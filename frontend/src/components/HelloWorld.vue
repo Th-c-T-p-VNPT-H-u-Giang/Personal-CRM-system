@@ -19,7 +19,7 @@ const count = ref(0);
           <a class="nav-link" href="#">Danh sách khách hàng</a>
           <a class="nav-link" href="#">Danh sách sản phẩm</a>
           <a class="nav-link" href="#">Danh sách đơn hàng</a>
-          <a class="nav-link" href="#">Báo cáo</a>
+          <a class="nav-link" href="#">Báo cáo 1</a>
         </nav>
       </div>
       <div class="col-md-9">
