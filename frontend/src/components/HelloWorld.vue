@@ -1,12 +1,4 @@
-<script setup>
-import { ref } from "vue";
-
-defineProps({
-  msg: String,
-});
-
-const count = ref(0);
-</script>
+<script setup></script>
 
 <template>
   <h1>{{ msg }}</h1>
@@ -19,7 +11,7 @@ const count = ref(0);
           <a class="nav-link" href="#">Danh sách khách hàng</a>
           <a class="nav-link" href="#">Danh sách sản phẩm</a>
           <a class="nav-link" href="#">Danh sách đơn hàng</a>
-          <a class="nav-link" href="#">Báo cáo 112</a>
+          <a class="nav-link" href="#">Báo cáo</a>
         </nav>
       </div>
       <div class="col-md-9">
@@ -110,7 +102,20 @@ const count = ref(0);
 </template>
 
 <style scoped>
-.read-the-docs {
-  color: #888;
+.color-dark {
+  color: var(--dark);
+}
+.border-nav {
+  border: 1px solid var(--gray);
+}
+.avatar {
+  width: 50px;
+  height: 50px;
+}
+.italic-text {
+  font-style: italic;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>
