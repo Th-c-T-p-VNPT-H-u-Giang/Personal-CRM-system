@@ -10,14 +10,21 @@ export default function(){
           showCloseButton: true,
         });
       };
-      const showFail = () => {
+      const showDelete = () => {
         
         Swal.fire({
-          title: "Thêm thành công",
-          icon: "error",
-          confirmButtonText: "OK",
-          showCloseButton: true,
-        });
+          title: 'Do you want to delete the level?',
+          // showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: 'Delete',
+          confirmButtonColor: '#cc0000'
+          // denyButtonText: `Delete`,
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            Swal.fire('Deleted!', '', 'success')
+          } 
+        })
       };
-      return {showSuccess,showFail}
+      return {showSuccess,showDelete}
 }

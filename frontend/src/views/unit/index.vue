@@ -1,38 +1,51 @@
 <template>
-  <!-- Bảng thông tin đơn vị -->
-
-  <div>
-    <h1 class="text-center my-3">INFORMATION OF LEVELS</h1>
-    <button class="btn btn-primary my-2">
-      <span class="material-symbols-outlined" @click="AddLevel"> add </span>
+  <div >
+    <h1 class="text-center mt-4">INFORMATION OF LEVELS</h1>
+    <!-- Button add trigger modal -->
+    <button
+    type="button"
+    class="btn btn-primary mb-2"
+    data-toggle="modal"
+    data-target="#exampleModal"
+  >
+  <span class="material-symbols-outlined mt-1"> add </span>
     </button>
-    <table class="table table-hover">
+   <!-- Bảng thông tin cấp -->
+    <table class="table table-hover mb-5">
       <thead>
         <tr>
+          <!-- <th>STT</th> -->
           <th scope="col">ID</th>
           <th scope="col">Name</th>
           <th scope="col">Action</th>
         </tr>
       </thead>
       <tbody>
-        <tr :key="index" v-for="(level, index) in levels" @click="InfoUnits(level.id)">
-          <th scope="row">{{ level.id }}</th>
-          <td>{{ level.name }}</td>
+        <tr :key="index" v-for="(level, index) in levels" >
+          <!-- <th>{{ index + 1 }} </th> -->
+          <th scope="row">{{ level.lev_id }}</th>
+          <td @click="InfoUnits(level.lev_id)">{{ level.lev_name }}</td>
           <td>
-            <router-link :to="{ name: 'Units', params: { id: level.id } }">
-              <span class="material-symbols-outlined"> info </span></router-link
+            <!-- chuyển trang đến đơn vị  -->
+            <router-link 
+            :to="{ name: 'Units', params: { id: level.lev_id } }"
+            class="display-hide"
             >
-            &nbsp;
+              <span class="material-symbols-outlined"> info </span>
+            </router-link> &nbsp;
+            <!-- Icon chỉnh sửa, lấy thông tin chỉnh sửa qua hàm getLevel với 2 tham số 1 id, index -->
             <span
               class="material-symbols-outlined"
-              @click="UpdateLevel(level.id)"
-            >
+              data-toggle="modal"
+              data-target="#exampleModal"
+              @click="getLevel(level.lev_id,index)">
               border_color
             </span>
             &nbsp;
+            <!-- icon xóa, thực hiện xóa qua hàm DeleteLevel -->
             <span
               class="material-symbols-outlined"
-              @click="DeleteLevel(level.id)"
+              @click="DeleteLevel(level.lev_id,index)"
             >
               delete
             </span>
@@ -40,20 +53,8 @@
         </tr>
       </tbody>
     </table>
-
     <!-- Modal update and add level -->
-
-    <!-- Button trigger modal -->
-    <button
-      type="button"
-      class="btn btn-primary"
-      data-toggle="modal"
-      data-target="#exampleModal"
-    >
-      Launch demo modal
-    </button>
-
-    <!-- Modal -->
+    <!-- Modal-->
     <div
       class="modal fade"
       id="exampleModal"
@@ -65,7 +66,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <h5 class="modal-title" id="exampleModalLabel">LEVELS</h5>
             <button
               type="button"
               class="close"
@@ -75,59 +76,79 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">...</div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-dismiss="modal"
-            >
-              Close
-            </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+          <div class="modal-body">
+            <Form :level="level"
+            @AddOrUpdate="AddOrUpdateLevel"
+                  
+            ></Form>
           </div>
+        
         </div>
       </div>
     </div>
+   
+     
+          
   </div>
 </template>
 <script>
 import { ref, reactive } from "vue";
 import Swal from "./use/showSwal";
 import router from "../../router";
+import Form from "./form/formLevel.vue"
 export default {
   name: "Levels",
+  components:{Form},
   setup() {
     const levels = reactive([
-      { id: 1, name: "Tổng công ty VNPT " },
-      { id: 2, name: "Phòng" },
+      { lev_id: 1, lev_name: "Tổng công ty VNPT " },
+      { lev_id: 2, lev_name: "Phòng" },
     ]);
+    const level=reactive({lev_id:'',lev_name:'',lev:''});
     //Export từ use/showSwal.js
-    const { showFail, showSuccess } = Swal();
+    const { showDelete, showSuccess } = Swal();
+
     //Hàm thông tin cấp
     const InfoUnits = async (id) => {
       console.log("chi tiết của cấp:", id);
       router.push({ name: 'Units', params: { id:id }})
     };
-    //Hàm thêm cấp
-    const AddLevel = async () => {
-      console.log("thêm");
-       showSuccess();
+    //Lấy level 
+    const getLevel=  async (id,index) => {
+      // console.log("Get level:", id,index);
+      level.lev_id=levels[index].lev_id;
+      level.lev_name=levels[index].lev_name;
+      level.lev='Update';
     };
-    //Hàm cập nhật cấp
-    const UpdateLevel = async (id) => {
-      console.log("cập nhật cấp:", id);
+    //Add or update 
+    const AddOrUpdateLevel =() => {
+      console.log("Add or Update");
+      if(level.lev==''){
+        console.log('Add',level);
+        levels[levels.length]={lev_id:level.lev_id,lev_name:level.lev_name};
+      }
+      else{
+        console.log('Update',level);        
+      }
       showSuccess();
-
+      level.lev_id='';
+      level.lev_name='';
+      level.lev=''
     };
     //Hàm xóa cấp
-    const DeleteLevel = async (id) => {
+    const DeleteLevel = async (id,index) => {
       console.log("xóa cấp:", id);
-      showSuccess();
+      levels.splice(index,1);
+      showDelete();
 
     };
 
-    return { levels, AddLevel, UpdateLevel, DeleteLevel, InfoUnits };
+    return { 
+      levels,level,
+      AddOrUpdateLevel,
+      getLevel,
+      DeleteLevel, InfoUnits,
+      };
   },
 };
 </script>
@@ -137,5 +158,9 @@ span{
 }
 span:hover{
   opacity: .7;
+}
+@media screen and (max-width:739px){  .display-hide{
+    display: none;
+  }
 }
 </style>
