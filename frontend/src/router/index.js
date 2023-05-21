@@ -3,74 +3,82 @@ import { createWebHistory, createRouter } from "vue-router";
 const routes = [
   // Dashboard
   {
-    path: '/',
-    name: 'Dashboard',
-    component: () => import('../views/dashboard/index.vue'),
+    path: "/",
+    name: "Dashboard",
+    component: () => import("../views/dashboard/index.vue"),
   },
   // Customer
   {
-    path: '/customer',
-    name: 'Customer',
-    component: () => import('../views/customer/index.vue'),
+    path: "/customer",
+    name: "Customer",
+    component: () => import("../views/customer/index.vue"),
   },
-  // Activity 
+  // Activity
   {
-    path: '/event',
-    name: 'Event',
-    component: () => import('../views/event/index.vue'),
+    path: "/event",
+    name: "Event",
+    component: () => import("../views/event/index.vue"),
   },
-  // Employee 
+  // Employee
   {
-    path: '/employee',
-    name: 'Employee',
-    component: () => import('../views/employee/index.vue'),
+    path: "/employee",
+    name: "Employee",
+    component: () => import("../views/employee/index.vue"),
   },
-  // Unit 
+  // Unit
   {
-    path: '/unit',
-    name: 'Unit',
-    component: () => import('../views/unit/index.vue'),
+    path: "/unit",
+    name: "Unit",
+    component: () => import("../views/unit/index.vue"),
+    query: {
+      page: 0,
+    },
   },
   {
-    path: '/units/:id',
-    name: 'Units',
-    component: () => import('../views/unit/units.vue'),
+    path: "/units/:id",
+    name: "UnitsofLevel",
+    component: () => import("../views/unit/UnitsofLevel.vue"),
+  },
+  {
+    path: "/units",
+    name: "Units",
+    component: () => import("../views/unit/units.vue"),
   },
   // Level
   {
-    path: '/level',
-    name: 'Level',
-    component: () => import('../views/level/index.vue'),
+    path: "/level",
+    name: "Level",
+    component: () => import("../views/level/index.vue"),
   },
   // Assignment
   {
-    path: '/assignment',
-    name: 'Assignment',
-    component: () => import('../views/assignment/index.vue'),
+    path: "/assignment",
+    name: "Assignment",
+    component: () => import("../views/assignment/index.vue"),
   },
   // Appointment
   {
-    path: '/appointment',
-    name: 'Appointment',
-    component: () => import('../views/appointment/index.vue'),
+    path: "/appointment",
+    name: "Appointment",
+    component: () => import("../views/appointment/index.vue"),
   },
   // Account
   {
-    path: '/account',
-    name: 'Account',
-    component: () => import('../views/account/index.vue'),
+    path: "/account",
+    name: "Account",
+    component: () => import("../views/account/index.vue"),
   },
   // Report
   {
-    path: '/report',
-    name: 'Report',
-    component: () => import('../views/report/index.vue'),
+    path: "/report",
+    name: "Report",
+    component: () => import("../views/report/index.vue"),
   },
   // Setting
   {
-    path: '/setting',
-    name: 'Setting',
-    component: () => import('../views/setting/index.vue'),
+    path: "/setting",
+    name: "Setting",
+    component: () => import("../views/setting/index.vue"),
   },
 ];
 const router = createRouter({

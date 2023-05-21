@@ -1,5 +1,6 @@
 <template>
   <div class="border-box p-2 ml-2">
+    <!-- link to level and title  -->
     <div class="row mt-4 mb-2">
       <router-link
         class="col-md-3 col-1 ml-2"
@@ -8,9 +9,9 @@
       >
         <span class="material-symbols-outlined"> arrow_back_ios </span>
       </router-link>
-      <h1 class="col-md-9 col-11">INFORMATION OF ALL UNITS</h1>
+      <h1 class="col-md-9 col-11">INFORMATION OF A UNITS</h1>
     </div>
-    <!-- Button add trigger modal -->
+    <!-- btn dropdown levels and units -->
     <div class="row mb-2">
       <div class="col-5">
         <!-- Button add trigger modal -->
@@ -26,7 +27,6 @@
           <span class="material-symbols-outlined"> delete </span>
         </button>
       </div>
-      <!-- dropdown levels -->
       <div class="col-7">
         <!-- btn levels -->
         <div class="dropdown">
@@ -42,10 +42,10 @@
           </button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <router-link
-              :key="index"
-              v-for="(lev, index) in levels"
               :to="{ name: 'UnitsofLevel', params: { id: lev.lev_id } }"
               class="dropdown-item"
+              :key="index"
+              v-for="(lev, index) in levels"
               >{{ lev.lev_name }}</router-link
             >
             <router-link :to="{ name: 'Units' }" class="dropdown-item"
@@ -59,7 +59,7 @@
         </router-link>
       </div>
     </div>
-    <!-- Bảng thông tin cấp -->
+    <!-- Table Units of a level -->
     <table class="table table-hover mb-5">
       <thead>
         <tr>
@@ -70,7 +70,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr :key="index" v-for="(unit, index) in units">
+        <tr :key="index" v-for="(unit, index) in lev_units">
           <th>
             <input type="checkbox" name="" id="" />
           </th>
@@ -98,12 +98,12 @@
         </tr>
       </tbody>
     </table>
-
-    <!-- Modal update and add level -->
-    <!-- Modal-->
+    <!-- Pagination -->
     <div>
       <Pagination_duy></Pagination_duy>
     </div>
+    <!-- Modal update and add level -->
+    <!-- Modal-->
     <div
       class="modal fade"
       id="exampleModal"
@@ -134,9 +134,9 @@
   </div>
 </template>
 <script>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, watch } from "vue";
 import Swal from "./use/showSwal";
-
+import { useRoute, useRouter } from "vue-router";
 import Form from "./form_table/formUnit.vue";
 import Pagination_duy from "../../components/table/pagination_duy.vue";
 
@@ -154,8 +154,27 @@ export default {
       { lev_id: 2, uni_id: 1, uni_name: "Phòng Kinh doanh" },
     ]);
     const unit = reactive({ uni_id: "", uni_name: "", uni: "" });
+    const lev_units = ref([]);
+
     //Export từ use/showSwal.js
     const { showDelete, showSuccess } = Swal();
+    const route = useRoute();
+    const params = ref({});
+    const getUnitofLevel = (id) => {
+      console.log("route:", id);
+      lev_units.value = units.filter((uni, index) => uni.lev_id == id);
+      console.log("new units a levels", lev_units.value);
+    };
+    watch(
+      () => route.params,
+      (newParams) => {
+        // Xử lý giá trị mới của route.params
+        params.value = newParams;
+        console.log("New route params:", params.value);
+        getUnitofLevel(params.value.id);
+      },
+      { immediate: true, deep: true }
+    );
 
     //Lấy level
     const getUnit = async (id, index) => {
@@ -186,12 +205,14 @@ export default {
     };
 
     return {
+      lev_units,
       levels,
       units,
       unit,
       AddOrUpdateUnit,
       getUnit,
       DeleteUnit,
+      params,
     };
   },
 };
@@ -219,10 +240,6 @@ span:hover {
 .col-7 {
   text-align: end;
 }
-.dropdown {
-  display: inline;
-}
-
 @media screen and (max-width: 739px) {
   .display-hide {
     display: none;
@@ -248,6 +265,9 @@ span:hover {
 
 .row {
   flex-wrap: nowrap;
+}
+.dropdown {
+  display: inline;
 }
 @media screen and (max-width: 739px) {
   .col-11 {

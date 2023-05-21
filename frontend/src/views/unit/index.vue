@@ -1,8 +1,10 @@
 <template>
   <div class="border-box p-2 ml-2">
     <h1 class="text-center mt-4">INFORMATION OF LEVELS</h1>
+    <!-- btn add, delete, levels, units -->
     <div class="row mb-2">
-      <div class="col-10">
+      <!-- btn add, delete -->
+      <div class="col-5">
         <!-- Button add trigger modal -->
         <button
           type="button"
@@ -12,18 +14,24 @@
         >
           <span class="material-symbols-outlined"> add </span>
         </button>
-        <button class="btn btn-danger">
+        <!-- btn delete -->
+        <button class="btn btn-danger" @click="deleteAll">
           <span class="material-symbols-outlined"> delete </span>
         </button>
       </div>
-      <div class="col-2" style="text-align: end">
+      <!-- btn levels, units -->
+      <div class="col-7">
+        <!-- btn levels -->
         <button
           class="btn menu active-menu"
           style="border-right: 1px solid #9e9898 !important"
         >
           Levels
         </button>
-        <button class="btn menu">Units</button>
+        <!-- btn units -->
+        <router-link :to="{ name: 'Units' }">
+          <button class="btn menu">Units</button>
+        </router-link>
       </div>
     </div>
 
@@ -38,24 +46,28 @@
         </tr>
       </thead>
       <tbody>
-        <tr :key="index" v-for="(level, index) in levels">
-          <th>
-            <input type="checkbox" name="" id="" />
-          </th>
-          <th scope="row">{{ level.lev_id }}</th>
+        <tr :key="index" v-for="(level, index) in newLevels">
+          <td>
+            <input
+              type="checkbox"
+              :id="`${level.lev_id}`"
+              v-model="checkboxValues[index].checked"
+            />
+          </td>
+          <td scope="row">{{ level.lev_id }}</td>
           <td @click="InfoUnits(level.lev_id)">{{ level.lev_name }}</td>
           <td>
-            <!-- chuyển trang đến đơn vị  -->
+            <!-- Link to units  -->
             <router-link
-              :to="{ name: 'Units', params: { id: level.lev_id } }"
+              :to="{ name: 'UnitsofLevel', params: { id: level.lev_id } }"
               class="display-hide"
             >
-              <span class="material-symbols-outlined"> info </span>
+              <span class="material-symbols-outlined icon-info"> info </span>
             </router-link>
             &nbsp;
-            <!-- Icon chỉnh sửa, lấy thông tin chỉnh sửa qua hàm getLevel với 2 tham số 1 id, index -->
+            <!-- Icon update, get information  by function getLevel with 2 params 1 id, index -->
             <span
-              class="material-symbols-outlined"
+              class="material-symbols-outlined icon-edit"
               data-toggle="modal"
               data-target="#exampleModal"
               @click="getLevel(level.lev_id, index)"
@@ -65,7 +77,7 @@
             &nbsp;
             <!-- icon xóa, thực hiện xóa qua hàm DeleteLevel -->
             <span
-              class="material-symbols-outlined"
+              class="material-symbols-outlined icon-delete"
               @click="DeleteLevel(level.lev_id, index)"
             >
               delete
@@ -74,6 +86,31 @@
         </tr>
       </tbody>
     </table>
+    <p>Checked count: {{ computedCheckedCount }}</p>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-end">
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+
+          <li
+            class="page-item"
+            v-for="page in pagination.numberOfPages"
+            :key="page"
+          >
+            <router-link
+              class="page-link"
+              :to="{ name: 'Unit', query: { page: page } }"
+            >
+              {{ page }}
+            </router-link>
+          </li>
+          <li class="page-item"><a class="page-link" href="#">Next</a></li>
+        </ul>
+      </nav>
+    </div>
+
     <!-- Modal update and add level -->
     <!-- Modal-->
     <div
@@ -106,28 +143,33 @@
   </div>
 </template>
 <script>
-import { ref, reactive } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import Swal from "./use/showSwal";
-import router from "../../router";
-import Form from "./form/formLevel.vue";
+import swal from "sweetalert2";
+
+import { useRoute } from "vue-router";
+import Form from "./form_table/formLevel.vue";
+import Pagination_duy from "../../components/table/pagination_duy.vue";
 export default {
   name: "Levels",
-  components: { Form },
+  components: { Form, Pagination_duy },
   setup() {
     const levels = reactive([
       { lev_id: 1, lev_name: "Tổng công ty VNPT " },
       { lev_id: 2, lev_name: "Phòng" },
+      { lev_id: 3, lev_name: "Phòng Tài chính" },
     ]);
     const level = reactive({ lev_id: "", lev_name: "", lev: "" });
-    //Export từ use/showSwal.js
+    //Export from use/showSwal.js
     const { showDelete, showSuccess } = Swal();
-
-    //Hàm thông tin cấp
+    const newLevels = ref({});
+    newLevels.value = levels;
+    //information units of a level
     const InfoUnits = async (id) => {
       console.log("chi tiết của cấp:", id);
-      router.push({ name: "Units", params: { id: id } });
+      router.push({ name: "UnitsofLevel", params: { id: id } });
     };
-    //Lấy level
+    //get a level
     const getLevel = async (id, index) => {
       // console.log("Get level:", id,index);
       level.lev_id = levels[index].lev_id;
@@ -151,13 +193,97 @@ export default {
       level.lev_name = "";
       level.lev = "";
     };
-    //Hàm xóa cấp
+    //function delete a level
     const DeleteLevel = async (id, index) => {
       console.log("xóa cấp:", id);
-      levels.splice(index, 1);
+      swal
+        .fire({
+          title: "Do you want to delete the level?",
+          // showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: "Delete",
+          confirmButtonColor: "#cc0000",
+          // denyButtonText: `Delete`,
+        })
+        .then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            levels.splice(index, 1);
+            swal.fire("Deleted!", "", "success");
+          }
+        });
+    };
+    const levelsCount = ref(levels.length);
+    const checkboxValues = ref([]);
+    checkboxValues.value = Array(levelsCount.value);
+    for (let i = 0; i < levelsCount.value; i++) {
+      checkboxValues.value[i] = { id: levels[i].lev_id, checked: false };
+    }
+    const computedCheckedCount = computed(() => {
+      return checkboxValues.value.filter((value) => value.checked).length;
+    });
+    watch(checkboxValues.value, (newValues) => {
+      console.log("Checkbox values changed:", checkboxValues.value, newValues);
+    });
+
+    const deleteAll = async () => {
+      console.log("Delete All");
+      var newArray = ref([]);
+
+      checkboxValues.value.forEach((checkbox, index) => {
+        if (checkbox.checked == true) {
+          console.log("Delete ID:", checkboxValues.value[index].id);
+          newLevels.value.splice(index, 1);
+        }
+      });
+      console.log(newLevels);
       showDelete();
     };
-
+    // Monitor newlevels after deletion
+    watch(newLevels.value, (newValues) => {
+      levelsCount.value = levels.length;
+      for (let i = 0; i < levelsCount.value; i++) {
+        checkboxValues.value[i] = {
+          id: newValues.value[i].lev_id,
+          checked: false,
+        };
+      }
+    });
+    // Pagination
+    const route = useRoute();
+    const pagination = {
+      entryValue: 2,
+      numberOfPages: 1,
+      totalRow: 0,
+      startRow: 0,
+      endRow: 0,
+      currentPage: 1,
+      searchText: "",
+      activeMenu: 1,
+    };
+    const setNumberOfPages = computed(() => {
+      return Math.ceil(levels.length / pagination.entryValue);
+    });
+    const setPages = () => {
+      pagination.numberOfPages = setNumberOfPages.value;
+      if (route.query.page) pagination.currentPage = route.query.page;
+      newLevels.value = levels.slice(0, pagination.entryValue);
+    };
+    setPages();
+    watch(
+      () => route.query,
+      (newQuery, oldQuery) => {
+        // Xử lý logic khi route.query thay đổi
+        console.log("Route query changed:", newQuery);
+        setPages();
+        if (route.query.page > 0)
+          newLevels.value = levels.slice(
+            (route.query.page - 1) * pagination.entryValue,
+            route.query.page * pagination.entryValue
+          );
+        else newLevels.value = levels.slice(0, pagination.entryValue);
+      }
+    );
     return {
       levels,
       level,
@@ -165,6 +291,12 @@ export default {
       getLevel,
       DeleteLevel,
       InfoUnits,
+      checkboxValues,
+      computedCheckedCount,
+      deleteAll,
+      pagination,
+      setPages,
+      newLevels,
     };
   },
 };
@@ -176,13 +308,33 @@ span {
 span:hover {
   opacity: 0.7;
 }
+.icon-edit:hover {
+  color: #e38205;
+}
+.icon-delete:hover {
+  color: #dc3545;
+}
+.icon-info:hover {
+  color: blue;
+}
 .border-box {
   border: 1px solid var(--gray);
   border-radius: 5px;
 }
+.col-7 {
+  text-align: end;
+}
 @media screen and (max-width: 739px) {
   .display-hide {
     display: none;
+  }
+  h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+  .btn {
+    padding: 8px;
+    margin-right: 2px;
   }
 }
 .menu {
@@ -193,5 +345,8 @@ span:hover {
 .active-menu {
   color: #fff;
   background-color: blue;
+}
+td {
+  width: 10px;
 }
 </style>
