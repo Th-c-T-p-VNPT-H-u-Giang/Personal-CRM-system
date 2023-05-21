@@ -44,6 +44,11 @@ const routes = [
     name: "Units",
     component: () => import("../views/unit/units.vue"),
   },
+  {
+    path: "/thunghiem",
+    name: "thunghiem",
+    component: () => import("../views/unit/thunghiem.vue"),
+  },
   // Level
   {
     path: "/level",
