@@ -33,7 +33,7 @@ export default {
       <div class="col-xl-10 col-sm-12">
         <Navbar />
         <RouterView></RouterView>
-        <Footer />
+        <Footer/>
       </div>
     </div>
   </div>
