@@ -30,25 +30,8 @@ const routes = [
     path: "/Unit",
     name: "Unit",
     component: () => import("../views/unit/index.vue"),
-    query: {
-      page: 0,
-    },
   },
-  {
-    path: "/units/:id",
-    name: "UnitsofLevel",
-    component: () => import("../views/unit/UnitsofLevel.vue"),
-  },
-  {
-    path: "/units",
-    name: "Units",
-    component: () => import("../views/unit/units.vue"),
-  },
-  {
-    path: "/thunghiem",
-    name: "thunghiem",
-    component: () => import("../views/unit/thunghiem.vue"),
-  },
+
   {
     path: "/unita",
     name: "unit",

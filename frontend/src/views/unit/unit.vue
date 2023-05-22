@@ -4,7 +4,7 @@ import Pagination from "./form_table/pagination_lananh.vue";
 import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
-import DeleteAll from "./form_table/delete-all-lananh.vue";
+import DeleteAll from "./form_table/delete_all_unit.vue";
 import Add from "./form_table/add_update_level.vue";
 import Form from "./form_table/formLevel.vue";
 import showSwal from "./use/showSwal";
@@ -30,11 +30,11 @@ export default {
 
     const data = reactive({
       items: [
-        { lev_id: 1, lev_name: "Tổng công ty VNPT " },
-        { lev_id: 1, lev_name: "Phòng" },
-        { lev_id: 1, lev_name: "Tổng công ty VNPT " },
-        { lev_id: 2, lev_name: "Phòng" },
-        { lev_id: 2, lev_name: "Tổng công ty VNPT " },
+        { lev_id: 1, uni_id: 1, uni_name: "Tổng công ty VNPT " },
+        { lev_id: 1, uni_id: 2, uni_name: "Phòng tài chính" },
+        { lev_id: 1, uni_id: 3, uni_name: "Tổng công ty VNPT " },
+        { lev_id: 2, uni_id: 4, uni_name: "Phòng chăm sóc" },
+        { lev_id: 2, uni_id: 5, uni_name: "Tổng công ty VNPT " },
       ],
       entryValue: 2,
       numberOfPages: 1,
@@ -48,8 +48,9 @@ export default {
     });
     const newData = reactive({
       lev_id: "",
-      lev_name: "",
-      lev: "",
+      uni_id: "",
+      uni_name: "",
+      uni: "",
     });
     const levels = reactive([
       { lev_id: 1, lev_name: "Tổng công ty VNPT " },
@@ -61,7 +62,7 @@ export default {
       console.log("Starting search");
       return data.items.map((value, index) => {
         console.log("value.name", value.lev_name);
-        return [value.lev_name].join("").toLocaleLowerCase();
+        return [value.uni_name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -106,8 +107,9 @@ export default {
     };
     const emptyNewData = () => {
       newData["lev_id"] = "";
-      newData["lev_name"] = "";
-      newData["lev"] = "";
+      newData["uni_id"] = "";
+      newData["uni_name"] = "";
+      newData["uni"] = "";
     };
     const addOrUpdateLevel = () => {
       if (newData.lev == "update") {
@@ -288,8 +290,8 @@ export default {
     <!-- @update="getLevel" -->
     <Table
       :items="setPages"
-      :fields="['Id_lev', 'Name']"
-      :labels="['lev_id', 'lev_name']"
+      :fields="['Uni_id', 'Name']"
+      :labels="['uni_id', 'uni_name']"
       @update="getLevel"
       @onDelete="onDelete"
       @detail="detail"
