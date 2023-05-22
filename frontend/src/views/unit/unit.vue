@@ -5,7 +5,7 @@ import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import DeleteAll from "./form_table/delete_all_unit.vue";
-import Add from "./form_table/add_update_level.vue";
+import Add from "./form_table/add_update_unit.vue";
 import Form from "./form_table/formLevel.vue";
 import showSwal from "./use/showSwal";
 import { reactive, ref, computed, watch, onMounted } from "vue";
@@ -113,12 +113,12 @@ export default {
     };
     const addOrUpdateLevel = () => {
       if (newData.lev == "update") {
-        console.log("UPDATE THU NGHIEM", newData.lev_id);
+        console.log("UPDATE THU NGHIEM", newData);
         emptyNewData();
         document.getElementById("model-add").style.display = "none";
         showSuccess();
       } else {
-        console.log("ADD THU NGHIEM", newData.lev_name);
+        console.log("ADD THU NGHIEM", newData.lev_id);
         emptyNewData();
         showSuccess();
       }
@@ -245,6 +245,7 @@ export default {
           <span id="delete-all" class="mx-2">Delete All</span>
         </button>
         <DeleteAll :items="data.items" />
+        <!-- Modal -->
         <button
           type="button"
           class="btn btn-primary"
@@ -253,36 +254,6 @@ export default {
         >
           <span id="add" class="mx-2">Add</span>
         </button>
-        <!-- Modal -->
-        <div
-          class="modal fade"
-          id="exampleModal"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  Add a New Level
-                </h5>
-                <button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <Form :level="newData" @AddOrUpdate="addOrUpdateLevel"></Form>
-              </div>
-            </div>
-          </div>
-        </div>
         <Add :newData="newData" @addorupdate="addOrUpdateLevel()" />
       </div>
     </div>

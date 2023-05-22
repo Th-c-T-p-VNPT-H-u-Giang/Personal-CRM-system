@@ -1,5 +1,5 @@
 <script>
-import Table from "../../../components/table/table-delete-all.vue";
+import Table from "./table_lananh.vue";
 import Pagination from "../../unit/form_table/pagination_lananh.vue";
 import Select from "../../../components/form/select.vue";
 import Search from "../../../components/form/search.vue";
@@ -34,7 +34,8 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return props.items.map((value, index) => {
-        return [value.name].join("").toLocaleLowerCase();
+        // thay đổi từ name ->lev_name
+        return [value.lev_name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -181,7 +182,6 @@ export default {
             :labels="['lev_id', 'lev_name']"
             :activeAction="`false`"
             :borderTableAll="`true`"
-            @update:delete="(value, index) => (setPages[index].delete = value)"
           />
           <Pagination
             :numberOfPages="data.numberOfPages"

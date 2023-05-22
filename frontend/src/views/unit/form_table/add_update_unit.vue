@@ -21,7 +21,8 @@
                 >Level(<span style="color: red">*</span>):</label
               >
 
-              <select class="pl-2" @change="getLevel">
+              <select class="pl-2 form-control" @change="getLevel">
+                <option disabled selected hidden value="#"></option>
                 <option
                   :value="`${value.lev_id}`"
                   :key="index"
@@ -38,7 +39,7 @@
                 class="form-control"
                 id="name"
                 name="name"
-                v-model="newData.lev_name"
+                v-model="newData.uni_name"
                 required
               />
             </div>
@@ -58,7 +59,7 @@
 </template>
 
 <script>
-import {} from "vue";
+import { ref, reactive } from "vue";
 export default {
   name: "Add",
   props: {
@@ -69,10 +70,15 @@ export default {
       { lev_id: 1, lev_name: "Tổng công ty VNPT " },
       { lev_id: 2, lev_name: "Phòng" },
     ]);
+    const getLevel = (event) => {
+      console.log(event.target.value);
+      newData.lev_id = event.target.value;
+    };
     const save = async () => {
+      console.log("save:", newData);
       ntx.emit("addorupdate", newData);
     };
-    return { save, levels };
+    return { save, levels, getLevel };
   },
 };
 </script>

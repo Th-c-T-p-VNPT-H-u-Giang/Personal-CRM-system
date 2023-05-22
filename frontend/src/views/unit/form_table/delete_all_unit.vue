@@ -1,5 +1,5 @@
 <script>
-import Table from "../../../components/table/table-delete-all.vue";
+import Table from "./table_lananh.vue";
 import Pagination from "../../unit/form_table/pagination_lananh.vue";
 import Select from "../../../components/form/select.vue";
 import Search from "../../../components/form/search.vue";
@@ -34,7 +34,7 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return props.items.map((value, index) => {
-        return [value.name].join("").toLocaleLowerCase();
+        return [value.uni_name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {

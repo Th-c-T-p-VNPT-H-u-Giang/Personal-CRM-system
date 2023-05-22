@@ -61,7 +61,15 @@ export default {
       </thead>
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
-          <td><input type="checkbox" name="" id="" /></td>
+          <td>
+            <input
+              :checked="item.delete"
+              v-model="item.delete"
+              type="checkbox"
+              name=""
+              id=""
+            />
+          </td>
           <td>{{ index + 1 }}</td>
           <td v-for="(label, index1) in labels" :key="index1">
             {{ item[label] }}

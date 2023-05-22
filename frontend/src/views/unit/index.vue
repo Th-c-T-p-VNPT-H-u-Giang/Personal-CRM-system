@@ -30,6 +30,7 @@ export default {
         { lev_id: 3, lev_name: "Tổng công ty VNPT " },
         { lev_id: 4, lev_name: "Phòng" },
         { lev_id: 5, lev_name: "Tổng công ty VNPT " },
+        { lev_id: 6, lev_name: "Tổng công ty VNPT " },
       ],
       entryValue: 2,
       numberOfPages: 1,
@@ -51,7 +52,6 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        console.log("value.name", value.lev_name);
         return [value.lev_name].join("").toLocaleLowerCase();
       });
     });
