@@ -1,6 +1,6 @@
 <script>
 import { reactive, ref } from "vue";
-import Add from "../form_table/add_level.vue";
+import Add from "./add_update_level.vue";
 export default {
   components: { Add },
   props: {
@@ -30,15 +30,17 @@ export default {
     },
   },
   setup(props, ntx) {
-    const newDataUpdate = reactive({ lev_id: "", lev_name: "" });
     const get = (data) => {
-      newDataUpdate.lev_name = data;
-      // console.log("get data:", data, newDataUpdate);
+      ntx.emit("update", data);
     };
-    const UpdateLevel = async (data) => {
-      console.log("update data từ emit:", data);
+    const onDelete = (data) => {
+      ntx.emit("onDelete", data);
     };
-    return { get, newDataUpdate, UpdateLevel };
+    const detail = (data) => {
+      ntx.emit("detail", data);
+    };
+
+    return { get, onDelete, detail };
   },
 };
 </script>
@@ -65,26 +67,33 @@ export default {
             {{ item[label] }}
           </td>
           <td v-if="activeAction == true">
-            <span id="view" class="material-symbols-outlined">
+            <span
+              id="view"
+              class="material-symbols-outlined"
+              @click="detail(item.lev_id)"
+            >
               visibility
             </span>
 
             <span
               class="material-symbols-outlined mx-2"
-              data-toggle="modal"
-              data-target="#model-edit"
               @click="get(item.lev_id)"
               id="edit"
             >
               edit
             </span>
 
-            <span id="delete" class="material-symbols-outlined"> delete </span>
+            <span
+              id="delete"
+              class="material-symbols-outlined"
+              @click="onDelete(item.lev_id)"
+            >
+              delete
+            </span>
           </td>
         </tr>
       </tbody>
     </table>
-    <Add :newDataUpdate="newDataUpdate" @update="UpdateLevel" />
   </div>
 </template>
 

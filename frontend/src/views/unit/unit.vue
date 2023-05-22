@@ -8,9 +8,11 @@ import DeleteAll from "./form_table/delete-all-lananh.vue";
 import Add from "./form_table/add_update_level.vue";
 import Form from "./form_table/formLevel.vue";
 import showSwal from "./use/showSwal";
-import { reactive, computed } from "vue";
+import { reactive, ref, computed, watch, onMounted } from "vue";
 import Swal from "./use/showSwal";
 import swal from "sweetalert2";
+import { useRoute, useRouter } from "vue-router";
+
 export default {
   components: {
     Table,
@@ -23,13 +25,16 @@ export default {
     Form,
   },
   setup(ctx) {
+    const route = useRoute();
+    const router = useRouter();
+
     const data = reactive({
       items: [
         { lev_id: 1, lev_name: "Tổng công ty VNPT " },
+        { lev_id: 1, lev_name: "Phòng" },
+        { lev_id: 1, lev_name: "Tổng công ty VNPT " },
         { lev_id: 2, lev_name: "Phòng" },
-        { lev_id: 3, lev_name: "Tổng công ty VNPT " },
-        { lev_id: 4, lev_name: "Phòng" },
-        { lev_id: 5, lev_name: "Tổng công ty VNPT " },
+        { lev_id: 2, lev_name: "Tổng công ty VNPT " },
       ],
       entryValue: 2,
       numberOfPages: 1,
@@ -46,6 +51,10 @@ export default {
       lev_name: "",
       lev: "",
     });
+    const levels = reactive([
+      { lev_id: 1, lev_name: "Tổng công ty VNPT " },
+      { lev_id: 2, lev_name: "Phòng" },
+    ]);
     const { showSuccess } = Swal();
     // computed
     const toString = computed(() => {
@@ -133,6 +142,16 @@ export default {
     const detail = (data) => {
       console.log("detail", data);
     };
+    const selectedOption = ref("Level");
+
+    watch(selectedOption, (newValue, oldValue) => {
+      console.log("Dropdown value changed:", newValue);
+      if (newValue != "Level" && newValue != "all")
+        router.push({ name: "unit_level", params: { id: newValue } });
+      else if (newValue == "all") router.push({ name: "unit" });
+      selectedOption.value = "Level";
+    });
+
     return {
       data,
       setPages,
@@ -141,6 +160,8 @@ export default {
       getLevel,
       onDelete,
       detail,
+      levels,
+      selectedOption,
     };
   },
 };
@@ -148,20 +169,30 @@ export default {
 
 <template>
   <div class="border-box d-flex flex-column ml-2">
+    <h1>Units</h1>
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
-      <a
+      <select
+        class="pl-2"
+        v-model="selectedOption"
         @click="data.activeMenu = 1"
         :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-        href="#"
-        >Level</a
       >
-
-      <router-link
-        :to="{ name: 'unit' }"
+        <option disabled selected hidden value="Level">Level</option>
+        <option
+          :value="`${value.lev_id}`"
+          :key="index"
+          v-for="(value, index) in levels"
+        >
+          {{ value.lev_name }}
+        </option>
+        <option value="all">All</option>
+      </select>
+      <a
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-        >Unit</router-link
+        href="#"
+        >Unit</a
       >
     </div>
     <!-- Filter -->
@@ -303,5 +334,11 @@ export default {
 #add,
 #delete-all {
   font-size: 14px;
+}
+select {
+  background-color: #f6f6f6;
+  border: 1px solid #b8c2cc;
+  width: 80px;
+  font-size: 16px;
 }
 </style>

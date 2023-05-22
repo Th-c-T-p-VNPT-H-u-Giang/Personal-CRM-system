@@ -8,9 +8,11 @@ import DeleteAll from "./form_table/delete-all-lananh.vue";
 import Add from "./form_table/add_update_level.vue";
 import Form from "./form_table/formLevel.vue";
 import showSwal from "./use/showSwal";
-import { reactive, computed } from "vue";
+import { reactive, ref, computed, watch, onMounted } from "vue";
 import Swal from "./use/showSwal";
 import swal from "sweetalert2";
+import { useRoute, useRouter } from "vue-router";
+
 export default {
   components: {
     Table,
@@ -23,13 +25,15 @@ export default {
     Form,
   },
   setup(ctx) {
-    const data = reactive({
+    const route = useRoute();
+    const router = useRouter();
+    const data_copy = reactive({
       items: [
         { lev_id: 1, lev_name: "Tổng công ty VNPT " },
+        { lev_id: 1, lev_name: "Phòng" },
+        { lev_id: 1, lev_name: "Tổng công ty VNPT " },
         { lev_id: 2, lev_name: "Phòng" },
-        { lev_id: 3, lev_name: "Tổng công ty VNPT " },
-        { lev_id: 4, lev_name: "Phòng" },
-        { lev_id: 5, lev_name: "Tổng công ty VNPT " },
+        { lev_id: 2, lev_name: "Tổng công ty VNPT " },
       ],
       entryValue: 2,
       numberOfPages: 1,
@@ -41,51 +45,58 @@ export default {
       activeMenu: 1,
       activeSelectAll: false,
     });
+    const data = ref({});
+    data.value = data_copy;
     const newData = reactive({
       lev_id: "",
       lev_name: "",
       lev: "",
     });
+    const levels = reactive([
+      { lev_id: 1, lev_name: "Tổng công ty VNPT " },
+      { lev_id: 2, lev_name: "Phòng" },
+    ]);
     const { showSuccess } = Swal();
     // computed
     const toString = computed(() => {
       console.log("Starting search");
-      return data.items.map((value, index) => {
+      return data.value.items.map((value, index) => {
         console.log("value.name", value.lev_name);
         return [value.lev_name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
-      return data.items.filter((value, index) => {
+      return data.value.items.filter((value, index) => {
         return toString.value[index].includes(
-          data.searchText.toLocaleLowerCase()
+          data.value.searchText.toLocaleLowerCase()
         );
       });
     });
     const filtered = computed(() => {
-      if (!data.searchText) {
-        data.totalRow = data.items.length;
-        return data.items;
+      if (!data.value.searchText) {
+        data.value.totalRow = data.value.items.length;
+        return data.value.items;
       } else {
-        data.totalRow = filter.value.length;
+        data.value.totalRow = filter.value.length;
         return filter.value;
       }
     });
     const setNumberOfPages = computed(() => {
-      return Math.ceil(filtered.value.length / data.entryValue);
+      return Math.ceil(filtered.value.length / data.value.entryValue);
     });
     const setPages = computed(() => {
-      if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-        data.entryValue = data.items.length;
-        data.numberOfPages = 1;
-      } else data.numberOfPages = setNumberOfPages.value;
-      data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-      data.endRow = data.currentPage * data.entryValue;
+      if (setNumberOfPages.value == 0 || data.value.entryValue == "All") {
+        data.value.entryValue = data.value.items.length;
+        data.value.numberOfPages = 1;
+      } else data.value.numberOfPages = setNumberOfPages.value;
+      data.value.startRow =
+        (data.value.currentPage - 1) * data.value.entryValue + 1;
+      data.value.endRow = data.value.currentPage * data.value.entryValue;
       // console.log(data);
       return filtered.value.filter((item, index) => {
         return (
-          index + 1 > (data.currentPage - 1) * data.entryValue &&
-          index + 1 <= data.currentPage * data.entryValue
+          index + 1 > (data.value.currentPage - 1) * data.value.entryValue &&
+          index + 1 <= data.value.currentPage * data.value.entryValue
         );
       });
     });
@@ -133,6 +144,56 @@ export default {
     const detail = (data) => {
       console.log("detail", data);
     };
+
+    const params = ref({});
+    computed(() => {
+      console.log("params", data.value.searchText);
+      return data.value.searchText;
+    });
+    const data_root = ref({});
+    data_root.value = data_copy;
+    const getUnitofLevel = (id) => {
+      console.log("route:", id, data_copy);
+      data.value.items = data_copy.items.filter(
+        (uni, index) => uni.lev_id == id
+      );
+      console.log("new units a levels", data.value);
+    };
+    watch(
+      () => route.params,
+      (newParams) => {
+        // Xử lý giá trị mới của route.params
+        params.value = newParams;
+        console.log("New route params:", params.value, data.value.items.length);
+        getUnitofLevel(params.value.id);
+
+        // for (let i = 0; i < data.value.items.length; i++) {
+        //   if (data.value.items[i].lev_id == params.value.id) {
+        //     data.value[i] = data.value.items[i];
+        //   }
+        // }
+        // console.log("newArray", data.value);
+      },
+      { immediate: true, deep: true }
+    );
+    // computed(() => {
+    //   console.log("newdata:");
+    //   return data.value;
+    // });
+    // onMounted(() => {
+    //   params.value = route.params.id;
+    // });
+
+    //
+    const selectedOption = ref("Level");
+    watch(selectedOption, (newValue, oldValue) => {
+      console.log("Dropdown value changed:", newValue);
+      if (newValue != "Level" && newValue != "all")
+        router.push({ name: "unit_level", params: { id: newValue } });
+      else if (newValue == "all") router.push({ name: "unit" });
+      selectedOption.value = "Level";
+    });
+
     return {
       data,
       setPages,
@@ -141,6 +202,8 @@ export default {
       getLevel,
       onDelete,
       detail,
+      levels,
+      selectedOption,
     };
   },
 };
@@ -148,20 +211,30 @@ export default {
 
 <template>
   <div class="border-box d-flex flex-column ml-2">
+    <h1>unit levels</h1>
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
-      <a
+      <select
+        class="pl-2"
+        v-model="selectedOption"
         @click="data.activeMenu = 1"
         :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-        href="#"
-        >Level</a
       >
-
-      <router-link
-        :to="{ name: 'unit' }"
+        <option disabled selected hidden value="Level">Level</option>
+        <option
+          :value="`${value.lev_id}`"
+          :key="index"
+          v-for="(value, index) in levels"
+        >
+          {{ value.lev_name }}
+        </option>
+        <option value="all">All</option>
+      </select>
+      <a
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-        >Unit</router-link
+        href="#"
+        >Unit</a
       >
     </div>
     <!-- Filter -->
@@ -303,5 +376,11 @@ export default {
 #add,
 #delete-all {
   font-size: 14px;
+}
+select {
+  background-color: #f6f6f6;
+  border: 1px solid #b8c2cc;
+  width: 80px;
+  font-size: 16px;
 }
 </style>

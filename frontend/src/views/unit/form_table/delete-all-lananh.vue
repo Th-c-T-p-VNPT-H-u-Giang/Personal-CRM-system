@@ -63,7 +63,7 @@ export default {
       } else data.numberOfPages = setNumberOfPages.value;
       data.startRow = (data.currentPage - 1) * data.entryValue + 1;
       data.endRow = data.currentPage * data.entryValue;
-      console.log(data);
+      // console.log(data);
       return filtered.value.filter((item, index) => {
         return (
           index + 1 > (data.currentPage - 1) * data.entryValue &&
@@ -167,8 +167,7 @@ export default {
               <button
                 type="button"
                 class="btn btn-danger ml-3"
-                data-toggle="modal"
-                data-target="#model-add"
+                @click="onDeleteAll"
               >
                 <span id="add" class="mx-2" style="font-size: 15px"
                   >Delete All</span

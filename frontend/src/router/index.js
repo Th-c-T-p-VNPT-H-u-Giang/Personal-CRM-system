@@ -25,9 +25,9 @@ const routes = [
     name: "Employee",
     component: () => import("../views/employee/index.vue"),
   },
-  // Unit
+
   {
-    path: "/unit",
+    path: "/Unit",
     name: "Unit",
     component: () => import("../views/unit/index.vue"),
     query: {
@@ -48,6 +48,16 @@ const routes = [
     path: "/thunghiem",
     name: "thunghiem",
     component: () => import("../views/unit/thunghiem.vue"),
+  },
+  {
+    path: "/unita",
+    name: "unit",
+    component: () => import("../views/unit/unit.vue"),
+  },
+  {
+    path: "/unita/:id",
+    name: "unit_level",
+    component: () => import("../views/unit/unit_level.vue"),
   },
   // Level
   {
