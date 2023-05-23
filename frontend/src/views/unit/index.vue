@@ -108,6 +108,7 @@ export default {
         showSuccess();
       } else {
         console.log("ADD THU NGHIEM", newData.lev_name);
+        data.items.push({ lev_id: 8, lev_name: newData.lev_name });
         emptyNewData();
         showSuccess();
       }
@@ -212,6 +213,7 @@ export default {
           <span id="delete-all" class="mx-2">Delete All</span>
         </button>
         <DeleteAll :items="data.items" />
+        <!-- Modal -->
         <button
           type="button"
           class="btn btn-primary"
@@ -220,36 +222,7 @@ export default {
         >
           <span id="add" class="mx-2">Add</span>
         </button>
-        <!-- Modal -->
-        <div
-          class="modal fade"
-          id="exampleModal"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  Add a New Level
-                </h5>
-                <button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <Form :level="newData" @AddOrUpdate="addOrUpdateLevel"></Form>
-              </div>
-            </div>
-          </div>
-        </div>
+
         <Add :newData="newData" @addorupdate="addOrUpdateLevel()" />
       </div>
     </div>
@@ -262,6 +235,7 @@ export default {
       @update="getLevel"
       @onDelete="onDelete"
       @detail="detail"
+      :name_id="'lev_id'"
     />
 
     <!-- Pagination -->

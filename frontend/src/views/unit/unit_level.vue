@@ -5,7 +5,7 @@ import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import DeleteAll from "./form_table/delete_all_unit.vue";
-import Add from "./form_table/add_update_level.vue";
+import Add from "./form_table/add_update_unit.vue";
 import Form from "./form_table/formLevel.vue";
 import showSwal from "./use/showSwal";
 import { reactive, ref, computed, watch, onMounted } from "vue";
@@ -102,10 +102,10 @@ export default {
       });
     });
 
-    const getLevel = async (value_id) => {
+    const getUnit = async (value_id) => {
       document.getElementById("model-add").style.display = "block";
-      newData.lev_id = value_id;
-      newData.lev = "update";
+      newData.uni_id = value_id;
+      newData.uni = "update";
     };
     const emptyNewData = () => {
       newData["lev_id"] = "";
@@ -114,13 +114,13 @@ export default {
       newData["uni"] = "";
     };
     const addOrUpdateLevel = () => {
-      if (newData.lev == "update") {
-        console.log("UPDATE THU NGHIEM", newData.lev_id);
+      if (newData.uni == "update") {
+        console.log("UPDATE THU NGHIEM", newData.uni_id);
         emptyNewData();
         document.getElementById("model-add").style.display = "none";
         showSuccess();
       } else {
-        console.log("ADD THU NGHIEM", newData.lev_name);
+        console.log("ADD THU NGHIEM", newData.uni_id);
         emptyNewData();
         showSuccess();
       }
@@ -177,7 +177,7 @@ export default {
       console.log("Dropdown value changed:", newValue);
       if (newValue != "Level" && newValue != "all")
         router.push({ name: "unit_level", params: { id: newValue } });
-      else if (newValue == "all") router.push({ name: "unit" });
+      else if (newValue == "all") router.push({ name: "Unit" });
       selectedOption.value = "Level";
     });
 
@@ -186,7 +186,7 @@ export default {
       setPages,
       newData,
       addOrUpdateLevel,
-      getLevel,
+      getUnit,
       onDelete,
       detail,
       levels,
@@ -198,7 +198,7 @@ export default {
 
 <template>
   <div class="border-box d-flex flex-column ml-2">
-    <h1>unit levels</h1>
+    <!-- <h1>unit levels</h1> -->
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <select
@@ -217,11 +217,11 @@ export default {
         </option>
         <option value="all">All</option>
       </select>
-      <a
+      <router-link
+        :to="{ name: 'unit' }"
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-        href="#"
-        >Unit</a
+        >Unit</router-link
       >
     </div>
     <!-- Filter -->
@@ -319,9 +319,10 @@ export default {
       :items="setPages"
       :fields="['Uni_id', 'Name']"
       :labels="['uni_id', 'uni_name']"
-      @update="getLevel"
+      @update="getUnit"
       @onDelete="onDelete"
       @detail="detail"
+      :name_id="'uni_id'"
     />
 
     <!-- Pagination -->

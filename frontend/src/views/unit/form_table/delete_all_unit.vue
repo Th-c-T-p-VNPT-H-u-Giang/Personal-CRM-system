@@ -108,10 +108,10 @@ export default {
         </div>
         <!-- Modal body -->
         <div class="modal-body">
-          <div class="d-flex justify-content-between mb-3">
-            <div class="d-flex justify-content-start">
+          <div class="d-flex justify-content-between mb-3 row">
+            <div class="d-flex justify-content-start col-6 row">
               <Select
-                class="d-flex justify-content-start"
+                class="d-flex justify-content-start col-4 col-md-2"
                 :options="[
                   {
                     name: 5,
@@ -138,12 +138,12 @@ export default {
                 :entryValue="data.entryValue"
               />
               <Search
-                class="ml-3"
+                class="ml-1 col-7 col-md-9"
                 style="width: 300px"
                 @update:searchText="(value) => (data.searchText = value)"
               />
             </div>
-            <div class="d-flex align-items-start">
+            <div class="d-flex align-items-start mx-3">
               <button
                 v-if="data.activeSelectAll == false"
                 type="button"

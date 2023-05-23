@@ -100,10 +100,10 @@ export default {
       });
     });
 
-    const getLevel = async (value_id) => {
+    const getUnit = async (value_id) => {
       document.getElementById("model-add").style.display = "block";
-      newData.lev_id = value_id;
-      newData.lev = "update";
+      newData.uni_id = value_id;
+      newData.uni = "update";
     };
     const emptyNewData = () => {
       newData["lev_id"] = "";
@@ -112,13 +112,13 @@ export default {
       newData["uni"] = "";
     };
     const addOrUpdateLevel = () => {
-      if (newData.lev == "update") {
-        console.log("UPDATE THU NGHIEM", newData);
+      if (newData.uni == "update") {
+        console.log("UPDATE THU NGHIEM", newData.uni_id);
         emptyNewData();
         document.getElementById("model-add").style.display = "none";
         showSuccess();
       } else {
-        console.log("ADD THU NGHIEM", newData.lev_id);
+        console.log("ADD THU NGHIEM", newData.uni_id);
         emptyNewData();
         showSuccess();
       }
@@ -144,13 +144,13 @@ export default {
     const detail = (data) => {
       console.log("detail", data);
     };
+    //select_option
     const selectedOption = ref("Level");
-
     watch(selectedOption, (newValue, oldValue) => {
       console.log("Dropdown value changed:", newValue);
       if (newValue != "Level" && newValue != "all")
         router.push({ name: "unit_level", params: { id: newValue } });
-      else if (newValue == "all") router.push({ name: "unit" });
+      else if (newValue == "all") router.push({ name: "Unit" });
       selectedOption.value = "Level";
     });
 
@@ -159,7 +159,7 @@ export default {
       setPages,
       newData,
       addOrUpdateLevel,
-      getLevel,
+      getUnit,
       onDelete,
       detail,
       levels,
@@ -171,7 +171,7 @@ export default {
 
 <template>
   <div class="border-box d-flex flex-column ml-2">
-    <h1>Units</h1>
+    <!-- <h1>Units</h1> -->
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <select
@@ -190,20 +190,20 @@ export default {
         </option>
         <option value="all">All</option>
       </select>
-      <a
+      <router-link
+        :to="{ name: 'unit' }"
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-        href="#"
-        >Unit</a
+        >Unit</router-link
       >
     </div>
     <!-- Filter -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
-    <div class="d-flex justify-content-between mx-3 mb-3">
-      <div class="d-flex justify-content-start">
+    <div class="d-flex justify-content-between mx-2 mb-3 row">
+      <div class="d-flex justify-content-start col-md-6 col-7 row">
         <Select
-          class="d-flex justify-content-start"
+          class="d-flex justify-content-start col-md-2 col-4"
           :options="[
             {
               name: 5,
@@ -230,12 +230,12 @@ export default {
           :entryValue="data.entryValue"
         />
         <Search
-          class="ml-3"
+          class="col-7 col-md-9"
           style="width: 300px"
           @update:searchText="(value) => (data.searchText = value)"
         />
       </div>
-      <div class="d-flex align-items-start">
+      <div class="d-flex align-items-start mx-2">
         <button
           type="button"
           class="btn btn-danger mr-3"
@@ -263,9 +263,10 @@ export default {
       :items="setPages"
       :fields="['Uni_id', 'Name']"
       :labels="['uni_id', 'uni_name']"
-      @update="getLevel"
+      @update="getUnit"
       @onDelete="onDelete"
       @detail="detail"
+      :name_id="'uni_id'"
     />
 
     <!-- Pagination -->

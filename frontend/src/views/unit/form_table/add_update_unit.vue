@@ -8,7 +8,12 @@
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title" style="font-size: 15px">Level</h4>
-          <button type="button" class="close" data-dismiss="modal">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            @click="turn_off"
+          >
             &times;
           </button>
         </div>
@@ -20,8 +25,12 @@
               <label for="name"
                 >Level(<span style="color: red">*</span>):</label
               >
-
-              <select class="pl-2 form-control" @change="getLevel">
+              <select
+                class="pl-2 form-control"
+                @change="getLevel"
+                v-model="selectValue"
+                required
+              >
                 <option disabled selected hidden value="#"></option>
                 <option
                   :value="`${value.lev_id}`"
@@ -42,6 +51,9 @@
                 v-model="newData.uni_name"
                 required
               />
+              <div style="color: red">
+                {{ errors.uni_name }}
+              </div>
             </div>
 
             <button
@@ -70,15 +82,43 @@ export default {
       { lev_id: 1, lev_name: "Tổng công ty VNPT " },
       { lev_id: 2, lev_name: "Phòng" },
     ]);
+    const selectValue = ref("");
+    const errors = reactive({
+      lev_id: "",
+      uni_name: "",
+    });
     const getLevel = (event) => {
       console.log(event.target.value);
       newData.lev_id = event.target.value;
     };
-    const save = async () => {
-      console.log("save:", newData);
-      ntx.emit("addorupdate", newData);
+    const validate = () => {
+      let valid = ref(true);
+      errors.lev_id = "";
+      errors.uni_name = "";
+      if (newData.lev_id.trim() == "") {
+        errors.lev_id = "Level is not empty";
+        valid.value = false;
+      }
+      if (newData.uni_name.trim() == "") {
+        errors.uni_name = "Name is not empty";
+        valid.value = false;
+      }
+      console.log(errors);
+      return valid;
     };
-    return { save, levels, getLevel };
+    const save = async () => {
+      if (validate().value) {
+        console.log("save:", newData);
+        ntx.emit("addorupdate", newData);
+        selectValue.value = "";
+      } else {
+        console.log("Data not empty");
+      }
+    };
+    const turn_off = () => {
+      document.getElementById("model-add").style.display = "none";
+    };
+    return { save, levels, getLevel, turn_off, selectValue, errors };
   },
 };
 </script>

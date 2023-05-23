@@ -1,5 +1,3 @@
-<script></script>
-
 <template>
   <!-- The Modal -->
   <div class="modal" id="model-add">
@@ -8,7 +6,12 @@
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title" style="font-size: 15px">Level</h4>
-          <button type="button" class="close" data-dismiss="modal">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            @click="turn_off"
+          >
             &times;
           </button>
         </div>
@@ -26,6 +29,9 @@
                 v-model="newData.lev_name"
                 required
               />
+              <div style="color: red">
+                {{ errors.lev_name }}
+              </div>
             </div>
 
             <button
@@ -43,17 +49,39 @@
 </template>
 
 <script>
-import {} from "vue";
+import { reactive, ref } from "vue";
 export default {
   name: "Add",
   props: {
     newData: { type: Object },
   },
+
   setup({ newData }, ntx) {
-    const save = async () => {
-      ntx.emit("addorupdate", newData);
+    const errors = reactive({
+      lev_name: "",
+    });
+    const validate = () => {
+      let valid = ref(true);
+      errors.lev_name = "";
+
+      if (newData.lev_name.trim() == "") {
+        errors.lev_name = "Name is not empty";
+        valid.value = false;
+      }
+      console.log(errors);
+      return valid;
     };
-    return { save };
+    const save = async () => {
+      if (validate().value) {
+        ntx.emit("addorupdate", newData);
+      } else {
+        console.log("Data not empty");
+      }
+    };
+    const turn_off = () => {
+      document.getElementById("model-add").style.display = "none";
+    };
+    return { save, turn_off, errors };
   },
 };
 </script>

@@ -1,6 +1,7 @@
 <script>
 import { reactive, ref } from "vue";
 import Add from "./add_update_level.vue";
+import { useRouter } from "vue-router";
 export default {
   components: { Add },
   props: {
@@ -28,16 +29,20 @@ export default {
       type: Boolean,
       default: false,
     },
+    name_id: { type: String },
   },
   setup(props, ntx) {
+    const router = useRouter();
     const get = (data) => {
+      console.log("id get:", data);
       ntx.emit("update", data);
     };
     const onDelete = (data) => {
       ntx.emit("onDelete", data);
     };
     const detail = (data) => {
-      ntx.emit("detail", data);
+      router.push({ name: "unit_level", params: { id: data } });
+      // ntx.emit("detail", data);
     };
 
     return { get, onDelete, detail };
@@ -78,14 +83,15 @@ export default {
             <span
               id="view"
               class="material-symbols-outlined"
-              @click="detail(item.lev_id)"
+              @click="detail(item[`${name_id}`])"
+              v-if="name_id != 'uni_id'"
             >
               visibility
             </span>
 
             <span
               class="material-symbols-outlined mx-2"
-              @click="get(item.lev_id)"
+              @click="get(item[`${name_id}`])"
               id="edit"
             >
               edit
@@ -94,7 +100,7 @@ export default {
             <span
               id="delete"
               class="material-symbols-outlined"
-              @click="onDelete(item.lev_id)"
+              @click="onDelete(item[`${name_id}`])"
             >
               delete
             </span>
