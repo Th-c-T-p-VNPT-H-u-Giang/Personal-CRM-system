@@ -32,19 +32,8 @@ export default {
   },
   setup(props, ntx) {
     const router = useRouter();
-    const get = (data) => {
-      console.log("id get:", data);
-      ntx.emit("update", data);
-    };
-    const onDelete = (data) => {
-      ntx.emit("onDelete", data);
-    };
-    const detail = (data) => {
-      router.push({ name: "unit_level", params: { id: data } });
-      // ntx.emit("detail", data);
-    };
 
-    return { get, onDelete, detail };
+    return {};
   },
 };
 </script>
@@ -75,33 +64,18 @@ export default {
             />
           </td>
           <td>{{ index + 1 }}</td>
-          <td v-for="(label, index1) in labels" :key="index1">
+          <td
+            v-for="(label, index1) in labels"
+            :key="index1"
+            style="overflow-wrap;: break-word;"
+          >
             {{ item[label] }}
           </td>
-          <td v-if="activeAction == true">
-            <span
-              id="view"
-              class="material-symbols-outlined"
-              @click="detail(item[`${name_id}`])"
-              v-if="name_id != 'uni_id'"
-            >
-              visibility
-            </span>
-
-            <span
-              class="material-symbols-outlined mx-2"
-              @click="get(item[`${name_id}`])"
-              id="edit"
-            >
-              edit
-            </span>
-
-            <span
-              id="delete"
-              class="material-symbols-outlined"
-              @click="onDelete(item[`${name_id}`])"
-            >
-              delete
+          <td v-if="activeAction == true" style="width: 200px">
+            <span id="view" class="material-symbols-outlined"> acute </span>
+            <span id="edit" class="material-symbols-outlined mx-2"> mail </span>
+            <span id="delete" class="material-symbols-outlined">
+              phone_in_talk
             </span>
           </td>
         </tr>
@@ -154,5 +128,10 @@ export default {
 }
 #delete:hover {
   color: var(--red);
+}
+@media screen and (max-width: 739px) {
+  .my-table {
+    width: 560px;
+  }
 }
 </style>

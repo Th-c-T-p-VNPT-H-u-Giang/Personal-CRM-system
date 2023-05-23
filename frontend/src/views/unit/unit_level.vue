@@ -152,8 +152,8 @@ export default {
       console.log("params", data.value.searchText);
       return data.value.searchText;
     });
-    const data_root = ref({});
-    data_root.value = data_copy;
+    // const data_root = ref({});
+    // data_root.value = data_copy;
     const getUnitofLevel = (id) => {
       console.log("route:", id, data_copy);
       data.value.items = data_copy.items.filter(
@@ -201,6 +201,7 @@ export default {
     <!-- <h1>unit levels</h1> -->
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
+      <!-- select_option -->
       <select
         class="pl-2"
         v-model="selectedOption"
