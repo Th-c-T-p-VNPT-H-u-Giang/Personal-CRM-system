@@ -1,37 +1,37 @@
 <template>
-    <table
-      class="my-table mb-2"
-      :class="[borderTableAll ? 'border-table-all' : '']"
-    >
-      <thead>
-        <tr>
-          <th v-if="isCheckBox"></th>
-          <th>Id</th>
-          <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-          <th v-if="activeAction">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in items" :key="index">
-          <td v-if="isCheckBox"><input type="checkbox" name="" id="" /></td>
-          <td>{{ item.id }}</td>
-          <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
-          <td v-if="activeAction">
-            <span id="view" class="material-symbols-outlined" v-if="!isCustomerType"> visibility </span>
-            <button v-if="isCustomer" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
-              <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
-            </button>
-            <edit-customer v-if="isCustomer"/>
-            <button v-if="isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
-              <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
-            </button>
-            <edit-customer-type class="text-left" v-if="isCustomerType"/>
-            <span id="delete" class="material-symbols-outlined" @click="handleDelete"> delete </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </template>
+  <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
+    <thead>
+      <tr>
+        <th v-if="isCheckBox"></th>
+        <th>Id</th>
+        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
+        <th v-if="activeAction">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(item, index) in items" :key="index">
+        <td v-if="isCheckBox"><input type="checkbox" name="" id="" /></td>
+        <td>{{ item.id }}</td>
+        <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
+        <td v-if="activeAction">
+          <button v-if="!isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-view">
+            <span id="view" class="material-symbols-outlined" > visibility </span>
+          </button>
+          <view-customer v-if="!isCustomerType" :item="item"/>
+          <button v-if="isCustomer" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
+            <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
+          </button>
+          <edit-customer v-if="isCustomer" :item="item"/>
+          <button v-if="isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
+            <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
+          </button>
+          <edit-customer-type class="text-left" v-if="isCustomerType" />
+          <span id="delete" class="material-symbols-outlined" @click="handleDelete"> delete </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</template>
   
 
 
@@ -39,9 +39,10 @@
 import Swal from "sweetalert2";
 import EditCustomer from '../../views/customer/EditCustomer.vue';
 import EditCustomerType from '../../views/customer/customerTypes/EditCustomerType.vue';
+import ViewCustomer from '../../views/customer/ViewCustomer.vue';
 
 export default {
-  components: { EditCustomer, EditCustomerType },
+  components: { EditCustomer, EditCustomerType, ViewCustomer },
   props: {
     items: {
       type: Array,
@@ -67,7 +68,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    isCheckBox : {
+    isCheckBox: {
       type: Boolean,
       default: true,
     },
@@ -106,7 +107,7 @@ export default {
 
 
 <style scoped>
-.btn-edit{
+.btn-edit {
   border: none;
   outline: none;
 }
@@ -146,12 +147,15 @@ export default {
   border-radius: 4px;
   padding: 1px;
 }
+
 #view:hover {
   color: var(--blue);
 }
+
 #edit:hover {
   color: var(--yellow);
 }
+
 #delete:hover {
   color: var(--red);
 }

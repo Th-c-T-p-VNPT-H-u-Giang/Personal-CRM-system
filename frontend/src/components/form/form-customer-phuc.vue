@@ -2,8 +2,7 @@
     <div class="container">
         <img v-if="checkView" class="rounded-circle"
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3Bc4deiXhE3yesuj-lYwq_nZiTbnbmuxdRHRc8H8&s" alt="">
-
-        <form class="">
+        <form @submit.prevent class="">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="name">Name (<span style="color: red;">*</span>)</label>
@@ -84,6 +83,9 @@ export default {
         view: {
             type: Boolean,
             default: false
+        },
+        item: {
+            type: Object
         }
     },
 
