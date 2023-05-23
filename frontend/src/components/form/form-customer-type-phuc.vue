@@ -3,7 +3,7 @@
         <h3 class="font-weight-bold">{{ title }}</h3>
         <form class="">
             <div class="form-group">
-                <label for="name">Name</label>
+                <label for="name">Name (<span style="color: red;">*</span>)</label>
                 <input type="text" class="form-control" id="name" placeholder="Enter Name Customer Type">
             </div>
             <button type="submit" class="btn btn-primary">{{ btnName }}</button>

@@ -17,8 +17,7 @@
                             <Select :options="options" @update:entryValue="handleUpdateEntryValue"
                                 :entryValue="data.entryValue" />
 
-                            <search class="mx-3" style="width: 300px"
-                                @update:searchText="(value) => (data.searchText = value)" />
+                            <search class="mx-3" style="width: 300px" @update:searchText="handleUpdateSearchText" />
                         </div>
                         <div class="d-flex align-items-start">
                             <button v-if="data.activeSelectAll == false" type="button" class="btn btn-light"
@@ -84,7 +83,7 @@ export default {
             },
             {
                 name: 'All',
-                value: 'All',
+                value: 99999,
             },
         ])
 
@@ -101,6 +100,8 @@ export default {
 
         const handleUpdateEntryValue = (value) => (data.entryValue = value)
 
+        // handle update search text 
+        const handleUpdateSearchText = (value) => (data.searchText = value)
 
         const toString = computed(() => {
             console.log("Starting search");
@@ -115,7 +116,6 @@ export default {
                 );
             });
         });
-
         const filtered = computed(() => {
             if (!data.searchText) {
                 data.totalRow = props.items.length;
@@ -125,7 +125,6 @@ export default {
                 return filter.value;
             }
         });
-
         const setNumberOfPages = computed(() => {
             return Math.ceil(filtered.value.length / data.entryValue);
         });
@@ -156,16 +155,16 @@ export default {
                 }
             }
         };
-
         onMounted(() => {
-            setDeleteAll()
-        })
+            setDeleteAll();
+        });
         return {
             options,
             data,
             setPages,
             setDeleteAll,
-            handleUpdateEntryValue
+            handleUpdateEntryValue,
+            handleUpdateSearchText
 
         }
     }

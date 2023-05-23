@@ -5,23 +5,27 @@
     >
       <thead>
         <tr>
-          <th></th>
+          <th v-if="isCheckBox"></th>
           <th>Id</th>
           <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-          <th v-if="activeAction == true">Actions</th>
+          <th v-if="activeAction">Actions</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
-          <td><input type="checkbox" name="" id="" /></td>
+          <td v-if="isCheckBox"><input type="checkbox" name="" id="" /></td>
           <td>{{ item.id }}</td>
           <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
-          <td v-if="activeAction == true">
-            <span id="view" class="material-symbols-outlined"> visibility </span>
-            <button type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
+          <td v-if="activeAction">
+            <span id="view" class="material-symbols-outlined" v-if="!isCustomerType"> visibility </span>
+            <button v-if="isCustomer" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
               <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
-            </button> 
-            <edit-customer/>
+            </button>
+            <edit-customer v-if="isCustomer"/>
+            <button v-if="isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
+              <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
+            </button>
+            <edit-customer-type class="text-left" v-if="isCustomerType"/>
             <span id="delete" class="material-symbols-outlined" @click="handleDelete"> delete </span>
           </td>
         </tr>
@@ -34,9 +38,10 @@
 <script>
 import Swal from "sweetalert2";
 import EditCustomer from '../../views/customer/EditCustomer.vue';
+import EditCustomerType from '../../views/customer/customerTypes/EditCustomerType.vue';
 
 export default {
-  components: { EditCustomer },
+  components: { EditCustomer, EditCustomerType },
   props: {
     items: {
       type: Array,
@@ -44,7 +49,7 @@ export default {
     },
     fields: {
       type: Array,
-      default: ["Name", "Age", "Payment"],
+      // default: ["Name", "Age", "Payment"],
     },
     labels: {
       type: Array,
@@ -62,6 +67,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    isCheckBox : {
+      type: Boolean,
+      default: true,
+    },
+    isCustomer: {
+      type: Boolean,
+      default: true
+    },
+    isCustomerType: {
+      type: Boolean,
+      default: false
+    }
   },
   setup(props, ntx) {
     const handleDelete = () => {

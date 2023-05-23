@@ -2,11 +2,13 @@
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
-      <router-link to="/customer-types" @click="data.activeMenu = 1" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']">
+      <router-link to="/customer" @click="handleActiveCustomerTab" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']">
+        Customer
+      </router-link>
+      <router-link to="/customer-types" @click="handleActiveCustomerTypeTab" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']">
         Customer Types
       </router-link>
-      <!-- <a @click="data.activeMenu = 2" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-        href="#">Habit</a> -->
+      
     </div>
     <!-- Filter -->
     <!-- Search -->
@@ -158,14 +160,14 @@ export default {
           wor_work_temp: "",
         },
       ],
-      entryValue: 4, // total record in page
+      entryValue: 5, // total record in page
       numberOfPages: 1,
       totalRow: 0, // total row data
       startRow: 0,
       endRow: 0,
       currentPage: 1,
       searchText: "",
-      activeMenu: 1,
+      activeMenu: 2,
     });
     
     const options = reactive([
@@ -187,7 +189,7 @@ export default {
             },
             {
                 name: 'All',
-                value: 'All',
+                value: 9999,
             },
         ])
  
@@ -255,12 +257,24 @@ export default {
     });
 
 
+    // handle active customer
+    const handleActiveCustomerTab = () => {
+      data.activeMenu = 2
+    }
+
+    //handle active customer type 
+    const handleActiveCustomerTypeTab = () => {
+      data.activeMenu = 1
+    }
+
     return {
       data,
       setPages,
       options,
       handleUpdateEntryValue,
-      handleUpdateSearchText
+      handleUpdateSearchText,
+      handleActiveCustomerTab,
+      handleActiveCustomerTypeTab
     };
   },
 };

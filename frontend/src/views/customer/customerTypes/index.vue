@@ -1,24 +1,29 @@
 <template>
-    <div class="card">
-        <div class="card-header">
-            <router-link to="/customer-types/add" class="btn btn-primary float-right mb-3">Add Customer Type</router-link>
-            <nav class="navbar navbar-light">
-                <form class="form-inline">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                </form>
-            </nav>
-        </div>
-        <div class="card-body">
-            <table-phuc :items="customerTypes" :labels="['name']" :nameRoute="'customer-types'"/>
-        </div>
-        <div class="card-footer">
-            <button class="btn btn-danger" @click="handleDeleteSelected">
-                Delete Selected
-            </button>
-            <pagination-phuc/>
-        </div>
+
+            <!-- <table-phuc :items="customerTypes" :labels="['name']" :nameRoute="'customer-types'"/> -->
+    <div class="border-box d-flex flex-column ml-2">
+    <!-- Menu -->
+    <div class="d-flex menu my-3 mx-3 justify-content-end">
+      <router-link to="/customer" @click="data.activeMenu = 2" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']">Customer</router-link>
+      <router-link to="/customer-types"  @click="data.activeMenu = 1" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']">
+        Customer Types
+      </router-link>
+      
     </div>
+    <!-- Filter -->
+    <!-- Search -->
+    <div class="border-hr mb-3"></div>
+    <div class="d-flex justify-content-between mx-3 mb-3">
+      <div class="d-flex align-items-start">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#model-add">
+          <span id="add" class="mx-2">Add</span>
+        </button>
+        <add-customer-type />
+      </div>
+    </div>
+    <!-- Table -->
+    <table-phuc class="text-center" :isCustomer="false" :isCustomerType="true" :items="data.customerTypes" :fields="['Name']" :labels="['name']" :nameRoute="'customer-types'" :isCheckBox="false"/>
+  </div>
 </template>
 
 <script>
@@ -26,11 +31,13 @@ import { reactive } from 'vue'
 import Swal from "sweetalert2";
 import tablePhuc from '../../../components/table/table-phuc.vue';
 import PaginationPhuc from '../../../components/table/pagination-phuc.vue';
+import AddCustomerType from './AddCustomerType.vue';
 
 export default {
-    components: { tablePhuc, PaginationPhuc },
+    components: { tablePhuc, PaginationPhuc, AddCustomerType },
     setup() {
-        const customerTypes = reactive([
+        const data = reactive({
+            customerTypes: [
             {
                 id: 1,
                 name: "Normal"
@@ -39,7 +46,16 @@ export default {
                 id: 2,
                 name: "VIP"
             },
-        ])
+      ],
+      entryValue: 4, // total record in page
+      numberOfPages: 1,
+      totalRow: 0, // total row data
+      startRow: 0,
+      endRow: 0,
+      currentPage: 1,
+      searchText: "",
+      activeMenu: 1,
+    });
 
         const handleDelete = (typeId) => {
             console.log(typeId);
@@ -83,9 +99,9 @@ export default {
         }
 
         return {
-            customerTypes,
             handleDelete,
-            handleDeleteSelected
+            handleDeleteSelected,
+            data
         }
     }
 }
@@ -93,6 +109,44 @@ export default {
 
 <style scoped>
 .material-symbols-outlined {
-    font-size: 18px;
+  font-size: 18px;
+}
+
+.navbar {
+  margin-top: -8px;
+}
+
+.border-box {
+  border: 1px solid var(--gray);
+  border-radius: 5px;
+}
+
+.menu {
+  /* border: 1px solid var(--gray); */
+  border-collapse: collapse;
+}
+
+.menu a {
+  border: 1px solid var(--gray);
+  border-collapse: collapse;
+  padding: 8px 12px;
+  font-size: 15px;
+}
+
+.active-menu {
+  color: blue;
+}
+
+.none-active-menu {
+  color: var(--dark);
+}
+
+.border-hr {
+  border-top: 1px solid var(--gray);
+}
+
+#add,
+#delete-all {
+  font-size: 14px;
 }
 </style>
