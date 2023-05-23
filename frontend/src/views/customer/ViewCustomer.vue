@@ -13,7 +13,7 @@
 
       <!-- Modal body -->
       <div class="modal-body">
-        <form-customer-phuc :view="true"/>
+        <form-customer-phuc :view="true" :item="viewData"/>
       </div>
     </div>
   </div>
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { reactive } from 'vue'
 import formCustomerPhuc from '../../components/form/form-customer-phuc.vue'
 export default {
   components: { formCustomerPhuc },
@@ -30,8 +31,14 @@ export default {
     }
   },
 
-  setup(){
-    
+  setup(props){
+    const viewData = reactive({
+      ...props.item
+    })
+
+    return {
+      viewData
+    }
   }
 }
 </script>

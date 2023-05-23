@@ -25,7 +25,7 @@
           <button v-if="isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
             <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
           </button>
-          <edit-customer-type class="text-left" v-if="isCustomerType" />
+          <edit-customer-type class="text-left" v-if="isCustomerType" :item="item"/>
           <span id="delete" class="material-symbols-outlined" @click="handleDelete"> delete </span>
         </td>
       </tr>

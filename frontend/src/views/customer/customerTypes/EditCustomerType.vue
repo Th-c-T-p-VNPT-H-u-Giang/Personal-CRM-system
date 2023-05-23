@@ -12,7 +12,7 @@
         </div>
         <!-- Modal body -->
         <div class="modal-body">
-          <form-customer-type-phuc :title="'Update Customer Type'" :btnName="'Update'" />
+          <form-customer-type-phuc :title="'Update Customer Type'" :btnName="'Update'" :item="item"/>
         </div>
       </div>
     </div>
@@ -23,6 +23,11 @@
 import formCustomerTypePhuc from '../../../components/form/form-customer-type-phuc.vue'
 export default {
   components: { formCustomerTypePhuc },
+  props: {
+    item: {
+      type: Object
+    }
+  }
 
 
 }

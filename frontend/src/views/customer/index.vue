@@ -52,12 +52,13 @@ import DeleteAll from '../../components/form/delete-all.vue';
 export default {
   components: { tablePhuc, PaginationPhuc, Search, Select, Add, DeleteAll },
   setup() {
+    let shortDate_1 = new Date("2021-08-08");
     const data = reactive({
       customers: [
         {
           id: 1,
           name: "Dang Van Phuc",
-          birthdate: "07/12/2002",
+          birthdate: shortDate_1,
           address: "Dong Thap",
           phone: "039977732",
           email: "phuc@gmail.com",
@@ -65,14 +66,14 @@ export default {
           avatar:
             "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
           wor_current_workplace: "CTU",
-          wor_work_history: [],
+          wor_work_history: 'VNPT',
           wor_current_position: "Student",
-          wor_work_temp: "",
+          wor_work_temp: "HKII",
         },
         {
           id: 2,
           name: "Pham Thanh Phong",
-          birthdate: "07/12/2002",
+          birthdate: shortDate_1,
           address: "Dong Thap",
           phone: "039977732",
           email: "phuc@gmail.com",
@@ -80,14 +81,15 @@ export default {
           avatar:
             "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
           wor_current_workplace: "CTU",
-          wor_work_history: [],
+          wor_work_history: 'VNPT',
           wor_current_position: "Student",
-          wor_work_temp: "",
+          wor_work_temp: "HKII",
         },
         {
           id: 3,
           name: "Nguyen Anh Nam",
-          birthdate: "07/12/2002",
+          birthdate: shortDate_1
+          ,
           address: "Dong Thap",
           phone: "039977732",
           email: "phuc@gmail.com",
@@ -95,14 +97,15 @@ export default {
           avatar:
             "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
           wor_current_workplace: "CTU",
-          wor_work_history: [],
+          wor_work_history: 'VNPT',
           wor_current_position: "Student",
-          wor_work_temp: "",
+          wor_work_temp: "HKII",
         },
         {
           id: 4,
           name: "Le Quoc Thinh",
-          birthdate: "07/12/2002",
+          birthdate: shortDate_1
+          ,
           address: "Dong Thap",
           phone: "039977732",
           email: "phuc@gmail.com",
@@ -110,14 +113,15 @@ export default {
           avatar:
             "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
           wor_current_workplace: "CTU",
-          wor_work_history: [],
+          wor_work_history: 'VNPT',
           wor_current_position: "Student",
-          wor_work_temp: "",
+          wor_work_temp: "HKII",
         },
         {
           id: 5,
           name: "Vo Van Thach",
-          birthdate: "07/12/2002",
+          birthdate: shortDate_1
+          ,
           address: "Dong Thap",
           phone: "039977732",
           email: "phuc@gmail.com",
@@ -125,14 +129,15 @@ export default {
           avatar:
             "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
           wor_current_workplace: "CTU",
-          wor_work_history: [],
+          wor_work_history: 'VNPT',
           wor_current_position: "Student",
-          wor_work_temp: "",
+          wor_work_temp: "HKII",
         },
         {
           id: 6,
           name: "Tran Minh Sang",
-          birthdate: "07/12/2002",
+          birthdate: shortDate_1
+          ,
           address: "Dong Thap",
           phone: "039977732",
           email: "phuc@gmail.com",
@@ -140,14 +145,15 @@ export default {
           avatar:
             "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
           wor_current_workplace: "CTU",
-          wor_work_history: [],
+          wor_work_history: 'VNPT',
           wor_current_position: "Student",
-          wor_work_temp: "",
+          wor_work_temp: "HKII",
         },
         {
           id: 7,
           name: "Nguyen Hoang Trong Tien",
-          birthdate: "07/12/2002",
+          birthdate: shortDate_1
+          ,
           address: "Dong Thap",
           phone: "039977732",
           email: "phuc@gmail.com",
@@ -155,9 +161,9 @@ export default {
           avatar:
             "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
           wor_current_workplace: "CTU",
-          wor_work_history: [],
+          wor_work_history: 'VNPT',
           wor_current_position: "Student",
-          wor_work_temp: "",
+          wor_work_temp: "HKII",
         },
       ],
       entryValue: 5, // total record in page
