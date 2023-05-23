@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <!-- {{ item }} -->
         <img v-if="checkView" class="rounded-circle mx-auto d-block"
             :src="viewData.avatar" alt="" height="100">
         <form @submit.prevent class="mt-2">
@@ -53,11 +54,6 @@
                     <input type="text" class="form-control" id="wor_current_position"
                         placeholder="Enter work current position ..." :disabled="checkView" :value="viewData.wor_current_position">
                 </div>
-<!-- 
-                wor_current_workplace: "CTU",
-          wor_work_history: [],
-          wor_current_position: "Student",
-          wor_work_temp: "", -->
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">

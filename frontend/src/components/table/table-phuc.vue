@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th v-if="isCheckBox"></th>
-        <th>Id</th>
+        <th>#</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction">Actions</th>
       </tr>
@@ -17,15 +17,15 @@
           <button v-if="!isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-view">
             <span id="view" class="material-symbols-outlined" > visibility </span>
           </button>
-          <view-customer v-if="!isCustomerType" :item="item"/>
+          <view-customer v-if="!isCustomerType" :item="items[index]"/>
           <button v-if="isCustomer" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
             <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
           </button>
-          <edit-customer v-if="isCustomer" :item="item"/>
+          <edit-customer v-if="isCustomer" :item="items[index]"/>
           <button v-if="isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
             <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
           </button>
-          <edit-customer-type class="text-left" v-if="isCustomerType" :item="item"/>
+          <edit-customer-type class="text-left" v-if="isCustomerType" :item="items[index]"/>
           <span id="delete" class="material-symbols-outlined" @click="handleDelete"> delete </span>
         </td>
       </tr>
