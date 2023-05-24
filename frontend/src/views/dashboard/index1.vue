@@ -72,10 +72,14 @@ export default {
     const overview = ref(true);
     const detail = ref(false);
     const takeCare = ref(false);
-    const selectedOption = ref("");
-    const showchart = ref(false);
-    watch(selectedOption, (newValue, oldValue) => {
-      console.log("Dropdown value changed:", newValue);
+    const selectedOption = ref("weak");
+    const showchart = reactive({
+      customerChart: false,
+      staffChart: false,
+      appointment: false,
+    });
+    watch([selectedOption], ([newValue1, oldValue1]) => {
+      console.log("Dropdown value changed:", newValue1);
       switch (selectedOption.value) {
         case "weak": {
           console.log("weak");
@@ -215,6 +219,25 @@ export default {
         },
       ];
     });
+    // ****
+    watch(showchart, (newValue, oldValue) => {
+      console.log("showchart :", newValue);
+      if (newValue.appointment) {
+        showchart.customerChart = showchart.staffChart = false;
+        console.log("app:", showchart);
+        return;
+      } else if (newValue.staffChart) {
+        showchart.customerChart = showchart.appointment = false;
+        console.log("staff:", showchart);
+
+        return;
+      } else {
+        showchart.staffChart = showchart.appointment = false;
+        console.log("cus:", showchart);
+
+        return;
+      }
+    });
     onMounted(() => {
       data.items = [
         {
@@ -336,7 +359,10 @@ export default {
       </div>
 
       <!-- Staff -->
-      <div class="col-xl-3 col-md-6 col-6 mb-4">
+      <div
+        class="col-xl-3 col-md-6 col-6 mb-4"
+        @click="showchart.staffChart = !showchart.staffChart"
+      >
         <div class="card border-left-success shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
@@ -357,7 +383,10 @@ export default {
       </div>
 
       <!-- Appointment -->
-      <div class="col-xl-3 col-md-6 col-6 mb-4" @click="showchart = !showchart">
+      <div
+        class="col-xl-3 col-md-6 col-6 mb-4"
+        @click="showchart.appointment = !showchart.appointment"
+      >
         <div class="card border-left-info shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
@@ -471,11 +500,18 @@ export default {
     </div>
     <div class="mb-5 mx-2">
       <!-- <h1 class="text-center mb-5 mt-2">REPORT</h1> -->
+      <!-- v-model="dataChart" -->
+
       <apexchart
         :options="chartOptions"
         :series="chartSeries"
-        v-model="dataChart"
-        v-if="overview && showchart"
+        v-if="overview && showchart.appointment"
+        height="400"
+      />
+      <apexchart
+        :options="chartOptions"
+        :series="chartSeries"
+        v-if="overview && showchart.staffChart"
         height="400"
       />
       <div v-if="detail" class="mx-2">
