@@ -69,73 +69,11 @@ export default {
         );
       });
     });
+
+    // table customer
     const overview = ref(true);
     const detail = ref(false);
     const takeCare = ref(false);
-    const selectedOption = ref("weak");
-    const showchart = reactive({
-      customerChart: false,
-      staffChart: false,
-      appointment: false,
-    });
-    watch([selectedOption], ([newValue1, oldValue1]) => {
-      console.log("Dropdown value changed:", newValue1);
-      switch (selectedOption.value) {
-        case "weak": {
-          console.log("weak");
-          dataChart.data[0] = [1, 2, 3, 4, 5];
-          dataChart.data[1] = [11, 12, 13, 14, 15];
-          console.log(dataChart.data[1]);
-          data.items = [
-            {
-              cus_id: 1,
-              cus_name: "Lan Anh",
-              tas_service_day: "2023-1-1",
-              tas_service_content:
-                "introduct new a service,introduct new a service",
-            },
-            {
-              cus_id: 2,
-              cus_name: "Hồng Diễm",
-              tas_service_day: "2023-2-1",
-              tas_service_content: "introduct new a service",
-            },
-          ];
-          break;
-        }
-        case "month": {
-          console.log("month");
-          dataChart.data[0] = [10, 2, 3, 4];
-          dataChart.data[1] = [11, 21, 31, 42];
-          data.items = [
-            {
-              cus_id: 3,
-              cus_name: "Lan Anh",
-              tas_service_day: "2023-1-1",
-              tas_service_content:
-                "introduct new a service,introduct new a service",
-            },
-            {
-              cus_id: 4,
-              cus_name: "Hồng Diễm",
-              tas_service_day: "2023-2-1",
-              tas_service_content: "introduct new a service",
-            },
-          ];
-          break;
-        }
-        case "quarter": {
-          console.log("quarter");
-          data.items = [];
-          break;
-        }
-        case "year": {
-          console.log("year");
-          data.items = [];
-          break;
-        }
-      }
-    });
     const showCustomer = () => {
       takeCare.value = !takeCare.value;
       if (takeCare.value) {
@@ -146,6 +84,108 @@ export default {
         data.items = [];
       }
     };
+    // Chart
+    const selectedOption = ref("weak");
+    const customerChart = ref(false);
+    const staffChart = ref(false);
+    const appointmentChart = ref(true);
+    const showchart = ref("appointment");
+    const show = (nameChart, cycle) => {
+      if (nameChart == "customer") {
+        switch (cycle) {
+          case "weak": {
+            console.log("weak+customer");
+            break;
+          }
+          case "month": {
+            console.log("month+customer");
+            break;
+          }
+        }
+      } else if (nameChart == "staff") {
+        switch (cycle) {
+          case "weak": {
+            console.log("weak+staff");
+            break;
+          }
+          case "month": {
+            console.log("month+staff");
+            break;
+          }
+        }
+      } else if (nameChart == "appointment") {
+        switch (cycle) {
+          case "weak": {
+            console.log("weak+appointment");
+            break;
+          }
+          case "month": {
+            console.log("month+appointment");
+            break;
+          }
+        }
+      }
+    };
+    // watch select_option
+    watch([selectedOption], ([newValue1, oldValue1]) => {
+      console.log("Dropdown value changed:", newValue1);
+      show(showchart.value, newValue1);
+      // switch (selectedOption.value) {
+      //   case "weak": {
+      //     console.log("weak");
+      //     dataChart.data[0] = [1, 2, 3, 4, 5];
+      //     dataChart.data[1] = [11, 12, 13, 14, 15];
+      //     console.log(dataChart.data[1]);
+      //     data.items = [
+      //       {
+      //         cus_id: 1,
+      //         cus_name: "Lan Anh",
+      //         tas_service_day: "2023-1-1",
+      //         tas_service_content:
+      //           "introduct new a service,introduct new a service",
+      //       },
+      //       {
+      //         cus_id: 2,
+      //         cus_name: "Hồng Diễm",
+      //         tas_service_day: "2023-2-1",
+      //         tas_service_content: "introduct new a service",
+      //       },
+      //     ];
+      //     break;
+      //   }
+      //   case "month": {
+      //     console.log("month");
+      //     dataChart.data[0] = [10, 2, 3, 4];
+      //     dataChart.data[1] = [11, 21, 31, 42];
+      //     data.items = [
+      //       {
+      //         cus_id: 3,
+      //         cus_name: "Lan Anh",
+      //         tas_service_day: "2023-1-1",
+      //         tas_service_content:
+      //           "introduct new a service,introduct new a service",
+      //       },
+      //       {
+      //         cus_id: 4,
+      //         cus_name: "Hồng Diễm",
+      //         tas_service_day: "2023-2-1",
+      //         tas_service_content: "introduct new a service",
+      //       },
+      //     ];
+      //     break;
+      //   }
+      //   case "quarter": {
+      //     console.log("quarter");
+      //     data.items = [];
+      //     break;
+      //   }
+      //   case "year": {
+      //     console.log("year");
+      //     data.items = [];
+      //     break;
+      //   }
+      // }
+    });
 
     const chartOptions = ref({});
     const dataChart = reactive({ data: [] });
@@ -184,60 +224,92 @@ export default {
         data: dataChart.data[1],
       },
     ];
+    // **watch datachart
     watch(dataChart, (newValue, oldValue) => {
       // Gọi phương thức cập nhật biểu đồ khi dữ liệu thay đổi
       console.log("newvalue:", newValue, chartSeries.value[1].data);
       if (selectedOption.value == "weak") {
         chartOptions.value = {
+          chart: {
+            id: "basic-bar",
+            type: "bar",
+            width: 500,
+          },
           xaxis: {
-            categories: [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-            ],
+            categories: ["Monday", "Tuesday", "Wednesday", "Thurday", "Friday"],
           },
           colors: ["rgb(255, 99, 132)", "#3300cc"],
         };
+
+        chartSeries.value = [
+          {
+            name: "uncare",
+            data: dataChart.data[0],
+          },
+          {
+            name: "cared",
+            data: dataChart.data[1],
+          },
+        ];
       } else if (selectedOption.value == "month") {
         chartOptions.value = {
+          chart: {
+            id: "basic-bar",
+            type: "bar",
+            width: 500,
+          },
           xaxis: {
-            categories: ["Weak 1", "Weak 2", "Weak 3", "Weak 4"],
+            categories: ["Week 1", "Week 2", "Week 3", "Week 4"],
           },
           colors: ["rgb(255, 99, 132)", "#3300cc"],
         };
+
+        chartSeries.value = [
+          {
+            name: "uncare",
+            data: dataChart.data[0],
+          },
+          {
+            name: "cared",
+            data: dataChart.data[1],
+          },
+        ];
       }
-      chartSeries.value = [
-        {
-          name: "uncare",
-          data: dataChart.data[0],
-        },
-        {
-          name: "cared",
-          data: dataChart.data[1],
-        },
-      ];
     });
-    // ****
     watch(showchart, (newValue, oldValue) => {
-      console.log("showchart :", newValue);
-      if (newValue.appointment) {
-        showchart.customerChart = showchart.staffChart = false;
-        console.log("app:", showchart);
-        return;
-      } else if (newValue.staffChart) {
-        showchart.customerChart = showchart.appointment = false;
-        console.log("staff:", showchart);
-
-        return;
-      } else {
-        showchart.staffChart = showchart.appointment = false;
-        console.log("cus:", showchart);
-
-        return;
-      }
+      console.log(newValue, showchart.value);
+      show(showchart.value, selectedOption.value);
     });
+    // **** watch : cus, staff, appointment
+    // watch(customerChart, (newValue, oldValue) => {
+    //   console.log("customer chart :", newValue, selectedOption.value);
+    //   if (newValue == false) {
+    //     customerChart.value = true;
+    //     console.log("cus new:", customerChart);
+    //   }
+    //   showchart.value = "customer";
+
+    //   show(showchart.value, selectedOption.value);
+    // });
+    // watch(staffChart, (newValue, oldValue) => {
+    //   console.log("staff :", newValue);
+    //   if (newValue == false) {
+    //     staffChart.value = true;
+    //     console.log("staff new:", staffChart);
+    //   }
+    //   showchart.value = "staff";
+    //   show(showchart.value, selectedOption.value);
+    // });
+    // watch(appointmentChart, (newValue, oldValue) => {
+    //   console.log("appointment :", newValue);
+    //   if (newValue == false) {
+    //     appointmentChart.value = true;
+    //     console.log("appointment new:", appointmentChart);
+    //   }
+    //   showchart.value = "appointment";
+    //   show(showchart.value, selectedOption.value);
+    // });
+
     onMounted(() => {
       data.items = [
         {
@@ -283,14 +355,17 @@ export default {
       dataChart,
       chartOptions,
       chartSeries,
-      showchart,
       data,
       overview,
       detail,
       takeCare,
       setPages,
       selectedOption,
+      showchart,
       showCustomer,
+      customerChart,
+      staffChart,
+      appointmentChart,
     };
   },
 };
@@ -338,8 +413,11 @@ export default {
     <!-- Trúc -->
     <div class="row mx-2 justify-content-around">
       <!-- customer -->
-      <div class="col-xl-3 col-md-6 col-6 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
+      <div class="col-xl-3 col-md-6 col-6 mb-4" @click="showchart = 'customer'">
+        <div
+          class="card border-left-primary shadow h-100 py-2"
+          :class="{ 'box-active': showchart == 'customer' }"
+        >
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
@@ -359,11 +437,11 @@ export default {
       </div>
 
       <!-- Staff -->
-      <div
-        class="col-xl-3 col-md-6 col-6 mb-4"
-        @click="showchart.staffChart = !showchart.staffChart"
-      >
-        <div class="card border-left-success shadow h-100 py-2">
+      <div class="col-xl-3 col-md-6 col-6 mb-4" @click="showchart = 'staff'">
+        <div
+          class="card border-left-success shadow h-100 py-2"
+          :class="{ 'box-active': showchart == 'staff' }"
+        >
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
@@ -385,9 +463,12 @@ export default {
       <!-- Appointment -->
       <div
         class="col-xl-3 col-md-6 col-6 mb-4"
-        @click="showchart.appointment = !showchart.appointment"
+        @click="showchart = 'appointment'"
       >
-        <div class="card border-left-info shadow h-100 py-2">
+        <div
+          class="card border-left-info shadow h-100 py-2"
+          :class="{ 'box-active': showchart == 'appointment' }"
+        >
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
@@ -501,19 +582,25 @@ export default {
     <div class="mb-5 mx-2">
       <!-- <h1 class="text-center mb-5 mt-2">REPORT</h1> -->
       <!-- v-model="dataChart" -->
+      <apexchart
+        :options="chartOptions"
+        :series="chartSeries"
+        v-if="overview"
+        height="400"
+      />
+      <!-- <apexchart
+        :options="chartOptions"
+        :series="chartSeries"
+        v-if="overview && staffChart && showchart == 'staff'"
+        height="400"
+      />
+      <apexchart
+        :options="chartOptions"
+        :series="chartSeries"
+        v-if="overview && appointmentChart && showchart == 'appointment'"
+        height="400"
+      /> -->
 
-      <apexchart
-        :options="chartOptions"
-        :series="chartSeries"
-        v-if="overview && showchart.appointment"
-        height="400"
-      />
-      <apexchart
-        :options="chartOptions"
-        :series="chartSeries"
-        v-if="overview && showchart.staffChart"
-        height="400"
-      />
       <div v-if="detail" class="mx-2">
         <h4 class="text-center my-2">Customer list</h4>
         <Table
@@ -563,5 +650,8 @@ select {
   background-color: #f6f6f6;
   border: 1px solid #b8c2cc;
   font-size: 16px;
+}
+.box-active {
+  background: #fdf3f4;
 }
 </style>
