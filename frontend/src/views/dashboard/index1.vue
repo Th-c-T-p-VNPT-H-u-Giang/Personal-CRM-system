@@ -32,7 +32,7 @@ export default {
       console.log("Starting search");
       return data.items.map((value, index) => {
         console.log("value.name", value.lev_name);
-        return [value.uni_name].join("").toLocaleLowerCase();
+        return [value.cus_name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -73,12 +73,14 @@ export default {
     const detail = ref(false);
     const takeCare = ref(false);
     const selectedOption = ref("");
+    const showchart = ref(false);
     watch(selectedOption, (newValue, oldValue) => {
       console.log("Dropdown value changed:", newValue);
       switch (selectedOption.value) {
         case "weak": {
           console.log("weak");
-          dataChart.data[1] = [1, 2, 3, 4, 5, 6, 8];
+          dataChart.data[0] = [1, 2, 3, 4, 5];
+          dataChart.data[1] = [11, 12, 13, 14, 15];
           console.log(dataChart.data[1]);
           data.items = [
             {
@@ -99,6 +101,8 @@ export default {
         }
         case "month": {
           console.log("month");
+          dataChart.data[0] = [10, 2, 3, 4];
+          dataChart.data[1] = [11, 21, 31, 42];
           data.items = [
             {
               cus_id: 3,
@@ -179,6 +183,27 @@ export default {
     watch(dataChart, (newValue, oldValue) => {
       // Gọi phương thức cập nhật biểu đồ khi dữ liệu thay đổi
       console.log("newvalue:", newValue, chartSeries.value[1].data);
+      if (selectedOption.value == "weak") {
+        chartOptions.value = {
+          xaxis: {
+            categories: [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+            ],
+          },
+          colors: ["rgb(255, 99, 132)", "#3300cc"],
+        };
+      } else if (selectedOption.value == "month") {
+        chartOptions.value = {
+          xaxis: {
+            categories: ["Weak 1", "Weak 2", "Weak 3", "Weak 4"],
+          },
+          colors: ["rgb(255, 99, 132)", "#3300cc"],
+        };
+      }
       chartSeries.value = [
         {
           name: "uncare",
@@ -235,6 +260,7 @@ export default {
       dataChart,
       chartOptions,
       chartSeries,
+      showchart,
       data,
       overview,
       detail,
@@ -285,6 +311,113 @@ export default {
       </div>
     </div>
     <div class="border-hr mb-3"></div>
+
+    <!-- Trúc -->
+    <div class="row mx-2 justify-content-around">
+      <!-- customer -->
+      <div class="col-xl-3 col-md-6 col-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                >
+                  Customer
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">1000</div>
+              </div>
+              <div class="col-auto">
+                <span class="material-symbols-outlined">groups</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Staff -->
+      <div class="col-xl-3 col-md-6 col-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-success text-uppercase mb-1"
+                >
+                  Staff
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">20</div>
+              </div>
+              <div class="col-auto">
+                <span class="material-symbols-outlined">support_agent</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointment -->
+      <div class="col-xl-3 col-md-6 col-6 mb-4" @click="showchart = !showchart">
+        <div class="card border-left-info shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-info text-uppercase mb-1"
+                >
+                  Appointment
+                </div>
+                <div class="row no-gutters align-items-center">
+                  <div class="col-auto">
+                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
+                      50%
+                    </div>
+                  </div>
+                  <div class="col">
+                    <!-- Thanh trạng thái % -->
+                    <div class="progress progress-sm mr-2">
+                      <div
+                        class="progress-bar bg-info"
+                        role="progressbar"
+                        style="width: 50%"
+                        aria-valuenow="50"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Request -->
+      <div class="col-xl-3 col-md-6 col-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-warning text-uppercase mb-1"
+                >
+                  Pending Requests
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-comments fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- search, select, take care -->
     <div class="row ml-2 justify-content-between" v-if="detail">
       <div class="col-6 row">
@@ -342,7 +475,7 @@ export default {
         :options="chartOptions"
         :series="chartSeries"
         v-model="dataChart"
-        v-if="overview"
+        v-if="overview && showchart"
         height="400"
       />
       <div v-if="detail" class="mx-2">
@@ -394,10 +527,5 @@ select {
   background-color: #f6f6f6;
   border: 1px solid #b8c2cc;
   font-size: 16px;
-}
-@media screen and (max-width: 739px) {
-  .border-box {
-    width: 580px;
-  }
 }
 </style>

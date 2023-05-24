@@ -71,12 +71,14 @@ export default {
           >
             {{ item[label] }}
           </td>
-          <td v-if="activeAction == true" style="width: 200px">
-            <span id="view" class="material-symbols-outlined"> acute </span>
-            <span id="edit" class="material-symbols-outlined mx-2"> mail </span>
-            <span id="delete" class="material-symbols-outlined">
-              phone_in_talk
+          <td v-if="activeAction == true">
+            <span id="appointment" class="material-symbols-outlined">
+              acute
             </span>
+            <span id="mail" class="material-symbols-outlined mx-2"> mail </span>
+            <!-- <span id="phone" class="material-symbols-outlined">
+              phone_in_talk
+            </span> -->
           </td>
         </tr>
       </tbody>
@@ -85,6 +87,9 @@ export default {
 </template>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+}
 .my-table {
   width: 100%;
   border-collapse: collapse;
@@ -111,27 +116,28 @@ export default {
   font-size: 13px;
 }
 
-#view,
-#edit,
-#delete {
+#appointment,
+#mail,
+#phone {
   font-size: 22px;
   cursor: pointer;
   border: 1px solid var(--gray);
   border-radius: 4px;
   padding: 1px;
 }
-#view:hover {
+#appointment:hover {
   color: var(--blue);
 }
-#edit:hover {
+#mail:hover {
   color: var(--yellow);
 }
-#delete:hover {
-  color: var(--red);
+#phone:hover {
+  color: var(--green);
 }
 @media screen and (max-width: 739px) {
-  .my-table {
-    width: 560px;
+  #mail {
+    margin-right: 0 !important;
+    margin-left: 8px !important;
   }
 }
 </style>
