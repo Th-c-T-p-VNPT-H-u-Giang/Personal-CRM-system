@@ -90,11 +90,20 @@ export default {
     const staffChart = ref(false);
     const appointmentChart = ref(true);
     const showchart = ref("appointment");
+    const chartOptions = ref({});
+    const dataChart = reactive({ data: [] });
+    const chartSeries = ref([]);
+    dataChart.data.push(
+      [30, 40, 45, 50, 49, 60, 70],
+      [10, 50, 65, 20, 19, 65, 72]
+    );
     const show = (nameChart, cycle) => {
       if (nameChart == "customer") {
         switch (cycle) {
           case "weak": {
             console.log("weak+customer");
+            dataChart.data[0] = [10, 40, 45, 50, 49, 60, 70];
+            console.log(dataChart.data[0]);
             break;
           }
           case "month": {
@@ -130,70 +139,8 @@ export default {
     watch([selectedOption], ([newValue1, oldValue1]) => {
       console.log("Dropdown value changed:", newValue1);
       show(showchart.value, newValue1);
-      // switch (selectedOption.value) {
-      //   case "weak": {
-      //     console.log("weak");
-      //     dataChart.data[0] = [1, 2, 3, 4, 5];
-      //     dataChart.data[1] = [11, 12, 13, 14, 15];
-      //     console.log(dataChart.data[1]);
-      //     data.items = [
-      //       {
-      //         cus_id: 1,
-      //         cus_name: "Lan Anh",
-      //         tas_service_day: "2023-1-1",
-      //         tas_service_content:
-      //           "introduct new a service,introduct new a service",
-      //       },
-      //       {
-      //         cus_id: 2,
-      //         cus_name: "Hồng Diễm",
-      //         tas_service_day: "2023-2-1",
-      //         tas_service_content: "introduct new a service",
-      //       },
-      //     ];
-      //     break;
-      //   }
-      //   case "month": {
-      //     console.log("month");
-      //     dataChart.data[0] = [10, 2, 3, 4];
-      //     dataChart.data[1] = [11, 21, 31, 42];
-      //     data.items = [
-      //       {
-      //         cus_id: 3,
-      //         cus_name: "Lan Anh",
-      //         tas_service_day: "2023-1-1",
-      //         tas_service_content:
-      //           "introduct new a service,introduct new a service",
-      //       },
-      //       {
-      //         cus_id: 4,
-      //         cus_name: "Hồng Diễm",
-      //         tas_service_day: "2023-2-1",
-      //         tas_service_content: "introduct new a service",
-      //       },
-      //     ];
-      //     break;
-      //   }
-      //   case "quarter": {
-      //     console.log("quarter");
-      //     data.items = [];
-      //     break;
-      //   }
-      //   case "year": {
-      //     console.log("year");
-      //     data.items = [];
-      //     break;
-      //   }
-      // }
     });
 
-    const chartOptions = ref({});
-    const dataChart = reactive({ data: [] });
-    const chartSeries = ref([]);
-    dataChart.data.push(
-      [30, 40, 45, 50, 49, 60, 70],
-      [10, 50, 65, 20, 19, 65, 72]
-    );
     chartOptions.value = {
       chart: {
         id: "basic-bar",
@@ -202,13 +149,13 @@ export default {
       },
       xaxis: {
         categories: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
+          "Tháng 1",
+          "Tháng 2",
+          "Tháng 3",
+          "Tháng 4",
+          "Tháng 5",
+          "Tháng 6",
+          "Tháng 7",
         ],
       },
       colors: ["rgb(255, 99, 132)", "#3300cc"],
@@ -216,65 +163,89 @@ export default {
 
     chartSeries.value = [
       {
-        name: "uncare",
+        name: "Chưa chăm sóc",
         data: dataChart.data[0],
       },
       {
-        name: "cared",
+        name: "Đã chăm sóc",
         data: dataChart.data[1],
       },
     ];
     // **watch datachart
     watch(dataChart, (newValue, oldValue) => {
       // Gọi phương thức cập nhật biểu đồ khi dữ liệu thay đổi
-      console.log("newvalue:", newValue, chartSeries.value[1].data);
-      if (selectedOption.value == "weak") {
-        chartOptions.value = {
-          chart: {
-            id: "basic-bar",
-            type: "bar",
-            width: 500,
-          },
-          xaxis: {
-            categories: ["Monday", "Tuesday", "Wednesday", "Thurday", "Friday"],
-          },
-          colors: ["rgb(255, 99, 132)", "#3300cc"],
-        };
+      console.log("newvalue:", newValue, ":", dataChart.data[0]);
+      // if (selectedOption.value == "weak") {
+      //   chartOptions.value = {
+      //     chart: {
+      //       id: "basic-bar",
+      //       type: "bar",
+      //       width: 500,
+      //     },
+      //     xaxis: {
+      //       categories: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
+      //     },
+      //     colors: ["rgb(255, 99, 132)", "#3300cc"],
+      //   };
 
-        chartSeries.value = [
-          {
-            name: "Chưa chăm sóc",
-            data: dataChart.data[0],
-          },
-          {
-            name: "Đã chăm sóc",
-            data: dataChart.data[1],
-          },
-        ];
-      } else if (selectedOption.value == "month") {
-        chartOptions.value = {
-          chart: {
-            id: "basic-bar",
-            type: "bar",
-            width: 500,
-          },
-          xaxis: {
-            categories: ["Week 1", "Week 2", "Week 3", "Week 4"],
-          },
-          colors: ["rgb(255, 99, 132)", "#3300cc"],
-        };
+      //   chartSeries.value = [
+      //     {
+      //       name: "Chưa chăm sóc",
+      //       data: dataChart.data[0],
+      //     },
+      //     {
+      //       name: "Đã chăm sóc",
+      //       data: dataChart.data[1],
+      //     },
+      //   ];
+      // } else if (selectedOption.value == "month") {
+      //   chartOptions.value = {
+      //     chart: {
+      //       id: "basic-bar",
+      //       type: "bar",
+      //       width: 500,
+      //     },
+      //     xaxis: {
+      //       categories: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
+      //     },
+      //     colors: ["rgb(255, 99, 132)", "#3300cc"],
+      //   };
 
-        chartSeries.value = [
-          {
-            name: "Chưa chăm sóc",
-            data: dataChart.data[0],
-          },
-          {
-            name: "Đã chăm sóc",
-            data: dataChart.data[1],
-          },
-        ];
-      }
+      //   chartSeries.value = [
+      //     {
+      //       name: "Chưa chăm sóc",
+      //       data: dataChart.data[0],
+      //     },
+      //     {
+      //       name: "Đã chăm sóc",
+      //       data: dataChart.data[1],
+      //     },
+      //   ];
+      // } else {
+      console.log("CUS");
+      chartOptions.value = {
+        chart: {
+          id: "basic-bar",
+          type: "bar",
+          width: 1370,
+        },
+        xaxis: {
+          categories: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
+        },
+        colors: ["rgb(255, 99, 132)"],
+      };
+
+      chartSeries.value = [
+        {
+          name: "Chưa chăm sóc",
+          data: newValue[0],
+        },
+        // {
+        //   name: "Đã chăm sóc",
+        //   data: [],
+        // },
+      ];
+      // }
     });
     watch(showchart, (newValue, oldValue) => {
       console.log(newValue, showchart.value);
@@ -534,49 +505,36 @@ export default {
           @update:searchText="(value) => (data.searchText = value)"
         />
       </div>
+      <!-- @click="showCustomer" -->
       <div class="col-6 row justify-content-end mr-3">
         <button
           class="btn"
           :class="{ 'btn-primary': !takeCare }"
-          @click="showCustomer"
+          @click="takeCare = !takeCare"
         >
           Chưa chăm sóc</button
         ><button
           class="btn"
           :class="{ 'btn-primary': takeCare }"
-          @click="showCustomer"
+          @click="takeCare = !takeCare"
         >
           Đã chăm sóc
         </button>
       </div>
     </div>
     <div class="mb-5 mx-2">
-      <!-- <h1 class="text-center mb-5 mt-2">REPORT</h1> -->
-      <!-- v-model="dataChart" -->
       <apexchart
         :options="chartOptions"
         :series="chartSeries"
         v-if="overview"
         height="400"
       />
-      <!-- <apexchart
-        :options="chartOptions"
-        :series="chartSeries"
-        v-if="overview && staffChart && showchart == 'staff'"
-        height="400"
-      />
-      <apexchart
-        :options="chartOptions"
-        :series="chartSeries"
-        v-if="overview && appointmentChart && showchart == 'appointment'"
-        height="400"
-      /> -->
 
       <div v-if="detail" class="mx-2">
-        <h4 class="text-center my-2">Customer list</h4>
+        <h4 class="text-center my-2">Danh sách khách hàng</h4>
         <Table
           :items="setPages"
-          :fields="['Customer_id', 'Name', 'Date', 'Content']"
+          :fields="['Mã khách hàng', 'Họ tên ', 'Ngày', 'Nội dung']"
           :labels="[
             'cus_id',
             'cus_name',

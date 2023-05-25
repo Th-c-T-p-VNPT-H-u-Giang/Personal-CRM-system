@@ -150,6 +150,7 @@ export default {
 <template>
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
+
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <a
         @click="data.activeMenu = 1"
@@ -168,8 +169,8 @@ export default {
     <!-- Filter -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
-    <div class="d-flex justify-content-between mx-3 mb-3">
-      <div class="d-flex justify-content-start">
+    <div class="d-flex justify-content-between mx-3 mb-3 row">
+      <div class="d-flex justify-content-start col-5">
         <Select
           class="d-flex justify-content-start"
           :options="[
@@ -203,7 +204,7 @@ export default {
           @update:searchText="(value) => (data.searchText = value)"
         />
       </div>
-      <div class="d-flex align-items-start">
+      <div class="d-flex align-items-start col-6 row justify-content-end">
         <button
           type="button"
           class="btn btn-danger mr-3"
@@ -277,5 +278,10 @@ export default {
 #add,
 #delete-all {
   font-size: 14px;
+}
+@media screen and (max-width: 739px) {
+  .mrt-2 {
+    margin-top: 8px;
+  }
 }
 </style>

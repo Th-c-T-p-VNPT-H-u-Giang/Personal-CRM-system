@@ -42,7 +42,7 @@ export default {
       endRow: 0,
       currentPage: 1,
       searchText: "",
-      activeMenu: 1,
+      activeMenu: 2,
       activeSelectAll: false,
     });
     const data = ref({});
@@ -161,6 +161,8 @@ export default {
       );
       console.log("new units a levels", data.value);
     };
+
+    const selectedOption = ref("");
     watch(
       () => route.params,
       (newParams) => {
@@ -168,17 +170,18 @@ export default {
         params.value = newParams;
         console.log("New route params:", params.value, data.value.items.length);
         getUnitofLevel(params.value.id);
+        // ***
+        // selectedOption.value = newValue;
       },
       { immediate: true, deep: true }
     );
 
-    const selectedOption = ref("Level");
     watch(selectedOption, (newValue, oldValue) => {
       console.log("Dropdown value changed:", newValue);
       if (newValue != "Level" && newValue != "all")
         router.push({ name: "unit_level", params: { id: newValue } });
-      else if (newValue == "all") router.push({ name: "Unit" });
-      selectedOption.value = "Level";
+      else if (newValue == "all") router.push({ name: "unit" });
+      // selectedOption.value = newValue;
     });
 
     return {
@@ -202,34 +205,24 @@ export default {
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <!-- select_option -->
-      <select
-        class="pl-2"
-        v-model="selectedOption"
+      <router-link
+        :to="{ name: 'Unit' }"
         @click="data.activeMenu = 1"
         :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+        >Cấp</router-link
       >
-        <option disabled selected hidden value="Level">Cấp</option>
-        <option
-          :value="`${value.lev_id}`"
-          :key="index"
-          v-for="(value, index) in levels"
-        >
-          {{ value.lev_name }}
-        </option>
-        <option value="all">All</option>
-      </select>
-      <!-- <router-link
+      <router-link
         :to="{ name: 'unit' }"
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         >Đơn vị</router-link
-      > -->
+      >
     </div>
     <!-- Filter -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
-    <div class="d-flex justify-content-between mx-3 mb-3">
-      <div class="d-flex justify-content-start">
+    <div class="d-flex justify-content-between mx-3 mb-3 row">
+      <div class="d-flex justify-content-start col-xl-8 col-12">
         <Select
           class="d-flex justify-content-start"
           :options="[
@@ -258,12 +251,23 @@ export default {
           :entryValue="data.entryValue"
         />
         <Search
-          class="ml-3"
-          style="width: 300px"
+          class="ml-3 search"
           @update:searchText="(value) => (data.searchText = value)"
         />
       </div>
-      <div class="d-flex align-items-start">
+      <!--  -->
+      <div class="d-flex align-items-start col-xl-4 col-12 mrt-2">
+        <select class="p-2 mr-3" v-model="selectedOption">
+          <option disabled selected hidden value="Level">Cấp</option>
+          <option
+            :value="`${value.lev_id}`"
+            :key="index"
+            v-for="(value, index) in levels"
+          >
+            {{ value.lev_name }}
+          </option>
+          <option value="all">Tất cả</option>
+        </select>
         <button
           type="button"
           class="btn btn-danger mr-3"
@@ -341,7 +345,18 @@ export default {
 select {
   background-color: #f6f6f6;
   border: 1px solid #b8c2cc;
-  width: 80px;
+  width: 100%;
   font-size: 16px;
+}
+.search {
+  width: 300px;
+}
+@media screen and (max-width: 739px) {
+  .mrt-2 {
+    margin-top: 8px;
+  }
+  .search {
+    width: 100%;
+  }
 }
 </style>

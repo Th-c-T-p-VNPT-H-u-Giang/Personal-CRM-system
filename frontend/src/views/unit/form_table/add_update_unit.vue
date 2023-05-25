@@ -23,7 +23,7 @@
           <form @submit.prevent="save" class="was-validated">
             <div class="form-group">
               <label for="name"
-                >Level(<span style="color: red">*</span>):</label
+                >Tên cấp(<span style="color: red">*</span>):</label
               >
               <select
                 class="pl-2 form-control"
@@ -42,7 +42,9 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="name">Name(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Tên đơn vị(<span style="color: red">*</span>):</label
+              >
               <input
                 type="text"
                 class="form-control"
@@ -55,13 +57,21 @@
                 {{ errors.uni_name }}
               </div>
             </div>
-
             <button
               type="submit"
+              v-if="newData.uni_id == ''"
               class="btn btn-primary px-3 py-2"
               style="font-size: 14px"
             >
-              Submit
+              Thêm
+            </button>
+            <button
+              type="submit"
+              v-if="newData.uni_id != ''"
+              class="btn btn-primary px-3 py-2"
+              style="font-size: 14px"
+            >
+              Sửa
             </button>
           </form>
         </div>

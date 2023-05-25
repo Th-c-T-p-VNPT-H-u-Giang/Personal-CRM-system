@@ -5,7 +5,7 @@
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Level</h4>
+          <h4 class="modal-title" style="font-size: 15px">Cấp</h4>
           <button
             type="button"
             class="close"
@@ -20,7 +20,9 @@
         <div class="modal-body">
           <form @submit.prevent="save" class="was-validated">
             <div class="form-group">
-              <label for="name">Name(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Tên cấp(<span style="color: red">*</span>):</label
+              >
               <input
                 type="text"
                 class="form-control"
@@ -33,13 +35,21 @@
                 {{ errors.lev_name }}
               </div>
             </div>
-
             <button
+              v-if="newData.lev_id != ''"
               type="submit"
               class="btn btn-primary px-3 py-2"
               style="font-size: 14px"
             >
-              Submit
+              Sửa
+            </button>
+            <button
+              v-if="newData.lev_id == ''"
+              type="submit"
+              class="btn btn-primary px-3 py-2"
+              style="font-size: 14px"
+            >
+              Thêm
             </button>
           </form>
         </div>
