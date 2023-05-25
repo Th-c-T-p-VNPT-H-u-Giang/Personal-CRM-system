@@ -14,18 +14,18 @@
         <td>{{ item.id }}</td>
         <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
         <td v-if="activeAction">
-          <button v-if="!isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-view">
-            <span id="view" class="material-symbols-outlined" > visibility </span>
+          <button v-if="!isCustomerType" @click="handleView(item)" type="button" class="btn-edit" data-toggle="modal" data-target="#model-view">
+            <span id="view" class="material-symbols-outlined"> visibility </span>
           </button>
-          <view-customer v-if="!isCustomerType" :item="items[index]"/>
+          <view-customer v-if="!isCustomerType" :item="viewData" />
           <button v-if="isCustomer" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
             <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
           </button>
-          <edit-customer v-if="isCustomer" :item="items[index]"/>
+          <edit-customer v-if="isCustomer" :item="items[index]" />
           <button v-if="isCustomerType" type="button" class="btn-edit" data-toggle="modal" data-target="#model-edit">
             <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
           </button>
-          <edit-customer-type class="text-left" v-if="isCustomerType" :item="items[index]"/>
+          <edit-customer-type class="text-left" v-if="isCustomerType" :item="items[index]" />
           <span id="delete" class="material-symbols-outlined" @click="handleDelete"> delete </span>
         </td>
       </tr>
@@ -40,6 +40,7 @@ import Swal from "sweetalert2";
 import EditCustomer from '../../views/customer/EditCustomer.vue';
 import EditCustomerType from '../../views/customer/customerTypes/EditCustomerType.vue';
 import ViewCustomer from '../../views/customer/ViewCustomer.vue';
+import { ref } from 'vue';
 
 export default {
   components: { EditCustomer, EditCustomerType, ViewCustomer },
@@ -79,7 +80,8 @@ export default {
     isCustomerType: {
       type: Boolean,
       default: false
-    }
+    },
+    
   },
   setup(props, ntx) {
     const handleDelete = () => {
@@ -98,8 +100,17 @@ export default {
       });
     };
 
+    let viewData = ref(null)
+    const handleView = (item) => {
+      viewData.value = {
+        ...item
+      }
+    }
+
     return {
-      handleDelete
+      handleDelete,
+      handleView,
+      viewData
     }
   },
 };
