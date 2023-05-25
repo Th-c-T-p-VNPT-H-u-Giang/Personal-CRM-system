@@ -6,7 +6,7 @@
         @click="data.activeMenu = 1"
         :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
         href="./report"
-        >Assigned Staff</a
+        >Báo Cáo Phân Công</a
       >
     </div>
     <!-- Filter -->
@@ -49,7 +49,7 @@
       </div>
       <div class="d-flex align-items-start">
         <button type="button" class="btn btn-primary" @click="printReport">
-          <span id="printrp" class="mx-2">Print</span>
+          <span id="printrp" class="mx-2">In</span>
         </button>
       </div>
     </div>
@@ -58,11 +58,11 @@
       <TableRp
         :items="setPages"
         :fields="[
-          'Customers',
-          'CustomersType',
-          'Staff',
-          'StartDate',
-          'EndDate',
+          'Khách Hàng',
+          'Loại Khách Hàng',
+          'Nhân Viên',
+          'Ngày Bắt Đầu',
+          'Ngày Kết Thúc',
         ]"
         :labels="[
           'customers',

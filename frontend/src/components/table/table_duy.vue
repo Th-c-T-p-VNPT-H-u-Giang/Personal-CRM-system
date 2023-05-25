@@ -40,15 +40,15 @@ export default {
       <tr>
         <th></th>
         <th>Id</th>
-        <th v-for="(value, index) in fields">{{ value }}</th>
-        <th v-if="activeAction == true">Actions</th>
+        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
+        <th v-if="activeAction == true">Quản Lý</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in items">
+      <tr v-for="(item, index) in items" :key="index">
         <td><input type="checkbox" name="" id="" /></td>
         <td>{{ index + 1 }}</td>
-        <td v-for="(label, index1) in labels">{{ item[label] }}</td>
+        <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
         <td v-if="activeAction == true">
           <span id="view" class="material-symbols-outlined" @click="$emit('view', item._id)"> visibility </span>
           <span id="edit" class="material-symbols-outlined mx-2" @click="$emit('edit', item, true)"> edit </span>

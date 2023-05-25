@@ -6,19 +6,19 @@
         @click="Data.activeMenu = 1"
         :class="[Data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
         href="./account"
-        >Account</a
+        >Tài Khoản</a
       >
       <a
         @click="Data.activeMenu = 2"
         :class="[Data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         href="./rolelist"
-        >Role</a
+        >Chức vụ</a
       >
       <a
         @click="Data.activeMenu = 3"
         :class="[Data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
         href="./permissionlist"
-        >Permission</a
+        >Phân Quyền</a
       >
     </div>
     <!-- Filter -->
@@ -67,7 +67,7 @@
           data-toggle="modal"
           data-target="#model-dlt-all-role"
         >
-          <span id="delete-all" class="mx-2">Delete All</span>
+          <span id="delete-all" class="mx-2">Xóa Tất Cả</span>
         </button>
         <DeleteAllRole :items="Data.items" />
         <button
@@ -76,20 +76,20 @@
           data-toggle="modal"
           data-target="#modal-addrole"
         >
-          <span id="addrole" class="mx-2">Add</span>
+          <span id="addrole" class="mx-2">Thêm</span>
         </button>
         <AddRole :item="Data.itemAdd" @create="create" />
       </div>
     </div>
-    {{ Data.itemAdd }}
+    <!-- {{ Data.itemAdd }} -->
     <!-- Table -->
     <Table
       :items="setPages"
       :fields="[
-        'FullName',
-        'UserName',
+        'Họ Tên',
+        'Tên Đăng Nhập',
         'Email',
-        'Role',
+        'Chức Vụ',
       ]"
       :labels="[
         'fullname',

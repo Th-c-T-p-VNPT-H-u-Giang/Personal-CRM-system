@@ -1,44 +1,85 @@
-<template>
-  <div>
-    <!-- Hiển thị thông tin của item -->
-    <h1>{{ item.customers }}</h1>
-    <p>Customer Type: {{ item.customerstype }}</p>
-    <p>Staff: {{ item.staff }}</p>
-    <p>Start Date: {{ item.startdate }}</p>
-    <p>End Date: {{ item.enddate }}</p>
-  </div>
-</template>
-
 <script>
+import { reactive, computed } from "vue";
+
 export default {
-  data() {
-    return {
-      items: [
-        {
-          _id: "1",
-          customers: "Trần Tuyết Mỹ",
-          customerstype: "VIP",
-          staff: "Trương Thiết Long",
-          startdate: "20/09/2022",
-          enddate: "11/03/2025",
-        },
-        {
-          _id: "2",
-          customers: "Nguyễn Thị Vân Anh",
-          customerstype: "VIP",
-          staff: "Trương Thiết Long",
-          startdate: "20/02/2023",
-          enddate: "11/03/2024",
-        },
-      ],
-      item: null, // Dữ liệu của item được truyền từ trang report.vue
-    };
+  props: {
+    item: {
+      type: Object,
+      default: {},
+    },
   },
-  created() {
-    // Truy cập vào tham số id từ URL
-    const itemId = this.$route.params.id;
-    // Tìm item tương ứng dựa trên itemId
-    this.item = this.items.find((item) => item._id === itemId);
+  setup(props, ctx) {
+    const data = reactive({});
+    const update = () => {
+      if (
+        props.item.fullname.length > 0 &&
+        props.item.username.length > 0 &&
+        props.item.email.length > 0 &&
+        props.item.birthday.length > 0 &&
+        props.item.registrationdate.length > 0
+      ) {
+        ctx.emit("update");
+      }
+    };
+    return {
+      update,
+    };
   },
 };
 </script>
+
+<template>
+  <!-- The Modal -->
+  <div class="modal" id="model-view">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title" style="font-size: 15px">Thông Tin Phân Công</h4>
+          <button
+            @click="$emit('cancel')"
+            type="button"
+            class="close"
+            data-dismiss="modal"
+          >
+            &times;
+          </button>
+        </div>
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <form class="was-validated">
+            <div class="form-group">
+              <label for="name">Khách Hàng</label>
+              
+            </div>
+            <div class="form-group">
+              <label for="name">Loại Khách Hàng </label>
+              
+            </div>
+            <div class="form-group">
+              <label for="name">Nhân Viên Chăm Sóc</label>
+              
+            </div>
+            <div class="form-group">
+              <label for="name">Ngày Bắt Đầu</label>
+              
+            </div>
+            <div class="form-group">
+              <label for="name">Ngày Kết Thúc</label>
+              
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.show-modal {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+</style>

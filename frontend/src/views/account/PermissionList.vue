@@ -6,19 +6,19 @@
         @click="Data.activeMenu = 1"
         :class="[Data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
         href="./account"
-        >Account</a
+        >Tài Khoản</a
       >
       <a
         @click="Data.activeMenu = 2"
         :class="[Data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         href="./rolelist"
-        >Role</a
+        >Chức Vụ</a
       >
       <a
         @click="Data.activeMenu = 3"
         :class="[Data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
         href="./permissionlist"
-        >Permission</a
+        >Phân Quyền</a
       >
     </div>
     <!-- Filter -->
@@ -66,7 +66,7 @@
           data-toggle="modal"
           data-target="#model-dlt-all-permission"
         >
-          <span id="delete-all" class="mx-2">Delete All</span>
+          <span id="delete-all" class="mx-2">Xóa Tất Cả</span>
         </button>
         <DeleteAllPermission :items="Data.items" />
         <button
@@ -75,13 +75,13 @@
           data-toggle="modal"
           data-target="#modal-addpermission"
         >
-          <span id="addpermission" class="mx-2">Add</span>
+          <span id="addpermission" class="mx-2">Thêm</span>
         </button>
         <AddPermission :item="Data.itemAdd" @create="create" />
       </div>
     </div>
     <!-- Table -->
-    {{ Data.itemAdd }}
+    <!-- {{ Data.itemAdd }} -->
     <Table
       :items="setPages"
       :fields="[

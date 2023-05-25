@@ -39,14 +39,14 @@ export default {
     <thead>
       <tr>
         <th>Id</th>
-        <th v-for="(value, index) in fields">{{ value }}</th>
-        <th v-if="activeActionView == true">Actions</th>
+        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
+        <th v-if="activeActionView == true">Quản Lý</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in items">
+      <tr v-for="(item, index) in items" :key="index">
         <td>{{ index + 1 }}</td>
-        <td v-for="(label, index1) in labels">{{ item[label] }}</td>
+        <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
         <td v-if="activeActionView == true" class="action-cell">
           <div class="action-container">
           <span id="view" class="material-symbols-outlined" @click="$emit('view', item._id)"> visibility </span>

@@ -18,7 +18,7 @@
         @click="data.activeMenu = 3"
         :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
         href="./permissionlist"
-        >Quyền</a
+        >Phân Quyền</a
       >
     </div>
     <!-- Filter -->
@@ -80,7 +80,7 @@
         <AddAccount :item="data.itemAdd" @create="create" />
       </div>
     </div>
-    <!-- Table -->{{ data.itemAdd }}
+    <!-- Table{{ data.itemAdd }} -->
     <Table
       :items="setPages"
       :fields="[
