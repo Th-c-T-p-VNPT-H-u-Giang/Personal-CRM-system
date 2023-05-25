@@ -243,11 +243,11 @@ export default {
 
         chartSeries.value = [
           {
-            name: "uncare",
+            name: "Chưa chăm sóc",
             data: dataChart.data[0],
           },
           {
-            name: "cared",
+            name: "Đã chăm sóc",
             data: dataChart.data[1],
           },
         ];
@@ -266,11 +266,11 @@ export default {
 
         chartSeries.value = [
           {
-            name: "uncare",
+            name: "Chưa chăm sóc",
             data: dataChart.data[0],
           },
           {
-            name: "cared",
+            name: "Đã chăm sóc",
             data: dataChart.data[1],
           },
         ];
@@ -280,35 +280,6 @@ export default {
       console.log(newValue, showchart.value);
       show(showchart.value, selectedOption.value);
     });
-    // **** watch : cus, staff, appointment
-    // watch(customerChart, (newValue, oldValue) => {
-    //   console.log("customer chart :", newValue, selectedOption.value);
-    //   if (newValue == false) {
-    //     customerChart.value = true;
-    //     console.log("cus new:", customerChart);
-    //   }
-    //   showchart.value = "customer";
-
-    //   show(showchart.value, selectedOption.value);
-    // });
-    // watch(staffChart, (newValue, oldValue) => {
-    //   console.log("staff :", newValue);
-    //   if (newValue == false) {
-    //     staffChart.value = true;
-    //     console.log("staff new:", staffChart);
-    //   }
-    //   showchart.value = "staff";
-    //   show(showchart.value, selectedOption.value);
-    // });
-    // watch(appointmentChart, (newValue, oldValue) => {
-    //   console.log("appointment :", newValue);
-    //   if (newValue == false) {
-    //     appointmentChart.value = true;
-    //     console.log("appointment new:", appointmentChart);
-    //   }
-    //   showchart.value = "appointment";
-    //   show(showchart.value, selectedOption.value);
-    // });
 
     onMounted(() => {
       data.items = [
@@ -375,11 +346,11 @@ export default {
     <!-- select_option - overview+detail -->
     <div class="m-3 d-flex menu justify-content-end">
       <select class="pl-2 mr-2" v-model="selectedOption" style="padding: 5px">
-        <option disabled selected hidden value="cycles">Cycles</option>
-        <option value="weak">Weak</option>
-        <option value="month">Month</option>
-        <option value="quarter">Quarter</option>
-        <option value="year">Year</option>
+        <option disabled selected hidden value="cycles">Chu kỳ</option>
+        <option value="weak">Tuần</option>
+        <option value="month">Tháng</option>
+        <option value="quarter">Qúy</option>
+        <option value="year">Năm</option>
       </select>
       <div class="">
         <button
@@ -392,7 +363,7 @@ export default {
             }
           "
         >
-          Overview
+          Tổng quan
         </button>
         <button
           class="btn m-0"
@@ -404,7 +375,7 @@ export default {
           "
           :class="{ 'btn-primary': detail }"
         >
-          Detail
+          Chi tiết
         </button>
       </div>
     </div>
@@ -424,7 +395,7 @@ export default {
                 <div
                   class="text-xs font-weight-bold text-primary text-uppercase mb-1"
                 >
-                  Customer
+                  Khách hàng
                 </div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">1000</div>
               </div>
@@ -448,7 +419,7 @@ export default {
                 <div
                   class="text-xs font-weight-bold text-success text-uppercase mb-1"
                 >
-                  Staff
+                  Nhân viên
                 </div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800">20</div>
               </div>
@@ -475,7 +446,7 @@ export default {
                 <div
                   class="text-xs font-weight-bold text-info text-uppercase mb-1"
                 >
-                  Appointment
+                  Lịch hẹn
                 </div>
                 <div class="row no-gutters align-items-center">
                   <div class="col-auto">
@@ -569,13 +540,13 @@ export default {
           :class="{ 'btn-primary': !takeCare }"
           @click="showCustomer"
         >
-          Uncare</button
+          Chưa chăm sóc</button
         ><button
           class="btn"
           :class="{ 'btn-primary': takeCare }"
           @click="showCustomer"
         >
-          Cared
+          Đã chăm sóc
         </button>
       </div>
     </div>

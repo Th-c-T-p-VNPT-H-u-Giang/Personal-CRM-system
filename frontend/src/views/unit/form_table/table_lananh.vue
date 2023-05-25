@@ -58,9 +58,9 @@ export default {
       <thead>
         <tr>
           <th></th>
-          <th>Id</th>
+          <th>STT</th>
           <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-          <th v-if="activeAction == true">Actions</th>
+          <th v-if="activeAction == true">Thao tác</th>
         </tr>
       </thead>
       <tbody>

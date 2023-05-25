@@ -150,9 +150,7 @@ export default {
                 class="btn btn-light"
                 @click="setDeleteAll(true), (data.activeSelectAll = true)"
               >
-                <span id="add" class="mx-2" style="font-size: 15px"
-                  >Select All</span
-                >
+                <span id="add" class="mx-2" style="font-size: 15px">Chọn</span>
               </button>
               <button
                 v-if="data.activeSelectAll == true"
@@ -161,7 +159,7 @@ export default {
                 @click="setDeleteAll(false), (data.activeSelectAll = false)"
               >
                 <span id="add" class="mx-2" style="font-size: 15px"
-                  >Un Select All</span
+                  >Bỏ chọn</span
                 >
               </button>
               <button
@@ -170,14 +168,14 @@ export default {
                 @click="onDeleteAll"
               >
                 <span id="add" class="mx-2" style="font-size: 15px"
-                  >Delete All</span
+                  >Xóa tất cả</span
                 >
               </button>
             </div>
           </div>
           <Table
             :items="setPages"
-            :fields="['Uni_id', 'Name']"
+            :fields="['Mã đơn vị', 'Tên đơn vị']"
             :labels="['uni_id', 'uni_name']"
             :activeAction="`false`"
             :borderTableAll="`true`"

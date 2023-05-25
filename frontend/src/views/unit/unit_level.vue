@@ -208,7 +208,7 @@ export default {
         @click="data.activeMenu = 1"
         :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
       >
-        <option disabled selected hidden value="Level">Level</option>
+        <option disabled selected hidden value="Level">Cấp</option>
         <option
           :value="`${value.lev_id}`"
           :key="index"
@@ -218,12 +218,12 @@ export default {
         </option>
         <option value="all">All</option>
       </select>
-      <router-link
+      <!-- <router-link
         :to="{ name: 'unit' }"
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-        >Unit</router-link
-      >
+        >Đơn vị</router-link
+      > -->
     </div>
     <!-- Filter -->
     <!-- Search -->
@@ -270,7 +270,7 @@ export default {
           data-toggle="modal"
           data-target="#model-delete-all"
         >
-          <span id="delete-all" class="mx-2">Delete All</span>
+          <span id="delete-all" class="mx-2">Xóa tất cả</span>
         </button>
         <DeleteAll :items="data.items" />
         <button
@@ -279,38 +279,10 @@ export default {
           data-toggle="modal"
           data-target="#model-add"
         >
-          <span id="add" class="mx-2">Add</span>
+          <span id="add" class="mx-2">Thêm</span>
         </button>
         <!-- Modal -->
-        <div
-          class="modal fade"
-          id="exampleModal"
-          tabindex="-1"
-          role="dialog"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">
-                  Add a New Level
-                </h5>
-                <button
-                  type="button"
-                  class="close"
-                  data-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <Form :level="newData" @AddOrUpdate="addOrUpdateLevel"></Form>
-              </div>
-            </div>
-          </div>
-        </div>
+
         <Add :newData="newData" @addorupdate="addOrUpdateLevel()" />
       </div>
     </div>
@@ -318,7 +290,7 @@ export default {
     <!-- @update="getLevel" -->
     <Table
       :items="setPages"
-      :fields="['Uni_id', 'Name']"
+      :fields="['Mã đơn vị', 'Tên đơn vị']"
       :labels="['uni_id', 'uni_name']"
       @update="getUnit"
       @onDelete="onDelete"

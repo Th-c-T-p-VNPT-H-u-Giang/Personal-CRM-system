@@ -128,7 +128,7 @@ export default {
               >
                 {{ sidebarTask.icon }}
               </span>
-              <span class="d-flex align-items-center" style="font-size: 15px;">{{
+              <span class="d-flex align-items-center" style="font-size: 15px">{{
                 sidebarTask.name
               }}</span>
             </div>

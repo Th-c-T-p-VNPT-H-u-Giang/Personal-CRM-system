@@ -155,14 +155,14 @@ export default {
         @click="data.activeMenu = 1"
         :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
         href="#"
-        >Level</a
+        >Cấp</a
       >
 
       <router-link
         :to="{ name: 'unit' }"
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-        >Unit</router-link
+        >Đơn vị</router-link
       >
     </div>
     <!-- Filter -->
@@ -210,7 +210,7 @@ export default {
           data-toggle="modal"
           data-target="#model-delete-all"
         >
-          <span id="delete-all" class="mx-2">Delete All</span>
+          <span id="delete-all" class="mx-2">Xóa tất cả</span>
         </button>
         <DeleteAll :items="data.items" />
         <!-- Modal -->
@@ -220,7 +220,7 @@ export default {
           data-toggle="modal"
           data-target="#model-add"
         >
-          <span id="add" class="mx-2">Add</span>
+          <span id="add" class="mx-2">Thêm</span>
         </button>
 
         <Add :newData="newData" @addorupdate="addOrUpdateLevel()" />
@@ -230,7 +230,7 @@ export default {
     <!-- @update="getLevel" -->
     <Table
       :items="setPages"
-      :fields="['Id_lev', 'Name']"
+      :fields="['Mã cấp', 'Tên cấp']"
       :labels="['lev_id', 'lev_name']"
       @update="getLevel"
       @onDelete="onDelete"
