@@ -317,6 +317,9 @@ select {
   width: 100%;
   font-size: 16px;
 }
+.search {
+  width: 300px;
+}
 @media screen and (max-width: 739px) {
   .mrt-2 {
     margin-top: 8px;
