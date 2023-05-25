@@ -1,5 +1,5 @@
 <template>
-  <input type="text" class="form-control" placeholder="Search" @input="$emit('update:searchText', $event.target.value)" />
+  <input type="text" class="form-control" placeholder="Tìm kiếm" @input="$emit('update:searchText', $event.target.value)" />
 </template>
 
 <script>

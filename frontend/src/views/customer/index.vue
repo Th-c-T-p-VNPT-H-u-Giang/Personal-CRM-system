@@ -202,7 +202,6 @@ export default {
 
     // handle update entry value 
     const handleUpdateEntryValue = (value) => {
-      console.log(value);
       data.entryValue = value
     }
     
@@ -213,7 +212,6 @@ export default {
     }
     // // handle pagination
     const toString = computed(() => {
-      console.log("Starting search");
       return data.customers.map((value, index) => {
         return [value.name].join("").toLocaleLowerCase(); // convert to array having is string
         // Example: ['Dang Van Phuc', 'Pham Thanh Phong', 'Nguyen Anh Nam', 'Le Quoc Thinh', 'Vo Van Thach', 'Tran Minh Sang', 'Nguyen Hoang Trong Tien']
@@ -253,7 +251,6 @@ export default {
       } else data.numberOfPages = setNumberOfPages.value;
       data.startRow = (data.currentPage - 1) * data.entryValue + 1;
       data.endRow = data.currentPage * data.entryValue;
-      console.log(data);
       return filtered.value.filter((item, index) => {
         return (
           index + 1 > (data.currentPage - 1) * data.entryValue &&

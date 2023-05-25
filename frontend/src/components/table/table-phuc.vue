@@ -5,7 +5,7 @@
         <th v-if="isCheckBox"></th>
         <th>#</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-        <th v-if="activeAction">Actions</th>
+        <th v-if="activeAction">Quản lý</th>
       </tr>
     </thead>
     <tbody>
@@ -86,16 +86,17 @@ export default {
   setup(props, ntx) {
     const handleDelete = () => {
       Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
+        title: "Bạn có chắc muốn xóa dòng này không?",
+        text: "Dòng dử liệu này không thể hồi phục",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "Hủy",
+        confirmButtonText: "Đồng ý",
       }).then((result) => {
         if (result.isConfirmed) {
-          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          Swal.fire("Đã xóa!", "Bạn vừa mới xóa dòng dử liệu.", "success");
         }
       });
     };

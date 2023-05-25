@@ -6,7 +6,7 @@
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <router-link to="/customer" @click="data.activeMenu = 2" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']">Customer</router-link>
       <router-link to="/customer-types"  @click="data.activeMenu = 1" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']">
-        Customer Types
+        Loại khách hàng
       </router-link>
       
     </div>
@@ -16,13 +16,13 @@
     <div class="d-flex justify-content-between mx-3 mb-3">
       <div class="d-flex align-items-start">
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#model-add">
-          <span id="add" class="mx-2">Add</span>
+          <span id="add" class="mx-2">Thêm</span>
         </button>
         <add-customer-type />
       </div>
     </div>
     <!-- Table -->
-    <table-phuc class="text-center" :isCustomer="false" :isCustomerType="true" :items="data.customerTypes" :fields="['Name']" :labels="['name']" :nameRoute="'customer-types'" :isCheckBox="false"/>
+    <table-phuc class="text-center" :isCustomer="false" :isCustomerType="true" :items="data.customerTypes" :fields="['Tên']" :labels="['name']" :nameRoute="'customer-types'" :isCheckBox="false"/>
   </div>
 </template>
 
@@ -58,20 +58,19 @@ export default {
     });
 
         const handleDelete = (typeId) => {
-            console.log(typeId);
             Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
+                title: 'Bạn có muốn xóa dòng dử liệu này không?',
+                text: "Dòng dử liệu này không có khả năng hồi phục nha!!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: 'Đồng ý'
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire(
-                        'Deleted!',
-                        'Your file has been deleted.',
+                        'Đã xóa!',
+                        'Bạn đã xóa dòng dử liệu',
                         'success'
                     )
                 }

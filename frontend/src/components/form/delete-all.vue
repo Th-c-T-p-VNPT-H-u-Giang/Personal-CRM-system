@@ -63,7 +63,6 @@ export default {
         },
     },
     setup(props) {
-        console.log(`Props ${props.items[0]}`);
         const options = reactive([
             {
                 name: 5,
@@ -242,7 +241,6 @@ export default {
             } else data.numberOfPages = setNumberOfPages.value;
             data.startRow = (data.currentPage - 1) * data.entryValue + 1;
             data.endRow = data.currentPage * data.entryValue;
-            console.log(data);
             return filtered.value.filter((item, index) => {
                 return (
                     index + 1 > (data.currentPage - 1) * data.entryValue &&

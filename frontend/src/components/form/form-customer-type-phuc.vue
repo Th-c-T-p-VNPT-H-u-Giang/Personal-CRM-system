@@ -4,7 +4,7 @@
         <form class="">
             <div class="form-group">
                 <label for="name">Name (<span style="color: red;">*</span>)</label> 
-                <input type="text" class="form-control" id="name" placeholder="Enter Name Customer Type" :value="viewData.name">
+                <input type="text" class="form-control" id="name" placeholder="" :value="viewData.name">
             </div>
             <button type="submit" class="btn btn-primary">{{ btnName }}</button>
         </form>

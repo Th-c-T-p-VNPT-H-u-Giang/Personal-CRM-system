@@ -93,6 +93,24 @@ const routes = [
     name: "Report",
     component: () => import("../views/report/index.vue"),
   },
+  {
+    path: "/report_assignment_staff",
+    name: "ReportAssignment",
+    component: () =>
+      import("../views/report/report_assignment_staff/index.vue"),
+  },
+  // Report leader employee
+  {
+    path: "/report-leader-employee",
+    name: "ReportLeaderEmploy",
+    component: () => import("../views/report/leader/leader_employ/index.vue"),
+  },
+  // Report leader customer
+  {
+    path: "/report-leader-customer",
+    name: "ReportLeaderCustomer",
+    component: () => import("../views/report/leader/leader_customer/index.vue"),
+  },
   // Setting
   {
     path: "/setting",

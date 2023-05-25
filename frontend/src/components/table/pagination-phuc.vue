@@ -52,7 +52,6 @@ export default {
     },
   },
   setup(props, ctx) {
-    console.log(props.totalRow);
     const updateCurrentPage = (number) => {
       ctx.emit("update:currentPage", number);
     };
@@ -62,7 +61,6 @@ export default {
         // console.log('run');
         // updateNextPage(number)
       if (number < props.numberOfPages && number > 0) {
-        console.log('run');
         ctx.emit("update:currentPage", number + 1);
         // updateNextPage
       }
@@ -71,7 +69,6 @@ export default {
     
     const updatePrevPage = (number) => {
       if (number <= props.numberOfPages && number > 1) {
-        console.log('updatePrevPage');
         ctx.emit("update:currentPage", number - 1);
       }
     };
