@@ -95,12 +95,14 @@ import { reactive, computed } from "vue";
 import { useRouter } from "vue-router";
 import jsPDF from "jspdf"; //in
 import html2canvas from "html2canvas";
+import ViewRp from "./view.vue";
 export default {
   components: {
     TableRp,
     Pagination,
     Select,
     Search,
+    ViewRp
   },
   setup(ctx) {
     const data = reactive({

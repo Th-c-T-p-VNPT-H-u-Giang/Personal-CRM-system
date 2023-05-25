@@ -4,7 +4,7 @@
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Delete All</h4>
+          <h4 class="modal-title" style="font-size: 15px">Xóa Tất Cả</h4>
           <button type="button" class="close" data-dismiss="modal">
             &times;
           </button>
@@ -54,7 +54,7 @@
                 @click="setDeleteAll(true), (data.activeSelectAll = true)"
               >
                 <span id="add" class="mx-2" style="font-size: 15px"
-                  >Select All</span
+                  >Chọn Tất Cả</span
                 >
               </button>
               <button
@@ -64,7 +64,7 @@
                 @click="setDeleteAll(false), (data.activeSelectAll = false)"
               >
                 <span id="add" class="mx-2" style="font-size: 15px"
-                  >UnSelect All</span
+                  >Hủy Chọn</span
                 >
               </button>
               <button
@@ -75,7 +75,7 @@
                 @click="dltall"
               >
                 <span id="add" class="mx-2" style="font-size: 15px"
-                  >Delete All</span
+                  >Xóa Tất Cả</span
                 >
               </button>
             </div>
@@ -83,11 +83,11 @@
           <Table
             :items="setPages"
             :fields="[
-              'FullName',
-              'UserName',
+              'Họ Tên',
+              'Tên Đăng Nhập',
               'Email',
-              'Birthday',
-              'RegistrationDate',
+              'Sinh Nhật',
+              'Ngày Đăng Ký',
             ]"
             :labels="[
               'fullname',

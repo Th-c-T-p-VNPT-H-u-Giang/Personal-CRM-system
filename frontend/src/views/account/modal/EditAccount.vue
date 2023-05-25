@@ -37,7 +37,7 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Edit A Account</h4>
+          <h4 class="modal-title" style="font-size: 15px">Sửa Tài Khoản</h4>
           <button
             @click="$emit('cancel')"
             type="button"
@@ -53,7 +53,7 @@ export default {
           <form class="was-validated">
             <div class="form-group">
               <label for="name"
-                >FullName(<span style="color: red">*</span>):</label
+                >Họ Tên(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
@@ -66,7 +66,7 @@ export default {
             </div>
             <div class="form-group">
               <label for="name"
-                >UserName(<span style="color: red">*</span>):</label
+                >Tên Đăng Nhập(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
@@ -91,7 +91,7 @@ export default {
               />
             </div>
             <div class="form-group">
-    <label for="name">Birthday(<span style="color: red">*</span>):</label>
+    <label for="name">Ngày Sinh(<span style="color: red">*</span>):</label>
     <input
       type="Date"
       class="form-control"
@@ -102,7 +102,7 @@ export default {
     />
   </div>
   <div class="form-group">
-    <label for="name">RegistrationDate(<span style="color: red">*</span>):</label>
+    <label for="name">Ngày Đăng Ký(<span style="color: red">*</span>):</label>
     <input
       type="Date"
       class="form-control"
@@ -119,7 +119,7 @@ export default {
               @click="create"
               id="edit"
             >
-              <span>Edit</span>
+              <span>Sửa</span>
             </button>
           </form>
         </div>

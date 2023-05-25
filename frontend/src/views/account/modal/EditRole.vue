@@ -5,7 +5,7 @@
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Edit Role</h4>
+          <h4 class="modal-title" style="font-size: 15px">Sửa Chức Vụ</h4>
           <button
             @click="$emit('cancel')"
             type="button"
@@ -21,7 +21,7 @@
           <form class="was-validated">
             <div class="form-group">
               <label for="name"
-                >FullName(<span style="color: red">*</span>):</label
+                >Họ Tên(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
@@ -34,7 +34,7 @@
             </div>
             <div class="form-group">
               <label for="name"
-                >UserName(<span style="color: red">*</span>):</label
+                >Tên Đăng Nhập(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
@@ -59,7 +59,7 @@
               />
             </div>
             <div class="form-group">
-              <label for="role">Role(<span style="color: red">*</span>):</label>
+              <label for="role">Chức Vụ(<span style="color: red">*</span>):</label>
               <select
                 class="form-control"
                 id="role"
@@ -67,10 +67,10 @@
                 v-model="item.role"
                 required
               >
-                <option value="">Select a role</option>
-                <option value="Employee">Employee</option>
-                <option value="Manager">Manager</option>
-                <option value="Leader">Leader</option>
+                <option value="">Chọn Chức Vụ</option>
+                <option value="Employee">Nhân Viên</option>
+                <option value="Manager">Quản Lý</option>
+                <option value="Leader">Lãnh Đạo</option>
                 <option value="Admin">Admin</option>
                 <!-- Thêm các vai trò khác tương tự vào đây -->
               </select>
@@ -82,7 +82,7 @@
               @click="create"
               id="edit"
             >
-              <span>Edit</span>
+              <span>Sửa</span>
             </button>
           </form>
         </div>

@@ -48,7 +48,7 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Edit A Account</h4>
+          <h4 class="modal-title" style="font-size: 15px">Sửa Quyền</h4>
           <button
             @click="$emit('cancel')"
             type="button"
@@ -64,7 +64,7 @@ export default {
           <form class="was-validated">
             <div class="form-group">
               <label for="name"
-                >FullName(<span style="color: red">*</span>):</label
+                >Họ Tên(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
@@ -77,7 +77,7 @@ export default {
             </div>
             <div class="form-group">
               <label for="name"
-                >UserName(<span style="color: red">*</span>):</label
+                >Tên Đăng Nhập(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
@@ -102,7 +102,7 @@ export default {
               />
             </div>
             <div class="form-group">
-              <label for="">Permission:</label>
+              <label for="">Quyền:</label>
             <div class="form-check">
               <input
                 type="checkbox"
