@@ -1,5 +1,3 @@
-<script></script>
-
 <template>
   <!-- The Modal -->
   <div class="modal" id="model-add">

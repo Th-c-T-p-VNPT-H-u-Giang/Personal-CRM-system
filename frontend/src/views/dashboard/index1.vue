@@ -1,11 +1,12 @@
 <script>
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import VueApexCharts from "vue3-apexcharts";
-import Table from "./table/table_dash.vue";
+import Table from "../../components/table/table_dash_lananh.vue";
 import Pagination from "../unit/form_table/pagination_lananh.vue";
 import Search from "../../components/form/search.vue";
 import Select from "../../components/form/select.vue";
-
+import Box from "../../components/box_lananh/box.vue";
+import SelectOption from "../../components/box_lananh/select.vue";
 export default {
   components: {
     apexchart: VueApexCharts,
@@ -13,6 +14,8 @@ export default {
     Pagination,
     Search,
     Select,
+    Box,
+    SelectOption,
   },
   setup() {
     // Data customer
@@ -85,7 +88,7 @@ export default {
       }
     };
     // Chart
-    const selectedOption = ref("weak");
+    const selectedOption = ref("week");
     const customerChart = ref(false);
     const staffChart = ref(false);
     const appointmentChart = ref(true);
@@ -100,7 +103,7 @@ export default {
     const show = (nameChart, cycle) => {
       if (nameChart == "customer") {
         switch (cycle) {
-          case "weak": {
+          case "week": {
             console.log("weak+customer");
             dataChart.data[0] = [10, 40, 45, 50, 49, 60, 70];
             console.log(dataChart.data[0]);
@@ -108,6 +111,7 @@ export default {
           }
           case "month": {
             console.log("month+customer");
+
             break;
           }
         }
@@ -124,8 +128,10 @@ export default {
         }
       } else if (nameChart == "appointment") {
         switch (cycle) {
-          case "weak": {
+          case "week": {
             console.log("weak+appointment");
+            dataChart.data[0] = [10, 40, 45, 50, 49, 60, 70];
+            dataChart.data[1] = [10, 70, 65, 50, 49, 23, 104];
             break;
           }
           case "month": {
@@ -145,7 +151,6 @@ export default {
       chart: {
         id: "basic-bar",
         type: "bar",
-        width: 500,
       },
       xaxis: {
         categories: [
@@ -175,121 +180,94 @@ export default {
     watch(dataChart, (newValue, oldValue) => {
       // Gọi phương thức cập nhật biểu đồ khi dữ liệu thay đổi
       console.log("newvalue:", newValue, ":", dataChart.data[0]);
-      // if (selectedOption.value == "weak") {
-      //   chartOptions.value = {
-      //     chart: {
-      //       id: "basic-bar",
-      //       type: "bar",
-      //       width: 500,
-      //     },
-      //     xaxis: {
-      //       categories: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
-      //     },
-      //     colors: ["rgb(255, 99, 132)", "#3300cc"],
-      //   };
+      console.log("Showchart", showchart.value);
+      if (showchart.value == "customer") {
+        chartOptions.value = {
+          chart: {
+            id: "basic-bar",
+            type: "bar",
+          },
+          xaxis: {
+            categories: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
+          },
+          colors: ["rgb(255, 99, 132)"],
+        };
 
-      //   chartSeries.value = [
-      //     {
-      //       name: "Chưa chăm sóc",
-      //       data: dataChart.data[0],
-      //     },
-      //     {
-      //       name: "Đã chăm sóc",
-      //       data: dataChart.data[1],
-      //     },
-      //   ];
-      // } else if (selectedOption.value == "month") {
-      //   chartOptions.value = {
-      //     chart: {
-      //       id: "basic-bar",
-      //       type: "bar",
-      //       width: 500,
-      //     },
-      //     xaxis: {
-      //       categories: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
-      //     },
-      //     colors: ["rgb(255, 99, 132)", "#3300cc"],
-      //   };
+        chartSeries.value = [
+          {
+            name: "Khách hàng mới",
+            data: newValue[0],
+          },
+        ];
+      } else if (showchart.value == "appointment") {
+        console.log("APP");
+        chartOptions.value = {
+          chart: {
+            id: "basic-bar",
+            type: "bar",
+          },
+          xaxis: {
+            categories: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
+          },
+          colors: ["rgb(255, 99, 132)", "#3300cc"],
+        };
 
-      //   chartSeries.value = [
-      //     {
-      //       name: "Chưa chăm sóc",
-      //       data: dataChart.data[0],
-      //     },
-      //     {
-      //       name: "Đã chăm sóc",
-      //       data: dataChart.data[1],
-      //     },
-      //   ];
-      // } else {
-      console.log("CUS");
-      chartOptions.value = {
-        chart: {
-          id: "basic-bar",
-          type: "bar",
-          width: 1370,
-        },
-        xaxis: {
-          categories: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
-        },
-        colors: ["rgb(255, 99, 132)"],
-      };
-
-      chartSeries.value = [
-        {
-          name: "Chưa chăm sóc",
-          data: newValue[0],
-        },
-        // {
-        //   name: "Đã chăm sóc",
-        //   data: [],
-        // },
-      ];
-      // }
+        chartSeries.value = [
+          {
+            name: "Chưa chăm sóc",
+            data: dataChart.data[0],
+          },
+          {
+            name: "Chưa chăm sóc",
+            data: dataChart.data[1],
+          },
+        ];
+      }
     });
     watch(showchart, (newValue, oldValue) => {
-      console.log(newValue, showchart.value);
+      console.log(showchart.value);
       show(showchart.value, selectedOption.value);
     });
-
+    watch(takeCare, (newValue, oldValue) => {
+      console.log("takecare", newValue);
+    });
     onMounted(() => {
       data.items = [
         {
           cus_id: 1,
           cus_name: "Lan Anh",
           tas_service_day: "2023-1-1",
-          tas_service_content:
-            "introduct new a service,introduct new a service",
+          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
         },
         {
           cus_id: 2,
           cus_name: "Hồng Diễm",
           tas_service_day: "2023-2-1",
-          tas_service_content: "introduct new a service",
+          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
         },
         {
           cus_id: 3,
           cus_name: "Lan Anh",
           tas_service_day: "2023-1-1",
-          tas_service_content: "introduct new a service",
+          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
         },
         {
           cus_id: 4,
           cus_name: "Hồng Diễm",
           tas_service_day: "2023-2-1",
-          tas_service_content: "introduct new a service",
+          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
         },
         {
           cus_id: 5,
           cus_name: "Lan Anh",
           tas_service_day: "2023-1-1",
-          tas_service_content: "introduct new a service",
+          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
         },
         {
           cus_id: 6,
           cus_name: "Hồng Diễm",
           tas_service_day: "2023-2-1",
-          tas_service_content: "introduct new a service",
+          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
         },
       ];
     });
@@ -316,13 +294,18 @@ export default {
   <div class="border-box">
     <!-- select_option - overview+detail -->
     <div class="m-3 d-flex menu justify-content-end">
-      <select class="pl-2 mr-2" v-model="selectedOption" style="padding: 5px">
-        <option disabled selected hidden value="cycles">Chu kỳ</option>
-        <option value="weak">Tuần</option>
-        <option value="month">Tháng</option>
-        <option value="quarter">Qúy</option>
-        <option value="year">Năm</option>
-      </select>
+      <!-- select cycles -->
+      <SelectOption
+        :field="[
+          { name: 'Tuần', value: 'week' },
+          { name: 'Tháng', value: 'month' },
+        ]"
+        @option="
+          (value) => {
+            selectedOption = value;
+          }
+        "
+      ></SelectOption>
       <div class="">
         <button
           class="btn m-0"
@@ -351,130 +334,21 @@ export default {
       </div>
     </div>
     <div class="border-hr mb-3"></div>
-
-    <!-- Trúc -->
-    <div class="row mx-2 justify-content-around">
-      <!-- customer -->
-      <div class="col-xl-3 col-md-6 col-6 mb-4" @click="showchart = 'customer'">
-        <div
-          class="card border-left-primary shadow h-100 py-2"
-          :class="{ 'box-active': showchart == 'customer' }"
-        >
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div
-                  class="text-xs font-weight-bold text-primary text-uppercase mb-1"
-                >
-                  Khách hàng
-                </div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">1000</div>
-              </div>
-              <div class="col-auto">
-                <span class="material-symbols-outlined">groups</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Staff -->
-      <div class="col-xl-3 col-md-6 col-6 mb-4" @click="showchart = 'staff'">
-        <div
-          class="card border-left-success shadow h-100 py-2"
-          :class="{ 'box-active': showchart == 'staff' }"
-        >
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div
-                  class="text-xs font-weight-bold text-success text-uppercase mb-1"
-                >
-                  Nhân viên
-                </div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">20</div>
-              </div>
-              <div class="col-auto">
-                <span class="material-symbols-outlined">support_agent</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Appointment -->
-      <div
-        class="col-xl-3 col-md-6 col-6 mb-4"
-        @click="showchart = 'appointment'"
-      >
-        <div
-          class="card border-left-info shadow h-100 py-2"
-          :class="{ 'box-active': showchart == 'appointment' }"
-        >
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div
-                  class="text-xs font-weight-bold text-info text-uppercase mb-1"
-                >
-                  Lịch hẹn
-                </div>
-                <div class="row no-gutters align-items-center">
-                  <div class="col-auto">
-                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                      50%
-                    </div>
-                  </div>
-                  <div class="col">
-                    <!-- Thanh trạng thái % -->
-                    <div class="progress progress-sm mr-2">
-                      <div
-                        class="progress-bar bg-info"
-                        role="progressbar"
-                        style="width: 50%"
-                        aria-valuenow="50"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Request -->
-      <div class="col-xl-3 col-md-6 col-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div
-                  class="text-xs font-weight-bold text-warning text-uppercase mb-1"
-                >
-                  Pending Requests
-                </div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-comments fa-2x text-gray-300"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Box -->
+    <Box
+      :showchart="showchart"
+      @Chart="
+        (value) => {
+          showchart = value;
+        }
+      "
+    ></Box>
 
     <!-- search, select, take care -->
     <div class="row ml-2 justify-content-between" v-if="detail">
-      <div class="col-6 row">
+      <div class="col-5 row">
         <Select
-          class="col-2"
+          class="col-md-2 col-4"
           :options="[
             {
               name: 5,
@@ -501,22 +375,25 @@ export default {
           :entryValue="data.entryValue"
         />
         <Search
-          class="col-6"
+          class="col-md-6 col-8"
+          :class="col"
           @update:searchText="(value) => (data.searchText = value)"
         />
       </div>
       <!-- @click="showCustomer" -->
-      <div class="col-6 row justify-content-end mr-3">
+      <div class="col-7 row justify-content-end mr-2">
         <button
-          class="btn"
+          class="btn col-md-3 col-6 pad"
           :class="{ 'btn-primary': !takeCare }"
           @click="takeCare = !takeCare"
+          v-if="showchart == 'appointment'"
         >
           Chưa chăm sóc</button
         ><button
-          class="btn"
+          class="btn col-md-3 col-6 pad"
           :class="{ 'btn-primary': takeCare }"
           @click="takeCare = !takeCare"
+          v-if="showchart == 'appointment'"
         >
           Đã chăm sóc
         </button>
@@ -580,7 +457,13 @@ select {
   border: 1px solid #b8c2cc;
   font-size: 16px;
 }
-.box-active {
-  background: #fdf3f4;
+
+.pad {
+  padding: 1px;
+}
+@media screen and (max-width: 739px) {
+  apexchart {
+    width: 500px;
+  }
 }
 </style>

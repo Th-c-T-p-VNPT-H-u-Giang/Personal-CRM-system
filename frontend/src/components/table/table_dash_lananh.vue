@@ -71,7 +71,7 @@ export default {
           >
             {{ item[label] }}
           </td>
-          <td v-if="activeAction == true">
+          <td v-if="activeAction == true" class="bet">
             <span id="appointment" class="material-symbols-outlined">
               acute
             </span>
@@ -137,7 +137,15 @@ export default {
 @media screen and (max-width: 739px) {
   #mail {
     margin-right: 0 !important;
-    margin-left: 8px !important;
+    margin-left: 0 !important;
+  }
+  #mail,
+  #appointment {
+    margin: 2px auto;
+    text-align: center;
+  }
+  .bet {
+    text-align: center;
   }
 }
 </style>
