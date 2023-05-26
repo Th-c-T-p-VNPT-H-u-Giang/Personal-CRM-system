@@ -29,6 +29,7 @@ export default {
       default: false,
     },
     name_id: { type: String },
+    takecare: { type: Boolean },
   },
   setup(props, ntx) {
     const router = useRouter();
@@ -48,7 +49,13 @@ export default {
         <tr>
           <th></th>
           <th>STT</th>
-          <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
+          <th
+            v-for="(value, index) in fields"
+            :key="index"
+            :class="{ none: value == 'Ngày hẹn' && takecare }"
+          >
+            {{ value }}
+          </th>
           <th v-if="activeAction == true">Thao tác</th>
         </tr>
       </thead>
@@ -67,7 +74,8 @@ export default {
           <td
             v-for="(label, index1) in labels"
             :key="index1"
-            style="overflow-wrap;: break-word;"
+            :class="{ none: label == 'app_day' && takecare }"
+            style="overflow-wrap: break-word"
           >
             {{ item[label] }}
           </td>
@@ -93,6 +101,9 @@ export default {
 .my-table {
   width: 100%;
   border-collapse: collapse;
+}
+.none {
+  display: none;
 }
 
 .border-table-all {

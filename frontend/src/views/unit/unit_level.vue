@@ -47,18 +47,22 @@ export default {
     });
     const data = ref({});
     data.value = data_copy;
+    // newData dùng để gửi props
     const newData = reactive({
       lev_id: "",
       uni_id: "",
       uni_name: "",
       uni: "",
     });
+    // Dùng để show các cấp và thêm
     const levels = reactive([
       { lev_id: 1, lev_name: "Tổng công ty VNPT " },
       { lev_id: 2, lev_name: "Phòng" },
     ]);
     const { showSuccess } = Swal();
+
     // computed
+    // Pag
     const toString = computed(() => {
       console.log("Starting search");
       return data.value.items.map((value, index) => {
@@ -102,17 +106,20 @@ export default {
       });
     });
 
+    // nhận emit từ table và hiện modal chỉnh sửa
     const getUnit = async (value_id) => {
       document.getElementById("model-add").style.display = "block";
       newData.uni_id = value_id;
       newData.uni = "update";
     };
+    // làm rỗng newData
     const emptyNewData = () => {
       newData["lev_id"] = "";
       newData["uni_id"] = "";
       newData["uni_name"] = "";
       newData["uni"] = "";
     };
+    // Thêm mới hoặc cập nhật
     const addOrUpdateLevel = () => {
       if (newData.uni == "update") {
         console.log("UPDATE THU NGHIEM", newData.uni_id);
@@ -125,11 +132,11 @@ export default {
         showSuccess();
       }
     };
+    // Xóa đơn vị
     const onDelete = (data) => {
       swal
         .fire({
           title: "Do you want to delete the level?",
-          // showDenyButton: true,
           showCancelButton: true,
           confirmButtonText: "Delete",
           confirmButtonColor: "#cc0000",
@@ -148,10 +155,10 @@ export default {
     };
 
     const params = ref({});
-    computed(() => {
-      console.log("params", data.value.searchText);
-      return data.value.searchText;
-    });
+    // computed(() => {
+    //   console.log("params", data.value.searchText);
+    //   return data.value.searchText;
+    // });
     // const data_root = ref({});
     // data_root.value = data_copy;
     const getUnitofLevel = (id) => {
@@ -308,6 +315,7 @@ export default {
       :totalRow="data.totalRow"
       :startRow="data.startRow"
       :endRow="data.endRow"
+      :currentPage="data.currentPage"
       @updateCurrentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />

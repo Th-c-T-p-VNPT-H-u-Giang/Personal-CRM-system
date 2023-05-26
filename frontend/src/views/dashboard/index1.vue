@@ -77,16 +77,6 @@ export default {
     const overview = ref(true);
     const detail = ref(false);
     const takeCare = ref(false);
-    const showCustomer = () => {
-      takeCare.value = !takeCare.value;
-      if (takeCare.value) {
-        console.log("customer taked");
-        data.items = [];
-      } else {
-        console.log("customer untaked");
-        data.items = [];
-      }
-    };
     // Chart
     const selectedOption = ref("week");
     const customerChart = ref(false);
@@ -96,57 +86,7 @@ export default {
     const chartOptions = ref({});
     const dataChart = reactive({ data: [] });
     const chartSeries = ref([]);
-    dataChart.data.push(
-      [30, 40, 45, 50, 49, 60, 70],
-      [10, 50, 65, 20, 19, 65, 72]
-    );
-    const show = (nameChart, cycle) => {
-      if (nameChart == "customer") {
-        switch (cycle) {
-          case "week": {
-            console.log("weak+customer");
-            dataChart.data[0] = [10, 40, 45, 50, 49, 60, 70];
-            console.log(dataChart.data[0]);
-            break;
-          }
-          case "month": {
-            console.log("month+customer");
-
-            break;
-          }
-        }
-      } else if (nameChart == "staff") {
-        switch (cycle) {
-          case "weak": {
-            console.log("weak+staff");
-            break;
-          }
-          case "month": {
-            console.log("month+staff");
-            break;
-          }
-        }
-      } else if (nameChart == "appointment") {
-        switch (cycle) {
-          case "week": {
-            console.log("weak+appointment");
-            dataChart.data[0] = [10, 40, 45, 50, 49, 60, 70];
-            dataChart.data[1] = [10, 70, 65, 50, 49, 23, 104];
-            break;
-          }
-          case "month": {
-            console.log("month+appointment");
-            break;
-          }
-        }
-      }
-    };
-    // watch select_option
-    watch([selectedOption], ([newValue1, oldValue1]) => {
-      console.log("Dropdown value changed:", newValue1);
-      show(showchart.value, newValue1);
-    });
-
+    dataChart.data.push([1, 4, 5, 5, 9, 6, 8], [2, 7, 5, 5, 4, 3, 10]);
     chartOptions.value = {
       chart: {
         id: "basic-bar",
@@ -176,11 +116,60 @@ export default {
         data: dataChart.data[1],
       },
     ];
+
+    const show = (nameChart, cycle) => {
+      console.log("show");
+      if (nameChart == "customer") {
+        switch (cycle) {
+          case "week": {
+            console.log("week+customer");
+            dataChart.data[0] = [1, 40, 45, 50, 49, 60, 70];
+            dataChart.data[1] = [1, 40, 45, 50, 49, 60, 70];
+            break;
+          }
+          case "month": {
+            console.log("month+customer");
+            break;
+          }
+        }
+      } else if (nameChart == "staff") {
+        switch (cycle) {
+          case "weak": {
+            console.log("weak+staff");
+            break;
+          }
+          case "month": {
+            console.log("month+staff");
+            break;
+          }
+        }
+      } else if (nameChart == "appointment") {
+        switch (cycle) {
+          case "week": {
+            console.log("weak+appointment");
+            dataChart.data[0] = [1, 4, 5, 5, 9, 6, 8];
+            dataChart.data[1] = [2, 7, 5, 5, 4, 3, 10];
+            break;
+          }
+          case "month": {
+            console.log("month+appointment");
+            dataChart.data[0] = [15, 4, 5, 5, 9, 6, 8];
+            dataChart.data[1] = [2, 7, 5, 5, 4, 3, 10];
+            break;
+          }
+        }
+      }
+    };
+
+    // watch select_option
+    watch([selectedOption], ([newValue1, oldValue1]) => {
+      console.log("Dropdown value changed:", newValue1);
+      show(showchart.value, newValue1);
+    });
     // **watch datachart
     watch(dataChart, (newValue, oldValue) => {
       // Gọi phương thức cập nhật biểu đồ khi dữ liệu thay đổi
-      console.log("newvalue:", newValue, ":", dataChart.data[0]);
-      console.log("Showchart", showchart.value);
+      console.log("Data chart", newValue, ":", dataChart.data);
       if (showchart.value == "customer") {
         chartOptions.value = {
           chart: {
@@ -190,13 +179,16 @@ export default {
           xaxis: {
             categories: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
           },
-          colors: ["rgb(255, 99, 132)"],
+          colors: ["rgb(255, 99, 132)", "#3300cc"],
         };
-
         chartSeries.value = [
           {
-            name: "Khách hàng mới",
-            data: newValue[0],
+            name: "vip",
+            data: dataChart.data[0],
+          },
+          {
+            name: "thường",
+            data: dataChart.data[1],
           },
         ];
       } else if (showchart.value == "appointment") {
@@ -224,10 +216,12 @@ export default {
         ];
       }
     });
+    // watch showchart<=>namechart
     watch(showchart, (newValue, oldValue) => {
       console.log(showchart.value);
       show(showchart.value, selectedOption.value);
     });
+
     watch(takeCare, (newValue, oldValue) => {
       console.log("takecare", newValue);
     });
@@ -282,7 +276,6 @@ export default {
       setPages,
       selectedOption,
       showchart,
-      showCustomer,
       customerChart,
       staffChart,
       appointmentChart,
@@ -380,7 +373,7 @@ export default {
           @update:searchText="(value) => (data.searchText = value)"
         />
       </div>
-      <!-- @click="showCustomer" -->
+      <!-- btn:showCustomer -->
       <div class="col-7 row justify-content-end mr-2">
         <button
           class="btn col-md-3 col-6 pad"
@@ -411,13 +404,15 @@ export default {
         <h4 class="text-center my-2">Danh sách khách hàng</h4>
         <Table
           :items="setPages"
-          :fields="['Mã khách hàng', 'Họ tên ', 'Ngày', 'Nội dung']"
+          :fields="['Mã khách hàng', 'Họ tên ', 'Ngày', 'Nội dung', 'Ngày hẹn']"
           :labels="[
             'cus_id',
             'cus_name',
             'tas_service_day',
             'tas_service_content',
+            'app_day',
           ]"
+          :takecare="takeCare"
           @update="getUnit"
           @onDelete="onDelete"
           @detail="detail"
@@ -429,6 +424,7 @@ export default {
           :totalRow="data.totalRow"
           :startRow="data.startRow"
           :endRow="data.endRow"
+          :currentPage="data.currentPage"
           @updateCurrentPage="(value) => (data.currentPage = value)"
           class="mx-3"
         />
@@ -460,10 +456,5 @@ select {
 
 .pad {
   padding: 1px;
-}
-@media screen and (max-width: 739px) {
-  apexchart {
-    width: 500px;
-  }
 }
 </style>

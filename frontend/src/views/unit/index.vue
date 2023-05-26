@@ -245,6 +245,7 @@ export default {
       :totalRow="data.totalRow"
       :startRow="data.startRow"
       :endRow="data.endRow"
+      :currentPage="data.currentPage"
       @updateCurrentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
