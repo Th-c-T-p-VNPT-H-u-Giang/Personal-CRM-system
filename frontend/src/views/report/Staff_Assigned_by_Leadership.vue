@@ -66,18 +66,16 @@
       <TableRp
         :items="setPages"
         :fields="[
-          'Khách Hàng',
-          'Loại Khách Hàng',
           'Nhân Viên',
-          'Ngày Bắt Đầu',
-          'Ngày Kết Thúc',
+          'Chức Vụ',
+          'Phòng Ban',
+          'Lãnh Đạo'
         ]"
         :labels="[
-          'customers',
-          'customerstype',
           'staff',
-          'startdate',
-          'enddate',
+          'position',
+          'unit',
+          'leader',
         ]"
         @visibility="
           (value, value1) => (
@@ -96,7 +94,7 @@
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
-    <Viewpc
+    <ViewRp
       :item="data.viewValue"
       :class="[data.activeView ? 'show-modal' : 'd-none']"
       @cancel="data.activeView = false"
@@ -110,40 +108,43 @@ import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import { reactive, computed } from "vue";
 import jsPDF from "jspdf"; //in
+import ViewRp from "./View_qlnv.vue";
 import "jspdf-autotable";
 import fontFile from "../../assets/arial.ttf";
-import Viewpc from "./View.vue";
 export default {
   components: {
     TableRp,
     Pagination,
     Select,
     Search,
-    Viewpc,
+    ViewRp,
   },
   setup(ctx) {
     const data = reactive({
       items: [
         {
           _id: "1",
-          customers: "Trần Tuyết Mỹ",
-          customerstype: "VIP",
           staff: "Trương Thiết Long",
-          startdate: "20/09/2022",
-          enddate: "11/03/2025",
-          appointment:"Name:Service Advisory\nDate: June 1, 2023\nTime: 10:00 AM - 11:00 AM\nLocation: Office A",
-          content: "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+          position: "Nhân Viên IT",
+          unit: "Phòng IT",
+          leader: "Phan Văn Rở",
+          task: "Gọi điện, gửi email hoặc liên lạc trực tuyến với khách hàng.\nQuản lý thông tin khách hàng.\nGiải quyết khiếu nại.\nHỗ trợ kỹ thuật.\nTheo dõi phản hồi khách hàng."
         },
         {
           _id: "2",
-          customers: "Nguyễn Thị Vân Anh",
-          customerstype: "VIP",
-          staff: "Trương Thiết Long",
-          startdate: "20/02/2023",
-          enddate: "11/03/2024",
-          content: "Định kỳ gửi thông tin",
-          appointment:"Name:Service Advisory\nDate: June 1, 2023\nTime: 15:00 PM - 16:00 PM\nLocation: The Coffee House",
-          content: "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+          staff: "Trương Thiết Long1",
+          position: "Nhân Viên IT1",
+          unit: "Phòng IT1",
+          leader: "Phan Văn Rở1",
+          task: "Gọi điện, gửi email hoặc liên lạc trực tuyến với khách hàng.\nQuản lý thông tin khách hàng.\nGiải quyết khiếu nại.\nHỗ trợ kỹ thuật.\nTheo dõi phản hồi khách hàng."
+        },
+        {
+          _id: "3",
+          staff: "Trương Thiết Long3",
+          position: "Nhân Viên IT3",
+          unit: "Phòng IT3",
+          leader: "Phan Văn Rở3",
+          task: "Gọi điện, gửi email hoặc liên lạc trực tuyến với khách hàng.\nQuản lý thông tin khách hàng.\nGiải quyết khiếu nại.\nHỗ trợ kỹ thuật.\nTheo dõi phản hồi khách hàng."
         },
       ],
       entryValue: 5,
@@ -153,8 +154,10 @@ export default {
       endRow: 0,
       currentPage: 1,
       searchText: "",
-      activeMenu: 1,
+      activeMenu: 2,
     });
+
+    // ...
 
     const printReport = () => {
       const doc = new jsPDF();
@@ -162,11 +165,10 @@ export default {
       // Define the column headers
       const columns = [
         { header: "ID", dataKey: "id" },
-        { header: "Khách hàng", dataKey: "customers" },
-        { header: "Loại khách hàng", dataKey: "customerstype" },
-        { header: "Nhân viên", dataKey: "staff" },
-        { header: "Ngày bắt đầu", dataKey: "startdate" },
-        { header: "Ngày kết thúc", dataKey: "enddate" },
+        { header: "Nhân Viên", dataKey: "staff" },
+        { header: "Chức Vụ", dataKey: "position" },
+        { header: "Phòng Ban", dataKey: "unit" },
+        { header: "Lãnh Đạo", dataKey: "leader" },
       ];
       doc.setFont("Arial"); // Set the active font
       doc.setFontSize(12);
@@ -189,7 +191,7 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.customers].join("").toLocaleLowerCase();
+        return [value.staff].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -225,6 +227,7 @@ export default {
         );
       });
     });
+
     return {
       data,
       setPages,

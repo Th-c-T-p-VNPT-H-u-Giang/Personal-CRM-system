@@ -101,12 +101,13 @@ const routes = [
     name: 'Report',
     component: () => import('../views/report/index.vue'),
   },
-  //view ReportAssignedStaff
+  // report Staff assigned by learder 
   {
-    path: '/view/:id',
-    name: 'RpAssignedStaff',
-    component: () => import('../views/report/view.vue'),
-  }, 
+    path: '/staffassignedbyleader',
+    name: 'StaffAssignedByLeader',
+    component: () => import('../views/report/Staff_Assigned_by_Leadership.vue'),
+  },
+ 
   // Setting
   {
     path: '/setting',
