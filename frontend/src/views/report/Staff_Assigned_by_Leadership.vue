@@ -6,17 +6,16 @@
         @click="data.activeMenu = 1"
         :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
         href="./report"
-        >Báo Cáo Phân Công</a
+        >Phân Công</a
       >
-    </div>
-    <div class="d-flex menu my-3 mx-3 justify-content-end">
       <a
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         href="./staffassignedbyleader"
-        >Nhân Viên Do Lãnh Đạo Phụ Trách</a
+        >Lãnh Đạo</a
       >
     </div>
+   
     <!-- Filter -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
