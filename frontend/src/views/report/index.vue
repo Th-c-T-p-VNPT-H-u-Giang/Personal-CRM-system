@@ -192,7 +192,66 @@ export default {
           staff: "Trương Thiết Long",
           startdate: "20/02/2023",
           enddate: "11/03/2024",
-          content: "Định kỳ gửi thông tin",
+          appointment:
+            "Name:Service Advisory\nDate: June 1, 2023\nTime: 15:00 PM - 16:00 PM\nLocation: The Coffee House",
+          content:
+            "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+        },
+        {
+          _id: "3",
+          customers: "Nguyễn Hải Yến",
+          customerstype: "VIP",
+          staff: "Trương Thiết Long",
+          startdate: "10/01/2023",
+          enddate: "11/03/2024",
+          appointment:
+            "Name:Service Advisory\nDate: June 1, 2023\nTime: 15:00 PM - 16:00 PM\nLocation: The Coffee House",
+          content:
+            "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+        },
+        {
+          _id: "3",
+          customers: "Nguyễn Trung Tín",
+          customerstype: "VIP",
+          staff: "Trương Thiết Long",
+          startdate: "10/01/2023",
+          enddate: "11/03/2024",
+          appointment:
+            "Name:Service Advisory\nDate: June 1, 2023\nTime: 15:00 PM - 16:00 PM\nLocation: The Coffee House",
+          content:
+            "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+        },
+        {
+          _id: "4",
+          customers: "Trần An Đông",
+          customerstype: "VIP",
+          staff: "Trương Thiết Long",
+          startdate: "10/01/2023",
+          enddate: "11/03/2024",
+          appointment:
+            "Name:Service Advisory\nDate: June 1, 2023\nTime: 15:00 PM - 16:00 PM\nLocation: The Coffee House",
+          content:
+            "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+        },
+        {
+          _id: "5",
+          customers: "Nguyễn Tiến Lộc",
+          customerstype: "VIP",
+          staff: "Trương Thiết Long",
+          startdate: "10/01/2023",
+          enddate: "11/03/2024",
+          appointment:
+            "Name:Service Advisory\nDate: June 1, 2023\nTime: 15:00 PM - 16:00 PM\nLocation: The Coffee House",
+          content:
+            "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+        },
+        {
+          _id: "6",
+          customers: "Trần Đăng Khoa",
+          customerstype: "VIP",
+          staff: "Trương Thiết Long",
+          startdate: "10/01/2023",
+          enddate: "11/03/2024",
           appointment:
             "Name:Service Advisory\nDate: June 1, 2023\nTime: 15:00 PM - 16:00 PM\nLocation: The Coffee House",
           content:

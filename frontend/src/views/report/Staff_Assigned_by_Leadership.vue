@@ -98,6 +98,57 @@
       :class="[data.activeView ? 'show-modal' : 'd-none']"
       @cancel="data.activeView = false"
     />
+    <div class="container pdf-content" v-show="true" ref="pdfContent">
+      <img
+        src="../../assets/images/vnpt-logo1.png"
+        class="rounded-circle"
+        alt="Cinque Terre"
+        style="height: 70px"
+      />
+      <div class="d-flex justify-content-between mt-4">
+        <p class="text-center ml-4 font-weight-bold">VNPT Hậu Giang</p>
+        <div class="text-center font-weight-bold" style="margin-top: -40px">
+          <p>CỘNG HÒA XÃ HỘI CHỦ NGHỈA VIỆT NAM</p>
+          <p>Độc lập - Tự do - Hạnh phúc</p>
+          <p>-----------------</p>
+        </div>
+      </div>
+      <div class="float-right">
+        <p>....ngày....tháng....năm</p>
+      </div>
+      <div class="text-center mt-4 font-weight-bold">
+        <h3 class="font-weight-bold">Báo Cáo Quản Lý Nhân Viên Do Lãnh Đạo Phụ Trách</h3>
+      </div>
+      <div class="">
+        <span>Họ tên</span>
+        <br />
+        <span>Chức vụ</span>
+        <br />
+        <span>Bộ phận công tác</span>
+      </div>
+      <table class="table table-bordered mt-4">
+        <thead>
+          <tr>
+            <th v-for="(value, index) in data.fields" :key="index">{{ value }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in data.items" :key="index">
+            <td>{{ item._id }}</td>
+            <td>{{ item.staff }}</td>
+            <td>{{ item.position }}</td>
+            <td>{{ item.unit }}</td>
+            <td>{{ item.leader }}</td>
+            <!-- <td>{{ item.task }}</td> -->
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="d-flex justify-content-around mt-4">
+        <p>Phụ trách bộ phận</p>
+        <p>Người Báo Cáo</p>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -105,11 +156,12 @@ import TableRp from "../../components/table/table_rp_long.vue";
 import Pagination from "../../components/table/pagination_duy.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
-import { reactive, computed } from "vue";
+import { reactive, computed, ref } from "vue";
 import jsPDF from "jspdf"; //in
+import html2canvas from "html2canvas";
 import ViewRp from "./View_qlnv.vue";
-import "jspdf-autotable";
-import fontFile from "../../assets/arial.ttf";
+// import "jspdf-autotable";
+// import fontFile from "../../assets/arial.ttf";
 export default {
   components: {
     TableRp,
@@ -154,37 +206,41 @@ export default {
       currentPage: 1,
       searchText: "",
       activeMenu: 2,
+      fields: ['ID', 'Nhân Viên', 'Chức Vụ', 'Phòng Ban', 'Lãnh Đạo Phụ Trách'],
     });
 
     // ...
 
-    const printReport = () => {
-      const doc = new jsPDF();
-      doc.addFont(fontFile, "Arial", "normal");
-      // Define the column headers
-      const columns = [
-        { header: "ID", dataKey: "id" },
-        { header: "Nhân Viên", dataKey: "staff" },
-        { header: "Chức Vụ", dataKey: "position" },
-        { header: "Phòng Ban", dataKey: "unit" },
-        { header: "Lãnh Đạo", dataKey: "leader" },
-      ];
-      doc.setFont("Arial"); // Set the active font
-      doc.setFontSize(12);
-      doc.autoTable({
-        head: [columns.map((col) => col.header)],
-        body: data.items.map((item) => Object.values(item)),
-        startY: 20,
-        styles: {
-          font: "Arial",
-          fontSize: 12,
-        },
-      });
-      // Save the PDF file
-      doc.save("vietnamese_table.pdf");
-    };
+    const pdfContent = ref(null);
 
-    // ...
+    const printReport = async () => {
+      const doc = new jsPDF();
+
+      if (pdfContent.value) {
+        const content = pdfContent.value;
+
+        // Chuyển đổi nội dung HTML thành ảnh sử dụng html2canvas
+        html2canvas(content).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+
+          // Đợi cho hình ảnh tải hoàn toàn trước khi thêm vào tài liệu PDF
+          const image = new Image();
+          image.onload = function () {
+            // Tạo tài liệu PDF và thêm ảnh vào
+            const imgWidth = 210; // Đặt chiều rộng ảnh bằng chiều rộng trang A4
+                const imgHeight = (canvas.height * imgWidth) / canvas.width; // Tính toán chiều cao dựa trên tỷ lệ
+
+                doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight); // Đặt kích thước ảnh là kích thước trang PDFF
+
+            // Tải xuống tệp PDF
+            doc.save("demo.pdf");
+          };
+
+          // Thiết lập nguồn dữ liệu cho hình ảnh và kích hoạt sự kiện onload
+          image.src = imgData;
+        });
+      }
+    };
 
     // computed
     const toString = computed(() => {
@@ -231,12 +287,18 @@ export default {
       data,
       setPages,
       printReport,
+      pdfContent,
     };
   },
 };
 </script>
 
 <style scoped>
+.pdf-content {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
 .border-box {
   border: 1px solid var(--gray);
   border-radius: 5px;
