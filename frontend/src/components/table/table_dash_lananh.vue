@@ -38,7 +38,6 @@ export default {
   },
 };
 </script>
-
 <template>
   <div>
     <table
@@ -47,12 +46,11 @@ export default {
     >
       <thead>
         <tr>
-          <th></th>
           <th>STT</th>
           <th
             v-for="(value, index) in fields"
             :key="index"
-            :class="{ none: value == 'Ngày hẹn' && takecare }"
+            :class="{ none: value == 'Lịch hẹn' && takecare }"
           >
             {{ value }}
           </th>
@@ -61,28 +59,16 @@ export default {
       </thead>
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
-          <td>
-            <input
-              :checked="item.delete"
-              v-model="item.delete"
-              type="checkbox"
-              name=""
-              id=""
-            />
-          </td>
           <td>{{ index + 1 }}</td>
           <td
             v-for="(label, index1) in labels"
             :key="index1"
+            style="overflow-wrap;: break-word;"
             :class="{ none: label == 'app_day' && takecare }"
-            style="overflow-wrap: break-word"
           >
             {{ item[label] }}
           </td>
           <td v-if="activeAction == true" class="bet">
-            <span id="appointment" class="material-symbols-outlined">
-              acute
-            </span>
             <span id="mail" class="material-symbols-outlined mx-2"> mail </span>
             <!-- <span id="phone" class="material-symbols-outlined">
               phone_in_talk
@@ -101,9 +87,6 @@ export default {
 .my-table {
   width: 100%;
   border-collapse: collapse;
-}
-.none {
-  display: none;
 }
 
 .border-table-all {
@@ -158,5 +141,8 @@ export default {
   .bet {
     text-align: center;
   }
+}
+.none {
+  display: none;
 }
 </style>

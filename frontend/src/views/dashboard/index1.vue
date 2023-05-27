@@ -225,6 +225,28 @@ export default {
     watch(takeCare, (newValue, oldValue) => {
       console.log("takecare", newValue);
     });
+    const chartOptions1 = ref({
+      chart: {
+        type: "pie",
+      },
+      labels: ["Khách vip", "Khách thường"],
+      series: [],
+      colors: ["#9FD7F9", "#3300cc"],
+      // Đặt màu sắc tại đây
+    });
+
+    const chartSeries1 = ref([10, 90]);
+
+    const chartOptions2 = ref({
+      chart: {
+        type: "pie",
+      },
+      labels: ["Chưa phân công", "Đã phân công"],
+      series: [],
+      colors: ["#FFDD94", "#FD8F52"], // Đặt màu sắc tại đây
+    });
+
+    const chartSeries2 = ref([30, 70]);
     onMounted(() => {
       data.items = [
         {
@@ -279,16 +301,22 @@ export default {
       customerChart,
       staffChart,
       appointmentChart,
+      chartOptions1,
+      chartSeries1,
+      chartOptions2,
+      chartSeries2,
     };
   },
 };
 </script>
 <template>
-  <div class="border-box">
+  <div class="border-box ml-1">
     <!-- select_option - overview+detail -->
     <div class="m-3 d-flex menu justify-content-end">
       <!-- select cycles -->
       <SelectOption
+        class="p-1"
+        v-if="showchart == 'appointment'"
         :field="[
           { name: 'Tuần', value: 'week' },
           { name: 'Tháng', value: 'month' },
@@ -299,9 +327,9 @@ export default {
           }
         "
       ></SelectOption>
-      <div class="">
+      <div>
         <button
-          class="btn m-0"
+          class="btn"
           :class="{ 'btn-primary': overview }"
           @click="
             () => {
@@ -392,19 +420,34 @@ export default {
         </button>
       </div>
     </div>
-    <div class="mb-5 mx-2">
+    <div class="mb-5">
       <apexchart
         :options="chartOptions"
         :series="chartSeries"
-        v-if="overview"
+        v-if="overview && showchart == 'appointment'"
         height="400"
       />
-
-      <div v-if="detail" class="mx-2">
+      <div class="row">
+        <apexchart
+          class="col-md-6 col-12"
+          :options="chartOptions1"
+          :series="chartSeries1"
+          v-if="overview && showchart == 'customer'"
+          height="400"
+        />
+        <apexchart
+          class="col-md-6 col-12"
+          :options="chartOptions2"
+          :series="chartSeries2"
+          v-if="overview && showchart == 'customer'"
+          height="400"
+        />
+      </div>
+      <div v-if="detail" class="">
         <h4 class="text-center my-2">Danh sách khách hàng</h4>
         <Table
           :items="setPages"
-          :fields="['Mã khách hàng', 'Họ tên ', 'Ngày', 'Nội dung', 'Ngày hẹn']"
+          :fields="['Mã khách hàng', 'Họ tên ', 'Ngày', 'Nội dung', 'Lịch hẹn']"
           :labels="[
             'cus_id',
             'cus_name',

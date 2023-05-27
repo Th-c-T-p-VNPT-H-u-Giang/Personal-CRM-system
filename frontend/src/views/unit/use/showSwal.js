@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 export default function () {
   const showSuccess = () => {
     Swal.fire({
-      title: "Success",
+      title: "Thành công",
       icon: "success",
       confirmButtonText: "OK",
       showCloseButton: true,
@@ -11,7 +11,7 @@ export default function () {
   };
   const showDelete = () => {
     Swal.fire({
-      title: "Do you want to delete the level?",
+      title: "Bạn có muốn xóa?",
       // showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: "Delete",
