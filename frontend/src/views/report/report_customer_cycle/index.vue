@@ -44,68 +44,41 @@
       <div class="d-flex justify-content-start">
         <Select
           class="d-flex justify-content-start"
-          :options="[
-            {
-              name: 5,
-              value: 5,
-            },
-            {
-              name: 10,
-              value: 10,
-            },
-            {
-              name: 20,
-              value: 20,
-            },
-            {
-              name: 30,
-              value: 30,
-            },
-            {
-              name: 'All',
-              value: 'All',
-            },
-          ]"
+          :options="options"
           @update:entryValue="(value) => (data.entryValue = value)"
           :entryValue="data.entryValue"
         />
         <Search
           class="ml-3"
           style="width: 300px"
-          @update:searchText="(value) => (data.searchText = value)"
+          @update:searchText="handleUpdateSearchText"
         />
       </div>
       <div class="d-flex align-items-start">
+        <button class="btn btn-warning">
+          <span id="delete-all" class="mx-2">Mail</span>
+        </button>
         <button
           type="button"
-          class="btn btn-primary"
-          @click="handlePrintReport"
+          class="btn btn-primary mx-2"
+          @click="handlePrintData"
         >
           <span id="printrp" class="mx-2">In</span>
         </button>
       </div>
     </div>
     <!-- Table -->
-    <div id="table-rp">
-      <TableRp
-        :items="setPages"
-        :fields="[
-          'Khách Hàng',
-          'Loại Khách Hàng',
-          'Nhân Viên',
-          'Ngày Bắt Đầu',
-          'Ngày Kết Thúc',
-        ]"
-        :labels="[
-          'customers',
-          'customerstype',
-          'staff',
-          'startdate',
-          'enddate',
-        ]"
-      />
-    </div>
-    <!-- Pagination -->
+    <table-phuc-report
+      :items="setPages"
+      :fields="[
+        'Họ và tên khách hàng',
+        'Họ và tên nhân viên',
+        'Ngày',
+        'Chu kì',
+      ]"
+      :labels="['nameCT', 'nameEM', 'date', 'cycle']"
+      :isCumtomerCycle="true"
+    />
     <pagination-phuc
       :numberOfPages="data.numberOfPages"
       :totalRow="data.totalRow"
@@ -135,7 +108,10 @@
         <p>....ngày....tháng....năm</p>
       </div>
       <div class="text-center mt-4 font-weight-bold">
-        <h3 class="font-weight-bold">Báo Cáo <br> Danh Sách Khách Hàng Thuộc Nhân Viên Phụ Trách</h3>
+        <h3 class="font-weight-bold">
+          Báo Cáo <br />
+          Danh Sách Khách Hàng Tới Chu Kì Nhưng Chưa Chăm Sóc
+        </h3>
       </div>
       <div class="">
         <span>Họ tên</span>
@@ -155,11 +131,10 @@
         <tbody>
           <tr v-for="(item, index) in data.items" :key="index">
             <td>{{ item._id }}</td>
-            <td>{{ item.customers }}</td>
-            <td>{{ item.customerstype }}</td>
-            <td>{{ item.staff }}</td>
-            <td>{{ item.startdate }}</td>
-            <td>{{ item.enddate }}</td>
+            <td>{{ item.nameCT }}</td>
+            <td>{{ item.nameEM }}</td>
+            <td>{{ item.date }}</td>
+            <td>{{ item.cycle }}</td>
           </tr>
         </tbody>
       </table>
@@ -171,60 +146,91 @@
     </div>
   </div>
 </template>
-<script>
-import { reactive, computed, ref } from "vue";
-import { useRouter } from "vue-router";
-import TableRp from "../../../components/table/table_rp_long.vue";
-import PaginationPhuc from "../../../components/table/pagination-phuc.vue";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
-import Select from "../../../components/form/select.vue";
-import Search from "../../../components/form/search.vue";
 
+<script>
+import jsPDF from "jspdf"; //in
+import html2canvas from "html2canvas";
+
+import { reactive, computed, ref } from "vue";
+import Select from "../../../components/form/select.vue";
+import PaginationPhuc from "../../../components/table/pagination-phuc.vue";
+import Search from "../../../components/form/search.vue";
+import TablePhucReport from "../../../components/table/table-phuc-report.vue";
 export default {
   components: {
-    TableRp,
-    PaginationPhuc,
     Select,
+    PaginationPhuc,
     Search,
+    TablePhucReport,
   },
-  setup(ctx) {
-    const labels = [
-      'STT',
-      'Tên khách hàng',
-      'Loại khách hàng',
-      'Tên nhân viên',
-      'Ngày bắt đầu',
-      'Ngầy kết thúc'
-    ]
+  setup() {
+    const options = [
+      {
+        name: 5,
+        value: 5,
+      },
+      {
+        name: 10,
+        value: 10,
+      },
+      {
+        name: 20,
+        value: 20,
+      },
+      {
+        name: 30,
+        value: 30,
+      },
+      {
+        name: "All",
+        value: "All",
+      },
+    ];
 
-
+    const labels = ["STT", "Tên khách hàng", "Tên nhân viên", "Ngày", "Chu kì"];
     const data = reactive({
       items: [
         {
           _id: "1",
-          customers: "Trần Tuyết Mỹ",
-          customerstype: "VIP",
-          staff: "Trương Thiết Long",
-          startdate: "20/09/2022",
-          enddate: "11/03/2025",
-          appointment:
-            "Name:Service Advisory\nDate: June 1, 2023\nTime: 10:00 AM - 11:00 AM\nLocation: Office A",
-          content:
-            "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+          nameCT: "Tran Tuan Duy",
+          nameEM: "Nguyen Van A",
+          date: "2023-01-01",
+          cycle: "Năm",
         },
         {
           _id: "2",
-          customers: "Nguyễn Thị Vân Anh",
-          customerstype: "VIP",
-          staff: "Trương Thiết Long",
-          startdate: "20/02/2023",
-          enddate: "11/03/2024",
-          content: "Định kỳ gửi thông tin",
-          appointment:
-            "Name:Service Advisory\nDate: June 1, 2023\nTime: 15:00 PM - 16:00 PM\nLocation: The Coffee House",
-          content:
-            "Theo dõi khách hàng\nChủ động phục vụ khách hàng\nCó chính sách ưu đãi cho khách hàng trung thành\nGiải quyết nhanh chóng khiếu nại của khách hàng",
+          nameCT: "Nguyen Lan Anh",
+          nameEM: "Nguyen Van A",
+          date: "2023-01-01",
+          cycle: "Năm",
+        },
+        {
+          _id: "3",
+          nameCT: "Nguyen Thi Thanh Truc",
+          nameEM: "Nguyen Van A",
+          date: "2023-01-01",
+          cycle: "Năm",
+        },
+        {
+          _id: "4",
+          nameCT: "Nguyen Ngoc Van Anh",
+          nameEM: "Nguyen Van B",
+          date: "2023-01-01",
+          cycle: "Tháng",
+        },
+        {
+          _id: "5",
+          nameCT: "Truong Thiet Long",
+          nameEM: "Nguyen Van B",
+          date: "2023-01-01",
+          cycle: "Tháng",
+        },
+        {
+          _id: "6",
+          nameCT: "Dang Van Phuc",
+          nameEM: "Nguyen Van B",
+          date: "2023-01-01",
+          cycle: "Tháng",
         },
       ],
       entryValue: 5,
@@ -234,44 +240,21 @@ export default {
       endRow: 0,
       currentPage: 1,
       searchText: "",
-      activeMenu: 1,
+      activeMenu: 0,
+      deleteValue: {
+        _id: "",
+        nameCT: "",
+        nameEM: "",
+        date: "",
+        cycle: "",
+      },
     });
-
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-
-      if (pdfContent.value) {
-        const content = pdfContent.value;
-
-        // Chuyển đổi nội dung HTML thành ảnh sử dụng html2canvas
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
-
-          // Đợi cho hình ảnh tải hoàn toàn trước khi thêm vào tài liệu PDF
-          const image = new Image();
-          image.onload = function () {
-            // Tạo tài liệu PDF và thêm ảnh vào
-            const imgWidth = 210; // Đặt chiều rộng ảnh bằng chiều rộng trang A4
-            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Tính toán chiều cao dựa trên tỷ lệ
-
-            doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight); // Đặt kích thước ảnh là kích thước trang PDFF
-
-            // Tải xuống tệp PDF
-            doc.save("BaoCaoKhachHangThuocNhanVienPhuTrach.pdf");
-          };
-
-          // Thiết lập nguồn dữ liệu cho hình ảnh và kích hoạt sự kiện onload
-          image.src = imgData;
-        });
-      }
-    };
 
     // computed
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.customers].join("").toLocaleLowerCase();
+        return [value.nameCT].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -307,24 +290,59 @@ export default {
         );
       });
     });
-    const router = useRouter();
 
-    const view = (_id) => {
-      console.log("view", _id);
-      router.push({ name: "ReportAssignmentView", params: { id: _id } });
+    // methods
+    const update = (item) => {
+      console.log("updating", item);
     };
+
+    const handleUpdateSearchText = (value) => {
+      data.searchText = value;
+    };
+
+    const pdfContent = ref(null);
+    const handlePrintData = () => {
+      const doc = new jsPDF();
+
+      if (pdfContent.value) {
+        const content = pdfContent.value;
+
+        // Chuyển đổi nội dung HTML thành ảnh sử dụng html2canvas
+        html2canvas(content).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+
+          // Đợi cho hình ảnh tải hoàn toàn trước khi thêm vào tài liệu PDF
+          const image = new Image();
+          image.onload = function () {
+            // Tạo tài liệu PDF và thêm ảnh vào
+            const imgWidth = 210; // Đặt chiều rộng ảnh bằng chiều rộng trang A4
+            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Tính toán chiều cao dựa trên tỷ lệ
+
+            doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight); // Đặt kích thước ảnh là kích thước trang PDFF
+
+            // Tải xuống tệp PDF
+            doc.save("BaoCaoDanhSachKhachHangToiCHuKiNhungChuaChamSoc.pdf");
+          };
+
+          // Thiết lập nguồn dữ liệu cho hình ảnh và kích hoạt sự kiện onload
+          image.src = imgData;
+        });
+      }
+    };
+
     return {
+      options,
       data,
       setPages,
-      view,
-      handlePrintReport,
+      handleUpdateSearchText,
+      handlePrintData,
+      labels,
       pdfContent,
-      labels
     };
   },
 };
 </script>
-  
+
 <style scoped>
 .pdf-content {
   position: absolute;
@@ -358,5 +376,13 @@ export default {
 
 .border-hr {
   border-top: 1px solid var(--gray);
+}
+
+.show-modal {
+  display: block;
+  opacity: 1;
+  background-color: var(--dark);
+  /* pointer-events: auto; */
+  z-index: 1;
 }
 </style>

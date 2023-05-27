@@ -9,7 +9,7 @@
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
-        <td>{{ item.id }}</td>
+        <td>{{ item.id || item._id}}</td>
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}
         </td>
@@ -19,7 +19,11 @@
               visibility
             </span>
           </button>
-          <view-report :item="viewData"/>
+          <!-- <view-report :item="viewData"/> -->
+          <view-modal v-if="isCustomerLongTime" :item="viewData" :isCustomerLongTime="true" :title="'Xem chi tiết thông tin khách hàng'"/>
+          <view-modal v-if="isCumtomerCycle" :item="viewData" :isCustomerCycle="true" :title="'Thông tin'"/>
+          <view-modal v-if="isLeaderCustomer" :item="viewData" :isLeaderCustomer="true" :title="'Thông tin khách hàng'"/>
+          <view-modal v-if="isLeaderStaff" :item="viewData" :isLeaderStaff="true" :title="'Thông tin nhân viên'"/>
           <span id="mail" class="material-symbols-outlined"> mail </span>
         </td>
       </tr>
@@ -31,12 +35,28 @@
   
 <script>
 import { ref } from 'vue';
-import ViewReport from '../../views/report/view-report.vue';
+import ViewModal from '../modal/view-modal.vue';
 
 
 export default {
-  components: {ViewReport  },
+  components: { ViewModal  },
   props: {
+    isCustomerLongTime: {
+      type: Boolean,
+      default: false,
+    },
+    isLeaderCustomer: {
+      type: Boolean,
+      default: false,
+    },
+    isLeaderStaff: {
+      type: Boolean,
+      default: false,
+    },
+    isCumtomerCycle: {
+      type: Boolean,
+      default: false,
+    },
     items: {
       type: Array,
       default: [],

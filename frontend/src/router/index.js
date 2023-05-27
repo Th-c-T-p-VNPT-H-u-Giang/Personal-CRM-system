@@ -99,18 +99,25 @@ const routes = [
     component: () =>
       import("../views/report/report_assignment_staff/index.vue"),
   },
-  // Report leader employee
+  // Report customer cycle
   {
-    path: "/report-leader-employee",
-    name: "ReportLeaderEmploy",
-    component: () => import("../views/report/leader/leader_employ/index.vue"),
+    path: "/report_customer_cycle",
+    name: "ReportCustomerCycle",
+    component: () => import("../views/report/report_customer_cycle/index.vue"),
   },
-  // Report leader customer
+  // Reporting customer is managed by the leader
   {
-    path: "/report-leader-customer",
+    path: "/report_leader_customer",
     name: "ReportLeaderCustomer",
     component: () => import("../views/report/leader/leader_customer/index.vue"),
   },
+  // Reporting staff is managed by the leader
+  {
+    path: "/report_leader_staff",
+    name: "ReportLeaderStaff",
+    component: () => import("../views/report/leader/leader_staff/index.vue"),
+  },
+
   // Setting
   {
     path: "/setting",

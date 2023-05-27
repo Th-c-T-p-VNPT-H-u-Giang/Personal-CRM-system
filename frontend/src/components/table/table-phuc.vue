@@ -1,5 +1,6 @@
 <template>
-  <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
+  <div class="table-responsive">
+    <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
     <thead>
       <tr>
         <th v-if="isCheckBox"></th>
@@ -31,6 +32,8 @@
       </tr>
     </tbody>
   </table>
+  </div>
+  
 </template>
   
 
