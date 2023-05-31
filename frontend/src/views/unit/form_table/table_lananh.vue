@@ -79,14 +79,14 @@ export default {
             {{ item[label] }}
           </td>
           <td v-if="activeAction == true">
-            <span
+            <!-- <span
               id="view"
               class="material-symbols-outlined"
               @click="detail(item[`${name_id}`])"
               v-if="name_id != 'uni_id'"
             >
               visibility
-            </span>
+            </span> -->
 
             <span
               class="material-symbols-outlined mx-2"

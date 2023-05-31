@@ -1,6 +1,6 @@
 <script>
 import { reactive, ref } from "vue";
-import { useRouter } from "vue-router";
+import { stringifyQuery, useRouter } from "vue-router";
 export default {
   components: {},
   props: {
@@ -29,7 +29,9 @@ export default {
       default: false,
     },
     name_id: { type: String },
-    takecare: { type: Boolean },
+    take_care: { type: Boolean },
+    assign: { type: Boolean },
+    isassign: { type: Boolean },
   },
   setup(props, ntx) {
     const router = useRouter();
@@ -46,11 +48,12 @@ export default {
     >
       <thead>
         <tr>
+          <th></th>
           <th>STT</th>
           <th
             v-for="(value, index) in fields"
             :key="index"
-            :class="{ none: value == 'Lịch hẹn' && takecare }"
+            :class="{ none: value == 'Lịch hẹn' && take_care }"
           >
             {{ value }}
           </th>
@@ -59,12 +62,13 @@ export default {
       </thead>
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
+          <td><input type="checkbox" name="" id="" /></td>
           <td>{{ index + 1 }}</td>
           <td
             v-for="(label, index1) in labels"
             :key="index1"
             style="overflow-wrap;: break-word;"
-            :class="{ none: label == 'app_day' && takecare }"
+            :class="{ none: label == 'app_day' && take_care }"
           >
             {{ item[label] }}
           </td>
@@ -73,6 +77,12 @@ export default {
             <!-- <span id="phone" class="material-symbols-outlined">
               phone_in_talk
             </span> -->
+            <span
+              v-if="isassign && !assign"
+              id="assign"
+              class="material-symbols-outlined mx-2"
+              >assignment_add</span
+            >
           </td>
         </tr>
       </tbody>
@@ -112,7 +122,8 @@ export default {
 
 #appointment,
 #mail,
-#phone {
+#phone,
+#assign {
   font-size: 22px;
   cursor: pointer;
   border: 1px solid var(--gray);
@@ -128,6 +139,12 @@ export default {
 #phone:hover {
   color: var(--green);
 }
+#assign:hover {
+  color: red;
+}
+.none {
+  display: none;
+}
 @media screen and (max-width: 739px) {
   #mail {
     margin-right: 0 !important;
@@ -141,8 +158,5 @@ export default {
   .bet {
     text-align: center;
   }
-}
-.none {
-  display: none;
 }
 </style>

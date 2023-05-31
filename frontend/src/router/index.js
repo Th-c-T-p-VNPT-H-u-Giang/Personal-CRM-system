@@ -1,16 +1,16 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 const routes = [
+  {
+    path: "/index1",
+    name: "Index1",
+    component: () => import("../views/unit/index1.vue"),
+  },
   // Dashboard
-  // {
-  //   path: "/",
-  //   name: "Dashboard",
-  //   component: () => import("../views/dashboard/index.vue"),
-  // },
   {
     path: "/",
     name: "Dashboard",
-    component: () => import("../views/dashboard/index1.vue"),
+    component: () => import("../views/dashboard/index.vue"),
   },
   // Customer
   {

@@ -1,15 +1,15 @@
 <template>
   <!-- The Modal -->
-  <div class="modal" id="model-add-unit">
+  <div class="modal" id="model-add-dep">
     <div class="modal-dialog">
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Đơn vị</h4>
+          <h4 class="modal-title" style="font-size: 15px">Phòng</h4>
           <button
             type="button"
             class="close"
-            data-dismiss="modal2"
+            data-dismiss="modal1"
             @click="turn_off"
           >
             &times;
@@ -42,43 +42,22 @@
 
             <div class="form-group">
               <label for="name"
-                >Tên trung tâm(<span style="color: red">*</span>):</label
-              >
-              <select
-                class="pl-2 form-control"
-                @change="getDep"
-                v-model="selectValue"
-                required
-              >
-                <option disabled selected hidden value="#"></option>
-                <option
-                  :value="`${value.dep_id}`"
-                  :key="index"
-                  v-for="(value, index) in departments"
-                >
-                  {{ value.dep_name }}
-                </option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="name"
-                >Tên đơn vị(<span style="color: red">*</span>):</label
+                >Tên phòng(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
                 class="form-control"
                 id="name"
                 name="name"
-                v-model="newData.uni_name"
+                v-model="newData.dep_name"
                 required
               />
               <div style="color: red">
-                {{ errors.uni_name }}
+                {{ errors.dep_name }}
               </div>
             </div>
             <button
-              v-if="newData.uni_id != ''"
+              v-if="newData.dep_id != ''"
               type="submit"
               class="btn btn-warning px-3 py-2"
               style="font-size: 14px"
@@ -86,7 +65,7 @@
               Sửa
             </button>
             <button
-              v-if="newData.uni_id == ''"
+              v-if="newData.dep_id == ''"
               type="submit"
               class="btn btn-primary px-3 py-2"
               style="font-size: 14px"
@@ -110,29 +89,20 @@ export default {
 
   setup({ newData }, ntx) {
     const centers = reactive([{ cen_id: 1, cen_name: "VNPT Hậu giang" }]);
-    const departments = reactive([
-      { dep_id: 1, dep_name: "Phòng chăm sóc khách hàng" },
-      { dep_id: 2, dep_name: "Phòng tài chính" },
-    ]);
     const errors = reactive({
-      uni_name: "",
+      dep_name: "",
     });
     const getCenter = (event) => {
       console.log("change:", event.target.value);
       newData.cen_id = event.target.value;
       console.log("cenid:", newData.cen_id);
     };
-    const getDep = (event) => {
-      console.log("change:", event.target.value);
-      newData.dep_id = event.target.value;
-      console.log("depid:", newData.dep_id);
-    };
     const validate = () => {
       let valid = ref(true);
-      errors.uni_name = "";
+      errors.dep_name = "";
 
-      if (newData.uni_name.trim() == "") {
-        errors.uni_name = "Tên đơn vị không được bỏ trống";
+      if (newData.dep_name.trim() == "") {
+        errors.dep_name = "Tên phòng không được bỏ trống";
         valid.value = false;
       }
       console.log(errors);
@@ -146,14 +116,13 @@ export default {
       }
     };
     const turn_off = () => {
-      document.getElementById("model-add-unit").style.display = "none";
+      document.getElementById("model-add-dep").style.display = "none";
       newData.cen_id = "";
+      newData.dep_name = "";
       newData.dep_id = "";
-      newData.uni_name = "";
-      newData.uni_id = "";
-      newData.uni = "";
+      newData.dep = "";
     };
-    return { centers, getCenter, departments, getDep, save, turn_off, errors };
+    return { centers, getCenter, save, turn_off, errors };
   },
 };
 </script>
