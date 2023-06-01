@@ -39,9 +39,15 @@ export default {
     <thead>
       <tr>
         <th></th>
+<<<<<<< HEAD
         <th>Id</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Actions</th>
+=======
+        <th>Stt</th>
+        <th v-for="(value, index) in fields">{{ value }}</th>
+        <th v-if="activeAction == true">Hành động</th>
+>>>>>>> master
       </tr>
     </thead>
     <tbody>
@@ -52,9 +58,40 @@ export default {
           {{ item[label] }}
         </td>
         <td v-if="activeAction == true">
-          <span id="view" class="material-symbols-outlined"> visibility </span>
-          <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
-          <span id="delete" class="material-symbols-outlined"> delete </span>
+          <button
+            type="button"
+            class=""
+            data-toggle="modal"
+            data-target="#model-view"
+          >
+            <span
+              id="view"
+              class="material-symbols-outlined d-flex align-items-center"
+            >
+              visibility
+            </span>
+          </button>
+          <button
+            type="button"
+            class="mx-2"
+            data-toggle="modal"
+            data-target="#model-edit"
+          >
+            <span
+              id="edit"
+              class="material-symbols-outlined d-flex align-items-center justify-content-center"
+              @click="$emit('edit', item, true)"
+            >
+              edit
+            </span>
+          </button>
+          <span
+            id="delete"
+            class="material-symbols-outlined"
+            @click="$emit('delete', item._id)"
+          >
+            delete
+          </span>
         </td>
       </tr>
     </tbody>

@@ -160,7 +160,11 @@ export default {
       >
 
       <router-link
+<<<<<<< HEAD
         :to="{ name: 'unit' }"
+=======
+        :to="{ name: 'Unit' }"
+>>>>>>> master
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         >Đơn vị</router-link
@@ -245,7 +249,10 @@ export default {
       :totalRow="data.totalRow"
       :startRow="data.startRow"
       :endRow="data.endRow"
+<<<<<<< HEAD
       :currentPage="data.currentPage"
+=======
+>>>>>>> master
       @updateCurrentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
