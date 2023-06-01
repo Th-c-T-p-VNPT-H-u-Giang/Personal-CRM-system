@@ -556,6 +556,7 @@ Permission.belongsToMany(Role, { through: Role_Permission });
 // one-to-one relationship
 Employee.hasOne(Account);
 Account.belongsTo(Employee);
+// Trigger
 
 // Sync the model with the database
 Customer_Types.sync();
@@ -607,3 +608,57 @@ module.exports = {
   Employee_Task,
   Role_Permission,
 };
+// Trigger
+// Tạo trigger xóa center thì các dep sẽ xóa
+const createTrigger = async () => {
+  await sequelize.query(`
+  CREATE TRIGGER deleteCenter BEFORE DELETE ON center_vnpthgs
+  FOR EACH ROW
+  BEGIN
+      -- Đặt giá trị mặc định cho các khóa ngoại tương ứng trong bảng Sản phẩm
+      delete from departments  WHERE centerVNPTHGId = OLD._id ;
+  END;
+  `);
+};
+
+// Tạo trigger sau khi đồng bộ hóa mô hình
+const createTriggerAfterSync = async () => {
+  // await sequelize.sync({ force: true });
+  await createTrigger();
+};
+
+// Chạy tạo trigger sau khi đồng bộ hóa
+createTriggerAfterSync()
+  .then(() => {
+    console.log("Trigger created successfully!");
+  })
+  .catch((error) => {
+    console.error("Error creating trigger:", error);
+  });
+//tạo trigger sau khi xóa dep sẽ xóa các units
+// Tạo trigger
+const createTrigger_Dep = async () => {
+  await sequelize.query(`
+  CREATE TRIGGER deleteDep BEFORE DELETE ON departments
+FOR EACH ROW
+BEGIN
+    -- Đặt giá trị mặc định cho các khóa ngoại tương ứng trong bảng Sản phẩm
+    delete from units  WHERE departmentId = OLD._id ;
+END;
+  `);
+};
+
+// Tạo trigger sau khi đồng bộ hóa mô hình
+const createTriggerAfterSync_Dep = async () => {
+  // await sequelize.sync({ force: true });
+  await createTrigger_Dep();
+};
+
+// Chạy tạo trigger sau khi đồng bộ hóa
+createTriggerAfterSync_Dep()
+  .then(() => {
+    console.log("Trigger created successfully!");
+  })
+  .catch((error) => {
+    console.error("Error creating trigger:", error);
+  });
