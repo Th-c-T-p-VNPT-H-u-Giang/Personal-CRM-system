@@ -39,6 +39,7 @@ export default {
     <thead>
       <tr>
         <th></th>
+<<<<<<< HEAD
         <th>Id</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Quản Lý</th>
@@ -53,6 +54,53 @@ export default {
           <span id="view" class="material-symbols-outlined" @click="$emit('view', item._id)"> visibility </span>
           <span id="edit" class="material-symbols-outlined mx-2" @click="$emit('edit', item, true)"> edit </span>
           <span id="delete" class="material-symbols-outlined" @click="$emit('delete', item._id)"> delete </span>
+=======
+        <th>Stt</th>
+        <th v-for="(value, index) in fields">{{ value }}</th>
+        <th v-if="activeAction == true">Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="(item, index) in items">
+        <td><input type="checkbox" name="" id="" /></td>
+        <td>{{ index + 1 }}</td>
+        <td v-for="(label, index1) in labels">{{ item[label] }}</td>
+        <td v-if="activeAction == true">
+          <button
+            type="button"
+            class=""
+            data-toggle="modal"
+            data-target="#model-view"
+          >
+            <span
+              id="view"
+              class="material-symbols-outlined d-flex align-items-center"
+            >
+              visibility
+            </span>
+          </button>
+          <button
+            type="button"
+            class="mx-2"
+            data-toggle="modal"
+            data-target="#model-edit"
+          >
+            <span
+              id="edit"
+              class="material-symbols-outlined d-flex align-items-center justify-content-center"
+              @click="$emit('edit', item, true)"
+            >
+              edit
+            </span>
+          </button>
+          <span
+            id="delete"
+            class="material-symbols-outlined"
+            @click="$emit('delete', item._id)"
+          >
+            delete
+          </span>
+>>>>>>> 647811d30517bc047eefce4e74da086465d489fb
         </td>
       </tr>
     </tbody>
@@ -104,4 +152,8 @@ export default {
 #delete:hover {
   color: var(--red);
 }
+<<<<<<< HEAD
 </style>
+=======
+</style>
+>>>>>>> 647811d30517bc047eefce4e74da086465d489fb

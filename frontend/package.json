@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
     "axios": "^1.4.0",
     "bootstrap": "^5.2.3",
     "bootstrap-icons": "^1.10.5",
@@ -18,6 +19,10 @@
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.5.29",
     "moment": "^2.29.4",
+=======
+    "bootstrap": "^5.2.3",
+    "bootstrap-icons": "^1.10.5",
+>>>>>>> 647811d30517bc047eefce4e74da086465d489fb
     "sweetalert2": "^11.7.5",
     "vue": "^3.2.47",
     "vue-router": "^4.2.0"

@@ -10,6 +10,12 @@ export default {
       type: String,
       required: true,
     },
+<<<<<<< HEAD
+=======
+    title: {
+      type: String,
+    }
+>>>>>>> 647811d30517bc047eefce4e74da086465d489fb
   },
   setup(props) {
     const data = reactive({
@@ -30,6 +36,10 @@ export default {
       :value="entryValue"
       @input="$emit('update:entryValue', $event.target.value)"
     >
+<<<<<<< HEAD
+=======
+      <option>{{ title }}</option>
+>>>>>>> 647811d30517bc047eefce4e74da086465d489fb
       <option
         v-for="option in options"
         :key="option.value"
@@ -46,7 +56,12 @@ export default {
   font-size: 13px;
 }
 .form-control {
+<<<<<<< HEAD
     background-color: inherit;
     border: 1px solid var(--gray);
+=======
+  background-color: inherit;
+  border: 1px solid var(--gray);
+>>>>>>> 647811d30517bc047eefce4e74da086465d489fb
 }
 </style>
