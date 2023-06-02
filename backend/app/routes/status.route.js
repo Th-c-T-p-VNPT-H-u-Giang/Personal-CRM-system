@@ -14,4 +14,3 @@ router.route('/:id')
     .delete(customers.deleteOne)
 
 module.exports = router;
-

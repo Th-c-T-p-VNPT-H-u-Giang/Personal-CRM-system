@@ -14,4 +14,3 @@ router.route('/:id')
     .delete(positions.deleteOne)
 
 module.exports = router;
-

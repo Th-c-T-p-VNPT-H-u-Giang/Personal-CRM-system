@@ -14,4 +14,3 @@ router.route('/:id')
     .delete(roles.deleteOne)
 
 module.exports = router;
-

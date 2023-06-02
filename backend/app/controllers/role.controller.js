@@ -2,6 +2,7 @@ const { Role } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
 const { sequelize } = require("../config/index");
+
 exports.create = async (req, res, next) => {
   try {
     const document = await Role.create({

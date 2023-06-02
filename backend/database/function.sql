@@ -10,4 +10,3 @@ INSERT into users (first_name, last_name) VALUES (AES_ENCRYPT('Ngoc', 'secret'),
 INSERT into users (first_name, last_name) VALUES (AES_ENCRYPT('Nghia', 'secret'), AES_ENCRYPT('Nguyen Trung', 'secret'));
 
   
-

@@ -14,4 +14,3 @@ router.route('/:id')
     .delete(permissions.deleteOne)
 
 module.exports = router;
-

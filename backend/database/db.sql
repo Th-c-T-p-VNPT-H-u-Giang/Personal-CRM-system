@@ -213,4 +213,3 @@ CREATE TABLE log (
     PRIMARY KEY (log_id)
 );
 
-

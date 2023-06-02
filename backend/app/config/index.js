@@ -5,7 +5,6 @@ const config = {
         port: process.env.PORT || 3000,
     }
 }
-
 // Khởi tạo kết nối database
 const sequelize = new Sequelize('personal_crm_system', 'root', 'KvdLgdtVL8', {
     host: 'localhost',

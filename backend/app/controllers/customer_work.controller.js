@@ -2,6 +2,7 @@ const { Customer_Types, Customer_Work, Customer } = require('../models/index.mod
 const createError = require('http-errors');
 const { v4: uuidv4 } = require('uuid');
 
+
 exports.create = async (req, res, next) => {
     try {
         const document = await Customer_Work.create({

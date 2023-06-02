@@ -3,6 +3,7 @@ const customers = require('../controllers/customer.controller');
 
 const router = express.Router();
 
+
 router.route('/')
     .post(customers.create)
     .get(customers.findAll)

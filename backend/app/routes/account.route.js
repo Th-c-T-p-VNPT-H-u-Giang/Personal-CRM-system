@@ -14,4 +14,3 @@ router.route('/:id')
     .delete(accounts.deleteOne)
 
 module.exports = router;
-
