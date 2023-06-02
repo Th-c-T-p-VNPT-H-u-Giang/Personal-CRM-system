@@ -1,6 +1,6 @@
 <template>
   <!-- The Modal -->
-  <div class="modal" id="model-add">
+  <div class="modal" id="model-add-center">
     <div class="modal-dialog">
       <div class="modal-content">
         <!-- Modal Header -->
@@ -89,7 +89,7 @@ export default {
       }
     };
     const turn_off = () => {
-      document.getElementById("model-add").style.display = "none";
+      document.getElementById("model-add-center").style.display = "none";
       newData.cen_name = "";
       newData.cen_id = "";
       newData.cen = "";

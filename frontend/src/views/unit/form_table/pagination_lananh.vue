@@ -55,11 +55,7 @@ export default {
     </p>
     <ul class="pagination">
       <li @click="updatePrevPage(currentPage)" class="page-item">
-<<<<<<< HEAD
         <a class="page-link text-dark">Previous</a>
-=======
-        <a class="page-link text-dark" href="#">Previous</a>
->>>>>>> master
       </li>
       <li
         @click="updateCurrentPage(value)"
@@ -70,19 +66,11 @@ export default {
         <a
           class="page-link"
           :class="[index == currentPage - 1 ? 'text-blue' : 'text-dark']"
-<<<<<<< HEAD
-=======
-          href="#"
->>>>>>> master
           >{{ value }}</a
         >
       </li>
       <li @click="updateNextPage(currentPage)" class="page-item">
-<<<<<<< HEAD
         <a class="page-link text-dark">Next</a>
-=======
-        <a class="page-link text-dark" href="#">Next</a>
->>>>>>> master
       </li>
     </ul>
   </div>

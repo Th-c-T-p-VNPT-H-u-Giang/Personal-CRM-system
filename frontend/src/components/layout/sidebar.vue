@@ -122,13 +122,8 @@ export default {
               >
                 {{ sidebarTask.icon }}
               </span>
-<<<<<<< HEAD
               <span class="d-flex align-items-center" style="font-size: 15px">{{
-                sidebarTask.name
-=======
-              <span class="d-flex align-items-center" style="font-size: 15px;">{{
                 sidebarTask.name_icon
->>>>>>> master
               }}</span>
             </div>
           </router-link>
@@ -181,5 +176,4 @@ export default {
 .none-border-icon {
   border: none;
 }
-
 </style>

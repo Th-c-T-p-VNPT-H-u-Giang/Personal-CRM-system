@@ -39,15 +39,9 @@ export default {
     <thead>
       <tr>
         <th></th>
-<<<<<<< HEAD
-        <th>Id</th>
-        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-        <th v-if="activeAction == true">Actions</th>
-=======
         <th>Stt</th>
-        <th v-for="(value, index) in fields">{{ value }}</th>
+        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Hành động</th>
->>>>>>> master
       </tr>
     </thead>
     <tbody>

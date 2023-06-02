@@ -325,6 +325,7 @@ export default {
           { name: 'Tuần', value: 'week' },
           { name: 'Tháng', value: 'month' },
         ]"
+        :selectedOption="selectedOption"
         @option="
           (value) => {
             selectedOption = value;

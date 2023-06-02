@@ -8,8 +8,13 @@ import DeleteAll from "../../components/form/delete-all.vue";
 import Add from "./add.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
-import { reactive, computed, watch, ref } from "vue";
+import { reactive, computed, watch, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+//***
+import SelectOption from "../../components/box_lananh/select_cdu.vue";
+import Center from "../../views/unit/center.vue";
+import CenterServices from "../../services/center.services";
+import axios from "axios";
 export default {
   components: {
     Table,
@@ -20,7 +25,10 @@ export default {
     Add,
     DeleteAll,
     Edit,
-    View
+    View,
+    // ***
+    SelectOption,
+    Center,
   },
   setup(ctx) {
     const data = reactive({
@@ -192,6 +200,38 @@ export default {
     watch(activeMenu, (newValue, oldValue) => {
       router.push({ name: "Position" });
     });
+
+    // *** trung tâm ****
+    const centers = reactive({ center: [] });
+    const selectedOptionCenter = ref("Trung tâm");
+    watch(selectedOptionCenter, (newValue, oldValue) => {
+      console.log("New Center:", newValue);
+      if (newValue == "other") {
+        console.log("Show model-center:");
+        document.getElementById("model-center").style.display = "block";
+      }
+    });
+    const Department = reactive([
+      { name: "Phòng CSkh", _id: "1" },
+      { name: "Phòng tài chính", _id: "2" },
+    ]);
+    const selectedOptionDepartment = ref("Phòng");
+    watch(selectedOptionDepartment, (newValue, oldValue) => {
+      console.log("New Department:", newValue);
+    });
+
+    const Unit = reactive([
+      { name: "Tổ 1", _id: "1" },
+      { name: "Tổ 2", _id: "2" },
+    ]);
+    const selectedOptionUnit = ref("Đơn vị");
+    watch(selectedOptionUnit, (newValue, oldValue) => {
+      console.log("New Unit:", newValue);
+    });
+
+    onMounted(async () => {
+      centers.center = CenterServices.findAll();
+    });
     return {
       data,
       setPages,
@@ -201,6 +241,13 @@ export default {
       deleteOne,
       edit,
       view,
+      //
+      centers,
+      selectedOptionCenter,
+      Department,
+      selectedOptionDepartment,
+      Unit,
+      selectedOptionUnit,
     };
   },
 };
@@ -228,21 +275,51 @@ export default {
     <!-- <div class="border-hr mb-3"></div> -->
     <div class="d-flex flex-column mt-3">
       <span class="mx-3 mb-3 h6">Lọc nhân viên</span>
+
       <div class="d-flex mx-3">
         <div class="form-group w-100">
-          <Select  :title="`Chức vụ`" :entryValue="`Chức vụ`" />
+          <Select :title="`Chức vụ`" :entryValue="`Chức vụ`" />
+        </div>
+        <!-- **** Lan Anh **** -->
+        <div class="form-group w-100 ml-3">
+          <SelectOption
+            :title="`Trung tâm`"
+            :selectedOption="selectedOptionCenter"
+            :field="centers.center"
+            :add="false"
+            @option="
+              (value) => {
+                selectedOptionCenter = value;
+              }
+            "
+          />
         </div>
         <div class="form-group w-100 ml-3">
-          <Select :title="`Đơn vị`" :entryValue="`Đơn vị`" />
+          <SelectOption
+            :title="`Phòng`"
+            :selectedOption="selectedOptionDepartment"
+            :field="Department"
+            @option="
+              (value) => {
+                selectedOptionDepartment = value;
+              }
+            "
+          />
         </div>
         <div class="form-group w-100 ml-3">
-          <Select :title="`Phòng`" :entryValue="`Phòng`" />
+          <SelectOption
+            :title="`Đơn vị`"
+            :selectedOption="selectedOptionUnit"
+            :field="Unit"
+            @option="
+              (value) => {
+                selectedOptionUnit = value;
+              }
+            "
+          />
         </div>
-        <div class="form-group w-100 ml-3">
-          <Select :title="`Trung tâm`" :entryValue="`Trung tâm`" />
-        </div>
-        <div class="form-group">
-        </div>
+        <!-- **** -->
+        <div class="form-group"></div>
       </div>
     </div>
     <div class="border-hr mb-3"></div>
@@ -305,8 +382,24 @@ export default {
     <!-- Table -->
     <Table
       :items="setPages"
-      :fields="['Họ và tên', 'Sđt', 'Email', 'Chức vụ', 'Đơn vị', 'Phòng', 'Trung tâm']"
-      :labels="['name', 'phone', 'email', 'position', 'unit', 'department', 'center']"
+      :fields="[
+        'Họ và tên',
+        'Sđt',
+        'Email',
+        'Chức vụ',
+        'Đơn vị',
+        'Phòng',
+        'Trung tâm',
+      ]"
+      :labels="[
+        'name',
+        'phone',
+        'email',
+        'position',
+        'unit',
+        'department',
+        'center',
+      ]"
       @delete="(value) => deleteOne(value)"
       @edit="
         (value, value1) => (
@@ -325,13 +418,15 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
+
+    <Edit
+      :item="data.editValue"
+      :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEdit = false"
+    />
+    <View />
+    <Center></Center>
   </div>
-  <Edit
-    :item="data.editValue"
-    :class="[data.activeEdit ? 'show-modal' : 'd-none']"
-    @cancel="data.activeEdit = false"
-  />
-  <View />
 </template>
 
 <style scoped>

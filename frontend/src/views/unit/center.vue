@@ -1,90 +1,97 @@
 <template>
-  <div class="modal" id="model-center">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Tất cả trung tâm</h4>
-          <button type="button" class="close" data-dismiss="modal">
-            &times;
-          </button>
-        </div>
-        <!-- Modal body -->
-        <div class="modal-body">
-          <div class="">
-            <div class="d-flex justify-content-between mr-2 mb-3 row">
-              <div class="d-flex justify-content-start col-5">
-                <Select
-                  class="d-flex justify-content-start"
-                  :options="[
-                    {
-                      name: 5,
-                      value: 5,
-                    },
-                    {
-                      name: 10,
-                      value: 10,
-                    },
-                    {
-                      name: 20,
-                      value: 20,
-                    },
-                    {
-                      name: 30,
-                      value: 30,
-                    },
-                    {
-                      name: 'All',
-                      value: 'All',
-                    },
-                  ]"
-                  @update:entryValue="(value) => (data.entryValue = value)"
-                  :entryValue="data.entryValue"
-                />
-                <Search
-                  class="ml-3"
-                  style="width: 300px"
-                  @update:searchText="(value) => (data.searchText = value)"
-                />
-              </div>
-              <!-- Thêm  -->
-              <div>
-                <!-- Modal -->
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-toggle="modal3"
-                  data-target="#model-add"
-                  @click="display"
-                >
-                  <span id="add" class="mx-2">Thêm</span>
-                </button>
+  <div>
+    <div class="modal modal-cdu" id="model-center">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Tất cả trung tâm</h4>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal_center"
+              @click="turnOff"
+            >
+              &times;
+            </button>
+          </div>
+          <!-- Modal body -->
+          <div class="modal-body">
+            <div>
+              <div class="d-flex justify-content-between mr-2 mb-3 row">
+                <div class="d-flex justify-content-start col-5">
+                  <Select
+                    class="d-flex justify-content-start"
+                    :options="[
+                      {
+                        name: 5,
+                        value: 5,
+                      },
+                      {
+                        name: 10,
+                        value: 10,
+                      },
+                      {
+                        name: 20,
+                        value: 20,
+                      },
+                      {
+                        name: 30,
+                        value: 30,
+                      },
+                      {
+                        name: 'All',
+                        value: 'All',
+                      },
+                    ]"
+                    @update:entryValue="(value) => (data.entryValue = value)"
+                    :entryValue="data.entryValue"
+                  />
+                  <Search
+                    class="ml-3"
+                    style="width: 300px"
+                    @update:searchText="(value) => (data.searchText = value)"
+                  />
+                </div>
+                <!-- Thêm  -->
+                <div>
+                  <!-- Modal -->
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-toggle="modal3"
+                    data-target="#model-add-center"
+                    @click="display"
+                  >
+                    <span id="add" class="mx-2">Thêm</span>
+                  </button>
 
-                <Add :newData="newData" @addorupdate="addOrUpdatecenel()" />
+                  <Add :newData="newData" @addorupdate="addOrUpdatecenel()" />
+                </div>
               </div>
+              <!-- Table -->
+              <!-- @update="getcenel" -->
+              <Table
+                :items="setPages"
+                :fields="['Mã trung tâm', 'Tên trung tâm']"
+                :labels="['cen_id', 'cen_name']"
+                @update="getcenter"
+                @onDelete="onDelete"
+                @detail="detail"
+                :name_id="'cen_id'"
+              />
+
+              <!-- Pagination -->
+              <Pagination
+                :numberOfPages="data.numberOfPages"
+                :totalRow="data.totalRow"
+                :startRow="data.startRow"
+                :endRow="data.endRow"
+                :currentPage="data.currentPage"
+                @updateCurrentPage="(value) => (data.currentPage = value)"
+                class="mx-3"
+              />
             </div>
-            <!-- Table -->
-            <!-- @update="getcenel" -->
-            <Table
-              :items="setPages"
-              :fields="['Mã trung tâm', 'Tên trung tâm']"
-              :labels="['cen_id', 'cen_name']"
-              @update="getcenter"
-              @onDelete="onDelete"
-              @detail="detail"
-              :name_id="'cen_id'"
-            />
-
-            <!-- Pagination -->
-            <Pagination
-              :numberOfPages="data.numberOfPages"
-              :totalRow="data.totalRow"
-              :startRow="data.startRow"
-              :endRow="data.endRow"
-              :currentPage="data.currentPage"
-              @updateCurrentPage="(value) => (data.currentPage = value)"
-              class="mx-3"
-            />
           </div>
         </div>
       </div>
@@ -174,13 +181,18 @@ export default {
     });
     //
     const getcenter = async (value_id) => {
-      document.getElementById("model-add").style.display = "block";
+      document.getElementById("model-add-center").style.display = "block";
       newData.cen_id = value_id;
       newData.cen_name = data.items[value_id - 1].cen_name;
       newData.cen = "update";
     };
     const display = () => {
-      document.getElementById("model-add").style.display = "block";
+      document.getElementById("model-add-center").style.display = "block";
+    };
+
+    const turnOff = () => {
+      console.log("turnoff");
+      document.getElementById("model-center").style.display = "none";
     };
     const emptyNewData = () => {
       newData["cen_id"] = "";
@@ -191,7 +203,7 @@ export default {
       if (newData.cen == "update") {
         console.log("UPDATE THU NGHIEM", newData.cen_id, newData.cen_name);
         emptyNewData();
-        document.getElementById("model-add").style.display = "none";
+        document.getElementById("model-add-center").style.display = "none";
         showSuccess();
       } else {
         console.log("ADD THU NGHIEM", newData.cen_name);
@@ -231,6 +243,7 @@ export default {
       onDelete,
       detail,
       display,
+      turnOff,
     };
   },
 };
@@ -239,5 +252,12 @@ export default {
 .border-box {
   border: 1px solid var(--gray);
   border-radius: 5px;
+}
+.modal-cdu {
+  width: calc(100% + 300px);
+  left: -150px;
+  right: -150px;
+  top: -26px;
+  height: 100%;
 }
 </style>

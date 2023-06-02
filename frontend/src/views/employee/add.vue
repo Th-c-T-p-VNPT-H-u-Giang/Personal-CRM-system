@@ -1,9 +1,15 @@
 <script>
-import { reactive } from "vue";
+import { reactive, ref, watch } from "vue";
 import Select from "../../components/form/select.vue";
+//***
+import SelectOption from "../../components/box_lananh/select_cdu.vue";
+import Center from "../unit/center.vue";
 export default {
   components: {
     Select,
+    // ***
+    SelectOption,
+    Center,
   },
   props: {
     item: {
@@ -13,6 +19,35 @@ export default {
   },
   setup(props, ctx) {
     const data = reactive({});
+    //***
+    const center = reactive([{ name: "VNPT HẬU GIANG", _id: "1" }]);
+    const selectedOptionCenter = ref("Trung tâm");
+    watch(selectedOptionCenter, (newValue, oldValue) => {
+      console.log("New Center:", newValue);
+      if (newValue == "other") {
+        console.log("Show model-center");
+        document.getElementById("model-center").style.display = "block";
+        // document.getElementById("model-add").style.display = "none";
+      }
+    });
+    const Department = reactive([
+      { name: "Phòng CSkh", _id: "1" },
+      { name: "Phòng tài chính", _id: "2" },
+    ]);
+    const selectedOptionDepartment = ref("Phòng");
+    watch(selectedOptionDepartment, (newValue, oldValue) => {
+      console.log("New Department:", newValue);
+    });
+
+    const Unit = reactive([
+      { name: "Tổ 1", _id: "1" },
+      { name: "Tổ 2", _id: "2" },
+    ]);
+    const selectedOptionUnit = ref("Đơn vị");
+    watch(selectedOptionUnit, (newValue, oldValue) => {
+      console.log("New Unit:", newValue);
+    });
+    //***
     const create = () => {
       if (props.item.name.length > 0 && props.item.content.length > 0) {
         ctx.emit("create");
@@ -20,6 +55,13 @@ export default {
     };
     return {
       create,
+      //***
+      center,
+      selectedOptionCenter,
+      Department,
+      selectedOptionDepartment,
+      Unit,
+      selectedOptionUnit,
     };
   },
 };
@@ -113,19 +155,47 @@ export default {
               <label for="center"
                 >Trung tâm(<span style="color: red">*</span>):</label
               >
-              <Select :title="`Trung tâm`" :entryValue="`Trung tâm`" />
+              <SelectOption
+                :title="`Trung tâm`"
+                :selectedOption="selectedOptionCenter"
+                :field="center"
+                :add="true"
+                @option="
+                  (value) => {
+                    selectedOptionCenter = value;
+                  }
+                "
+              />
             </div>
             <div class="form-group">
               <label for="department"
                 >Phòng(<span style="color: red">*</span>):</label
               >
-              <Select :title="`Phòng`" :entryValue="`Phòng`" />
+              <SelectOption
+                :title="`Phòng`"
+                :selectedOption="selectedOptionDepartment"
+                :field="Department"
+                @option="
+                  (value) => {
+                    selectedOptionDepartment = value;
+                  }
+                "
+              />
             </div>
             <div class="form-group">
               <label for="department"
                 >Đơn vị(<span style="color: red">*</span>):</label
               >
-              <Select :title="`Đơn vị`" :entryValue="`Đơn vị`" />
+              <SelectOption
+                :title="`Đơn vị`"
+                :selectedOption="selectedOptionUnit"
+                :field="Unit"
+                @option="
+                  (value) => {
+                    selectedOptionUnit = value;
+                  }
+                "
+              />
             </div>
             <b-button
               type="submit"
@@ -138,6 +208,7 @@ export default {
               <span>Thêm</span>
             </b-button>
           </form>
+          <Center></Center>
         </div>
       </div>
     </div>

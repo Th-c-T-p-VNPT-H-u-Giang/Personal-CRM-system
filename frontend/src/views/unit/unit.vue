@@ -149,8 +149,8 @@ export default {
     watch(selectedOption, (newValue, oldValue) => {
       console.log("Dropdown value changed:", newValue);
       if (newValue != "Level" && newValue != "all")
-        router.push({ name: "unit_level", params: { id: newValue } });
-      else if (newValue == "all") router.push({ name: "unit" });
+        router.push({ name: "Unit.view", params: { id: newValue } });
+      else if (newValue == "all") router.push({ name: "Unit" });
       // selectedOption.value = "Level";
     });
 
@@ -176,22 +176,14 @@ export default {
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <router-link
-<<<<<<< HEAD
-        :to="{ name: 'Unit' }"
-=======
         :to="{ name: 'Level' }"
->>>>>>> master
         @click="data.activeMenu = 1"
         :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
         >Cấp</router-link
       >
 
       <router-link
-<<<<<<< HEAD
-        :to="{ name: 'unit' }"
-=======
         :to="{ name: 'Unit' }"
->>>>>>> master
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         >Đơn vị</router-link
@@ -285,10 +277,6 @@ export default {
       :totalRow="data.totalRow"
       :startRow="data.startRow"
       :endRow="data.endRow"
-<<<<<<< HEAD
-      :currentPage="data.currentPage"
-=======
->>>>>>> master
       @updateCurrentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
