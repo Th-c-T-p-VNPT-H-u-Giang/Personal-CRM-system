@@ -108,7 +108,7 @@ import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import Add from "./form_table/add_update_center.vue";
 import Form from "./form_table/formLevel.vue";
-import { reactive, computed, onMounted, ref } from "vue";
+import { reactive, computed, onMounted, ref, watch } from "vue";
 import Swal from "./use/showSwal";
 import swal from "sweetalert2";
 import centerServices from "../../services/center.services";
@@ -193,8 +193,9 @@ export default {
     //
     const getcenter = async (value_id) => {
       document.getElementById("model-add-center").style.display = "block";
+      let centerEdit = await centerServices.findOne(value_id);
       newData._id = value_id;
-      // newData.name = data.items[value_id - 1].name;
+      newData.name = centerEdit.name;
       newData.cen = "update";
     };
     const display = () => {
@@ -210,19 +211,24 @@ export default {
       newData["name"] = "";
       newData["cen"] = "";
     };
+    const init = async () => {
+      data.items = await centerServices.findAll();
+      ctx.emit("newData", data.items);
+    };
     const addOrUpdatecenel = async () => {
       if (newData.cen == "update") {
         console.log("UPDATE THU NGHIEM", newData._id, newData.name);
+        await centerServices.update(newData._id, newData);
+        init();
         emptyNewData();
         document.getElementById("model-add-center").style.display = "none";
         showSuccess();
       } else {
         console.log("ADD THU NGHIEM", newData.name);
         centerServices.create(newData);
+        init();
         emptyNewData();
         showSuccess();
-        data.items = await centerServices.findAll();
-        ctx.emit("newData", data.items);
       }
     };
     const onDelete = (data) => {
@@ -235,11 +241,12 @@ export default {
           confirmButtonText: "Xóa",
           confirmButtonColor: "#cc0000",
         })
-        .then((result) => {
+        .then(async (result) => {
           /* Read more about isConfirmed, isDenied below */
           if (result.isConfirmed) {
-            // CODE API
             console.log("Delete", data);
+            await centerServices.deleteOne(data);
+            init();
             swal.fire("Deleted!", "", "success");
           }
         });
@@ -247,6 +254,7 @@ export default {
     const detail = (data) => {
       console.log("detail", data);
     };
+
     onMounted(async () => {
       data.items = await centerServices.findAll();
       console.log("Mounted length:", data.items.length, "Data:", data.items);

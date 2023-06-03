@@ -5,6 +5,8 @@ import Select from "../../components/form/select.vue";
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
 import Center from "../unit/center.vue";
 import centerServices from "../../services/center.services";
+import depServices from "../../services/dep.services";
+import unitServices from "../../services/unit.services";
 export default {
   components: {
     Select,
@@ -23,8 +25,16 @@ export default {
     //***
     const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("Trung tâm");
-    watch(selectedOptionCenter, (newValue, oldValue) => {
+    watch(selectedOptionCenter, async (newValue, oldValue) => {
       console.log("New Center:", newValue);
+      departments.department = await depServices.findAllDepOfACenter(newValue);
+      units.unit = [];
+      for (let val of departments.department) {
+        let newUnits = await unitServices.findAllUnitsOfADep(val._id);
+        for (let value of newUnits) {
+          units.unit.push(value);
+        }
+      }
       if (newValue == "other") {
         console.log("Show model-center");
         document.getElementById("model-center").style.display = "block";
@@ -32,19 +42,15 @@ export default {
       }
     });
 
-    const Department = reactive([
-      { name: "Phòng CSkh", _id: "1" },
-      { name: "Phòng tài chính", _id: "2" },
-    ]);
+    const departments = reactive({
+      department: [],
+    });
     const selectedOptionDepartment = ref("Phòng");
     watch(selectedOptionDepartment, (newValue, oldValue) => {
       console.log("New Department:", newValue);
     });
 
-    const Unit = reactive([
-      { name: "Tổ 1", _id: "1" },
-      { name: "Tổ 2", _id: "2" },
-    ]);
+    const units = reactive({ unit: [] });
     const selectedOptionUnit = ref("Đơn vị");
     watch(selectedOptionUnit, (newValue, oldValue) => {
       console.log("New Unit:", newValue);
@@ -55,8 +61,14 @@ export default {
         ctx.emit("create");
       }
     };
+    const createCenter = (value) => {
+      console.log("createCenter:");
+      centers.center = value;
+      ctx.emit("newCenter", centers.center);
+    };
     onMounted(async () => {
       centers.center = await centerServices.findAll();
+      departments.department = await depServices.findAll();
     });
     return {
       // create,
@@ -64,10 +76,11 @@ export default {
       //***
       centers,
       selectedOptionCenter,
-      Department,
+      departments,
       selectedOptionDepartment,
-      Unit,
+      units,
       selectedOptionUnit,
+      createCenter,
     };
   },
 };
@@ -180,7 +193,7 @@ export default {
               <SelectOption
                 :title="`Phòng`"
                 :selectedOption="selectedOptionDepartment"
-                :field="Department"
+                :field="departments.department"
                 @option="
                   (value) => {
                     selectedOptionDepartment = value;
@@ -195,7 +208,7 @@ export default {
               <SelectOption
                 :title="`Đơn vị`"
                 :selectedOption="selectedOptionUnit"
-                :field="Unit"
+                :field="units.unit"
                 @option="
                   (value) => {
                     selectedOptionUnit = value;
@@ -214,7 +227,7 @@ export default {
               <span>Thêm</span>
             </b-button>
           </form>
-          <Center @newData="(value) => (centers.center = value)"></Center>
+          <Center @newData="createCenter"></Center>
         </div>
       </div>
     </div>

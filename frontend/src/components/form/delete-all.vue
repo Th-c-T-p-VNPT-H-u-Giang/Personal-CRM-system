@@ -63,7 +63,7 @@ export default {
       } else data.numberOfPages = setNumberOfPages.value;
       data.startRow = (data.currentPage - 1) * data.entryValue + 1;
       data.endRow = data.currentPage * data.entryValue;
-      console.log(data);
+      // console.log(data);
       return filtered.value.filter((item, index) => {
         return (
           index + 1 > (data.currentPage - 1) * data.entryValue &&
@@ -144,19 +144,21 @@ export default {
               />
             </div>
             <div class="d-flex align-items-start">
-              <button v-if="data.activeSelectAll == false"
+              <button
+                v-if="data.activeSelectAll == false"
                 type="button"
                 class="btn btn-light"
-                @click="setDeleteAll(true), data.activeSelectAll = true"
+                @click="setDeleteAll(true), (data.activeSelectAll = true)"
               >
                 <span id="add" class="mx-2" style="font-size: 15px"
                   >Select All</span
                 >
               </button>
-              <button v-if="data.activeSelectAll == true"
+              <button
+                v-if="data.activeSelectAll == true"
                 type="button"
                 class="btn btn-light"
-                @click="setDeleteAll(false), data.activeSelectAll = false"
+                @click="setDeleteAll(false), (data.activeSelectAll = false)"
               >
                 <span id="add" class="mx-2" style="font-size: 15px"
                   >Un Select All</span
@@ -180,7 +182,7 @@ export default {
             :labels="['name', 'birthday', 'address']"
             :activeAction="`false`"
             :borderTableAll="`true`"
-            @update:delete="(value, index) => setPages[index].delete = value"
+            @update:delete="(value, index) => (setPages[index].delete = value)"
           />
           <Pagination
             :numberOfPages="data.numberOfPages"

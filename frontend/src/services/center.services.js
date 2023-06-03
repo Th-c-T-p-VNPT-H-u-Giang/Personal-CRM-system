@@ -17,10 +17,10 @@ class centerService {
     return (await this.api.delete("/")).data;
   }
   async deleteOne(id) {
-    return (await this.api.get(`/${id}`)).data;
+    return (await this.api.delete(`/${id}`)).data;
   }
   async update(id, data) {
-    return (await this.api.post(`/${id}`, data)).data;
+    return (await this.api.put(`/${id}`, data)).data;
   }
 }
 

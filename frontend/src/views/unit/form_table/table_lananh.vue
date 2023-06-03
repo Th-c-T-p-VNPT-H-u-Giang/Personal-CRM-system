@@ -99,7 +99,7 @@ export default {
             <span
               id="delete"
               class="material-symbols-outlined"
-              @click="onDelete(item[`${name_id}`])"
+              @click="onDelete(item._id)"
             >
               delete
             </span>

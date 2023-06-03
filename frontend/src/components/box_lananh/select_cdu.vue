@@ -35,7 +35,7 @@ export default {
     add: { type: Boolean },
   },
   setup({ selectedOption, add }, { emit }) {
-    console.log("Add:", add);
+    // console.log("Add:", add);
     const select = ref({});
     select.value = selectedOption;
     watch([select], ([newValue1, oldValue1]) => {

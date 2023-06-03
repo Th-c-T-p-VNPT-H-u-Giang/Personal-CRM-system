@@ -15,6 +15,7 @@ import SelectOption from "../../components/box_lananh/select_cdu.vue";
 import Center from "../../views/unit/center.vue";
 import CenterServices from "../../services/center.services";
 import departmentsServices from "../../services/dep.services";
+import unitsServices from "../../services/unit.services";
 export default {
   components: {
     Table,
@@ -210,6 +211,14 @@ export default {
       departments.department = await departmentsServices.findAllDepOfACenter(
         newValue
       );
+      units.unit = [];
+      for (let val of departments.department) {
+        var newData = await unitsServices.findAllUnitsOfADep(val._id);
+        for (let value of newData) {
+          units.unit.push(value);
+        }
+      }
+      // console.log("Units:", units.unit);
       if (newValue == "other") {
         console.log("Show model-center:");
         document.getElementById("model-center").style.display = "block";
@@ -217,14 +226,14 @@ export default {
     });
     const departments = reactive({ department: [] });
     const selectedOptionDepartment = ref("Phòng");
-    watch(selectedOptionDepartment, (newValue, oldValue) => {
-      console.log("New Department:", newValue);
+    watch(selectedOptionDepartment, async (newValue, oldValue) => {
+      // console.log("New Department:", newValue);
+      units.unit = await unitsServices.findAllUnitsOfADep(newValue);
     });
 
-    const Unit = reactive([
-      { name: "Tổ 1", _id: "1" },
-      { name: "Tổ 2", _id: "2" },
-    ]);
+    const units = reactive({
+      unit: [],
+    });
     const selectedOptionUnit = ref("Đơn vị");
     watch(selectedOptionUnit, (newValue, oldValue) => {
       console.log("New Unit:", newValue);
@@ -233,6 +242,7 @@ export default {
     onMounted(async () => {
       centers.center = await CenterServices.findAll();
       departments.department = await departmentsServices.findAll();
+      units.unit = await unitsServices.findAll();
     });
     return {
       data,
@@ -248,7 +258,7 @@ export default {
       selectedOptionCenter,
       departments,
       selectedOptionDepartment,
-      Unit,
+      units,
       selectedOptionUnit,
     };
   },
@@ -313,7 +323,7 @@ export default {
           <SelectOption
             :title="`Đơn vị`"
             :selectedOption="selectedOptionUnit"
-            :field="Unit"
+            :field="units.unit"
             @option="
               (value) => {
                 selectedOptionUnit = value;
@@ -379,7 +389,11 @@ export default {
         >
           <span id="add" class="mx-2">Thêm</span>
         </button>
-        <Add :item="data.itemAdd" @create="create" />
+        <Add
+          :item="data.itemAdd"
+          @create="create"
+          @newCenter="(value) => (centers.center = value)"
+        />
       </div>
     </div>
     <!-- Table -->
