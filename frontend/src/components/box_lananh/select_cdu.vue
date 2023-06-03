@@ -25,7 +25,7 @@ import Center from "../../views/unit/center.vue";
 
 export default {
   name: "select",
-  compilerOptions: {
+  components: {
     Center,
   },
   props: {

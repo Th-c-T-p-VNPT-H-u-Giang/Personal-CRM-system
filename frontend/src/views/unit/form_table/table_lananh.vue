@@ -90,7 +90,7 @@ export default {
 
             <span
               class="material-symbols-outlined mx-2"
-              @click="get(item[`${name_id}`])"
+              @click="get(item._id)"
               id="edit"
             >
               edit

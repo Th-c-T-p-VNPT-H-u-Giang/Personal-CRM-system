@@ -1,9 +1,10 @@
 <script>
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, watch, onMounted } from "vue";
 import Select from "../../components/form/select.vue";
 //***
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
 import Center from "../unit/center.vue";
+import centerServices from "../../services/center.services";
 export default {
   components: {
     Select,
@@ -20,7 +21,7 @@ export default {
   setup(props, ctx) {
     const data = reactive({});
     //***
-    const center = reactive([{ name: "VNPT HẬU GIANG", _id: "1" }]);
+    const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("Trung tâm");
     watch(selectedOptionCenter, (newValue, oldValue) => {
       console.log("New Center:", newValue);
@@ -30,6 +31,7 @@ export default {
         // document.getElementById("model-add").style.display = "none";
       }
     });
+
     const Department = reactive([
       { name: "Phòng CSkh", _id: "1" },
       { name: "Phòng tài chính", _id: "2" },
@@ -47,16 +49,20 @@ export default {
     watch(selectedOptionUnit, (newValue, oldValue) => {
       console.log("New Unit:", newValue);
     });
-    //***
-    const create = () => {
+
+    const clickAdd = () => {
       if (props.item.name.length > 0 && props.item.content.length > 0) {
         ctx.emit("create");
       }
     };
+    onMounted(async () => {
+      centers.center = await centerServices.findAll();
+    });
     return {
-      create,
+      // create,
+      clickAdd,
       //***
-      center,
+      centers,
       selectedOptionCenter,
       Department,
       selectedOptionDepartment,
@@ -158,7 +164,7 @@ export default {
               <SelectOption
                 :title="`Trung tâm`"
                 :selectedOption="selectedOptionCenter"
-                :field="center"
+                :field="centers.center"
                 :add="true"
                 @option="
                   (value) => {
@@ -208,7 +214,7 @@ export default {
               <span>Thêm</span>
             </b-button>
           </form>
-          <Center></Center>
+          <Center @newData="(value) => (centers.center = value)"></Center>
         </div>
       </div>
     </div>

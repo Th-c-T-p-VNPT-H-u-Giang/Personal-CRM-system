@@ -28,15 +28,15 @@
                 class="form-control"
                 id="name"
                 name="name"
-                v-model="newData.cen_name"
+                v-model="newData.name"
                 required
               />
               <div style="color: red">
-                {{ errors.cen_name }}
+                {{ errors.name }}
               </div>
             </div>
             <button
-              v-if="newData.cen_id != ''"
+              v-if="newData._id != ''"
               type="submit"
               class="btn btn-warning px-3 py-2"
               style="font-size: 14px"
@@ -44,7 +44,7 @@
               Sửa
             </button>
             <button
-              v-if="newData.cen_id == ''"
+              v-if="newData._id == ''"
               type="submit"
               class="btn btn-primary px-3 py-2"
               style="font-size: 14px"
@@ -68,14 +68,14 @@ export default {
 
   setup({ newData }, ntx) {
     const errors = reactive({
-      cen_name: "",
+      name: "",
     });
     const validate = () => {
       let valid = ref(true);
-      errors.cen_name = "";
+      errors.name = "";
 
-      if (newData.cen_name.trim() == "") {
-        errors.cen_name = "Tên trung tâm không được bỏ trống";
+      if (newData.name.trim() == "") {
+        errors.name = "Tên trung tâm không được bỏ trống";
         valid.value = false;
       }
       console.log(errors);
@@ -90,8 +90,8 @@ export default {
     };
     const turn_off = () => {
       document.getElementById("model-add-center").style.display = "none";
-      newData.cen_name = "";
-      newData.cen_id = "";
+      newData.name = "";
+      newData._id = "";
       newData.cen = "";
     };
     return { save, turn_off, errors };

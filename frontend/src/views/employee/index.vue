@@ -14,7 +14,7 @@ import { useRouter } from "vue-router";
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
 import Center from "../../views/unit/center.vue";
 import CenterServices from "../../services/center.services";
-import axios from "axios";
+import departmentsServices from "../../services/dep.services";
 export default {
   components: {
     Table,
@@ -175,8 +175,10 @@ export default {
     });
 
     // methods
-    const create = () => {
+    const create = async () => {
       console.log("creating");
+      // ***
+      centers.center = await CenterServices.findAll();
     };
     const update = (item) => {
       console.log("updating", item);
@@ -204,17 +206,16 @@ export default {
     // *** trung tâm ****
     const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("Trung tâm");
-    watch(selectedOptionCenter, (newValue, oldValue) => {
-      console.log("New Center:", newValue);
+    watch(selectedOptionCenter, async (newValue, oldValue) => {
+      departments.department = await departmentsServices.findAllDepOfACenter(
+        newValue
+      );
       if (newValue == "other") {
         console.log("Show model-center:");
         document.getElementById("model-center").style.display = "block";
       }
     });
-    const Department = reactive([
-      { name: "Phòng CSkh", _id: "1" },
-      { name: "Phòng tài chính", _id: "2" },
-    ]);
+    const departments = reactive({ department: [] });
     const selectedOptionDepartment = ref("Phòng");
     watch(selectedOptionDepartment, (newValue, oldValue) => {
       console.log("New Department:", newValue);
@@ -230,7 +231,8 @@ export default {
     });
 
     onMounted(async () => {
-      centers.center = CenterServices.findAll();
+      centers.center = await CenterServices.findAll();
+      departments.department = await departmentsServices.findAll();
     });
     return {
       data,
@@ -241,10 +243,10 @@ export default {
       deleteOne,
       edit,
       view,
-      //
+      //***
       centers,
       selectedOptionCenter,
-      Department,
+      departments,
       selectedOptionDepartment,
       Unit,
       selectedOptionUnit,
@@ -298,7 +300,8 @@ export default {
           <SelectOption
             :title="`Phòng`"
             :selectedOption="selectedOptionDepartment"
-            :field="Department"
+            :field="departments.department"
+            :add="false"
             @option="
               (value) => {
                 selectedOptionDepartment = value;
@@ -425,7 +428,7 @@ export default {
       @cancel="data.activeEdit = false"
     />
     <View />
-    <Center></Center>
+    <Center @newData="(value) => (centers.center = value)"></Center>
   </div>
 </template>
 

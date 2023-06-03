@@ -74,7 +74,7 @@
               <Table
                 :items="setPages"
                 :fields="['Mã trung tâm', 'Tên trung tâm']"
-                :labels="['cen_id', 'cen_name']"
+                :labels="['_id', 'name']"
                 @update="getcenter"
                 @onDelete="onDelete"
                 @detail="detail"
@@ -101,14 +101,17 @@
 <script>
 import Table from "./form_table/table_lananh.vue";
 import Pagination from "./form_table/pagination_lananh.vue";
+// import Pagination from "../../components/table/pagination_duy.vue";
+
 import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import Add from "./form_table/add_update_center.vue";
 import Form from "./form_table/formLevel.vue";
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted, ref } from "vue";
 import Swal from "./use/showSwal";
 import swal from "sweetalert2";
+import centerServices from "../../services/center.services";
 export default {
   components: {
     Table,
@@ -119,9 +122,10 @@ export default {
     Add,
     Form,
   },
-  setup(ctx) {
+
+  setup(props, ctx) {
     const data = reactive({
-      items: [{ cen_id: 1, cen_name: "VNPT Hậu Giang" }],
+      items: [{ name: "", _id: "" }],
       entryValue: 2,
       numberOfPages: 1,
       totalRow: 0,
@@ -132,9 +136,10 @@ export default {
       activeMenu: 1,
       activeSelectAll: false,
     });
+
     const newData = reactive({
-      cen_id: "",
-      cen_name: "",
+      _id: "",
+      name: "",
       cen: "",
     });
     const { showSuccess } = Swal();
@@ -142,7 +147,7 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.cen_name].join("").toLocaleLowerCase();
+        return [value.name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -153,18 +158,24 @@ export default {
       });
     });
     const filtered = computed(() => {
+      // console.log("filtered:");
+
       if (!data.searchText) {
+        // console.log("1");
         data.totalRow = data.items.length;
         return data.items;
       } else {
+        // console.log("2");
         data.totalRow = filter.value.length;
         return filter.value;
       }
     });
     const setNumberOfPages = computed(() => {
+      // console.log("setNumberofpages");
       return Math.ceil(filtered.value.length / data.entryValue);
     });
     const setPages = computed(() => {
+      // console.log("setpages");
       if (setNumberOfPages.value == 0 || data.entryValue == "All") {
         data.entryValue = data.items.length;
         data.numberOfPages = 1;
@@ -182,8 +193,8 @@ export default {
     //
     const getcenter = async (value_id) => {
       document.getElementById("model-add-center").style.display = "block";
-      newData.cen_id = value_id;
-      newData.cen_name = data.items[value_id - 1].cen_name;
+      newData._id = value_id;
+      // newData.name = data.items[value_id - 1].name;
       newData.cen = "update";
     };
     const display = () => {
@@ -195,21 +206,23 @@ export default {
       document.getElementById("model-center").style.display = "none";
     };
     const emptyNewData = () => {
-      newData["cen_id"] = "";
-      newData["cen_name"] = "";
+      newData["_id"] = "";
+      newData["name"] = "";
       newData["cen"] = "";
     };
-    const addOrUpdatecenel = () => {
+    const addOrUpdatecenel = async () => {
       if (newData.cen == "update") {
-        console.log("UPDATE THU NGHIEM", newData.cen_id, newData.cen_name);
+        console.log("UPDATE THU NGHIEM", newData._id, newData.name);
         emptyNewData();
         document.getElementById("model-add-center").style.display = "none";
         showSuccess();
       } else {
-        console.log("ADD THU NGHIEM", newData.cen_name);
-        data.items.push({ cen_id: 8, cen_name: newData.cen_name });
+        console.log("ADD THU NGHIEM", newData.name);
+        centerServices.create(newData);
         emptyNewData();
         showSuccess();
+        data.items = await centerServices.findAll();
+        ctx.emit("newData", data.items);
       }
     };
     const onDelete = (data) => {
@@ -234,6 +247,10 @@ export default {
     const detail = (data) => {
       console.log("detail", data);
     };
+    onMounted(async () => {
+      data.items = await centerServices.findAll();
+      console.log("Mounted length:", data.items.length, "Data:", data.items);
+    });
     return {
       data,
       setPages,
