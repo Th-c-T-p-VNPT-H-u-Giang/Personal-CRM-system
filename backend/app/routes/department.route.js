@@ -14,5 +14,6 @@ router
   .put(department.update)
   .get(department.findOne)
   .delete(department.deleteOne);
+router.route("/center/:centerId").get(department.findAllDepOfACenter);
 
 module.exports = router;

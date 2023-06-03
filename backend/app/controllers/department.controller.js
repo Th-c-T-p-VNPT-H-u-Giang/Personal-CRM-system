@@ -40,7 +40,19 @@ exports.findOne = async (req, res, next) => {
     return next(createError(400, "Error finding Department !"));
   }
 };
-
+//
+exports.findAllDepOfACenter = async (req, res, next) => {
+  try {
+    const documents = await Department.findAll({
+      where: {
+        centerVNPTHGId: req.params.centerId,
+      },
+    });
+    return res.send(documents);
+  } catch (error) {
+    return next(createError(400, "Error finding Department !"));
+  }
+};
 exports.deleteOne = async (req, res, next) => {
   try {
     const documents = await Department.destroy({

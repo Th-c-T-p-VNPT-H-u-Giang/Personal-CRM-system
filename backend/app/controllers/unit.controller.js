@@ -40,7 +40,19 @@ exports.findOne = async (req, res, next) => {
     return next(createError(400, "Error finding Unit !"));
   }
 };
-
+//
+exports.findAllUnitOfADep = async (req, res, next) => {
+  try {
+    const documents = await Unit.findAll({
+      where: {
+        departmentId: req.params.depId,
+      },
+    });
+    return res.send(documents);
+  } catch (error) {
+    return next(createError(400, "Error finding Units of a Department !"));
+  }
+};
 exports.deleteOne = async (req, res, next) => {
   try {
     const documents = await Unit.destroy({
