@@ -13,10 +13,15 @@ const encryptionKey = '12345678912345678901234567890121';
 const iv = '0123456789abcdef';
 
 const setEncrypt = (value, name, modelInstance) => {
-    const cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, iv);
-    let encrypted = cipher.update(value, 'utf8', 'hex');
-    encrypted += cipher.final('hex');
-    modelInstance.setDataValue(name, encrypted);
+    if (value.length == 0) {
+        let encrypted = '';
+        modelInstance.setDataValue(name, encrypted);
+    } else {
+        const cipher = crypto.createCipheriv('aes-256-cbc', encryptionKey, iv);
+        let encrypted = cipher.update(value, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+        modelInstance.setDataValue(name, encrypted);
+    }
 }
 
 const getDecrypt = (name, modelInstance) => {
@@ -256,6 +261,11 @@ const Permission = sequelize.define('Permission', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Tên quyền không được bỏ trống.',
+            },
+        },
         get() {
             return getDecrypt('name', this);
         },
@@ -270,6 +280,11 @@ const Role = sequelize.define('Role', {
     name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Tên chức năng không được bỏ trống.',
+            },
+        },
         get() {
             return getDecrypt('name', this);
         },
@@ -362,6 +377,11 @@ const Account = sequelize.define('Account', {
     user_name: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Tên đăng nhập không được bỏ trống.',
+            },
+        },
         get() {
             return getDecrypt('user_name', this);
         },
@@ -372,6 +392,11 @@ const Account = sequelize.define('Account', {
     password: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Mật khẩu không được bỏ trống.',
+            },
+        },
         get() {
             return getDecrypt('password', this);
         },

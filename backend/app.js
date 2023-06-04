@@ -17,6 +17,18 @@ app.get('/', (req, res, next) => {
     })
 });
 
+// handles before https methods
+const convertToLowercase = (req, res, next) => {
+    for (let key in req.body) {
+        if (typeof req.body[key] === 'string') {
+            req.body[key] = req.body[key].toLowerCase();
+        }
+    }
+    next();
+};
+
+app.use(convertToLowercase);
+
 // initialize router
 const customerRouter = require('./app/routes/customer.route');
 const customer_typesRouter = require('./app/routes/customer_types.route');

@@ -4,14 +4,38 @@ const { v4: uuidv4 } = require("uuid");
 const { sequelize } = require("../config/index");
 
 exports.create = async (req, res, next) => {
-  try {
-    const document = await Permission.create({
-      name: req.body.name,
+  if (Object.keys(req.body).length === 1) {
+    const { name } = req.body;
+    const permissions = await Permission.findAll();
+    for (let value of permissions) {
+      if (value.name == name) {
+        return res.send({
+          error: true,
+          msg: `Đã tồn tại quyền ${value.name}.`,
+        });
+      }
+    }
+    try {
+      const document = await Permission.create({
+        name: req.body.name,
+      });
+      return res.send({
+        error: false,
+        msg: `Bạn đã tạo thành công quyền ${document.name}`,
+        document,
+      });
+    } catch (error) {
+      console.log(error.message);
+      return res.send({
+        error: true,
+        msg: error.message,
+      });
+    }
+  } else {
+    return res.send({
+      error: true,
+      msg: `Vui lòng nhập đủ thông tin.`,
     });
-    return res.send(document);
-  } catch (error) {
-    console.log(error);
-    return next(createError(400, "Error creating Permission !"));
   }
 };
 
@@ -34,12 +58,17 @@ exports.findOne = async (req, res, next) => {
     });
     return res.send(documents);
   } catch (error) {
-    return next(createError(400, "Error finding permission!"));
+    return next(createError(400, "Error finding permission !"));
   }
 };
 
 exports.deleteOne = async (req, res, next) => {
   try {
+    const permission = await Permission.findOne({
+      where: {
+        _id: req.params.id,
+      },
+    });
     const result = await Permission.destroy({
       where: {
         _id: req.params.id,
@@ -47,10 +76,13 @@ exports.deleteOne = async (req, res, next) => {
     });
 
     if (result === 0) {
+      // If no records were deleted, return an error
       return next(createError(404, "Permission not found"));
     }
-
-    return res.sendStatus(204);
+    return res.send({
+      msg: `Đã xoá thành công quyền ${permission.name}`,
+      document: permission,
+    });
   } catch (error) {
     console.log(error);
     return next(createError(400, "Error deleting permission"));
@@ -79,28 +111,72 @@ exports.deleteAll = async (req, res, next) => {
   }
 };
 
+// exports.update = async (req, res, next) => {
+//   try {
+//     const { name } = req.body;
+//     const [updatedRowsCount, updatedRows] = await Permission.update(
+//       {
+//         name,
+//       },
+//       {
+//         where: {
+//           _id: req.params.id,
+//         },
+//         returning: true, 
+//       }
+//     );
+
+//     if (updatedRowsCount === 0) {
+//       return next(createError(404, "Permission not found"));
+//     }
+
+//     return res.send(updatedRows[0]);
+//   } catch (error) {
+//     console.log(error);
+//     return next(createError(400, "Error updating Permission"));
+//   }
+// };
 exports.update = async (req, res, next) => {
+  console.log("Update", req.body);
+  const { name } = req.body;
+  // Kiểm tra xem dữ liệu cần thiết có bị thiếu không
+  if (!name) {
+    return res.send({
+      error: true,
+      msg: "Vui lòng điền đầy đủ thông tin.",
+    });
+  }
   try {
-    const { name } = req.body;
-    const [updatedRowsCount, updatedRows] = await Permission.update(
-      {
-        name,
-      },
-      {
+    let permissions = [
+      await Permission.findOne({
         where: {
           _id: req.params.id,
         },
-        returning: true, 
-      }
-    );
+      }),
+    ];
 
-    if (updatedRowsCount === 0) {
-      return next(createError(404, "Permission not found"));
+    permissions = permissions.filter((value, index) => {
+      return value.name == name;
+    });
+
+    if (permissions.length == 0) {
+      const document = await Permission.update(
+        {
+          name: req.body.name,
+        },
+        { where: { _id: req.params.id }, returning: true }
+      );
+      return res.send({
+        error: false,
+        msg: "Dữ liệu đã được thay đổi thành công.",
+      });
+    } else {
+      return res.send({
+        error: true,
+        msg: "Dữ liệu chưa được thay đổi.",
+      });
     }
-
-    return res.send(updatedRows[0]);
   } catch (error) {
-    console.log(error);
-    return next(createError(400, "Error updating Permission"));
+    return next(createError(400, "Error update"));
   }
 };
