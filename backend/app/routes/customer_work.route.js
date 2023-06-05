@@ -3,11 +3,8 @@ const customerWorks = require("../controllers/customer_work.controller");
 
 const router = express.Router();
 
-router
-  .route("/")
-  .post(customerWorks.create)
-  .get(customerWorks.findAll)
-  .delete(customerWorks.deleteAll);
+router.route("/").post(customerWorks.create).get(customerWorks.findAll);
+// .delete(customerWorks.deleteAll);
 
 router
   .route("/:id")

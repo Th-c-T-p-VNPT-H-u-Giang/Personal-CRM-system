@@ -1,6 +1,5 @@
 const { Customer_Types } = require("../models/index.model.js");
 const createError = require("http-errors");
-const { v4: uuidv4 } = require("uuid");
 
 exports.create = async (req, res, next) => {
   const customerType = await Customer_Types.findAll();
@@ -19,20 +18,16 @@ exports.create = async (req, res, next) => {
         name: req.body.name,
       });
       return res.status(200).json({
-        msg: document
-          ? "Customer type add successfully!!"
-          : "Customer type add failed",
-        statusCode: document ? true : false,
-        payload: document ? document : undefined,
+        error: false,
+        msg: `Thêm thành công loại khách hàng ${document.name}`,
       });
     } catch (error) {
       return next(createError(500, error.message));
     }
   } else {
     return res.status(200).json({
-      msg: "Name Customer type can not the same",
-      statusCode: false,
-      payload: undefined,
+      error: true,
+      msg: `Tên loại khách hàng ${req.body.name} đã tồn tại không thể thêm!!`,
     });
   }
 };
@@ -40,7 +35,12 @@ exports.create = async (req, res, next) => {
 exports.findAll = async (req, res, next) => {
   try {
     const documents = await Customer_Types.findAll();
-    return res.send(documents);
+    return res.status(200).json({
+      msg:
+        documents.length > 0 ? "Danh sách khách hàng" : "Không có khách hàng",
+      error: documents.length > 0 ? false : true,
+      documents,
+    });
   } catch (error) {
     console.log(error);
     return next(createError(500, error.message));
@@ -56,20 +56,18 @@ exports.deleteOne = async (req, res, next) => {
     });
 
     return res.status(200).json({
+      error: customerType ? false : true,
       msg: customerType
-        ? "Deleted customer type successfully!!"
-        : "Not found!!",
-      statusCode: customerType ? true : false,
+        ? "Bạn vừa xóa thành công loại khách hàng"
+        : "Không thể tìm thấy loại khách hàng để xóa!!",
     });
   } catch (error) {
-    console.log(error);
     return next(createError(500, error.message));
   }
 };
 
 exports.update = async (req, res, next) => {
   const customerType = await Customer_Types.findAll();
-  console.log(customerType);
   const name = req.body.name;
   let isCheck = true;
   for (const each of customerType) {
@@ -91,20 +89,18 @@ exports.update = async (req, res, next) => {
         }
       );
       return res.status(200).json({
+        error: customerType[0] ? false : true,
         msg: customerType[0]
-          ? "Update customer type successfully!!"
-          : "Not found!!",
-        statusCode: customerType[0] ? true : false,
+          ? "Dử liệu thay đổi thành công"
+          : "Không thể tìm thấy dử liệu để thay đổi!!",
       });
     } catch (error) {
-      console.log(error);
       return next(createError(500, error.message));
     }
   } else {
     return res.status(200).json({
-      msg: "Name Customer type can not the same",
-      statusCode: false,
-      payload: undefined,
+      error: true,
+      msg: "Dữ liệu chùng nên chưa được thay đổi.",
     });
   }
 };

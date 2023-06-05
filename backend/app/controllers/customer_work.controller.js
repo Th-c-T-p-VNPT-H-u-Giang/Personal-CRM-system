@@ -20,12 +20,10 @@ exports.create = async (req, res, next) => {
     });
 
     return res.status(200).json({
-      msg: document ? "Created successfully" : "Failed to create",
-      statusCode: document ? true : false,
-      payload: document ? document : undefined,
+      msg: document ? "Tạo thành công" : "Tạo thất bại",
+      error: document ? false : true,
     });
   } catch (error) {
-    console.log(error);
     return next(createError(500, error.message));
   }
 };
@@ -49,9 +47,9 @@ exports.findAll = async (req, res, next) => {
     });
 
     return res.status(200).json({
-      msg: documents.length > 0 ? "Not Empty!!" : "Empty",
-      statusCode: documents.length > 0 ? true : false,
-      payload: documents.length > 0 ? documents : undefined,
+      msg: documents.length > 0 ? "Danh sách công việc khách hàng!!" : "Trống",
+      error: documents.length > 0 ? false : true,
+      documents,
     });
   } catch (error) {
     return next(createError(500, error.message));
@@ -97,16 +95,15 @@ exports.deleteOne = async (req, res, next) => {
     });
 
     return res.status(200).json({
-      msg: document ? "Delete successfully!!!" : "Not found to deleted!!!",
-      statusCode: document ? true : false,
-      payload: document ? document : undefined,
+      msg: document
+        ? "Xóa thành công!!!"
+        : "Không tìm thấy khách hàng để xóa!!!",
+      error: document ? false : true,
     });
   } catch (error) {
     return next(createError(500, error.message));
   }
 };
-
-exports.deleteAll = async (req, res, next) => {};
 
 exports.update = async (req, res, next) => {
   const { id } = req.params;
@@ -124,9 +121,9 @@ exports.update = async (req, res, next) => {
 
     return res.status(200).json({
       msg: document[0]
-        ? "Updated successfully"
-        : "Not found customer work to update",
-      statusCode: document[0] ? true : false,
+        ? "Sửa dử liệu thành công"
+        : "Không tìm thấy thông tin để sửa",
+      error: document[0] ? false : true,
     });
   } catch (error) {
     return next(createError(500, error.message));

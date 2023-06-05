@@ -11,6 +11,7 @@ router
 router
   .route("/")
   .post(uploadImages("avatar"), customers.create)
+  // .post(, uploadImages("avatar"))
   .get(customers.findAll)
   .delete(customers.deleteAll);
 

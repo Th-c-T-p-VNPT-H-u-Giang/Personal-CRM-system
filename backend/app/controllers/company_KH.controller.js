@@ -9,10 +9,9 @@ exports.create = async (req, res, next) => {
     });
     return res.status(200).json({
       msg: document
-        ? "Company KH created successfully"
-        : "Company KH created failed",
-      statusCode: document ? true : false,
-      payload: document ? document : undefined,
+        ? "Tạo công ty khách hàng thành công"
+        : "Tạo công ty khách hàng thất bại",
+      error: document ? false : true,
     });
   } catch (error) {
     return next(createError(500, error.message));
@@ -23,24 +22,31 @@ exports.findAll = async (req, res, next) => {
   try {
     const documents = await Company_KH.findAll();
 
-    return res.status(200).send(documents);
+    return res.status(200).json({
+      msg:
+        documents.length > 0
+          ? "Danh sách công ty của khách hàng"
+          : "Danh sách không tồn tại",
+      error: documents.length > 0 ? false : true,
+      documents,
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
 };
 
-// exports.findOne = async (req, res, next) => {
-//   try {
-//     const documents = await Customer.findOne({
-//       where: {
-//         _id: req.params.id,
-//       },
-//     });
-//     return res.send(documents);
-//   } catch (error) {
-//     return next(createError(500, error.message));
-//   }
-// };
+exports.findOne = async (req, res, next) => {
+  try {
+    const documents = await Company_KH.findOne({
+      where: {
+        _id: req.params.id,
+      },
+    });
+    return res.send(documents);
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
 
 exports.deleteOne = async (req, res, next) => {
   const { id } = req.params;
@@ -52,9 +58,8 @@ exports.deleteOne = async (req, res, next) => {
     });
 
     return res.status(200).json({
-      msg: document ? "Deleted successfully" : "Not found to delete!!",
-      statusCode: document ? true : false,
-      payload: document ? document : undefined,
+      msg: document ? "Xóa thành công" : "Không tìm thấy thông tin để sửa!!",
+      error: document ? false : true,
     });
   } catch (error) {
     return next(createError(500, error.message));
@@ -80,7 +85,9 @@ exports.update = async (req, res, next) => {
 
     console.log(document);
     return res.status(200).json({
-      msg: document[0] ? "Update successfully" : "Not found to update!!",
+      msg: document[0]
+        ? "Sửa dử liệu thành công"
+        : "Không tìm thấy dử liệu để sửa!!",
       statusCode: document[0] ? true : false,
       payload: document[0] ? document : undefined,
     });

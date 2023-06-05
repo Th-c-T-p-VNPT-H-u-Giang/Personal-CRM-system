@@ -6,6 +6,9 @@ const path_lib = require("path");
 const POSITION_CUT_LINK_IMAGE = 21;
 
 exports.create = async (req, res, next) => {
+  // const documents = await Customer.findAll();
+  // check unique name, email, phone
+
   const { path } = req.file;
   const imgUrl = path.slice(4, path.length);
   const image = `http://localhost:3000/${imgUrl}`;
@@ -15,16 +18,13 @@ exports.create = async (req, res, next) => {
     avatar: image,
   };
 
-  const customer = await Customer.create({
-    ...newCustomer,
-  });
   try {
+    const customer = await Customer.create({
+      ...newCustomer,
+    });
     return res.status(200).json({
-      msg: customer
-        ? "Created customer successfully"
-        : "Failed to create customer",
-      statusCode: customer ? true : false,
-      payload: customer ? customer : undefined,
+      msg: customer ? "Thêm khách hàng thành công" : "Thêm khách hàng thất bại",
+      error: customer ? false : true,
     });
   } catch (error) {
     return next(createError(500, error.message));
@@ -35,12 +35,15 @@ exports.findAll = async (req, res, next) => {
   try {
     const documents = await Customer.findAll();
     return res.status(200).json({
-      msg: documents.length > 0 ? "Not Empty!!" : "Empty",
-      statusCode: documents.length > 0 ? true : false,
-      payload: documents.length > 0 ? documents : undefined,
+      msg:
+        documents.length > 0
+          ? "Danh sách khách hàng!!"
+          : "Không có khách hàng nào",
+      error: documents.length > 0 ? false : true,
+      documents,
     });
   } catch (error) {
-    return next(createError(500, error.message));
+    return next(createError(400, error.message));
   }
 };
 
@@ -52,9 +55,10 @@ exports.findOne = async (req, res, next) => {
       },
     });
     return res.status(200).json({
-      msg: documents ? "Get customer by id successfully" : "Not found!!",
-      statusCode: documents ? true : false,
-      payload: documents ? documents : undefined,
+      msg: documents
+        ? "Thông tin khách hàng"
+        : "Thông tin khách hàng không tồn tại!!",
+      error: documents ? false : true,
     });
   } catch (error) {
     return next(createError(500, error.message));
@@ -92,15 +96,14 @@ exports.deleteOne = async (req, res, next) => {
 
       return res.status(200).json({
         msg: deleteCustomer
-          ? "Customer deleted successfully"
-          : "Customer deleted failed",
-        statusCode: deleteCustomer ? true : false,
-        payload: deleteCustomer ? customer : undefined,
+          ? "Xóa khách hàng thành công"
+          : "Xóa khách hàng không thành công",
+        error: deleteCustomer ? false : true,
       });
     } else {
       return res.status(200).json({
-        msg: "Not Found!!",
-        statusCode: false,
+        msg: "Không tìm thấy khách hàng để xóa!!",
+        error: true,
       });
     }
   } catch (error) {
@@ -132,10 +135,9 @@ exports.update = async (req, res, next) => {
       );
       return res.status(200).json({
         msg: updatedCustomer
-          ? "updated customer successfully!!"
-          : "Not found customer to update!!",
-        statusCode: updatedCustomer ? true : false,
-        payload: updatedCustomer,
+          ? "Sửa thông tin khách hàng thành công!!"
+          : "Ko tìm thấy thông tin khách hàng để xóa!!",
+        error: updatedCustomer ? false : true,
       });
     } else {
       const customer = await Customer.findOne({
@@ -178,10 +180,10 @@ exports.update = async (req, res, next) => {
       );
       return res.status(200).json({
         msg: updatedCustomer
-          ? "updated customer successfully!!"
-          : "Not found customer to update!!",
-        statusCode: updatedCustomer ? true : false,
-        payload: updatedCustomer,
+          ? "Sửa thông tin khách hàng thành công!!"
+          : "Không tìm thấy dử liệu để sửa!!",
+        error: updatedCustomer ? false : true,
+        document: updatedCustomer,
       });
     }
   } catch (error) {
