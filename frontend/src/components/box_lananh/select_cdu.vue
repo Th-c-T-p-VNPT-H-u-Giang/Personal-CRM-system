@@ -9,30 +9,34 @@
         {{ val.name }}
       </option>
       <option
-        v-if="add"
+        v-if="add.nameCDU == 'center'"
         value="other"
         data-toggle="modal_center"
         data-target="#model-center"
       >
         Khác
       </option>
+      <option
+        v-if="add.nameCDU == 'dep'"
+        value="other"
+        data-toggle="model-department"
+        data-target="#model-department"
+      >
+        Khác dep
+      </option>
     </select>
   </div>
 </template>
 <script>
 import { watch, ref, reactive } from "vue";
-import Center from "../../views/unit/center.vue";
-
 export default {
   name: "select",
-  components: {
-    Center,
-  },
+  components: {},
   props: {
     field: { type: Array },
     title: { type: String },
     selectedOption: { type: String },
-    add: { type: Boolean },
+    add: { type: Object, default: "" },
   },
   setup({ selectedOption, add }, { emit }) {
     // console.log("Add:", add);

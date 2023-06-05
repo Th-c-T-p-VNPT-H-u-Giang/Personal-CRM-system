@@ -195,7 +195,7 @@ export default {
       document.getElementById("model-add-center").style.display = "block";
       let centerEdit = await centerServices.findOne(value_id);
       newData._id = value_id;
-      newData.name = centerEdit.name;
+      newData.name = centerEdit.document.name;
       newData.cen = "update";
     };
     const display = () => {
@@ -212,7 +212,9 @@ export default {
       newData["cen"] = "";
     };
     const init = async () => {
-      data.items = await centerServices.findAll();
+      let documents = await centerServices.findAll();
+      data.items = documents.document;
+      console.log("emit newData", data.items);
       ctx.emit("newData", data.items);
     };
     const addOrUpdatecenel = async () => {
@@ -224,8 +226,8 @@ export default {
         document.getElementById("model-add-center").style.display = "none";
         showSuccess();
       } else {
-        console.log("ADD THU NGHIEM", newData.name);
-        centerServices.create(newData);
+        console.log("ADD THU NGHIEM", newData);
+        await centerServices.create(newData);
         init();
         emptyNewData();
         showSuccess();
@@ -256,7 +258,8 @@ export default {
     };
 
     onMounted(async () => {
-      data.items = await centerServices.findAll();
+      let documents = await centerServices.findAll();
+      data.items = documents.document;
       console.log("Mounted length:", data.items.length, "Data:", data.items);
     });
     return {

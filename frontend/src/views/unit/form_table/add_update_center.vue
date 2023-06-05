@@ -67,7 +67,6 @@ export default {
   },
 
   setup({ newData }, ntx) {
-    console.log(newData.name);
     const errors = reactive({
       name: "",
     });

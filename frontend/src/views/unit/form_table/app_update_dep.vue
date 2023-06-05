@@ -26,16 +26,16 @@
               <select
                 class="pl-2 form-control"
                 @change="getCenter"
-                v-model="selectValue"
+                v-model="selectedOption"
                 required
               >
                 <option disabled selected hidden value="#"></option>
                 <option
-                  :value="`${value.cen_id}`"
+                  :value="`${value._id}`"
                   :key="index"
-                  v-for="(value, index) in centers"
+                  v-for="(value, index) in centers.center"
                 >
-                  {{ value.cen_name }}
+                  {{ value.name }}
                 </option>
               </select>
             </div>
@@ -49,7 +49,7 @@
                 class="form-control"
                 id="name"
                 name="name"
-                v-model="newData.dep_name"
+                v-model="newData.name"
                 required
               />
               <div style="color: red">
@@ -80,7 +80,8 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { reactive, ref, onMounted } from "vue";
+import centerServices from "../../../services/center.services";
 export default {
   name: "Add",
   props: {
@@ -88,20 +89,25 @@ export default {
   },
 
   setup({ newData }, ntx) {
-    const centers = reactive([{ cen_id: 1, cen_name: "VNPT Hậu giang" }]);
+    const centers = reactive({ center: [] });
     const errors = reactive({
       dep_name: "",
+      centerVNPTHGId: "",
     });
+    const selectedOption = ref("#");
     const getCenter = (event) => {
       console.log("change:", event.target.value);
-      newData.cen_id = event.target.value;
-      console.log("cenid:", newData.cen_id);
+      newData.centerVNPTHGId = event.target.value;
+      console.log("cenid:", newData.centerVNPTHGId);
     };
     const validate = () => {
       let valid = ref(true);
       errors.dep_name = "";
-
-      if (newData.dep_name.trim() == "") {
+      if (selectedOption.value == "#") {
+        errors.centerVNPTHGId = "Tên trung tâm không được bỏ trống";
+        valid.value = false;
+      }
+      if (newData.name.trim() == "") {
         errors.dep_name = "Tên phòng không được bỏ trống";
         valid.value = false;
       }
@@ -117,12 +123,15 @@ export default {
     };
     const turn_off = () => {
       document.getElementById("model-add-dep").style.display = "none";
-      newData.cen_id = "";
-      newData.dep_name = "";
-      newData.dep_id = "";
+      newData.centerVNPTHGId = "";
+      newData.name = "";
+      newData._id = "";
       newData.dep = "";
     };
-    return { centers, getCenter, save, turn_off, errors };
+    onMounted(async () => {
+      centers.center = await centerServices.findAll();
+    });
+    return { centers, getCenter, selectedOption, save, turn_off, errors };
   },
 };
 </script>

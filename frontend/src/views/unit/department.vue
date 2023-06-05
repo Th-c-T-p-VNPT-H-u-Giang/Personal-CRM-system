@@ -5,13 +5,18 @@
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title">Tất cả Phòng</h4>
-          <button type="button" class="close" data-dismiss="modal">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal_dep"
+            @click="turnOff"
+          >
             &times;
           </button>
         </div>
         <!-- Modal body -->
         <div class="modal-body">
-          <div class="">
+          <div>
             <div class="d-flex justify-content-between mr-2 mb-3 row">
               <div class="d-flex justify-content-start col-5">
                 <Select
@@ -68,7 +73,7 @@
             <Table
               :items="setPages"
               :fields="['Mã phòng', 'Tên phòng']"
-              :labels="['dep_id', 'dep_name']"
+              :labels="['_id', 'name']"
               @update="getdep"
               @onDelete="onDelete"
               @detail="detail"
@@ -98,9 +103,10 @@ import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import Add from "./form_table/app_update_dep.vue";
-import { reactive, computed } from "vue";
+import { reactive, computed, onMounted } from "vue";
 import Swal from "./use/showSwal";
 import swal from "sweetalert2";
+import departmentServices from "../../services/dep.services";
 export default {
   components: {
     Table,
@@ -110,12 +116,9 @@ export default {
     Search,
     Add,
   },
-  setup(ctx) {
+  setup(props, ctx) {
     const data = reactive({
-      items: [
-        { dep_id: 1, dep_name: "Phòng chăm sóc khách hàng" },
-        { dep_id: 2, dep_name: "Phòng tài chính" },
-      ],
+      items: [{ _id: "", name: "" }],
       entryValue: 2,
       numberOfPages: 1,
       totalRow: 0,
@@ -127,8 +130,9 @@ export default {
       activeSelectAll: false,
     });
     const newData = reactive({
-      dep_id: "",
-      dep_name: "",
+      centerVNPTHGId: "",
+      _id: "",
+      name: "",
       dep: "",
     });
     const { showSuccess } = Swal();
@@ -136,7 +140,7 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.dep_name].join("").toLocaleLowerCase();
+        return [value.name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -176,27 +180,35 @@ export default {
     //
     const getdep = async (value_id) => {
       document.getElementById("model-add-dep").style.display = "block";
-      newData.dep_id = value_id;
-      newData.dep_name = data.items[value_id - 1].dep_name;
+      newData._id = value_id;
+      // newData.name = data.items[value_id - 1].dep_name;
       newData.dep = "update";
     };
     const display = () => {
       document.getElementById("model-add-dep").style.display = "block";
+    };
+    const turnOff = () => {
+      console.log("turnoff");
+      document.getElementById("model-department").style.display = "none";
     };
     const emptyNewData = () => {
       newData["dep_id"] = "";
       newData["dep_name"] = "";
       newData["dep"] = "";
     };
-    const addOrUpdatedep = () => {
+    const init = async () => {
+      data.items = await departmentServices.findAll();
+      ctx.emit("newData", data.items);
+    };
+    const addOrUpdatedep = async () => {
       if (newData.dep == "update") {
         console.log("UPDATE THU NGHIEM", newData.dep_id, newData.dep_name);
         emptyNewData();
         document.getElementById("model-add-dep").style.display = "none";
         showSuccess();
       } else {
-        console.log("ADD THU NGHIEM", newData.dep_name);
-        data.items.push({ dep_id: 8, dep_name: newData.dep_name });
+        console.log("ADD THU NGHIEM", newData.name);
+        await departmentServices.create(newData);
         emptyNewData();
         showSuccess();
       }
@@ -223,6 +235,9 @@ export default {
     const detail = (data) => {
       console.log("detail", data);
     };
+    onMounted(async () => {
+      data.items = await departmentServices.findAll();
+    });
     return {
       data,
       setPages,
@@ -232,6 +247,7 @@ export default {
       onDelete,
       detail,
       display,
+      turnOff,
     };
   },
 };

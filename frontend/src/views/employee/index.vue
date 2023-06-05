@@ -204,17 +204,16 @@ export default {
       router.push({ name: "Position" });
     });
 
-    // *** trung tâm ****
+    // ****** trung tâm ******
     const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("Trung tâm");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
-      departments.department = await departmentsServices.findAllDepOfACenter(
-        newValue
-      );
+      let documents = await departmentsServices.findAllDepOfACenter(newValue);
+      departments.department = documents.document;
       units.unit = [];
       for (let val of departments.department) {
         var newData = await unitsServices.findAllUnitsOfADep(val._id);
-        for (let value of newData) {
+        for (let value of newData.document) {
           units.unit.push(value);
         }
       }
@@ -228,7 +227,8 @@ export default {
     const selectedOptionDepartment = ref("Phòng");
     watch(selectedOptionDepartment, async (newValue, oldValue) => {
       // console.log("New Department:", newValue);
-      units.unit = await unitsServices.findAllUnitsOfADep(newValue);
+      let documents = await unitsServices.findAllUnitsOfADep(newValue);
+      units.unit = documents.document;
     });
 
     const units = reactive({
@@ -240,9 +240,12 @@ export default {
     });
 
     onMounted(async () => {
-      centers.center = await CenterServices.findAll();
-      departments.department = await departmentsServices.findAll();
-      units.unit = await unitsServices.findAll();
+      let documents = await CenterServices.findAll();
+      centers.center = documents.document;
+      let documents_dep = await departmentsServices.findAll();
+      departments.department = documents_dep.document;
+      let documents_unit = await unitsServices.findAll();
+      units.unit = documents_unit.document;
     });
     return {
       data,
@@ -298,7 +301,7 @@ export default {
             :title="`Trung tâm`"
             :selectedOption="selectedOptionCenter"
             :field="centers.center"
-            :add="false"
+            :add="'center'"
             @option="
               (value) => {
                 selectedOptionCenter = value;
@@ -311,7 +314,7 @@ export default {
             :title="`Phòng`"
             :selectedOption="selectedOptionDepartment"
             :field="departments.department"
-            :add="false"
+            :add="'dep'"
             @option="
               (value) => {
                 selectedOptionDepartment = value;
@@ -442,7 +445,6 @@ export default {
       @cancel="data.activeEdit = false"
     />
     <View />
-    <Center @newData="(value) => (centers.center = value)"></Center>
   </div>
 </template>
 
