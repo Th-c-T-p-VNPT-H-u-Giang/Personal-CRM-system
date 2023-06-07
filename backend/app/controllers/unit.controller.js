@@ -1,4 +1,4 @@
-const { Unit } = require("../models/index.model.js");
+const { Unit, Department, Center_VNPTHG } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
@@ -64,9 +64,7 @@ exports.create = async (req, res, next) => {
 exports.findAll = async (req, res, next) => {
   try {
     const documents = await Unit.findAll({});
-    return res.send({
-      document: documents,
-    });
+    return res.send(documents);
   } catch (error) {
     console.log(error);
     return next(createError(400, "Error finding Units !"));
@@ -79,10 +77,20 @@ exports.findOne = async (req, res, next) => {
       where: {
         _id: req.params.id,
       },
+      include: [
+        {
+          model: Department,
+          attributes: ["name"],
+          include: [
+            {
+              model: Center_VNPTHG,
+              attributes: ["name"],
+            },
+          ],
+        },
+      ],
     });
-    return res.send({
-      document: documents,
-    });
+    return res.send(documents);
   } catch (error) {
     return next(createError(400, "Error finding Unit !"));
   }
@@ -95,9 +103,7 @@ exports.findAllUnitOfADep = async (req, res, next) => {
         departmentId: req.params.depId,
       },
     });
-    return res.send({
-      document: documents,
-    });
+    return res.send(documents);
   } catch (error) {
     return next(createError(400, "Error finding Units of a Department !"));
   }

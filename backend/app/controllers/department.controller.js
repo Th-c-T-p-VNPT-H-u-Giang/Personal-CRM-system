@@ -1,4 +1,4 @@
-const { Department } = require("../models/index.model.js");
+const { Department, Center_VNPTHG } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
 const crypto = require("crypto");
@@ -64,9 +64,7 @@ exports.create = async (req, res, next) => {
 exports.findAll = async (req, res, next) => {
   try {
     const documents = await Department.findAll({});
-    return res.send({
-      document: documents,
-    });
+    return res.send(documents);
   } catch (error) {
     console.log(error);
     return next(createError(400, "Error finding Departments !"));
@@ -79,10 +77,13 @@ exports.findOne = async (req, res, next) => {
       where: {
         _id: req.params.id,
       },
+      include: [
+        {
+          model: Center_VNPTHG,
+        },
+      ],
     });
-    return res.send({
-      document: documents,
-    });
+    return res.send(documents);
   } catch (error) {
     return next(createError(400, "Error finding Department !"));
   }
@@ -95,9 +96,7 @@ exports.findAllDepOfACenter = async (req, res, next) => {
         centerVNPTHGId: req.params.centerId,
       },
     });
-    return res.send({
-      document: documents,
-    });
+    return res.send(documents);
   } catch (error) {
     return next(createError(400, "Error finding Department !"));
   }
@@ -137,7 +136,10 @@ exports.update = async (req, res, next) => {
         _id: req.params.id,
       },
     });
-    if (dep.name !== req.body.name) {
+    if (
+      dep.name !== req.body.name ||
+      dep.centerVNPTHGId !== req.body.centerVNPTHGId
+    ) {
       const documents = await Department.update(
         { name: req.body.name, centerVNPTHGId: req.body.centerVNPTHGId },
         { where: { _id: req.params.id } }

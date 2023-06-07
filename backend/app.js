@@ -46,38 +46,28 @@ const CycleRouter = require("./app/routes/cycle.route");
 const EmployeeRouter = require("./app/routes/employee.route");
 const AccountRouter = require("./app/routes/account.route");
 const AppointmentRouter = require("./app/routes/appointment.route");
-const StatusRouter = require("./app/routes/status.route");
 const TaskRouter = require("./app/routes/task.route");
 const LogRouter = require("./app/routes/log.route");
-const Customer_EventRouter = require("./app/routes/customer_event.route");
-const Customer_HabitRouter = require("./app/routes/customer_habit.route");
-const Employee_TaskRouter = require("./app/routes/employee_task.route");
-const Role_PermissionRouter = require("./app/routes/role_permission.route");
 
 // use router
-app.use("/customers", customerRouter);
-app.use("/customer_types", customer_typesRouter);
-app.use("/customer_works", customer_workRouter);
-app.use("/company_KHs", Company_KHRouter);
-app.use("/events", EventRouter);
-app.use("/habits", HabitRouter);
-app.use("/positions", PositionRouter);
+app.use("/api/customers", customerRouter);
+app.use("/api/customer_types", customer_typesRouter);
+app.use("/api/customer_works", customer_workRouter);
+app.use("/api/company_KHs", Company_KHRouter);
+app.use("/api/events", EventRouter);
+app.use("/api/habits", HabitRouter);
+app.use("/api/positions", PositionRouter);
 app.use("/api/center_VNPTHGs", Center_VNPTHGRouter);
 app.use("/api/departments", DepartmentRouter);
 app.use("/api/units", UnitRouter);
-app.use("/permissions", PermissionRouter);
-app.use("/roles", RoleRouter);
-app.use("/cycles", CycleRouter);
-app.use("/employees", EmployeeRouter);
-app.use("/accounts", AccountRouter);
-app.use("/appointments", AppointmentRouter);
-app.use("/statuss", StatusRouter);
-app.use("/tasks", TaskRouter);
-app.use("/logs", LogRouter);
-app.use("/customer_events", Customer_EventRouter);
-app.use("/customer_habits", Customer_HabitRouter);
-app.use("/employee_tasks", Employee_TaskRouter);
-app.use("/role_permissions", Role_PermissionRouter);
+app.use("/api/permissions", PermissionRouter);
+app.use("/api/roles", RoleRouter);
+app.use("/api/cycles", CycleRouter);
+app.use("/api/employees", EmployeeRouter);
+app.use("/api/accounts", AccountRouter);
+app.use("/api/appointments", AppointmentRouter);
+app.use("/api/tasks", TaskRouter);
+app.use("/api/logs", LogRouter);
 
 // check errors
 app.use((req, res, next) => {

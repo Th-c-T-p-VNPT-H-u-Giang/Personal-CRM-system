@@ -62,9 +62,7 @@ exports.create = async (req, res, next) => {
 exports.findAll = async (req, res, next) => {
   try {
     const documents = await Center_VNPTHG.findAll({});
-    return res.send({
-      document: documents,
-    });
+    return res.send(documents);
   } catch (error) {
     console.log(error);
     return next(createError(400, "Error findAll Centers !"));
@@ -78,9 +76,7 @@ exports.findOne = async (req, res, next) => {
         _id: req.params.id,
       },
     });
-    return res.send({
-      document: documents,
-    });
+    return res.send(documents);
   } catch (error) {
     return next(createError(400, "Error finding Center_VNPTHG !"));
   }
