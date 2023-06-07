@@ -1,4 +1,4 @@
-import createApiClient from "./api.services";
+import createApiClient from "./api.service";
 
 class centerService {
   constructor(baseUrl = "/api/center_VNPTHGs") {
@@ -7,10 +7,10 @@ class centerService {
   async create(data) {
     return (await this.api.post(`/`, data)).data;
   }
-  async findAll() {
+  async getAll() {
     return (await this.api.get("/")).data;
   }
-  async findOne(id) {
+  async getOne(id) {
     return (await this.api.get(`/${id}`)).data;
   }
   async deleteAll() {

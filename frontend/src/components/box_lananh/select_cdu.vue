@@ -24,6 +24,14 @@
       >
         Khác dep
       </option>
+      <option
+        v-if="add.nameCDU == 'unit'"
+        value="other"
+        data-toggle="model-department"
+        data-target="#model-department"
+      >
+        Khác unit
+      </option>
     </select>
   </div>
 </template>
@@ -43,7 +51,7 @@ export default {
     const select = ref({});
     select.value = selectedOption;
     watch([select], ([newValue1, oldValue1]) => {
-      console.log("Dropdown value changed:", select.value);
+      // console.log("Dropdown value changed:", select.value);
       emit("option", select.value);
     });
 

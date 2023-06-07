@@ -23,13 +23,22 @@
               <label for="name"
                 >Tên trung tâm(<span style="color: red">*</span>):</label
               >
+              <!-- -->
               <select
                 class="pl-2 form-control"
                 @change="getCenter"
                 v-model="selectedOption"
                 required
               >
-                <option disabled selected hidden value="#"></option>
+                <option
+                  disabled
+                  :selected="newData.Center_VNPTHG"
+                  hidden
+                  v-if="newData.Center_VNPTHG"
+                  value=""
+                >
+                  {{ newData.Center_VNPTHG }}
+                </option>
                 <option
                   :value="`${value._id}`"
                   :key="index"
@@ -57,7 +66,7 @@
               </div>
             </div>
             <button
-              v-if="newData.dep_id != ''"
+              v-if="newData._id != ''"
               type="submit"
               class="btn btn-warning px-3 py-2"
               style="font-size: 14px"
@@ -65,13 +74,14 @@
               Sửa
             </button>
             <button
-              v-if="newData.dep_id == ''"
+              v-if="newData._id == ''"
               type="submit"
               class="btn btn-primary px-3 py-2"
               style="font-size: 14px"
             >
               Thêm
             </button>
+            {{ center }}
           </form>
         </div>
       </div>
@@ -80,26 +90,29 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onBeforeMount, onMounted } from "vue";
 import centerServices from "../../../services/center.services";
 export default {
   name: "Add",
   props: {
     newData: { type: Object },
+    center: { type: Array, default: [] },
   },
 
-  setup({ newData }, ntx) {
+  setup({ newData, center }, ntx) {
     const centers = reactive({ center: [] });
+    centers.center = center;
     const errors = reactive({
       dep_name: "",
       centerVNPTHGId: "",
     });
-    const selectedOption = ref("#");
     const getCenter = (event) => {
       console.log("change:", event.target.value);
       newData.centerVNPTHGId = event.target.value;
       console.log("cenid:", newData.centerVNPTHGId);
     };
+    const selectedOption = ref("");
+
     const validate = () => {
       let valid = ref(true);
       errors.dep_name = "";
@@ -127,11 +140,24 @@ export default {
       newData.name = "";
       newData._id = "";
       newData.dep = "";
+      newData.centerVNPTHGId = "";
+      newData.Center_VNPTHG = "";
+      selectedOption.value = "";
+      // name.value = "";
     };
     onMounted(async () => {
-      centers.center = await centerServices.findAll();
+      let documents = await centerServices.findAll();
+      centers.center = documents.document;
+      // console.log("app_update_dep.vue");
     });
-    return { centers, getCenter, selectedOption, save, turn_off, errors };
+    return {
+      centers,
+      getCenter,
+      selectedOption,
+      save,
+      turn_off,
+      errors,
+    };
   },
 };
 </script>

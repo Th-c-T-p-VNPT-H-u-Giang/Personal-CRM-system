@@ -16,6 +16,12 @@ import Center from "../../views/unit/center.vue";
 import CenterServices from "../../services/center.services";
 import departmentsServices from "../../services/dep.services";
 import unitsServices from "../../services/unit.services";
+import {
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+} from "../../assets/js/common.http";
 export default {
   components: {
     Table,
@@ -179,7 +185,7 @@ export default {
     const create = async () => {
       console.log("creating");
       // ***
-      centers.center = await CenterServices.findAll();
+      centers.center = await CenterServices.getAll();
     };
     const update = (item) => {
       console.log("updating", item);
@@ -208,12 +214,13 @@ export default {
     const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("Trung tâm");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
-      let documents = await departmentsServices.findAllDepOfACenter(newValue);
-      departments.department = documents.document;
+      departments.department = await departmentsServices.findAllDepOfACenter(
+        newValue
+      );
       units.unit = [];
       for (let val of departments.department) {
         var newData = await unitsServices.findAllUnitsOfADep(val._id);
-        for (let value of newData.document) {
+        for (let value of newData) {
           units.unit.push(value);
         }
       }
@@ -227,8 +234,7 @@ export default {
     const selectedOptionDepartment = ref("Phòng");
     watch(selectedOptionDepartment, async (newValue, oldValue) => {
       // console.log("New Department:", newValue);
-      let documents = await unitsServices.findAllUnitsOfADep(newValue);
-      units.unit = documents.document;
+      units.unit = await unitsServices.findAllUnitsOfADep(newValue);
     });
 
     const units = reactive({
@@ -240,12 +246,9 @@ export default {
     });
 
     onMounted(async () => {
-      let documents = await CenterServices.findAll();
-      centers.center = documents.document;
-      let documents_dep = await departmentsServices.findAll();
-      departments.department = documents_dep.document;
-      let documents_unit = await unitsServices.findAll();
-      units.unit = documents_unit.document;
+      centers.center = await CenterServices.getAll();
+      departments.department = await departmentsServices.getAll();
+      units.unit = await unitsServices.getAll();
     });
     return {
       data,
@@ -270,24 +273,6 @@ export default {
 
 <template>
   <div class="border-box d-flex flex-column ml-2">
-    <!-- Menu -->
-    <!-- <div class="d-flex menu my-3 mx-3 justify-content-end">
-      <a
-        @click="activeMenu = 1"
-        :class="[activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-        href="#"
-        >Nhân viên</a
-      >
-      <a
-        @click="activeMenu = 2"
-        :class="[activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-        href="#"
-        >Chức vụ</a
-      >
-    </div> -->
-    <!-- Filter -->
-    <!-- Search -->
-    <!-- <div class="border-hr mb-3"></div> -->
     <div class="d-flex flex-column mt-3">
       <span class="mx-3 mb-3 h6">Lọc nhân viên</span>
 
@@ -395,7 +380,21 @@ export default {
         <Add
           :item="data.itemAdd"
           @create="create"
-          @newCenter="(value) => (centers.center = value)"
+          @newCenter="
+            (value) => {
+              centers.center = value;
+            }
+          "
+          @newDep="
+            (value) => {
+              departments.department = value;
+            }
+          "
+          @newUnit="
+            (value) => {
+              units.unit = value;
+            }
+          "
         />
       </div>
     </div>

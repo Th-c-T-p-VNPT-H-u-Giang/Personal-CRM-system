@@ -8,10 +8,25 @@ import DeleteAll from "../../components/form/delete-all.vue";
 import Add from "./add.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
-import { reactive, computed, watch, ref } from "vue";
+import { reactive, computed, watch, ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
-import { test } from "../../assets/common.js";
+import { formatDateTime } from "../../assets/js/common.js";
 import { toString, _filter } from "../../assets/js/pagination.js";
+
+// services
+
+import Event from "../../services/event.service";
+import {
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+} from "../../assets/js/common.http";
+import {
+  alert_success,
+  alert_error,
+  alert_delete,
+} from "../../assets/js/common.alert";
 export default {
   components: {
     Table,
@@ -22,40 +37,15 @@ export default {
     Add,
     DeleteAll,
     Edit,
-    View
+    View,
   },
   setup(ctx) {
     const data = reactive({
       items: [
         {
-          _id: "1",
-          name: "sinh nhật",
-          content: "abc, def, xxxxxxxxxxxxxxxxxxxxxxxxx",
-          duration: "15/5/2023",
-        },
-        {
-          _id: "2",
-          name: "sinh nhật",
-          content: "abc, def, xxxxxxxxxxxxxxxxxxxxxxxxx",
-          duration: "15/5/2023",
-        },
-        {
-          _id: "3",
-          name: "sinh nhật",
-          content: "abc, def, xxxxxxxxxxxxxxxxxxxxxxxxx",
-          duration: "15/5/2023",
-        },
-        {
-          _id: "4",
-          name: "sinh nhật",
-          content: "abc, def, xxxxxxxxxxxxxxxxxxxxxxxxx",
-          duration: "15/5/2023",
-        },
-        {
-          _id: "5",
-          name: "sinh nhật",
-          content: "abc, def, xxxxxxxxxxxxxxxxxxxxxxxxx",
-          duration: "15/5/2023",
+          _id: 1,
+          name: "abc",
+          duration: "abc",
         },
       ],
       entryValue: 5,
@@ -68,7 +58,7 @@ export default {
       itemAdd: {
         name: "",
         content: "",
-        duration: "",
+        time_duration: "",
       },
       activeEdit: false,
       editValue: {
@@ -77,49 +67,50 @@ export default {
         content: "",
         duration: "2023-05-12",
       },
-      a: 2,
+    });
+    const toString = computed(() => {
+      console.log("Starting search");
+      return data.items.map((value, index) => {
+        return [value.name].join("").toLocaleLowerCase();
+      });
+    });
+    const filter = computed(() => {
+      return data.items.filter((value, index) => {
+        return toString.value[index].includes(
+          data.searchText.toLocaleLowerCase()
+        );
+      });
     });
     const filtered = computed(() => {
       if (!data.searchText) {
         data.totalRow = data.items.length;
         return data.items;
       } else {
-        data.totalRow = _filter(data.items, data.searchText).length;
-        return _filter(data.items, data.searchText);
+        data.totalRow = filter.value.length;
+        return filter.value;
       }
     });
     const setNumberOfPages = computed(() => {
       return Math.ceil(filtered.value.length / data.entryValue);
     });
     const setPages = computed(() => {
-      if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-        data.entryValue = data.items.length;
-        data.numberOfPages = 1;
-      } else data.numberOfPages = setNumberOfPages.value;
-      data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-      data.endRow = data.currentPage * data.entryValue;
-      return filtered.value.filter((item, index) => {
-        return (
-          index + 1 > (data.currentPage - 1) * data.entryValue &&
-          index + 1 <= data.currentPage * data.entryValue
-        );
-      });
+      if (data.items.length > 0) {
+        if (setNumberOfPages.value == 0 || data.entryValue == "All") {
+          data.entryValue = data.items.length;
+          data.numberOfPages = 1;
+        } else data.numberOfPages = setNumberOfPages.value;
+        data.startRow = (data.currentPage - 1) * data.entryValue + 1;
+        data.endRow = data.currentPage * data.entryValue;
+        return filtered.value.filter((item, index) => {
+          return (
+            index + 1 > (data.currentPage - 1) * data.entryValue &&
+            index + 1 <= data.currentPage * data.entryValue
+          );
+        });
+      } else return data.items.value;
     });
 
-    // methods
-    const create = () => {
-      console.log("creating");
-    };
-    const update = (item) => {
-      console.log("updating", item);
-    };
-    const deleteOne = (_id) => {
-      console.log("deleting", _id);
-    };
-    const edit = () => {
-      console.log("edit");
-    };
-
+    // routers
     const router = useRouter();
 
     const view = (_id) => {
@@ -133,12 +124,64 @@ export default {
       router.push({ name: "Habit" });
     });
 
-    const test1 = () => {
-      console.log("starting");
-      data.a = test(data.a);
-      console.log(data.a);
+    // methods
+    const create = async () => {
+      console.log(data.itemAdd);
+      const result = await http_create(Event, data.itemAdd);
+      console.log("result", result);
+      if (!result.error) {
+        alert_success(
+          `Thêm sự kiện`,
+          `Sự kiện ${result.document.name} lúc ${formatDateTime(
+            result.document.time_duration
+          )} đã được tạo thành công.`
+        );
+        refresh();
+      } else if (result.error) {
+        alert_error(`Thêm sự kiện`, `${result.msg}`);
+      }
     };
-    test1();
+    const update = (item) => {
+      console.log("updating", item);
+    };
+    const deleteOne = async (_id) => {
+      const event = await http_getOne(Event, _id);
+      console.log("deleting", event);
+      const isConfirmed = await alert_delete(
+        `Xoá sự kiện`,
+        `Bạn có chắc chắn muốn xoá sự kiện ${event.name} lúc ${formatDateTime(
+          event.time_duration
+        )} không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await http_deleteOne(Event, _id);
+        alert_success(
+          `Xoá sự kiện`,
+          `Bạn đã xoá thành công sự kiện ${
+            result.document.name
+          } lúc ${formatDateTime(result.document.time_duration)}.`
+        );
+        refresh();
+      }
+    };
+
+    const edit = () => {
+      console.log("edit");
+    };
+
+    const refresh = async () => {
+      data.items = await http_getAll(Event);
+    };
+
+    // handle http methods
+
+    // Hàm callback được gọi trước khi component được mount (load)
+    onBeforeMount(async () => {
+      refresh();
+      console.log(data.items);
+    });
+
     return {
       data,
       setPages,
@@ -148,14 +191,12 @@ export default {
       deleteOne,
       edit,
       view,
-      test1,
     };
   },
 };
 </script>
 
 <template>
-  {{ data.a }}
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
@@ -244,7 +285,7 @@ export default {
         >
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
-        <DeleteAll :items="data.items" />
+        <!-- <DeleteAll :items="data.items" /> -->
         <button
           type="button"
           class="btn btn-primary"
@@ -259,8 +300,8 @@ export default {
     <!-- Table -->
     <Table
       :items="setPages"
-      :fields="['Tên', 'Nội dung', 'Thời gian']"
-      :labels="['name', 'content', 'duration']"
+      :fields="['Tên sự kiện', 'Nội dung sự kiện', 'Thời gian diễn ra']"
+      :labels="['name', 'content', 'time_duration']"
       @delete="(value) => deleteOne(value)"
       @edit="
         (value, value1) => (
@@ -279,13 +320,13 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
+    <Edit
+      :item="data.editValue"
+      :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEdit = false"
+    />
+    <View />
   </div>
-  <Edit
-    :item="data.editValue"
-    :class="[data.activeEdit ? 'show-modal' : 'd-none']"
-    @cancel="data.activeEdit = false"
-  />
-  <View />
 </template>
 
 <style scoped>

@@ -108,7 +108,7 @@ import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import Add from "./form_table/add_update_center.vue";
 import Form from "./form_table/formLevel.vue";
-import { reactive, computed, onMounted, ref, watch } from "vue";
+import { reactive, computed, ref, watch, onBeforeMount } from "vue";
 import Swal from "./use/showSwal";
 import swal from "sweetalert2";
 import centerServices from "../../services/center.services";
@@ -126,7 +126,7 @@ export default {
   setup(props, ctx) {
     const data = reactive({
       items: [{ name: "", _id: "" }],
-      entryValue: 2,
+      entryValue: 10,
       numberOfPages: 1,
       totalRow: 0,
       startRow: 0,
@@ -214,7 +214,6 @@ export default {
     const init = async () => {
       let documents = await centerServices.findAll();
       data.items = documents.document;
-      console.log("emit newData", data.items);
       ctx.emit("newData", data.items);
     };
     const addOrUpdatecenel = async () => {
@@ -257,10 +256,10 @@ export default {
       console.log("detail", data);
     };
 
-    onMounted(async () => {
+    onBeforeMount(async () => {
       let documents = await centerServices.findAll();
       data.items = documents.document;
-      console.log("Mounted length:", data.items.length, "Data:", data.items);
+      // console.log("Mounted length:", data.items.length, "Data:", data.items);
     });
     return {
       data,

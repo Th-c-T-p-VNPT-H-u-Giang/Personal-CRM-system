@@ -1,4 +1,4 @@
-import createApiClient from "./api.services";
+import createApiClient from "./api.service";
 
 class departmentsService {
   constructor(baseUrl = "/api/departments") {
@@ -7,8 +7,11 @@ class departmentsService {
   async create(data) {
     return (await this.api.post(`/`, data)).data;
   }
-  async findAll() {
+  async getAll() {
     return (await this.api.get("/")).data;
+  }
+  async getOne(id) {
+    return (await this.api.get(`${id}`)).data;
   }
   async findAllDepOfACenter(centerId) {
     return (await this.api.get(`/center/${centerId}`)).data;
@@ -23,7 +26,7 @@ class departmentsService {
     return (await this.api.get(`/${id}`)).data;
   }
   async update(id, data) {
-    return (await this.api.post(`/${id}`, data)).data;
+    return (await this.api.put(`/${id}`, data)).data;
   }
 }
 

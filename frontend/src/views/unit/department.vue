@@ -65,7 +65,11 @@
                   <span id="add" class="mx-2">Thêm</span>
                 </button>
 
-                <Add :newData="newData" @addorupdate="addOrUpdatedep()" />
+                <Add
+                  :newData="newData"
+                  :center="center"
+                  @addorupdate="addOrUpdatedep()"
+                />
               </div>
             </div>
             <!-- Table -->
@@ -103,7 +107,7 @@ import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import Add from "./form_table/app_update_dep.vue";
-import { reactive, computed, onMounted } from "vue";
+import { reactive, computed, onBeforeMount } from "vue";
 import Swal from "./use/showSwal";
 import swal from "sweetalert2";
 import departmentServices from "../../services/dep.services";
@@ -115,6 +119,10 @@ export default {
     Select,
     Search,
     Add,
+  },
+  props: {
+    center: { type: Array, default: [] },
+    selectedOptionCenter: { type: String, default: "" },
   },
   setup(props, ctx) {
     const data = reactive({
@@ -130,7 +138,8 @@ export default {
       activeSelectAll: false,
     });
     const newData = reactive({
-      centerVNPTHGId: "",
+      centerVNPTHGId: props.selectedOptionCenter,
+      Center_VNPTHG: "",
       _id: "",
       name: "",
       dep: "",
@@ -180,35 +189,55 @@ export default {
     //
     const getdep = async (value_id) => {
       document.getElementById("model-add-dep").style.display = "block";
+      let depEdit = await departmentServices.findOne(value_id);
+      newData.centerVNPTHGId = depEdit.document.centerVNPTHGId;
       newData._id = value_id;
-      // newData.name = data.items[value_id - 1].dep_name;
+      newData.centerVNPTHGId = depEdit.document.centerVNPTHGId;
+      newData.Center_VNPTHG = depEdit.document.Center_VNPTHG.name;
+      newData.name = depEdit.document.name;
       newData.dep = "update";
     };
     const display = () => {
       document.getElementById("model-add-dep").style.display = "block";
     };
     const turnOff = () => {
-      console.log("turnoff");
       document.getElementById("model-department").style.display = "none";
     };
     const emptyNewData = () => {
+      newData.centerVNPTHGId = "";
+      newData.Center_VNPTHG = "";
       newData["dep_id"] = "";
       newData["dep_name"] = "";
       newData["dep"] = "";
     };
+    //select center->dep
     const init = async () => {
-      data.items = await departmentServices.findAll();
+      let documents = "";
+      console.log("Center:", props.selectedOptionCenter);
+      if (
+        props.selectedOptionCenter != "" &&
+        props.selectedOptionCenter != "Trung tâm"
+      ) {
+        documents = await departmentServices.findAllDepOfACenter(
+          props.selectedOptionCenter
+        );
+      } else documents = await departmentServices.findAll();
+      data.items = documents.document;
+      console.log("NewDep:", data.items);
       ctx.emit("newData", data.items);
     };
     const addOrUpdatedep = async () => {
       if (newData.dep == "update") {
-        console.log("UPDATE THU NGHIEM", newData.dep_id, newData.dep_name);
+        console.log("UPDATE THU NGHIEM", newData._id, newData);
+        await departmentServices.update(newData._id, newData);
+        init();
         emptyNewData();
         document.getElementById("model-add-dep").style.display = "none";
         showSuccess();
       } else {
         console.log("ADD THU NGHIEM", newData.name);
         await departmentServices.create(newData);
+        init();
         emptyNewData();
         showSuccess();
       }
@@ -235,8 +264,9 @@ export default {
     const detail = (data) => {
       console.log("detail", data);
     };
-    onMounted(async () => {
-      data.items = await departmentServices.findAll();
+    onBeforeMount(async () => {
+      let documents = await departmentServices.findAll();
+      data.items = documents.document;
     });
     return {
       data,

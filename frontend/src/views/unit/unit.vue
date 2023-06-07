@@ -8,7 +8,7 @@ import DeleteAll from "./form_table/delete_all_unit.vue";
 import Add from "./form_table/add_update_unit.vue";
 import Form from "./form_table/formLevel.vue";
 import showSwal from "./use/showSwal";
-import { reactive, ref, computed, watch, onMounted } from "vue";
+import { reactive, ref, computed, watch, onBeforeMount } from "vue";
 import Swal from "./use/showSwal";
 import swal from "sweetalert2";
 import { useRoute, useRouter } from "vue-router";
