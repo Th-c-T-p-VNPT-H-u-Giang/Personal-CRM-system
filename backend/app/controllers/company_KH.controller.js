@@ -12,6 +12,7 @@ exports.create = async (req, res, next) => {
         ? "Tạo công ty khách hàng thành công"
         : "Tạo công ty khách hàng thất bại",
       error: document ? false : true,
+      document,
     });
   } catch (error) {
     return next(createError(500, error.message));

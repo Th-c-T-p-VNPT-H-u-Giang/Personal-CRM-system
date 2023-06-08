@@ -20,6 +20,7 @@ exports.create = async (req, res, next) => {
       return res.status(200).json({
         error: false,
         msg: `Thêm thành công loại khách hàng ${document.name}`,
+        document,
       });
     } catch (error) {
       return next(createError(500, error.message));
@@ -44,6 +45,23 @@ exports.findAll = async (req, res, next) => {
   } catch (error) {
     console.log(error);
     return next(createError(500, error.message));
+  }
+};
+
+exports.findOne = async (req, res, next) => {
+  try {
+    const document = await Customer_Types.findOne({
+      where: {
+        _id: req.params.id,
+      },
+    });
+    return res.status(200).json({
+      msg: document ? "Chi tiết khách hàng" : "Khách hàng không tồn tại",
+      error: document ? false : true,
+      document,
+    });
+  } catch (error) {
+    return next(createError(400, "Error findOne"));
   }
 };
 
@@ -93,6 +111,7 @@ exports.update = async (req, res, next) => {
         msg: customerType[0]
           ? "Dử liệu thay đổi thành công"
           : "Không thể tìm thấy dử liệu để thay đổi!!",
+        document: customerType,
       });
     } catch (error) {
       return next(createError(500, error.message));

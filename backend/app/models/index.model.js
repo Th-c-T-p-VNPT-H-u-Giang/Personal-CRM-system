@@ -101,7 +101,9 @@ const Customer = sequelize.define("Customer", {
   },
   avatar: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
+    default:
+      "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png",
     validate: {
       notEmpty: {
         msg: "Ảnh khách hàng không được bỏ trống không được bỏ trống.",

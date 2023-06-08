@@ -8,26 +8,32 @@ const POSITION_CUT_LINK_IMAGE = 21;
 exports.create = async (req, res, next) => {
   // const documents = await Customer.findAll();
   // check unique name, email, phone
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  } else {
+    const { path } = req.file;
+    const imgUrl = path.slice(4, path.length);
+    const image = `http://localhost:3000/${imgUrl}`;
+    console.log(image);
+    const newCustomer = {
+      ...req.body,
+      avatar: image,
+    };
 
-  const { path } = req.file;
-  const imgUrl = path.slice(4, path.length);
-  const image = `http://localhost:3000/${imgUrl}`;
-  console.log(image);
-  const newCustomer = {
-    ...req.body,
-    avatar: image,
-  };
-
-  try {
-    const customer = await Customer.create({
-      ...newCustomer,
-    });
-    return res.status(200).json({
-      msg: customer ? "Thêm khách hàng thành công" : "Thêm khách hàng thất bại",
-      error: customer ? false : true,
-    });
-  } catch (error) {
-    return next(createError(500, error.message));
+    try {
+      const customer = await Customer.create({
+        ...newCustomer,
+      });
+      return res.status(200).json({
+        msg: customer
+          ? "Thêm khách hàng thành công"
+          : "Thêm khách hàng thất bại",
+        error: customer ? false : true,
+        document: customer,
+      });
+    } catch (error) {
+      return next(createError(500, error.message));
+    }
   }
 };
 

@@ -3,12 +3,17 @@ const createError = require("http-errors");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
+const path = require("path");
 
 // initialize
 const app = express();
 app.use(cors());
 app.use(morgan("dev"));
 app.use(express.json());
+
+// config path
+const pathPublic = path.join(__dirname, "./app/public");
+app.use("/public", express.static(pathPublic));
 
 // simple route
 app.get("/", (req, res, next) => {
@@ -50,10 +55,10 @@ const Company_KHRouter = require("./app/routes/company_KH.route");
 // const LogRouter = require("./app/routes/log.route");
 
 // // use router
-app.use("/customers", customerRouter);
-app.use("/customer_types", customer_typesRouter);
-app.use("/customer_works", customer_workRouter);
-app.use("/company_KHs", Company_KHRouter);
+app.use("/api/customers", customerRouter);
+app.use("/api/customer_types", customer_typesRouter);
+app.use("/api/customer_works", customer_workRouter);
+app.use("/api/company_KHs", Company_KHRouter);
 // app.use("/events", EventRouter);
 // app.use("/habits", HabitRouter);
 // app.use("/positions", PositionRouter);

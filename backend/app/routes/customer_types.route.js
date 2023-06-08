@@ -5,6 +5,10 @@ const router = express.Router();
 
 router.route("/").post(customerTypes.create).get(customerTypes.findAll);
 
-router.route("/:id").put(customerTypes.update).delete(customerTypes.deleteOne);
+router
+  .route("/:id")
+  .put(customerTypes.update)
+  .delete(customerTypes.deleteOne)
+  .get(customerTypes.findOne);
 
 module.exports = router;
