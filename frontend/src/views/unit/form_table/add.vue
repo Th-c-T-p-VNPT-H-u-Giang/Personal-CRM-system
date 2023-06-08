@@ -12,7 +12,6 @@ import {
   alert_success,
   alert_error,
   alert_delete,
-  alert_warning,
 } from "../../assets/js/common.alert";
 import centerServices from "../../services/center.services";
 import {
@@ -32,30 +31,19 @@ export default {
       type: Object,
       default: {},
     },
-    // VAnh
-    positions: {
-      type: Object,
-      default: {},
-    },
-    units: {
-      type: Object,
-      default: {},
-    },
   },
   setup(props, ctx) {
     const data = reactive({});
-    const create = () => {
-      if (props.item.name.length > 0 && props.item.content.length > 0) {
-        ctx.emit("create");
-      }
-      // ctx.emit("create");
-      // ***
-      // console.log(
-      //   selectedOptionCenter,
-      //   selectedOptionDepartment,
-      //   selectedOptionUnit
-      // );
-    };
+    // const create = () => {
+    //   if (props.item.name.length > 0 && props.item.content.length > 0) {
+    //     ctx.emit("create");
+    //   }
+    //   console.log(
+    //     selectedOptionCenter,
+    //     selectedOptionDepartment,
+    //     selectedOptionUnit
+    //   );
+    // };
     // ****REFRESH
     const refresh = async (name) => {
       switch (name) {
@@ -103,12 +91,8 @@ export default {
         });
 
         if (CenterName) {
-          const document = await centerServices.create({ name: CenterName });
-          if (document.error) {
-            alert_warning(`Đã tồn tại trung tâm `, `${CenterName}`);
-            return;
-          }
-          alert_success(`Đã thêm trung tâm`, `${CenterName}`);
+          Swal.fire(`Tên trung tâm mới là ${CenterName}`);
+          await centerServices.create({ name: CenterName });
           await refresh("center");
           ctx.emit("newCenter", centers.center);
         }
@@ -157,16 +141,10 @@ export default {
             // Xử lý giá trị selectedOption và giá trị inputValue
             console.log("Selected Option:", formValues.selectedOption);
             console.log("Input Value:", formValues.inputValue);
-            const documents = await departmentsServices.create({
+            await departmentsServices.create({
               centerVNPTHGId: formValues.selectedOption,
               name: formValues.inputValue,
             });
-            if (documents.error) {
-              alert_warning(`Đã tồn tại phòng `, `${formValues.inputValue}`);
-              return;
-            }
-            alert_success(`Đã thêm phòng`, `${formValues.inputValue}`);
-
             await refresh("department");
             ctx.emit("newDep", departments.department);
           }
@@ -254,16 +232,10 @@ export default {
             console.log("Selected Option dep:", formValues.selectedOptionDep);
 
             console.log("Input Value:", formValues.inputValue);
-            const documents = await unitsServices.create({
+            await unitsServices.create({
               departmentId: formValues.selectedOptionDep,
               name: formValues.inputValue,
             });
-            if (documents.error) {
-              alert_warning(`Đã tồn tại  `, `${formValues.inputValue}`);
-              return;
-            }
-            alert_success(`Đã thêm `, `${formValues.inputValue}`);
-
             await refresh("unit");
             ctx.emit("newUnit", units.unit);
           }
@@ -294,165 +266,6 @@ export default {
 };
 </script>
 
-<template>
-  <div class="modal" id="model-add">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">
-            Thêm thông tin nhân viên mới
-          </h4>
-          <button type="button" class="close" data-dismiss="modal">
-            &times;
-          </button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="modal-body">
-          <form action="/action_page.php" class="was-validated">
-            <div class="form-group">
-              <label for="name"
-                >Họ và tên(<span style="color: red">*</span>):</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name"
-                v-model="item.name"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="birthday"
-                >Ngày sinh(<span style="color: red">*</span>):</label
-              >
-              <input
-                type="date"
-                class="form-control"
-                id="birthday"
-                name="birthday"
-                v-model="item.birthday"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="address"
-                >Địa chỉ(<span style="color: red">*</span>):</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="address"
-                name="address"
-                v-model="item.address"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="phone"
-                >Số điện thoại(<span style="color: red">*</span>):</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="phone"
-                name="phone"
-                v-model="item.phone"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="email"
-                >Email(<span style="color: red">*</span>):</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="email"
-                name="email"
-                v-model="item.email"
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label for="">Chức vụ(<span style="color: red">*</span>):</label>
-              <select class="form-control" required v-model="item.postionId">
-                <!-- <option value="" disabled selected hidden>Chức vụ</option> -->
-                <option
-                  v-for="positions in positions"
-                  :key="positions"
-                  :value="positions._id"
-                >
-                  {{ positions.name }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="center"
-                >Trung tâm(<span style="color: red">*</span>):</label
-              >
-
-              <SelectOption
-                :title="`Trung tâm`"
-                :selectedOption="selectedOptionCenter"
-                :field="centers.center"
-                :add="{ nameCDU: 'center' }"
-                @option="
-                  (value) => {
-                    selectedOptionCenter = value;
-                  }
-                "
-              />
-            </div>
-            <div class="form-group">
-              <label for="department"
-                >Phòng(<span style="color: red">*</span>):</label
-              >
-              <SelectOption
-                :title="`Phòng`"
-                :selectedOption="selectedOptionDepartment"
-                :field="departments.department"
-                :add="{ nameCDU: 'dep' }"
-                @option="
-                  (value) => {
-                    selectedOptionDepartment = value;
-                  }
-                "
-              />
-            </div>
-            <div class="form-group">
-              <label for="department"
-                >Đơn vị(<span style="color: red">*</span>):</label
-              >
-              <SelectOption
-                :title="`Đơn vị`"
-                :selectedOption="selectedOptionUnit"
-                :field="units.unit"
-                :add="{ nameCDU: 'unit' }"
-                @option="
-                  (value) => {
-                    selectedOptionUnit = value;
-                  }
-                "
-              />
-            </div>
-            <b-button
-              type="submit"
-              class="btn btn-primary px-3 py-2"
-              style="font-size: 14px"
-              @click="create"
-              id="add"
-              data-dismiss="modal"
-            >
-              <span>Thêm</span>
-            </b-button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
+<template></template>
 
 <style scoped></style>

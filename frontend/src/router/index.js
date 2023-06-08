@@ -8,8 +8,23 @@ const routes = [
   },
   {
     path: "/center",
-    name: "Center.add",
+    name: "Center",
     component: () => import("../views/unit/center.vue"),
+  },
+  {
+    path: "/center/:id",
+    name: "Center.view",
+    component: () => import("../views/unit/department.vue"),
+  },
+  {
+    path: "/department",
+    name: "Department",
+    component: () => import("../views/unit/department.vue"),
+  },
+  {
+    path: "/department/:id",
+    name: "Department.view",
+    component: () => import("../views/unit/unit1.vue"),
   },
   // Dashboard
   {

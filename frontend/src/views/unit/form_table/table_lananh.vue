@@ -28,20 +28,20 @@ export default {
       type: Boolean,
       default: false,
     },
-    name_id: { type: String },
+    name_id: { type: String, default: "" },
   },
   setup(props, ntx) {
     const router = useRouter();
     const get = (data) => {
-      console.log("id get:", data);
+      // console.log("id get:", data);
       ntx.emit("update", data);
     };
     const onDelete = (data) => {
       ntx.emit("onDelete", data);
     };
     const detail = (data) => {
-      router.push({ name: "unit_level", params: { id: data } });
-      // ntx.emit("detail", data);
+      // router.push({ name: "Center.view", params: { id: data } });
+      ntx.emit("detail", data);
     };
 
     return { get, onDelete, detail };
@@ -79,14 +79,14 @@ export default {
             {{ item[label] }}
           </td>
           <td v-if="activeAction == true">
-            <!-- <span
+            <span
               id="view"
               class="material-symbols-outlined"
-              @click="detail(item[`${name_id}`])"
+              @click="detail(item._id)"
               v-if="name_id != 'uni_id'"
             >
               visibility
-            </span> -->
+            </span>
 
             <span
               class="material-symbols-outlined mx-2"

@@ -146,7 +146,7 @@ export default {
       // name.value = "";
     };
     onMounted(async () => {
-      let documents = await centerServices.findAll();
+      let documents = await centerServices.getAll();
       centers.center = documents.document;
       // console.log("app_update_dep.vue");
     });

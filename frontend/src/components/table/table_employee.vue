@@ -27,16 +27,7 @@ export default {
       default: false,
     },
   },
-  // ####
-  setup(props, ntx) {
-    const data = reactive({
-      a: true,
-      items_new: props.items,
-    });
-    return {
-      data,
-    };
-  },
+  setup(props, ntx) {},
 };
 </script>
 
@@ -48,30 +39,57 @@ export default {
     <thead>
       <tr>
         <th></th>
-        <th>Id</th>
+        <th>Stt</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-        <th v-if="activeAction == true">Actions</th>
+        <th v-if="activeAction == true">Hành động</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
-        <td>
-          <input
-            :checked="item.delete"
-            v-model="data.items_new[index].delete"
-            type="checkbox"
-            name=""
-            id=""
-          />
-        </td>
+        <td><input type="checkbox" name="" id="" /></td>
         <td>{{ index + 1 }}</td>
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}
         </td>
+        <td>{{ item.Position.name }}</td>
+        <td>{{ item.Unit.name }}</td>
+        <td>{{ item.Unit.Department.name }}</td>
+        <td>{{ item.Unit.Department.Center_VNPTHG.name }}</td>
         <td v-if="activeAction == true">
-          <span id="view" class="material-symbols-outlined"> visibility </span>
-          <span id="edit" class="material-symbols-outlined mx-2"> edit </span>
-          <span id="delete" class="material-symbols-outlined"> delete </span>
+          <button
+            type="button"
+            class=""
+            data-toggle="modal"
+            data-target="#model-view"
+          >
+            <span
+              id="view"
+              class="material-symbols-outlined d-flex align-items-center"
+            >
+              visibility
+            </span>
+          </button>
+          <button
+            type="button"
+            class="mx-2"
+            data-toggle="modal"
+            data-target="#model-edit"
+          >
+            <span
+              id="edit"
+              class="material-symbols-outlined d-flex align-items-center justify-content-center"
+              @click="$emit('edit', item, true)"
+            >
+              edit
+            </span>
+          </button>
+          <span
+            id="delete"
+            class="material-symbols-outlined"
+            @click="$emit('delete', item._id)"
+          >
+            delete
+          </span>
         </td>
       </tr>
     </tbody>
@@ -108,7 +126,7 @@ export default {
 #view,
 #edit,
 #delete {
-  font-size: 13px;
+  font-size: 18px;
   cursor: pointer;
   border: 1px solid var(--gray);
   border-radius: 4px;

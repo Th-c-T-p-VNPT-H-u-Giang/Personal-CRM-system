@@ -1,96 +1,3 @@
-<template>
-  <div class="modal" id="model-unit">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Tất cả đơn vị</h4>
-          <button type="button" class="close" data-dismiss="modal">
-            &times;
-          </button>
-        </div>
-        <!-- Modal body -->
-        <div class="modal-body">
-          <div class="">
-            <div class="d-flex justify-content-between mr-2 mb-3 row">
-              <div class="d-flex justify-content-start col-5">
-                <Select
-                  class="d-flex justify-content-start"
-                  :options="[
-                    {
-                      name: 5,
-                      value: 5,
-                    },
-                    {
-                      name: 10,
-                      value: 10,
-                    },
-                    {
-                      name: 20,
-                      value: 20,
-                    },
-                    {
-                      name: 30,
-                      value: 30,
-                    },
-                    {
-                      name: 'All',
-                      value: 'All',
-                    },
-                  ]"
-                  @update:entryValue="(value) => (data.entryValue = value)"
-                  :entryValue="data.entryValue"
-                />
-                <Search
-                  class="ml-3"
-                  style="width: 300px"
-                  @update:searchText="(value) => (data.searchText = value)"
-                />
-              </div>
-              <!-- Thêm  -->
-              <div>
-                <!-- Modal -->
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-toggle="modal2"
-                  data-target="#model-add-unit"
-                  @click="display"
-                >
-                  <span id="add" class="mx-2">Thêm</span>
-                </button>
-
-                <Add :newData="newData" @addorupdate="addOrUpdateunit()" />
-              </div>
-            </div>
-            <!-- Table -->
-            <!-- @update="getuniel" -->
-            <Table
-              :items="setPages"
-              :fields="['Mã đơn vị', 'Tên đơn vị']"
-              :labels="['uni_id', 'uni_name']"
-              @update="getunit"
-              @onDelete="onDelete"
-              @detail="detail"
-              :name_id="'uni_id'"
-            />
-
-            <!-- Pagination -->
-            <Pagination
-              :numberOfPages="data.numberOfPages"
-              :totalRow="data.totalRow"
-              :startRow="data.startRow"
-              :endRow="data.endRow"
-              :currentPage="data.currentPage"
-              @updateCurrentPage="(value) => (data.currentPage = value)"
-              class="mx-3"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 <script>
 import Table from "./form_table/table_lananh.vue";
 import Pagination from "./form_table/pagination_lananh.vue";
@@ -98,9 +5,18 @@ import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import Add from "./form_table/add_update_unit.vue";
-import { reactive, computed } from "vue";
-import Swal from "./use/showSwal";
-import swal from "sweetalert2";
+import { reactive, computed, onBeforeMount } from "vue";
+import centerServices from "../../services/center.services";
+import departmentServices from "../../services/dep.services";
+import unitServices from "../../services/unit.services";
+import { useRouter, useRoute } from "vue-router";
+import Swal from "sweetalert2";
+import { http_getAll, http_getOne } from "../../assets/js/common.http";
+import {
+  alert_delete,
+  alert_success,
+  alert_warning,
+} from "../../assets/js/common.alert";
 export default {
   components: {
     Table,
@@ -111,12 +27,11 @@ export default {
     Add,
   },
   setup(ctx) {
+    const route = useRoute();
+    const router = useRouter();
     const data = reactive({
-      items: [
-        { uni_id: 1, uni_name: "tổ 1" },
-        { uni_id: 2, uni_name: "tổ 2" },
-      ],
-      entryValue: 2,
+      items: [{ _id: "", name: "" }],
+      entryValue: 10,
       numberOfPages: 1,
       totalRow: 0,
       startRow: 0,
@@ -126,12 +41,6 @@ export default {
       activeMenu: 1,
       activeSelectAll: false,
     });
-    const newData = reactive({
-      uni_id: "",
-      uni_name: "",
-      uni: "",
-    });
-    const { showSuccess } = Swal();
     // computed
     const toString = computed(() => {
       console.log("Starting search");
@@ -174,68 +83,301 @@ export default {
       });
     });
     //
-    const getunit = async (value_id) => {
-      document.getElementById("model-add-unit").style.display = "block";
-      newData.uni_id = value_id;
-      newData.uni_name = data.items[value_id - 1].uni_name;
-      newData.uni = "update";
+    const refresh = async () => {
+      if (route.params.id) {
+        data.items = await unitServices.findAllUnitsOfADep(route.params.id);
+        return;
+      }
+      data.items = await http_getAll(unitServices);
     };
-    const display = () => {
-      document.getElementById("model-add-unit").style.display = "block";
+    const centers = reactive({ center: [] });
+    const departments = reactive({ department: [] });
+
+    const update = async (value_id) => {
+      console.log("UPDATE");
+      let data = await unitServices.getOne(value_id);
+      const showSweetAlert = async () => {
+        const { value: formValues } = await Swal.fire({
+          title: "Thêm phòng mới",
+          html: `
+      <select id="my-select-center" class="swal2-input  mx-2" style="width:92%">
+        <option disabled selected hidden value="${
+          data.Department.Center_VNPTHG._id
+        }">${data.Department.Center_VNPTHG.name}</option>
+        ${centers.center
+          .map(
+            (option) => `<option value="${option._id}" >${option.name}</option>`
+          )
+          .join("")}
+      </select>
+      <select id="my-select-dep" class="swal2-input  mx-2" style="width:92%" >
+        <option disabled selected hidden value="${data.departmentId}">${
+            data.Department.name
+          }</option>
+        
+      </select>
+      </select>
+      <input id="my-input"  class="swal2-input form-control  m-3" value="${
+        data.name
+      }" style="width:92%" type="text" placeholder="Tên phòng">
+    `,
+          focusConfirm: false,
+          showCancelButton: true,
+          preConfirm: () => {
+            const selectedOptionCenter =
+              document.getElementById("my-select-center").value;
+            const selectedOptionDep =
+              document.getElementById("my-select-dep").value;
+
+            const inputValue = document.getElementById("my-input").value;
+            if (!selectedOptionCenter || !inputValue || !selectedOptionDep) {
+              Swal.showValidationMessage("Vui lòng điền đầy đủ thông tin");
+            }
+
+            return {
+              selectedOptionCenter,
+              selectedOptionDep,
+              inputValue,
+            };
+          },
+          didOpen: () => {
+            const center = document.getElementById("my-select-center");
+            const dep = document.getElementById("my-select-dep");
+
+            center.addEventListener("change", async () => {
+              const Id = center.value;
+              departments.department =
+                (await departmentServices.findAllDepOfACenter(Id)) || [];
+
+              dep.innerHTML = `
+          <option value="">Select a product</option>
+          ${departments.department
+            .map(
+              (option) =>
+                `<option value="${option._id}">${option.name}</option>`
+            )
+            .join("")}
+        `;
+            });
+          },
+        });
+
+        if (formValues) {
+          // Xử lý giá trị selectedOption và giá trị inputValue
+          console.log(
+            "Selected Option Center:",
+            formValues.selectedOptionCenter
+          );
+          console.log("Selected Option dep:", formValues.selectedOptionDep);
+          console.log("Input Value:", formValues.inputValue);
+          const documents = await unitServices.update(value_id, {
+            departmentId: formValues.selectedOptionDep,
+            name: formValues.inputValue,
+          });
+          if (documents.error) {
+            alert_warning(`Đã tồn tại  `, `${formValues.inputValue}`);
+            return;
+          }
+          alert_success(`Đã chỉnh sửa `, `${formValues.inputValue}`);
+
+          await refresh();
+        }
+      };
+
+      // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
+      showSweetAlert();
     };
-    const emptyNewData = () => {
-      newData["uni_id"] = "";
-      newData["uni_name"] = "";
-      newData["uni"] = "";
+    const create = () => {
+      const showSweetAlert = async () => {
+        const { value: formValues } = await Swal.fire({
+          title: "Thêm phòng mới",
+          html: `
+      <select id="my-select-center" class="swal2-input  mx-2" style="width:92%">
+        <option value="">Trung tâm</option>
+        ${centers.center
+          .map(
+            (option) => `<option value="${option._id}" >${option.name}</option>`
+          )
+          .join("")}
+      </select>
+      <select id="my-select-dep" class="swal2-input  mx-2" style="width:92%" >
+        <option value="">Phòng</option>
+        
+      </select>
+      </select>
+      <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên phòng">
+    `,
+          focusConfirm: false,
+          showCancelButton: true,
+          preConfirm: () => {
+            const selectedOptionCenter =
+              document.getElementById("my-select-center").value;
+            const selectedOptionDep =
+              document.getElementById("my-select-dep").value;
+
+            const inputValue = document.getElementById("my-input").value;
+            if (!selectedOptionCenter || !inputValue || !selectedOptionDep) {
+              Swal.showValidationMessage("Vui lòng điền đầy đủ thông tin");
+            }
+
+            return {
+              selectedOptionCenter,
+              selectedOptionDep,
+              inputValue,
+            };
+          },
+          didOpen: () => {
+            const center = document.getElementById("my-select-center");
+            const dep = document.getElementById("my-select-dep");
+
+            center.addEventListener("change", async () => {
+              const Id = center.value;
+              departments.department =
+                (await departmentServices.findAllDepOfACenter(Id)) || [];
+
+              dep.innerHTML = `
+          <option value="">Select a product</option>
+          ${departments.department
+            .map(
+              (option) =>
+                `<option value="${option._id}">${option.name}</option>`
+            )
+            .join("")}
+        `;
+            });
+          },
+        });
+
+        if (formValues) {
+          // Xử lý giá trị selectedOption và giá trị inputValue
+          console.log(
+            "Selected Option Center:",
+            formValues.selectedOptionCenter
+          );
+          // console.log("Selected Option dep:", formValues.selectedOptionDep);
+          // console.log("Input Value:", formValues.inputValue);
+          const documents = await unitServices.create({
+            departmentId: formValues.selectedOptionDep,
+            name: formValues.inputValue,
+          });
+          if (documents.error) {
+            alert_warning(`Đã tồn tại  `, `${formValues.inputValue}`);
+            return;
+          }
+          alert_success(`Đã thêm `, `${formValues.inputValue}`);
+          await refresh();
+        }
+      };
+
+      // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
+      showSweetAlert();
     };
-    const addOrUpdateunit = () => {
-      if (newData.uni == "update") {
-        console.log("UPDATE THU NGHIEM", newData.uni_id, newData.uni_name);
-        emptyNewData();
-        document.getElementById("model-add-unit").style.display = "none";
-        showSuccess();
-      } else {
-        console.log("ADD THU NGHIEM", newData.uni_name);
-        data.items.push({ uni_id: 8, uni_name: newData.uni_name });
-        emptyNewData();
-        showSuccess();
+
+    const onDelete = async (data) => {
+      const documents = await unitServices.getOne(data);
+      const result = await alert_delete("Bạn muốn xóa", documents.name);
+      if (result) {
+        await unitServices.deleteOne(data);
+        alert_success("Bạn đã xóa ", documents.name);
+        refresh();
       }
     };
-    const onDelete = (data) => {
-      swal
-        .fire({
-          title: "Bạn có muốn xóa trung tâm này?",
-          // showDenyButton: true,
-          showCancelButton: true,
-          cancelButtonText: "Không",
-          confirmButtonText: "Xóa",
-          confirmButtonColor: "#cc0000",
-        })
-        .then((result) => {
-          /* Read more about isConfirmed, isDenied below */
-          if (result.isConfirmed) {
-            // CODE API
-            console.log("Delete", data);
-            swal.fire("Deleted!", "", "success");
-          }
-        });
-    };
     const detail = (data) => {
-      console.log("detail", data);
+      // console.log("detail", data);
     };
+    onBeforeMount(async () => {
+      centers.center = await centerServices.getAll();
+      departments.department = await departmentServices.getAll();
+      if (route.params.id) {
+        data.items = await unitServices.findAllUnitsOfADep(route.params.id);
+        return;
+      }
+      data.items = await departmentServices.getAll();
+    });
     return {
       data,
       setPages,
-      newData,
-      addOrUpdateunit,
-      getunit,
+      update,
       onDelete,
       detail,
-      display,
+      create,
     };
   },
 };
 </script>
+
+<template>
+  <div>
+    <div class="d-flex justify-content-between mr-2 mb-3 row">
+      <div class="d-flex justify-content-start col-5">
+        <Select
+          class="d-flex justify-content-start"
+          :options="[
+            {
+              name: 5,
+              value: 5,
+            },
+            {
+              name: 10,
+              value: 10,
+            },
+            {
+              name: 20,
+              value: 20,
+            },
+            {
+              name: 30,
+              value: 30,
+            },
+            {
+              name: 'All',
+              value: 'All',
+            },
+          ]"
+          @update:entryValue="(value) => (data.entryValue = value)"
+          :entryValue="data.entryValue"
+        />
+        <Search
+          class="ml-3"
+          style="width: 300px"
+          @update:searchText="(value) => (data.searchText = value)"
+        />
+      </div>
+      <!-- Thêm  -->
+      <div>
+        <!-- Modal -->
+        <button type="button" class="btn btn-primary" @click="create">
+          <span id="add" class="mx-2">Thêm</span>
+        </button>
+
+        <!-- <Add :newData="newData" @addorupdate="addOrUpdateunit()" /> -->
+      </div>
+    </div>
+    <!-- Table -->
+    <!-- @update="getuniel" -->
+    <Table
+      :items="setPages"
+      :fields="['Mã đơn vị', 'Tên đơn vị']"
+      :labels="['_id', 'name']"
+      @update="update"
+      @onDelete="onDelete"
+      @detail="detail"
+      :name_id="'uni_id'"
+    />
+
+    <!-- Pagination -->
+    <Pagination
+      :numberOfPages="data.numberOfPages"
+      :totalRow="data.totalRow"
+      :startRow="data.startRow"
+      :endRow="data.endRow"
+      :currentPage="data.currentPage"
+      @updateCurrentPage="(value) => (data.currentPage = value)"
+      class="mx-3"
+    />
+  </div>
+</template>
+
 <style>
 .border-box {
   border: 1px solid var(--gray);

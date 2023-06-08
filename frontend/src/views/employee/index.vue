@@ -1,5 +1,5 @@
 <script>
-import Table from "../../components/table/table_duy.vue";
+import Table from "../../components/table/table_employee.vue";
 import Pagination from "../../components/table/pagination_duy.vue";
 import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
@@ -8,7 +8,7 @@ import DeleteAll from "../../components/form/delete-all.vue";
 import Add from "./add.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
-import { reactive, computed, watch, ref, onMounted } from "vue";
+import { reactive, computed, watch, ref, onMounted, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
 //***
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
@@ -16,12 +16,21 @@ import Center from "../../views/unit/center.vue";
 import CenterServices from "../../services/center.services";
 import departmentsServices from "../../services/dep.services";
 import unitsServices from "../../services/unit.services";
+
+// Vanh
+import Employee from "../../services/employee.service";
+import Position from "../../services/position.service";
 import {
   http_getAll,
   http_create,
   http_getOne,
   http_deleteOne,
 } from "../../assets/js/common.http";
+import {
+  alert_success,
+  alert_error,
+  alert_delete,
+} from "../../assets/js/common.alert";
 export default {
   components: {
     Table,
@@ -41,78 +50,18 @@ export default {
     const data = reactive({
       items: [
         {
-          _id: "1",
-          name: "Tran Tuan Duy",
-          birthday: "2001-01-01",
-          address: "Can Tho",
-          phone: "0987654321",
-          email: "Duy@gmail.com",
-          position: "Trưởng phòng marketing",
-          unit: "Lãnh đạo",
-          department: "Marketing",
-          center: "trung tâm VNPT HG",
-        },
-        {
-          _id: "2",
-          name: "Nguyen Lan Anh",
-          birthday: "2001-01-01",
-          address: "Can Tho",
-          phone: "0987654321",
-          email: "LAnh@gmail.com",
-          position: "Trưởng phòng marketing",
-          unit: "Lãnh đạo",
-          department: "Marketing",
-          center: "trung tâm VNPT HG",
-        },
-        {
-          _id: "3",
-          name: "Nguyen Thi Thanh Truc",
-          birthday: "2001-01-01",
-          address: "Can Tho",
-          phone: "0987654321",
-          email: "Truc@gmail.com",
-          position: "Trưởng phòng marketing",
-          unit: "Lãnh đạo",
-          department: "Marketing",
-          center: "trung tâm VNPT HG",
-        },
-        {
-          _id: "4",
-          name: "Nguyen Ngoc Van Anh",
-          birthday: "2001-01-01",
-          address: "Can Tho",
-          phone: "0987654321",
-          email: "VAnh@gmail.com",
-          position: "Trưởng phòng marketing",
-          unit: "Lãnh đạo",
-          department: "Marketing",
-          center: "trung tâm VNPT HG",
-        },
-        {
-          _id: "5",
-          name: "Truong Thiet Long",
-          birthday: "2001-01-01",
-          address: "Can Tho",
-          phone: "0987654321",
-          email: "Long@gmail.com",
-          position: "Trưởng phòng marketing",
-          unit: "Lãnh đạo",
-          department: "Marketing",
-          center: "trung tâm VNPT HG",
-        },
-        {
-          _id: "6",
-          name: "Dang Van Phuc",
-          birthday: "2001-01-01",
-          address: "Can Tho",
-          phone: "0987654321",
-          email: "Phuc@gmail.com",
-          position: "Trưởng phòng marketing",
-          unit: "Lãnh đạo",
-          department: "Marketing",
-          center: "trung tâm VNPT HG",
+          _id: "",
+          name: "",
+          Position: {
+            name: "",
+          },
+          Unit: {
+            name: "",
+            Department: { name: "", Center_VNPTHG: { name: "" } },
+          },
         },
       ],
+
       entryValue: 5,
       numberOfPages: 1,
       totalRow: 0,
@@ -182,16 +131,49 @@ export default {
     });
 
     // methods
+    // VAnh
     const create = async () => {
       console.log("creating");
-      // ***
-      centers.center = await CenterServices.getAll();
+      console.log("Data ItemAdd Employee: ", data.itemAdd);
+      const result = await http_create(Employee, data.itemAdd);
+      console.log("result", result);
+      if (!result.error) {
+        alert_success(
+          `Thêm nhân viên`,
+          `Nhân viên "${result.document.name}" đã được tạo thành công.`
+        );
+        refresh();
+      } else if (result.error) {
+        alert_error(`Thêm nhân viên`, `${result.msg}`);
+      }
     };
     const update = (item) => {
       console.log("updating", item);
     };
-    const deleteOne = (_id) => {
-      console.log("deleting", _id);
+    //Vanh
+    const deleteOne = async (_id) => {
+      console.log("Deleting", _id);
+      const employee = await http_getOne(Employee, _id);
+      console.log("deleting", employee);
+      const isConfirmed = await alert_delete(
+        `Xoá nhân viên`,
+        `Bạn có chắc chắn muốn xoá nhân viên "${employee.name}" không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await http_deleteOne(Employee, _id);
+        alert_success(
+          `Xoá nhân viên`,
+          `Bạn đã xoá thành công nhân viên "${result.document.name}".`
+        );
+        refresh();
+      }
+    };
+    //REFRESH
+    const refresh = async () => {
+      // data.units = await http_getAll(unitsServices);
+      data.positions = await http_getAll(Position);
+      data.items = await http_getAll(Employee);
     };
     const edit = () => {
       console.log("edit");
@@ -225,10 +207,10 @@ export default {
         }
       }
       // console.log("Units:", units.unit);
-      if (newValue == "other") {
-        console.log("Show model-center:");
-        document.getElementById("model-center").style.display = "block";
-      }
+      // if (newValue == "other") {
+      //   console.log("Show model-center:");
+      //   document.getElementById("model-center").style.display = "block";
+      // }
     });
     const departments = reactive({ department: [] });
     const selectedOptionDepartment = ref("Phòng");
@@ -249,6 +231,10 @@ export default {
       centers.center = await CenterServices.getAll();
       departments.department = await departmentsServices.getAll();
       units.unit = await unitsServices.getAll();
+      await refresh();
+      console.log("hi employee", data.items);
+      console.log("hi position", data.positions);
+      console.log("hi unit", data.units);
     });
     return {
       data,
@@ -278,7 +264,16 @@ export default {
 
       <div class="d-flex mx-3">
         <div class="form-group w-100">
-          <Select :title="`Chức vụ`" :entryValue="`Chức vụ`" />
+          <!-- <select class="form-control">
+            <option value="" disabled selected hidden>Chức vụ</option>
+            <option v-for="positions in data.positions" :key="positions" :value="positions._id">{{ positions.name }}</option>
+          </select>             -->
+          <Select
+            :title="`Chức vụ`"
+            :options="data.positions"
+            @update:entryValue="(value) => (data.entryValue = value)"
+            :entryValue="data.entryValue"
+          />
         </div>
         <!-- **** Lan Anh **** -->
         <div class="form-group w-100 ml-3">
@@ -368,7 +363,7 @@ export default {
         >
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
-        <DeleteAll :items="data.items" />
+        <!-- <DeleteAll :items="data.items" /> -->
         <button
           type="button"
           class="btn btn-primary"
@@ -379,6 +374,7 @@ export default {
         </button>
         <Add
           :item="data.itemAdd"
+          :positions="data.positions"
           @create="create"
           @newCenter="
             (value) => {
@@ -405,20 +401,13 @@ export default {
         'Họ và tên',
         'Sđt',
         'Email',
+        'Ngày sinh',
         'Chức vụ',
         'Đơn vị',
         'Phòng',
         'Trung tâm',
       ]"
-      :labels="[
-        'name',
-        'phone',
-        'email',
-        'position',
-        'unit',
-        'department',
-        'center',
-      ]"
+      :labels="['name', 'phone', 'email', 'birthday']"
       @delete="(value) => deleteOne(value)"
       @edit="
         (value, value1) => (
