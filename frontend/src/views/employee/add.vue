@@ -43,18 +43,10 @@ export default {
     },
   },
   setup(props, ctx) {
-    const data = reactive({});
     const create = () => {
       if (props.item.name.length > 0 && props.item.content.length > 0) {
         ctx.emit("create");
       }
-      // ctx.emit("create");
-      // ***
-      // console.log(
-      //   selectedOptionCenter,
-      //   selectedOptionDepartment,
-      //   selectedOptionUnit
-      // );
     };
     // ****REFRESH
     const refresh = async (name) => {
@@ -75,7 +67,7 @@ export default {
     };
     //CENTERS
     const centers = reactive({ center: [] });
-    const selectedOptionCenter = ref("Trung tâm");
+    const selectedOptionCenter = ref("");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
       departments.department = await departmentsServices.findAllDepOfACenter(
         newValue
@@ -89,29 +81,46 @@ export default {
       }
       // Alert add center
       if (newValue == "other") {
-        const { value: CenterName } = await Swal.fire({
-          title: "Thêm mới trung tâm",
-          input: "text",
-          inputLabel: "Tên trung tâm",
-          inputValue: "",
-          showCancelButton: true,
-          inputValidator: (value) => {
-            if (!value) {
-              return "Tên trung tâm không được bỏ trống";
-            }
-          },
-        });
+        const showSweetAlert = async () => {
+          const { value: CenterName } = await Swal.fire({
+            title: "Thêm mới trung tâm",
+            input: "text",
+            inputLabel: "Tên trung tâm",
+            inputValue: "",
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return "Tên trung tâm không được bỏ trống";
+              }
+            },
+          });
 
-        if (CenterName) {
-          const document = await centerServices.create({ name: CenterName });
-          if (document.error) {
-            alert_warning(`Đã tồn tại trung tâm `, `${CenterName}`);
-            return;
+          if (CenterName) {
+            const document = await centerServices.create({ name: CenterName });
+            if (document.error) {
+              // Swal.fire({
+              //   icon: "warning",
+              //   title: `Đã tồn tại trung tâm `,
+              //   text: `${CenterName}`,
+              //   background: "#fff",
+              //   confirmButtonText: "OK",
+              // }).then((result) => {
+              //   if (result.isConfirmed) {
+              //     setTimeout(showSweetAlert, 300);
+              //   }
+              // });
+
+              alert_warning(`Đã tồn tại trung tâm `, `${CenterName}`);
+              return false;
+            }
+            alert_success(`Đã thêm trung tâm`, `${CenterName}`);
+            await refresh("center");
+            ctx.emit("newCenter", centers.center);
+            selectedOptionCenter.value = document.document._id;
           }
-          alert_success(`Đã thêm trung tâm`, `${CenterName}`);
-          await refresh("center");
-          ctx.emit("newCenter", centers.center);
-        }
+          return true;
+        };
+        showSweetAlert();
       }
     });
 
@@ -125,11 +134,15 @@ export default {
           const { value: formValues } = await Swal.fire({
             title: "Thêm phòng mới",
             html: `
-      <select id="my-select" class="swal2-input  mx-2" >
+      <select id="my-select" class="swal2-input  mx-2" style="width:92%"  >
         <option value="">Trung tâm</option>
         ${centers.center
           .map(
-            (option) => `<option value="${option._id}">${option.name}</option>`
+            (option) =>
+              `<option value="${option._id}" ${
+                option._id == selectedOptionCenter.value ? "selected" : ""
+              }
+               > ${option.name}</option>`
           )
           .join("")}
       </select>
@@ -155,24 +168,24 @@ export default {
 
           if (formValues) {
             // Xử lý giá trị selectedOption và giá trị inputValue
-            console.log("Selected Option:", formValues.selectedOption);
-            console.log("Input Value:", formValues.inputValue);
-            const documents = await departmentsServices.create({
+            // console.log("Selected Option:", formValues.selectedOption);
+            // console.log("Input Value:", formValues.inputValue);
+            const document = await departmentsServices.create({
               centerVNPTHGId: formValues.selectedOption,
               name: formValues.inputValue,
             });
-            if (documents.error) {
+            if (document.error) {
               alert_warning(`Đã tồn tại phòng `, `${formValues.inputValue}`);
-              return;
             }
             alert_success(`Đã thêm phòng`, `${formValues.inputValue}`);
-
             await refresh("department");
             ctx.emit("newDep", departments.department);
+            selectedOptionDepartment.value = document.document._id;
           }
         };
 
         // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
+
         showSweetAlert();
       }
     });
@@ -193,7 +206,9 @@ export default {
         <option value="">Trung tâm</option>
         ${centers.center
           .map(
-            (option) => `<option value="${option._id}" >${option.name}</option>`
+            (option) => `<option value="${option._id}"
+            ${option._id == selectedOptionCenter.value ? "selected" : ""} 
+            >${option.name}</option>`
           )
           .join("")}
       </select>
@@ -202,7 +217,7 @@ export default {
         
       </select>
       </select>
-      <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên phòng">
+      <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
     `,
             focusConfirm: false,
             showCancelButton: true,
@@ -223,10 +238,28 @@ export default {
                 inputValue,
               };
             },
-            didOpen: () => {
+            didOpen: async () => {
               const center = document.getElementById("my-select-center");
               const dep = document.getElementById("my-select-dep");
 
+              const Id = center.value;
+              departments.department =
+                (await departmentsServices.findAllDepOfACenter(Id)) || [];
+
+              dep.innerHTML = `
+          <option value="">Phòng</option>
+          ${departments.department
+            .map(
+              (option) =>
+                `<option value="${option._id}"
+                ${
+                  option._id == selectedOptionDepartment.value ? "selected" : ""
+                } 
+
+                >${option.name}</option>`
+            )
+            .join("")}
+        `;
               center.addEventListener("change", async () => {
                 const Id = center.value;
                 departments.department =
@@ -237,7 +270,9 @@ export default {
           ${departments.department
             .map(
               (option) =>
-                `<option value="${option._id}">${option.name}</option>`
+                `<option value="${option._id}"
+                
+                >${option.name}</option>`
             )
             .join("")}
         `;
@@ -254,11 +289,11 @@ export default {
             console.log("Selected Option dep:", formValues.selectedOptionDep);
 
             console.log("Input Value:", formValues.inputValue);
-            const documents = await unitsServices.create({
+            const document = await unitsServices.create({
               departmentId: formValues.selectedOptionDep,
               name: formValues.inputValue,
             });
-            if (documents.error) {
+            if (document.error) {
               alert_warning(`Đã tồn tại  `, `${formValues.inputValue}`);
               return;
             }
@@ -266,6 +301,7 @@ export default {
 
             await refresh("unit");
             ctx.emit("newUnit", units.unit);
+            selectedOptionUnit.value = document.document._id;
           }
         };
 
@@ -393,9 +429,8 @@ export default {
               <label for="center"
                 >Trung tâm(<span style="color: red">*</span>):</label
               >
-
+              <!-- {{ newCenter }} -->
               <SelectOption
-                :title="`Trung tâm`"
                 :selectedOption="selectedOptionCenter"
                 :field="centers.center"
                 :add="{ nameCDU: 'center' }"
@@ -411,7 +446,6 @@ export default {
                 >Phòng(<span style="color: red">*</span>):</label
               >
               <SelectOption
-                :title="`Phòng`"
                 :selectedOption="selectedOptionDepartment"
                 :field="departments.department"
                 :add="{ nameCDU: 'dep' }"
@@ -427,7 +461,6 @@ export default {
                 >Đơn vị(<span style="color: red">*</span>):</label
               >
               <SelectOption
-                :title="`Đơn vị`"
                 :selectedOption="selectedOptionUnit"
                 :field="units.unit"
                 :add="{ nameCDU: 'unit' }"

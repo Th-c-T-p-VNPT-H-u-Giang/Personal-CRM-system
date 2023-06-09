@@ -84,7 +84,7 @@ exports.findOne = async (req, res, next) => {
           include: [
             {
               model: Center_VNPTHG,
-              attributes: ["name"],
+              attributes: ["name", "_id"],
             },
           ],
         },
@@ -137,13 +137,18 @@ exports.deleteAll = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
+  console.log("UNITS:", req.body, req.params);
   try {
     let unit = await Unit.findOne({
       where: {
         _id: req.params.id,
       },
     });
-    if (unit.name !== req.body.name) {
+    console.log("Units", unit);
+    if (
+      unit.name !== req.body.name ||
+      unit.departmentId !== req.body.departmentId
+    ) {
       const documents = await Unit.update(
         { name: req.body.name, departmentId: req.body.departmentId },
         { where: { _id: req.params.id } }
@@ -159,6 +164,6 @@ exports.update = async (req, res, next) => {
       });
     }
   } catch (error) {
-    return next(createError(400, "Error update Unit !"));
+    return next(createError(400, "Error update Department !"));
   }
 };

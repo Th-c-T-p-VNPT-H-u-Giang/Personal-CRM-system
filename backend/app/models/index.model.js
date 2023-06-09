@@ -250,6 +250,12 @@ const Position = sequelize.define("Position", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    underscored: true,
+    validate: {
+      notEmpty: {
+        msg: "Tên vị trí không được bỏ trống.",
+      },
+    },
     get() {
       return getDecrypt("name", this);
     },
@@ -366,6 +372,11 @@ const Employee = sequelize.define("Employee", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: "Tên nhân viên không được bỏ trống.",
+      },
+    },
     get() {
       return getDecrypt("name", this);
     },
@@ -376,6 +387,11 @@ const Employee = sequelize.define("Employee", {
   birthday: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: "Ngày sinh nhân viên không được bỏ trống.",
+      },
+    },
     get() {
       return getDecrypt("birthday", this);
     },
@@ -386,6 +402,11 @@ const Employee = sequelize.define("Employee", {
   avatar: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: "Avatar nhân viên không được bỏ trống.",
+      },
+    },
     get() {
       return getDecrypt("avatar", this);
     },
@@ -396,6 +417,11 @@ const Employee = sequelize.define("Employee", {
   address: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: "Địa chỉ nhân viên không được bỏ trống.",
+      },
+    },
     get() {
       return getDecrypt("address", this);
     },
@@ -406,6 +432,11 @@ const Employee = sequelize.define("Employee", {
   phone: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: "Số điện thoại nhân viên không được bỏ trống.",
+      },
+    },
     get() {
       return getDecrypt("phone", this);
     },
@@ -416,6 +447,11 @@ const Employee = sequelize.define("Employee", {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: "Email nhân viên không được bỏ trống.",
+      },
+    },
     get() {
       return getDecrypt("email", this);
     },
@@ -768,7 +804,6 @@ module.exports = {
   Status_Task,
   FeedBack_Task,
 };
-
 // Trigger
 // Tạo trigger xóa center thì các dep sẽ xóa
 const createTrigger = async () => {

@@ -224,8 +224,6 @@ export default {
         <button type="button" class="btn btn-primary" @click="create">
           <span id="add" class="mx-2">Thêm</span>
         </button>
-
-        <!-- <Add :newData="newData" @addorupdate="addOrUpdatecenel()" /> -->
       </div>
     </div>
     <!-- Table -->

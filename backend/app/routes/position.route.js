@@ -1,17 +1,18 @@
-const express = require('express');
-const customers = require('../controllers/customer.controller');
+const express = require("express");
+const positions = require("../controllers/position.controller");
 
 const router = express.Router();
 
-router.route('/')
-    .post(customers.create)
-    .get(customers.findAll)
-    .delete(customers.deleteAll)
+router
+  .route("/")
+  .post(positions.create)
+  .get(positions.findAll)
+  .delete(positions.deleteAll);
 
-router.route('/:id')
-    .put(customers.update)
-    .get(customers.findOne)
-    .delete(customers.deleteOne)
+router
+  .route("/:id")
+  .put(positions.update)
+  .get(positions.findOne)
+  .delete(positions.deleteOne);
 
 module.exports = router;
-

@@ -2,60 +2,47 @@
   <div>
     <select
       class="form-control d-flex justify-content-start pl-2 mr-2"
-      v-model="select"
+      @change="changed"
     >
       <option disabled selected hidden>{{ title }}</option>
-      <option v-for="(val, index) in field" :key="index" :value="val._id">
+
+      <option
+        v-for="(val, index) in field"
+        :key="index"
+        :value="val._id"
+        :selected="selectedOption == val._id"
+      >
         {{ val.name }}
       </option>
-      <option
-        v-if="add.nameCDU == 'center'"
-        value="other"
-        data-toggle="modal_center"
-        data-target="#model-center"
-      >
-        Khác
-      </option>
-      <option
-        v-if="add.nameCDU == 'dep'"
-        value="other"
-        data-toggle="model-department"
-        data-target="#model-department"
-      >
-        Khác dep
-      </option>
-      <option
-        v-if="add.nameCDU == 'unit'"
-        value="other"
-        data-toggle="model-department"
-        data-target="#model-department"
-      >
-        Khác unit
-      </option>
+
+      <option v-if="add.nameCDU == 'center'" value="other">Khác</option>
+      <option v-if="add.nameCDU == 'dep'" value="other">Khác dep</option>
+      <option v-if="add.nameCDU == 'unit'" value="other">Khác unit</option>
     </select>
   </div>
 </template>
 <script>
-import { watch, ref, reactive } from "vue";
+import { watch, ref, reactive, onMounted, computed } from "vue";
 export default {
   name: "select",
   components: {},
   props: {
     field: { type: Array },
-    title: { type: String },
+    title: { type: String, default: "" },
     selectedOption: { type: String },
     add: { type: Object, default: "" },
   },
-  setup({ selectedOption, add }, { emit }) {
-    // console.log("Add:", add);
-    const select = ref({});
-    select.value = selectedOption;
-    watch([select], ([newValue1, oldValue1]) => {
-      // console.log("Dropdown value changed:", select.value);
-      emit("option", select.value);
-    });
 
-    return { select };
+  setup(props, { emit }) {
+    const changed = (e) => {
+      if (e && e.target) {
+        emit("option", e.target.value);
+      }
+    };
+
+    return {
+      changed,
+    };
   },
 };
 </script>
