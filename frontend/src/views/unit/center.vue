@@ -174,7 +174,7 @@ export default {
     onMounted(async () => {
       data.items = await centerServices.getAll();
       data.activeMenu = route.query.active;
-      console.log("query", route.query.active);
+      // console.log("query", route.query.active);
     });
     return {
       data,
@@ -260,7 +260,7 @@ export default {
     <!-- @update="getcenel" -->
     <Table
       :items="setPages"
-      :fields="['Mã trung tâm', 'Tên trung tâm']"
+      :fields="['', 'Tên trung tâm']"
       :labels="['_id', 'name']"
       @update="update"
       @onDelete="onDelete"

@@ -383,7 +383,7 @@ export default {
     <!-- @update="getuniel" -->
     <Table
       :items="setPages"
-      :fields="['Mã đơn vị', 'Tên đơn vị']"
+      :fields="['', 'Tên đơn vị']"
       :labels="['_id', 'name']"
       @update="update"
       @onDelete="onDelete"
@@ -418,6 +418,7 @@ export default {
   border-collapse: collapse;
   padding: 8px 12px;
   font-size: 15px;
+  width: 117px;
 }
 .active-menu {
   color: blue;

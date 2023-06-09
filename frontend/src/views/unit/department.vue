@@ -237,7 +237,6 @@ export default {
     onMounted(async () => {
       centers.center = await centerServices.getAll();
       data.activeMenu = route.query.active;
-      console.log("query", route.query.active);
       if (route.params.id) {
         data.items = await departmentServices.findAllDepOfACenter(
           route.params.id
@@ -328,7 +327,7 @@ export default {
     <!-- Table -->
     <Table
       :items="setPages"
-      :fields="['Mã phòng', 'Tên phòng']"
+      :fields="['', 'Tên phòng']"
       :labels="['_id', 'name']"
       @update="update"
       @onDelete="onDelete"
@@ -362,6 +361,7 @@ export default {
   border-collapse: collapse;
   padding: 8px 12px;
   font-size: 15px;
+  width: 117px;
 }
 .active-menu {
   color: blue;

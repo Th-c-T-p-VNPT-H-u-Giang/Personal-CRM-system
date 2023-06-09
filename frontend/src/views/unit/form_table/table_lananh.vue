@@ -59,7 +59,13 @@ export default {
         <tr>
           <th></th>
           <th>STT</th>
-          <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
+          <th
+            v-for="(value, index) in fields"
+            :key="index"
+            :class="[value == '' ? 'truncate' : '']"
+          >
+            {{ value }}
+          </th>
           <th v-if="activeAction == true">Thao tác</th>
         </tr>
       </thead>
@@ -75,7 +81,11 @@ export default {
             />
           </td>
           <td>{{ index + 1 }}</td>
-          <td v-for="(label, index1) in labels" :key="index1">
+          <td
+            v-for="(label, index1) in labels"
+            :key="index1"
+            :class="[label == '_id' ? 'truncate' : '']"
+          >
             {{ item[label] }}
           </td>
           <td v-if="activeAction == true">
@@ -114,6 +124,7 @@ export default {
 .my-table {
   width: 100%;
   border-collapse: collapse;
+  text-align: center;
 }
 
 .border-table-all {
@@ -154,5 +165,12 @@ export default {
 }
 #delete:hover {
   color: var(--red);
+}
+.truncate {
+  max-width: 100px; /* Đặt chiều rộng tối đa cho phần tử */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: none;
 }
 </style>
