@@ -4,9 +4,8 @@ import Pagination from "./form_table/pagination_lananh.vue";
 import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
-// import Add from "./form_table/app_update_dep.vue";
 import Add from "../../components/box_lananh/select_cdu.vue";
-import { reactive, computed, onBeforeMount } from "vue";
+import { reactive, computed, onBeforeMount, onMounted } from "vue";
 
 import departmentServices from "../../services/dep.services";
 import { useRouter, useRoute } from "vue-router";
@@ -104,7 +103,11 @@ export default {
     };
 
     const detail = (data) => {
-      router.push({ name: "Department.view", params: { id: data } });
+      router.push({
+        name: "Department.view",
+        params: { id: data },
+        query: { active: 3 },
+      });
       // console.log("detail", data);
     };
     const onDelete = async (data) => {
@@ -231,9 +234,10 @@ export default {
       // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
       showSweetAlert();
     };
-    onBeforeMount(async () => {
+    onMounted(async () => {
       centers.center = await centerServices.getAll();
-
+      data.activeMenu = route.query.active;
+      console.log("query", route.query.active);
       if (route.params.id) {
         data.items = await departmentServices.findAllDepOfACenter(
           route.params.id
@@ -254,7 +258,30 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div class="border-box">
+    <div class="d-flex menu my-3 mx-3 justify-content-end">
+      <router-link
+        :to="{ name: 'Center', query: { active: 1 } }"
+        :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+      >
+        Trung tâm</router-link
+      >
+
+      <router-link
+        :to="{ name: 'Department', query: { active: 2 } }"
+        :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
+      >
+        Phòng</router-link
+      >
+
+      <router-link
+        :to="{ name: 'Unit', query: { active: 3 } }"
+        :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
+      >
+        Tổ</router-link
+      >
+    </div>
+    <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mr-2 mb-3 row">
       <div class="d-flex justify-content-start col-5">
         <Select
@@ -292,20 +319,13 @@ export default {
       </div>
       <!-- Thêm  -->
       <div>
-        <!-- Modal -->
+        <!-- btn thêm -->
         <button type="button" class="btn btn-primary" @click="create">
           <span id="add" class="mx-2">Thêm</span>
         </button>
-
-        <!-- <Add
-          :newData="newData"
-          :center="center"
-          @addorupdate="addOrUpdatedep()"
-        /> -->
       </div>
     </div>
     <!-- Table -->
-    <!-- @update="updateel" -->
     <Table
       :items="setPages"
       :fields="['Mã phòng', 'Tên phòng']"
@@ -332,5 +352,43 @@ export default {
 .border-box {
   border: 1px solid var(--gray);
   border-radius: 5px;
+}
+.menu {
+  /* border: 1px solid var(--gray); */
+  border-collapse: collapse;
+}
+.menu a {
+  border: 1px solid var(--gray);
+  border-collapse: collapse;
+  padding: 8px 12px;
+  font-size: 15px;
+}
+.active-menu {
+  color: blue;
+}
+.none-active-menu {
+  color: var(--dark);
+}
+.border-hr {
+  border-top: 1px solid var(--gray);
+}
+#add,
+#delete-all {
+  font-size: 14px;
+}
+.show-modal {
+  display: block;
+  opacity: 1;
+  background-color: var(--dark);
+  /* pointer-events: auto; */
+  z-index: 1;
+}
+
+.modal-cdu {
+  width: calc(100% + 300px);
+  left: -150px;
+  right: -150px;
+  top: -26px;
+  height: 100%;
 }
 </style>

@@ -9,10 +9,10 @@ import Search from "../../components/form/search.vue";
 import Add from "./form_table/add_update_center.vue";
 
 import Form from "./form_table/formLevel.vue";
-import { reactive, computed, ref, watch, onBeforeMount } from "vue";
+import { reactive, computed, ref, watch, onBeforeMount, onMounted } from "vue";
 // import Swal from "./use/showSwal";
 import centerServices from "../../services/center.services";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 import { http_getAll } from "../../assets/js/common.http";
 import CenterServices from "../../services/center.services";
@@ -35,6 +35,7 @@ export default {
 
   setup(props, ctx) {
     const router = useRouter();
+    const route = useRoute();
     const data = reactive({
       items: [{ name: "", _id: "" }],
       entryValue: 10,
@@ -98,7 +99,11 @@ export default {
     });
     //
     const detail = (data) => {
-      router.push({ name: "Center.view", params: { id: data } });
+      router.push({
+        name: "Center.view",
+        params: { id: data },
+        query: { active: 2 },
+      });
       console.log("detail", data);
     };
     const update = async (value_id) => {
@@ -166,8 +171,10 @@ export default {
       }
     };
 
-    onBeforeMount(async () => {
+    onMounted(async () => {
       data.items = await centerServices.getAll();
+      data.activeMenu = route.query.active;
+      console.log("query", route.query.active);
     });
     return {
       data,
@@ -182,7 +189,30 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div class="border-box">
+    <div class="d-flex menu my-3 mx-3 justify-content-end">
+      <router-link
+        :to="{ name: 'Center', query: { active: 1 } }"
+        :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+      >
+        Trung tâm</router-link
+      >
+
+      <router-link
+        :to="{ name: 'Department', query: { active: 2 } }"
+        :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
+      >
+        Phòng</router-link
+      >
+
+      <router-link
+        :to="{ name: 'Unit', query: { active: 3 } }"
+        :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
+      >
+        Tổ</router-link
+      >
+    </div>
+    <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mr-2 mb-3 row">
       <div class="d-flex justify-content-start col-5">
         <Select
@@ -255,6 +285,38 @@ export default {
   border: 1px solid var(--gray);
   border-radius: 5px;
 }
+.menu {
+  border-collapse: collapse;
+}
+.menu a {
+  border: 1px solid var(--gray);
+  border-collapse: collapse;
+  padding: 8px 12px;
+  font-size: 15px;
+  width: 117px;
+  text-align: center;
+}
+.active-menu {
+  color: blue;
+}
+.none-active-menu {
+  color: var(--dark);
+}
+.border-hr {
+  border-top: 1px solid var(--gray);
+}
+#add,
+#delete-all {
+  font-size: 14px;
+}
+.show-modal {
+  display: block;
+  opacity: 1;
+  background-color: var(--dark);
+  /* pointer-events: auto; */
+  z-index: 1;
+}
+
 .modal-cdu {
   width: calc(100% + 300px);
   left: -150px;

@@ -1,36 +1,6 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 const routes = [
-  {
-    path: "/a",
-    name: "A",
-    component: () => import("../views/employee/a.vue"),
-  },
-  {
-    path: "/index1",
-    name: "Index1",
-    component: () => import("../views/unit/index1.vue"),
-  },
-  {
-    path: "/center",
-    name: "Center",
-    component: () => import("../views/unit/center.vue"),
-  },
-  {
-    path: "/center/:id",
-    name: "Center.view",
-    component: () => import("../views/unit/department.vue"),
-  },
-  {
-    path: "/department",
-    name: "Department",
-    component: () => import("../views/unit/department.vue"),
-  },
-  {
-    path: "/department/:id",
-    name: "Department.view",
-    component: () => import("../views/unit/unit1.vue"),
-  },
   // Dashboard
   {
     path: "/",
@@ -107,23 +77,33 @@ const routes = [
     name: "Position.view",
     component: () => import("../views/position/view.vue"),
   },
-  // Unit
+  //Center
+  {
+    path: "/center",
+    name: "Center",
+    component: () => import("../views/unit/center.vue"),
+  },
+  {
+    path: "/center/:id",
+    name: "Center.view",
+    component: () => import("../views/unit/department.vue"),
+  },
+  {
+    path: "/department",
+    name: "Department",
+    component: () => import("../views/unit/department.vue"),
+  },
+  {
+    path: "/department/:id",
+    name: "Department.view",
+    component: () => import("../views/unit/unit1.vue"),
+  },
   {
     path: "/unit",
     name: "Unit",
-    component: () => import("../views/unit/unit.vue"),
+    component: () => import("../views/unit/unit1.vue"),
   },
-  {
-    path: "/unit/:id",
-    name: "Unit.view",
-    component: () => import("../views/unit/unit_level.vue"),
-  },
-  // Level
-  {
-    path: "/level",
-    name: "Level",
-    component: () => import("../views/unit/index.vue"),
-  },
+  //level
   {
     path: "/level/:id",
     name: "Level.view",
