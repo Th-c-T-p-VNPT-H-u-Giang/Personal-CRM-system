@@ -37,6 +37,8 @@ import Select_Advanced from "../../components/form/select_advanced.vue";
 import centerServices from "../../services/center_vnpt.service";
 import Swal from "sweetalert2";
 import FormWizard from "../../components/form/form-wizard.vue";
+import positionService from "../../services/position.service";
+
 export default {
   components: {
     Table,
@@ -62,11 +64,20 @@ export default {
           _id: "",
           name: "",
           Position: {
+            _id: "",
             name: "",
           },
           Unit: {
+            _id: "",
             name: "",
-            Department: { name: "", Center_VNPTHG: { name: "" } },
+            Department: {
+              _id: "",
+              name: "",
+              Center_VNPTHG: {
+                _id: "",
+                name: "",
+              },
+            },
           },
         },
       ],
@@ -100,6 +111,7 @@ export default {
       modelValue: "Trung tâm",
       modelDep: "Phòng",
       modelUnit: "Tổ",
+      modelPositon: "Chức vụ",
       test: {
         a: "",
         b: "",
@@ -151,10 +163,10 @@ export default {
 
     // methods
     // VAnh
-    const create = async () => {
+    const create = async (value) => {
       console.log("creating");
-      console.log("Data ItemAdd Employee: ", data.itemAdd);
-      const result = await http_create(Employee, data.itemAdd);
+      console.log("Data ItemAdd Employee: ", value);
+      const result = await http_create(Employee, value);
       console.log("result", result);
       if (!result.error) {
         alert_success(
@@ -199,6 +211,8 @@ export default {
 
       units.unit = await unitsServices.getAll();
       units.unit.push({ _id: "other", name: "khác" });
+      positions.position = await positionService.getAll();
+      positions.position.push({ _id: "other", name: "khác" });
     };
     const edit = () => {
       console.log("edit");
@@ -456,6 +470,45 @@ export default {
       });
       console.log("searchSlect", value.length);
     };
+
+    //POSITION
+    const positions = reactive({ position: [] });
+    const selectedOptionPosition = ref("Chức vụ");
+    watch(selectedOptionPosition, async (newValue, oldValue) => {
+      if (newValue == "other") {
+        const showSweetAlert = async () => {
+          const { value: positionName } = await Swal.fire({
+            title: "Thêm mới chức vụ",
+            input: "text",
+            inputLabel: "Tên chức vụ",
+            inputValue: "",
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return "Tên chức vụ không được bỏ trống";
+              }
+            },
+          });
+
+          if (positionName) {
+            const document = await positionService.create({
+              name: positionName,
+            });
+            if (document.error) {
+              alert_warning(`Đã tồn tại chức vụ `, `${positionName}`);
+              return false;
+            }
+            alert_success(`Đã thêm chức vụ`, `${positionName}`);
+            await refresh_add();
+            data.modelPositon = document.document.name;
+            ctx.emit("newPosition", positions.position);
+          }
+          return true;
+        };
+        showSweetAlert();
+      }
+    });
+
     const updateAdd = ref(false);
     const onDeleteCenter = async (value) => {
       console.log("Value delete:", value);
@@ -514,6 +567,8 @@ export default {
       onDeleteDep,
       onDeleteUnit,
       updateAdd,
+      positions,
+      selectedOptionPosition,
     };
   },
 };
@@ -530,11 +585,26 @@ export default {
             <option value="" disabled selected hidden>Chức vụ</option>
             <option v-for="positions in data.positions" :key="positions" :value="positions._id">{{ positions.name }}</option>
           </select>             -->
-          <Select
-            :title="`Chức vụ`"
-            :options="data.positions"
-            @update:entryValue="(value) => (data.entryValue = value)"
-            :entryValue="data.entryValue"
+          <Select_Advanced
+            class="form-control"
+            required
+            :options="positions.position"
+            :modelValue="data.modelPositon"
+            style="width: 100%; height: 100%"
+            @searchSelect="
+              async (value) => (
+                await refresh_add(),
+                (positions.position = positions.position.filter(
+                  (value1, index) => {
+                    console.log(value1, value);
+                    return value1.name.includes(value) || value.length == 0;
+                  }
+                )),
+                console.log('searchSlect', value.length)
+              )
+            "
+            @delete="(value) => onDeleteCenter(value)"
+            @choosed="(value) => (selectedOptionPosition = value)"
           />
         </div>
         <!-- DUY -->
@@ -647,7 +717,7 @@ export default {
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
         <!-- <DeleteAll :items="data.items" /> -->
-        <button
+        <!-- <button
           type="button"
           class="btn btn-primary"
           data-toggle="modal"
@@ -679,18 +749,45 @@ export default {
             }
           "
           @restore="(value) => (updateAdd = value)"
-        />
+        /> -->
         <!-- Thêm DUY -->
-        <!-- <button
+        <button
           type="button"
           class="btn btn-primary"
           data-toggle="modal"
           data-target="#model-form-wizard"
         >
-          <span class="mx-2">model-form-wizard</span>
+          <span class="mx-2">Thêm</span>
         </button>
-        {{ data.test }}
-        <FormWizard :item="data.test" /> -->
+
+        <FormWizard
+          @create="(value) => create(value)"
+          @newCenter="
+            (value) => {
+              centers.center = value;
+              centers.center.push({ _id: 'other', name: 'Khác' });
+            }
+          "
+          @newDep="
+            (value) => {
+              departments.department = value;
+              departments.department.push({ _id: 'other', name: 'Khác' });
+            }
+          "
+          @newUnit="
+            (value) => {
+              units.unit = value;
+              units.unit.push({ _id: 'other', name: 'Khác' });
+            }
+          "
+          @newPosition="
+            (value) => {
+              positions.position = value;
+              positions.position.push({ _id: 'other', name: 'Khác' });
+            }
+          "
+          @restore="(value) => (updateAdd = value)"
+        />
       </div>
     </div>
     <!-- Table -->

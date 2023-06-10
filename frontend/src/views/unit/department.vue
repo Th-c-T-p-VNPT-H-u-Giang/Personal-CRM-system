@@ -5,7 +5,7 @@ import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import Add from "../../components/box_lananh/select_cdu.vue";
-import { reactive, computed, onBeforeMount, onMounted } from "vue";
+import { reactive, computed, ref, onBeforeMount, onMounted } from "vue";
 
 import departmentServices from "../../services/department.service";
 import { useRouter, useRoute } from "vue-router";
@@ -74,21 +74,21 @@ export default {
       return Math.ceil(filtered.value.length / data.entryValue);
     });
     const setPages = computed(() => {
-      if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-        data.entryValue = data.items.length;
-        data.numberOfPages = 1;
-      } else data.numberOfPages = setNumberOfPages.value;
-      data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-      data.endRow = data.currentPage * data.entryValue;
-      // console.log(data);
-      return filtered.value.filter((item, index) => {
-        return (
-          index + 1 > (data.currentPage - 1) * data.entryValue &&
-          index + 1 <= data.currentPage * data.entryValue
-        );
-      });
+      if (data.items.length > 0) {
+        if (setNumberOfPages.value == 0 || data.entryValue == "All") {
+          data.entryValue = data.items.length;
+          data.numberOfPages = 1;
+        } else data.numberOfPages = setNumberOfPages.value;
+        data.startRow = (data.currentPage - 1) * data.entryValue + 1;
+        data.endRow = data.currentPage * data.entryValue;
+        return filtered.value.filter((item, index) => {
+          return (
+            index + 1 > (data.currentPage - 1) * data.entryValue &&
+            index + 1 <= data.currentPage * data.entryValue
+          );
+        });
+      } else return data.items.value;
     });
-    //
 
     const centers = reactive({ center: [] });
 
@@ -120,15 +120,21 @@ export default {
       }
     };
     const create = async () => {
+      const document = ref("");
+      if (route.params.id) {
+        document.value = await centerServices.getOne(route.params.id);
+      }
       const showSweetAlert = async () => {
         const { value: formValues } = await Swal.fire({
           title: "Thêm phòng mới",
           html: `
-      <select id="my-select" class="swal2-input  mx-2" >
+      <select id="my-select" class="swal2-input  mx-2" style="width:92%" >
         <option value="">Trung tâm</option>
         ${centers.center
           .map(
-            (option) => `<option value="${option._id}">${option.name}</option>`
+            (option) => `<option value="${option._id}"
+            ${option._id == document.value._id ? "selected" : ""}
+            >${option.name}</option>`
           )
           .join("")}
       </select>

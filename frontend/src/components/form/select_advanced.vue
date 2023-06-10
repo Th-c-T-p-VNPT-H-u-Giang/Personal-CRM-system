@@ -1,6 +1,4 @@
 <template>
-  <!-- {{ options }} -->
-  <!-- {{ fields }} -->
   <div
     class="select-border d-flex align-items-center flex-row flex-row-reverse"
     style=""

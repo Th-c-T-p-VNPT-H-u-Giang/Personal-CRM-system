@@ -5,7 +5,7 @@ import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import Add from "./form_table/add_update_unit.vue";
-import { reactive, computed, onBeforeMount } from "vue";
+import { reactive, computed, onBeforeMount, ref } from "vue";
 import centerServices from "../../services/center_vnpt.service";
 import departmentServices from "../../services/department.service";
 import unitServices from "../../services/unit.service";
@@ -68,21 +68,22 @@ export default {
       return Math.ceil(filtered.value.length / data.entryValue);
     });
     const setPages = computed(() => {
-      if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-        data.entryValue = data.items.length;
-        data.numberOfPages = 1;
-      } else data.numberOfPages = setNumberOfPages.value;
-      data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-      data.endRow = data.currentPage * data.entryValue;
-      // console.log(data);
-      return filtered.value.filter((item, index) => {
-        return (
-          index + 1 > (data.currentPage - 1) * data.entryValue &&
-          index + 1 <= data.currentPage * data.entryValue
-        );
-      });
+      if (data.items.length > 0) {
+        if (setNumberOfPages.value == 0 || data.entryValue == "All") {
+          data.entryValue = data.items.length;
+          data.numberOfPages = 1;
+        } else data.numberOfPages = setNumberOfPages.value;
+        data.startRow = (data.currentPage - 1) * data.entryValue + 1;
+        data.endRow = data.currentPage * data.entryValue;
+        return filtered.value.filter((item, index) => {
+          return (
+            index + 1 > (data.currentPage - 1) * data.entryValue &&
+            index + 1 <= data.currentPage * data.entryValue
+          );
+        });
+      } else return data.items.value;
     });
-    //
+
     const refresh = async () => {
       if (route.params.id) {
         data.items = await unitServices.findAllUnitsOfADep(route.params.id);
@@ -114,7 +115,7 @@ export default {
         <option disabled selected hidden value="${data.departmentId}">${
             data.Department.name
           }</option>
-        
+
       </select>
       </select>
       <input id="my-input"  class="swal2-input form-control  m-3" value="${
@@ -187,7 +188,12 @@ export default {
       // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
       showSweetAlert();
     };
-    const create = () => {
+    const create = async () => {
+      const documents = ref("");
+      if (route.params.id) {
+        documents.value = await departmentServices.getOne(route.params.id);
+      }
+      console.log(documents.value._id);
       const showSweetAlert = async () => {
         const { value: formValues } = await Swal.fire({
           title: "Thêm phòng mới",
@@ -196,16 +202,19 @@ export default {
         <option value="">Trung tâm</option>
         ${centers.center
           .map(
-            (option) => `<option value="${option._id}" >${option.name}</option>`
+            (option) => `<option value="${option._id}"
+            ${option._id == documents.value.centerVNPTHGId ? "selected" : ""}
+
+            >${option.name}</option>`
           )
           .join("")}
       </select>
       <select id="my-select-dep" class="swal2-input  mx-2" style="width:92%" >
         <option value="">Phòng</option>
-        
+
       </select>
       </select>
-      <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên phòng">
+      <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
     `,
           focusConfirm: false,
           showCancelButton: true,
@@ -226,21 +235,42 @@ export default {
               inputValue,
             };
           },
-          didOpen: () => {
+          didOpen: async () => {
             const center = document.getElementById("my-select-center");
             const dep = document.getElementById("my-select-dep");
+            const Id = ref("");
+            Id.value = center.value;
+            console.log("idcenter", center.value);
+            departments.department =
+              (await departmentServices.findAllDepOfACenter(Id.value)) || [];
 
+            dep.innerHTML = `
+          <option value="">Select a product</option>
+          ${departments.department
+            .map(
+              (option) =>
+                `<option value="${option._id}"
+                ${option._id == documents.value._id ? "selected" : ""}
+
+                >${option.name}</option>`
+            )
+            .join("")}
+        `;
             center.addEventListener("change", async () => {
-              const Id = center.value;
+              Id.value = center.value;
+              console.log("idcenter change", center.value);
               departments.department =
-                (await departmentServices.findAllDepOfACenter(Id)) || [];
+                (await departmentServices.findAllDepOfACenter(Id.value)) || [];
 
               dep.innerHTML = `
           <option value="">Select a product</option>
           ${departments.department
             .map(
               (option) =>
-                `<option value="${option._id}">${option.name}</option>`
+                `<option value="${option._id}"
+                ${option._id == documents.value._id ? "selected" : ""}
+
+                >${option.name}</option>`
             )
             .join("")}
         `;

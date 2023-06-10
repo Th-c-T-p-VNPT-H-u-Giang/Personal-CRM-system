@@ -1,20 +1,38 @@
 <script>
-import { reactive, onMounted } from "vue";
+import { reactive, onMounted, ref, watch } from "vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import CenterServices from "../../services/center_vnpt.service";
 import departmentsServices from "../../services/department.service";
 import unitsServices from "../../services/unit.service";
+import positionService from "../../services/position.service";
+import Swal from "sweetalert2";
+
+import {
+  alert_success,
+  alert_error,
+  alert_delete,
+  alert_warning,
+} from "../../assets/js/common.alert";
 export default {
   props: {
-    item: {
-      type: Object,
-      default: {},
-    },
+    // item: {
+    //   type: Object,
+    //   default: {},
+    // },
   },
   components: {
     Select_Advanced,
   },
   setup(props, ctx) {
+    const item = reactive({
+      name: "",
+      birthday: "",
+      phone: "",
+      address: "",
+      email: "",
+      postionId: "",
+      unitId: "",
+    });
     const data = reactive({
       stepList: [
         {
@@ -27,33 +45,364 @@ export default {
         },
       ],
       activeStep: 1,
+      modelValue: "",
+      modelDep: "",
+      modelUnit: "",
+      modelPositon: "",
     });
     const create = () => {
-      ctx.emit("create");
+      item.unitId = selectedOptionUnit.value;
+      item.postionId = selectedOptionPosition.value;
+      item.avatar = "abc";
+      console.log("Item:", item);
+      ctx.emit("create", item);
     };
-    const centers = reactive({
-      center: [],
+    const centers = reactive({ center: [] });
+    const selectedOptionCenter = ref("");
+    watch(selectedOptionCenter, async (newValue, oldValue) => {
+      departments.department = await departmentsServices.findAllDepOfACenter(
+        newValue
+      );
+      units.unit = [];
+      for (let val of departments.department) {
+        var newData = await unitsServices.findAllUnitsOfADep(val._id);
+        for (let value of newData) {
+          units.unit.push(value);
+        }
+      }
+      departments.department.push({ _id: "other", name: "khác" });
+      units.unit.push({ _id: "other", name: "khác" });
+      // Alert add center
+      if (newValue == "other") {
+        const showSweetAlert = async () => {
+          const { value: CenterName } = await Swal.fire({
+            title: "Thêm mới trung tâm",
+            input: "text",
+            inputLabel: "Tên trung tâm",
+            inputValue: "",
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return "Tên trung tâm không được bỏ trống";
+              }
+            },
+          });
+
+          if (CenterName) {
+            const document = await CenterServices.create({ name: CenterName });
+            if (document.error) {
+              alert_warning(`Đã tồn tại trung tâm `, `${CenterName}`);
+              return false;
+            }
+            alert_success(`Đã thêm trung tâm`, `${CenterName}`);
+            await refresh_add();
+            data.modelValue = document.document.name;
+            ctx.emit("newCenter", centers.center);
+          }
+          return true;
+        };
+        showSweetAlert();
+      }
     });
-    const departments = reactive({
-      department: [],
+
+    //DEPARTMENTS
+    const departments = reactive({ department: [] });
+    const selectedOptionDepartment = ref("Phòng");
+    watch(selectedOptionDepartment, async (newValue, oldValue) => {
+      units.unit = await unitsServices.findAllUnitsOfADep(newValue);
+      units.unit.push({ _id: "other", name: "khác" });
+
+      if (newValue == "other") {
+        const showSweetAlert = async () => {
+          const { value: formValues } = await Swal.fire({
+            title: "Thêm phòng mới",
+            html: `
+      <select id="my-select" class="swal2-input  mx-2" style="width:92%"  >
+        <option value="">Trung tâm</option>
+        ${centers.center
+          .map(
+            (option) =>
+              `<option value="${option._id}" ${
+                option._id == selectedOptionCenter.value ? "selected" : ""
+              }
+               > ${option.name}</option>`
+          )
+          .join("")}
+      </select>
+
+      </select>
+      <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên phòng">
+    `,
+            showCancelButton: true,
+            focusConfirm: false,
+            preConfirm: () => {
+              const selectedOption = document.getElementById("my-select").value;
+              const inputValue = document.getElementById("my-input").value;
+              if (!selectedOption || !inputValue) {
+                Swal.showValidationMessage("Vui lòng điền đầy đủ thông tin");
+              }
+
+              return {
+                selectedOption,
+                inputValue,
+              };
+            },
+          });
+
+          if (formValues) {
+            // Xử lý giá trị selectedOption và giá trị inputValue
+            // console.log("Selected Option:", formValues.selectedOption);
+            // console.log("Input Value:", formValues.inputValue);
+            const document = await departmentsServices.create({
+              centerVNPTHGId: formValues.selectedOption,
+              name: formValues.inputValue,
+            });
+            if (document.error) {
+              alert_warning(`Đã tồn tại phòng `, `${formValues.inputValue}`);
+              return;
+            }
+            alert_success(`Đã thêm phòng`, `${formValues.inputValue}`);
+            data.modelDep = document.document.name;
+            await refresh_add();
+            ctx.emit("newDep", departments.department);
+          }
+        };
+
+        // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
+        showSweetAlert();
+      }
     });
+
+    //UNITS
     const units = reactive({
       unit: [],
     });
+    const selectedOptionUnit = ref("Đơn vị");
+    watch(selectedOptionUnit, (newValue, oldValue) => {
+      console.log("New Unit:", newValue);
+      if (newValue == "other") {
+        const showSweetAlert = async () => {
+          const { value: formValues } = await Swal.fire({
+            title: "Thêm phòng mới",
+            html: `
+      <select id="my-select-center" class="swal2-input  mx-2" style="width:92%">
+        <option value="">Trung tâm</option>
+        ${centers.center
+          .map(
+            (option) => `<option value="${option._id}"
+            ${option._id == selectedOptionCenter.value ? "selected" : ""} 
+            >${option.name}</option>`
+          )
+          .join("")}
+      </select>
+      <select id="my-select-dep" class="swal2-input  mx-2" style="width:92%" >
+        <option value="">Phòng</option>
+        
+      </select>
+      </select>
+      <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
+    `,
+            focusConfirm: false,
+            showCancelButton: true,
+            preConfirm: () => {
+              const selectedOptionCenter =
+                document.getElementById("my-select-center").value;
+              const selectedOptionDep =
+                document.getElementById("my-select-dep").value;
+
+              const inputValue = document.getElementById("my-input").value;
+              if (!selectedOptionCenter || !inputValue || !selectedOptionDep) {
+                Swal.showValidationMessage("Vui lòng điền đầy đủ thông tin");
+              }
+
+              return {
+                selectedOptionCenter,
+                selectedOptionDep,
+                inputValue,
+              };
+            },
+            didOpen: async () => {
+              const center = document.getElementById("my-select-center");
+              const dep = document.getElementById("my-select-dep");
+
+              const Id = center.value;
+              departments.department =
+                (await departmentsServices.findAllDepOfACenter(Id)) || [];
+
+              dep.innerHTML = `
+          <option value="">Phòng</option>
+          ${departments.department
+            .map(
+              (option) =>
+                `<option value="${option._id}"
+                ${
+                  option._id == selectedOptionDepartment.value ? "selected" : ""
+                } 
+
+                >${option.name}</option>`
+            )
+            .join("")}
+        `;
+              center.addEventListener("change", async () => {
+                const Id = center.value;
+                departments.department =
+                  (await departmentsServices.findAllDepOfACenter(Id)) || [];
+
+                dep.innerHTML = `
+          <option value="">Select a product</option>
+          ${departments.department
+            .map(
+              (option) =>
+                `<option value="${option._id}"
+                
+                >${option.name}</option>`
+            )
+            .join("")}
+        `;
+              });
+            },
+          });
+
+          if (formValues) {
+            // Xử lý giá trị selectedOption và giá trị inputValue
+            console.log(
+              "Selected Option Center:",
+              formValues.selectedOptionCenter
+            );
+            console.log("Selected Option dep:", formValues.selectedOptionDep);
+
+            console.log("Input Value:", formValues.inputValue);
+            const document = await unitsServices.create({
+              departmentId: formValues.selectedOptionDep,
+              name: formValues.inputValue,
+            });
+            if (document.error) {
+              alert_warning(`Đã tồn tại  `, `${formValues.inputValue}`);
+              return;
+            }
+            alert_success(`Đã thêm `, `${formValues.inputValue}`);
+
+            await refresh_add();
+            ctx.emit("newUnit", units.unit);
+            selectedOptionUnit.value = document.document._id;
+            data.modelUnit = document.document.name;
+          }
+        };
+
+        // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
+        showSweetAlert();
+      }
+    });
+
+    const positions = reactive({ position: [] });
+    const selectedOptionPosition = ref("Chức vụ");
+    watch(selectedOptionPosition, async (newValue, oldValue) => {
+      if (newValue == "other") {
+        const showSweetAlert = async () => {
+          const { value: positionName } = await Swal.fire({
+            title: "Thêm mới chức vụ",
+            input: "text",
+            inputLabel: "Tên chức vụ",
+            inputValue: "",
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return "Tên chức vụ không được bỏ trống";
+              }
+            },
+          });
+
+          if (positionName) {
+            const document = await positionService.create({
+              name: positionName,
+            });
+            if (document.error) {
+              alert_warning(`Đã tồn tại chức vụ `, `${positionName}`);
+              return false;
+            }
+            alert_success(`Đã thêm chức vụ`, `${positionName}`);
+            await refresh_add();
+            data.modelPositon = document.document.name;
+            ctx.emit("newPosition", positions.position);
+          }
+          return true;
+        };
+        showSweetAlert();
+      }
+    });
+
     const refresh_add = async () => {
       centers.center = await CenterServices.getAll();
       centers.center.push({ _id: "other", name: "khác" });
       departments.department = await departmentsServices.getAll();
       departments.department.push({ _id: "other", name: "khác" });
+
       units.unit = await unitsServices.getAll();
       units.unit.push({ _id: "other", name: "khác" });
+
+      positions.position = await positionService.getAll();
+      positions.position.push({ _id: "other", name: "khác" });
+    };
+    const onDeleteCenter = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await CenterServices.deleteOne(value._id);
+        alert_success("Bạn đã xóa trung tâm", value.name);
+        await refresh_add();
+        ctx.emit("newCenter", centers.center);
+      }
+    };
+    const onDeleteDep = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await departmentsServices.deleteOne(value._id);
+        alert_success("Bạn đã xóa", value.name);
+        await refresh_add();
+        ctx.emit("newDep", departments.department);
+      }
+    };
+    const onDeleteUnit = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await unitsServices.deleteOne(value._id);
+        alert_success("Bạn đã xóa ", value.name);
+        await refresh_add();
+        ctx.emit("newUnit", units.unit);
+      }
+    };
+    const onDeletePosition = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await positionService.delete(value._id);
+        alert_success("Bạn đã xóa ", value.name);
+        await refresh_add();
+        ctx.emit("newPosition", positions.position);
+      }
     };
     onMounted(async () => {
       await refresh_add();
     });
     return {
+      item,
       create,
       data,
+      centers,
+      departments,
+      units,
+      onDeleteCenter,
+      onDeleteDep,
+      onDeleteUnit,
+      onDeletePosition,
+      selectedOptionCenter,
+      selectedOptionDepartment,
+      selectedOptionUnit,
+      positions,
+      selectedOptionPosition,
+      refresh_add,
     };
   },
 };
@@ -184,20 +533,31 @@ export default {
                   <label for=""
                     >Chức vụ(<span style="color: red">*</span>):</label
                   >
-                  <select
-                    class="form-control"
-                    required
-                    v-model="item.postionId"
-                  >
-                    <!-- <option value="" disabled selected hidden>Chức vụ</option> -->
-                    <option
-                      v-for="positions in positions"
-                      :key="positions"
-                      :value="positions._id"
-                    >
-                      {{ positions.name }}
-                    </option>
-                  </select>
+                  <div class="form-group w-100">
+                    <Select_Advanced
+                      class="form-control"
+                      required
+                      :options="positions.position"
+                      :modelValue="data.modelPositon"
+                      style="width: 100%; height: 100%"
+                      @searchSelect="
+                        async (value) => (
+                          await refresh_add(),
+                          (positions.position = positions.position.filter(
+                            (value1, index) => {
+                              console.log(value1, value);
+                              return (
+                                value1.name.includes(value) || value.length == 0
+                              );
+                            }
+                          )),
+                          console.log('searchSlect', value.length)
+                        )
+                      "
+                      @delete="(value) => onDeleteCenter(value)"
+                      @choosed="(value) => (selectedOptionPosition = value)"
+                    />
+                  </div>
                 </div>
                 <div class="form-group">
                   <label for=""
@@ -284,7 +644,7 @@ export default {
                   type="button"
                   class="btn btn-primary px-3 py-2"
                   style="font-size: 14px"
-                  @click="$emit('create')"
+                  @click="create()"
                   id="add"
                 >
                   <span>Thêm</span>
