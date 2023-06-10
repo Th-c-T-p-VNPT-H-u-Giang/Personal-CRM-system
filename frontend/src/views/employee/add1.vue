@@ -82,12 +82,22 @@ export default {
       departments.department = value;
       ctx.emit("newDep", departments.department);
     };
+    const searchCenter = async (value) => {
+      console.log(value);
+      centers.center = await CenterServices.getAll();
+      centers.center = centers.center.filter((value1, index) => {
+        console.log(value1, value);
+        return value1.name.includes(value) || value.length == 0;
+      });
+      console.log("searchSlect", centers.center);
+    };
     onMounted(async () => {
       let documents = await centerServices.findAll();
       centers.center = documents.document;
       let documents_dep = await depServices.findAll();
       departments.department = documents_dep.document;
     });
+
     return {
       // create,
       clickAdd,
@@ -101,6 +111,7 @@ export default {
       createCenter,
       Department,
       createDep,
+      searchCenter,
     };
   },
 };
@@ -202,6 +213,11 @@ export default {
                 @option="
                   (value) => {
                     selectedOptionCenter = value;
+                  }
+                "
+                @searchSelect="
+                  (value) => {
+                    searchCenter(value);
                   }
                 "
               />

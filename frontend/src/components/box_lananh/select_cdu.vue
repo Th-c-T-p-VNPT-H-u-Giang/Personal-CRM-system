@@ -13,6 +13,7 @@
         :selected="selectedOption == val._id"
       >
         {{ val.name }}
+        <!-- <span class="trash-icon" @click="handleDelete(val._id)"> X </span> -->
       </option>
 
       <option v-if="add.nameCDU == 'center'" value="other">Khác</option>
@@ -39,9 +40,13 @@ export default {
         emit("option", e.target.value);
       }
     };
+    const handleDelete = (value) => {
+      emit("onDelete", value);
+    };
 
     return {
       changed,
+      handleDelete,
     };
   },
 };

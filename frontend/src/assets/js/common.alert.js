@@ -56,7 +56,7 @@ export const alert_info = (title, text) => {
 
 export const alert_delete = async (title, text) => {
   let isConfirmed = false;
-  Swal.fire({
+  await Swal.fire({
     icon: "question",
     title: title,
     text: text,
@@ -69,7 +69,6 @@ export const alert_delete = async (title, text) => {
     showConfirmButton: true,
     reverseButtons: true,
   }).then((result) => {
-    console.log("warning:", result.isConfirmed);
     isConfirmed = result.isConfirmed;
   });
   return isConfirmed;

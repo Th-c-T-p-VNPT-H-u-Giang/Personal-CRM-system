@@ -1,5 +1,5 @@
 <script>
-import { reactive, ref, watch, onMounted } from "vue";
+import { reactive, ref, watch, onMounted, watchEffect } from "vue";
 import Select from "../../components/form/select.vue";
 // ******
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
@@ -15,6 +15,8 @@ import {
   alert_warning,
 } from "../../assets/js/common.alert";
 import centerServices from "../../services/center.services";
+import Select_Advanced from "../../components/form/select_advanced.vue";
+
 import {
   http_getAll,
   http_create,
@@ -26,6 +28,7 @@ export default {
     Select,
     // ***
     SelectOption,
+    Select_Advanced,
   },
   props: {
     item: {
@@ -41,8 +44,16 @@ export default {
       type: Object,
       default: {},
     },
+    //**
+    updateAdd: { type: String, default: "" },
   },
   setup(props, ctx) {
+    const data = reactive({
+      modelValue: "",
+      modelDep: "",
+      modelUnit: "",
+    });
+
     const create = () => {
       if (props.item.name.length > 0 && props.item.content.length > 0) {
         ctx.emit("create");
@@ -79,6 +90,8 @@ export default {
           units.unit.push(value);
         }
       }
+      departments.department.push({ _id: "other", name: "khác" });
+      units.unit.push({ _id: "other", name: "khác" });
       // Alert add center
       if (newValue == "other") {
         const showSweetAlert = async () => {
@@ -97,26 +110,18 @@ export default {
 
           if (CenterName) {
             const document = await centerServices.create({ name: CenterName });
+            console.log("doc:", document.document.name);
+            // data.modelValue = document.document.name;
             if (document.error) {
-              // Swal.fire({
-              //   icon: "warning",
-              //   title: `Đã tồn tại trung tâm `,
-              //   text: `${CenterName}`,
-              //   background: "#fff",
-              //   confirmButtonText: "OK",
-              // }).then((result) => {
-              //   if (result.isConfirmed) {
-              //     setTimeout(showSweetAlert, 300);
-              //   }
-              // });
-
               alert_warning(`Đã tồn tại trung tâm `, `${CenterName}`);
               return false;
             }
             alert_success(`Đã thêm trung tâm`, `${CenterName}`);
             await refresh("center");
+            data.modelValue = document.document.name;
             ctx.emit("newCenter", centers.center);
-            selectedOptionCenter.value = document.document._id;
+            // selectedOptionCenter.value = document.document._id;
+            // name.value = document.document.name;
           }
           return true;
         };
@@ -129,6 +134,8 @@ export default {
     const selectedOptionDepartment = ref("Phòng");
     watch(selectedOptionDepartment, async (newValue, oldValue) => {
       units.unit = await unitsServices.findAllUnitsOfADep(newValue);
+      units.unit.push({ _id: "other", name: "khác" });
+
       if (newValue == "other") {
         const showSweetAlert = async () => {
           const { value: formValues } = await Swal.fire({
@@ -176,16 +183,16 @@ export default {
             });
             if (document.error) {
               alert_warning(`Đã tồn tại phòng `, `${formValues.inputValue}`);
+              return;
             }
             alert_success(`Đã thêm phòng`, `${formValues.inputValue}`);
+            data.modelDep = document.document.name;
             await refresh("department");
             ctx.emit("newDep", departments.department);
-            selectedOptionDepartment.value = document.document._id;
           }
         };
 
         // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
-
         showSweetAlert();
       }
     });
@@ -302,6 +309,7 @@ export default {
             await refresh("unit");
             ctx.emit("newUnit", units.unit);
             selectedOptionUnit.value = document.document._id;
+            data.modelUnit = document.document.name;
           }
         };
 
@@ -309,11 +317,58 @@ export default {
         showSweetAlert();
       }
     });
-
-    onMounted(async () => {
+    const refresh_add = async () => {
       centers.center = await CenterServices.getAll();
+      centers.center.push({ _id: "other", name: "khác" });
       departments.department = await departmentsServices.getAll();
+      departments.department.push({ _id: "other", name: "khác" });
+
       units.unit = await unitsServices.getAll();
+      units.unit.push({ _id: "other", name: "khác" });
+    };
+    const onDeleteCenter = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await centerServices.deleteOne(value._id);
+        alert_success("Bạn đã xóa trung tâm", value.name);
+        await refresh_add();
+        ctx.emit("newCenter", centers.center);
+      }
+    };
+    const onDeleteDep = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await departmentsServices.deleteOne(value._id);
+        alert_success("Bạn đã xóa", value.name);
+        await refresh_add();
+        ctx.emit("newDep", departments.department);
+      }
+    };
+    const onDeleteUnit = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await unitsServices.deleteOne(value._id);
+        alert_success("Bạn đã xóa ", value.name);
+        await refresh_add();
+        ctx.emit("newUnit", units.unit);
+      }
+    };
+    const update = ref("");
+    update.value = props.updateAdd;
+    watchEffect(async () => {
+      console.log("updateADD:", props.updateAdd);
+      if (props.updateAdd) {
+        console.log("updateADD:", props.updateAdd);
+        await refresh_add();
+        ctx.emit("restore", false);
+      }
+    });
+    onMounted(async () => {
+      console.log("Mouted updateAdd:", props.updateAdd);
+      await refresh_add();
     });
 
     return {
@@ -325,6 +380,11 @@ export default {
       selectedOptionDepartment,
       units,
       selectedOptionUnit,
+      refresh_add,
+      data,
+      onDeleteCenter,
+      onDeleteDep,
+      onDeleteUnit,
     };
   },
 };
@@ -426,10 +486,85 @@ export default {
               </select>
             </div>
             <div class="form-group">
+              <label for=""
+                >Trung tâm(<span style="color: red">*</span>):</label
+              >
+              <div class="form-group w-100">
+                <Select_Advanced
+                  class="form-control"
+                  required
+                  :options="centers.center"
+                  :modelValue="data.modelValue"
+                  style="width: 100%; height: 100%"
+                  @searchSelect="
+                    async (value) => (
+                      await refresh_add(),
+                      (centers.center = centers.center.filter(
+                        (value1, index) => {
+                          console.log(value1, value);
+                          return (
+                            value1.name.includes(value) || value.length == 0
+                          );
+                        }
+                      )),
+                      console.log('searchSlect', value.length)
+                    )
+                  "
+                  @delete="(value) => onDeleteCenter(value)"
+                  @choosed="(value) => (selectedOptionCenter = value)"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="">Phòng(<span style="color: red">*</span>):</label>
+              <Select_Advanced
+                class="form-control"
+                required
+                :options="departments.department"
+                :modelValue="data.modelDep"
+                style="width: 100%; height: 100%"
+                @searchSelect="
+                  async (value) => (
+                    await refresh_add(),
+                    (departments.department = departments.department.filter(
+                      (value1, index) => {
+                        console.log(value1, value);
+                        return value1.name.includes(value) || value.length == 0;
+                      }
+                    )),
+                    console.log('searchSlect', value.length)
+                  )
+                "
+                @delete="(value) => onDeleteDep(value)"
+                @choosed="(value) => (selectedOptionDepartment = value)"
+              />
+            </div>
+            <div class="form-group w-100">
+              <label for="">Tổ(<span style="color: red">*</span>):</label>
+              <Select_Advanced
+                class="form-control"
+                :options="units.unit"
+                :modelValue="data.modelUnit"
+                style="width: 100%; height: 100%"
+                @searchSelect="
+                  async (value) => (
+                    await refresh_add(),
+                    (units.unit = units.unit.filter((value1, index) => {
+                      console.log(value1, value);
+                      return value1.name.includes(value) || value.length == 0;
+                    })),
+                    console.log('searchSlect', value.length)
+                  )
+                "
+                @delete="(value) => onDeleteUnit(value)"
+                @choosed="(value) => (selectedOptionUnit = value)"
+              />
+            </div>
+            <!-- Lan Anh -->
+            <!-- <div class="form-group">
               <label for="center"
                 >Trung tâm(<span style="color: red">*</span>):</label
               >
-              <!-- {{ newCenter }} -->
               <SelectOption
                 :selectedOption="selectedOptionCenter"
                 :field="centers.center"
@@ -470,7 +605,7 @@ export default {
                   }
                 "
               />
-            </div>
+            </div> -->
             <b-button
               type="submit"
               class="btn btn-primary px-3 py-2"
@@ -488,4 +623,8 @@ export default {
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+* {
+  box-sizing: border-box;
+}
+</style>
