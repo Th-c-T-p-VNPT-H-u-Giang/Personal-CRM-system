@@ -12,7 +12,7 @@
         @click="Data.activeMenu = 2"
         :class="[Data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         href="./rolelist"
-        >Chức Vụ</a
+        >Vai Trò</a
       >
       <a
         @click="Data.activeMenu = 3"
@@ -22,6 +22,51 @@
       >
     </div>
     <!-- Filter -->
+    <div class="border-hr mb-3"></div>
+    <div class="d-flex flex-column">
+      <span class="mx-3 mb-3 h6">Lọc Quyền</span>
+      <div class="d-flex mx-3">
+        <div class="form-group w-100">
+          <Select
+            :title="`Khoảng thời gian`"
+            :entryValue="`Khoảng thời gian`"
+            :options="[
+              { name: '1 tuần', value: '1 tuần' },
+              { name: '1 tháng', value: '1 tháng' },
+              { name: '1 năm', value: '1 năm' },
+            ]"
+          />
+        </div>
+        <div class="d-flex">
+          <input
+            style=""
+            class="input px-2 form-group w-100 ml-3"
+            type="date"
+            name=""
+            id=""
+          />
+        </div>
+        
+        <div class="form-group ml-3">
+          <Select_Advanced
+            :options="Data.items"
+            style="width: 300px; height: 100%"
+            @searchSelect="
+              async (value) => (
+                await refresh(),
+                (Data.items = Data.items.filter((value1, index) => {
+                  console.log(value1, value);
+                  return value1.name.includes(value) || value.length == 0;
+                })),
+                console.log('searchSlect', value.length)
+              )
+            "
+            @delete="(value) => console.log('delete', value)"
+            @choosed="(value) => console.log('choosed', value)"
+          />
+        </div>
+      </div>
+    </div>
     <!-- Search -->
     <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">
@@ -66,9 +111,9 @@
           data-toggle="modal"
           data-target="#model-dlt-all-permission"
         >
-          <span id="delete-all" class="mx-2">Xóa Tất Cả</span>
+          <span id="delete-all" class="mx-2">Xóa</span>
         </button>
-        <DeleteAllPermission :items="Data.items" />
+        <!-- <DeleteAllPermission :items="Data.items" /> -->
         <button
           type="button"
           class="btn btn-primary"
@@ -84,18 +129,8 @@
     <!-- {{ Data.itemAdd }} -->
     <Table
       :items="setPages"
-      :fields="[
-        'Họ Tên',
-        'Tên Đăng Nhập',
-        'Email',
-        'Quyền',
-      ]"
-      :labels="[
-        'fullname',
-        'username',
-        'email',
-        'permission',
-      ]"
+      :fields="['Quyền']"
+      :labels="['name']"
       @delete="(value) => deleteOne(value)"
       @edit="
         (value, value1) => (
@@ -111,28 +146,42 @@
       :startRow="Data.startRow"
       :endRow="Data.endRow"
       :currentPage="Data.currentPage"
-      @update:currentPage="(value) => Data.currentPage = value"
+      @update:currentPage="(value) => (Data.currentPage = value)"
       class="mx-3"
     />
-  <EditPermission
-    :item="Data.editValue"
-    :class="[Data.activeEdit ? 'show-modal' : 'd-none']"
-    @cancel="Data.activeEdit = false"
-  />
+    <EditPermission
+      :item="Data.editValue"
+      :class="[Data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="Data.activeEdit = false"
+      @edit="edit(Data.editValue)"
+    />
   </div>
 </template>
 
 <script>
-import Table from "../../components/table/table_duy.vue";
-import Pagination from "../../components/table/pagination_duy.vue";
-// import Dropdown from "../../components/form/dropdown.vue";
-import Select from "../../components/form/select.vue";
-import Search from "../../components/form/search.vue";
+import 
+{ Table,
+  Pagination,
+  Select,
+  Search,
+  reactive,
+  computed,
+  onBeforeMount,
+  useRouter,
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+  http_update,
+  alert_success,
+  alert_error,
+  alert_delete,
+  Permission
+} from "../common/import.js"
 import DeleteAllPermission from "../../components/form/dlt_all_permission.vue";
-import AddPermission from "./modal/AddPermission.vue"
-import EditPermission from "./modal/EditPermission.vue"
-import { reactive, computed } from "vue";
-import { useRouter } from "vue-router";
+import AddPermission from "./modal/AddPermission.vue";
+import EditPermission from "./modal/EditPermission.vue";
+
 export default {
   components: {
     Table,
@@ -142,96 +191,15 @@ export default {
     Search,
     AddPermission,
     DeleteAllPermission,
-    EditPermission
+    EditPermission,
   },
   setup(ctx) {
     const Data = reactive({
       items: [
         {
           _id: "1",
-          fullname: "Trương Thiết Long",
-          username: "ttlong315",
-          email: "ttlong315@gmail.com",
-          permission: "Full Authority",
+          name: "Full Authority",
         },
-        {
-          _id: "2",
-          fullname: "Trần Tuyết Mỹ",
-          username: "meimey113",
-          email: "meimei113@gmail.com",
-          permission: "Full Authority",
-        },
-        {
-          _id: "3",
-          fullname: "Giang Văn Mít",
-          username: "janeSmith",
-          email: "janesmith@example.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "4",
-          fullname: "Nguyễn Thị Vân Anh",
-          username: "vanh13",
-          email: "vanh@gmail.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "5",
-          fullname: "Trần An Đông",
-          username: "adong",
-          email: "dong@gmail.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "6",
-          fullname: "Nguyễn Hải Yến",
-          username: "hyen",
-          email: "yen@gmail.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "7",
-          fullname: "Nguyễn Trung Tín",
-          username: "ttin",
-          email: "tin@gmail.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "8",
-          fullname: "Nguyễn Thị Hương",
-          username: "huong.nguyen",
-          email: "huong.nguyen@gmail.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "9",
-          fullname: "Phạm Văn Đức",
-          username: "duc.pham",
-          email: "duc.pham@gmail.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "10",
-          fullname: "Trần Minh An",
-          username: "minhantran",
-          email: "minhantran@gmail.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "11",
-          fullname: "Lê Thị Kim Anh",
-          username: "kimanh.le",
-          email: "kimanh.le@gmail.com",
-          permission: "abcdefg",
-        },
-        {
-          _id: "12",
-          fullname: "Võ Hoàng Nam",
-          username: "nam.vo",
-          email: "nam.vo@gmail.com",
-          permission: "abcdefg",
-        },
-        // Add more items as needed
       ],
       entryValue: 5,
       numberOfPages: 1,
@@ -242,25 +210,17 @@ export default {
       searchText: "",
       activeMenu: 3,
       itemAdd: {
-        fullname: "",
-        username: "",
-        email: "",
-        permission: "",
+        name: "",
       },
       activeEdit: false,
-      editValue: {
-        _id: "",
-        fullname: "",
-        username: "",
-        email: "",
-        permission: "",
-      },
+      editValue: {},
+      searchSelect: "",
     });
     // computed
     const toString = computed(() => {
       console.log("Starting search");
       return Data.items.map((value, index) => {
-        return [value.fullname].join("").toLocaleLowerCase();
+        return [value.name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -298,18 +258,58 @@ export default {
       });
     });
     // methods
-    const create = () => {
-      console.log("creating", Data.itemAdd);
+    const create = async () => {
+      console.log(Data.itemAdd);
+      const result = await http_create(Permission, Data.itemAdd);
+      console.log("result", result);
+      if (!result.error) {
+        alert_success(
+          `Thêm Quyền`,
+          `Thêm thành công quyền ${result.document.name}.`
+        );
+        refresh();
+      } else if (result.error) {
+        alert_error(`Thêm Quyền`, `${result.msg}`);
+      }
     };
     const update = (item) => {
       console.log("updating", item);
     };
-    const deleteOne = (_id) => {
-      console.log("deleting", _id);
+    const deleteOne = async (_id) => {
+      const permission = await http_getOne(Permission, _id);
+      console.log("deleting", permission);
+      const isConfirmed = await alert_delete(
+        `Xoá Quyền`,
+        `Bạn có chắc chắn muốn xoá quyền ${permission.name} không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await http_deleteOne(Permission, _id);
+        alert_success(
+          `Xoá quyền`,
+          `Bạn đã xoá thành công quyền ${result.document.name}.`
+        );
+        refresh();
+      }
     };
-    const edit = () => {
-      console.log("edit");
+    const edit = async (editValue) => {
+      console.log(editValue);
+      const result = await http_update(Permission, editValue._id, editValue);
+      if (!result.error) {
+        alert_success(`Sửa tài khoản`, `${result.msg}`);
+        refresh();
+      } else if (result.error) {
+        alert_error(`Sửa tài khoản`, `${result.msg}`);
+      }
     };
+    const refresh = async () => {
+      Data.items = await http_getAll(Permission);
+    };
+    // Hàm callback được gọi trước khi component được mount (load)
+    onBeforeMount(async () => {
+      refresh();
+      console.log(Data.items);
+    });
 
     const router = useRouter();
 
@@ -325,6 +325,7 @@ export default {
       deleteOne,
       edit,
       view,
+      refresh
     };
   },
 };
@@ -364,5 +365,10 @@ export default {
   background-color: var(--dark);
   /* pointer-events: auto; */
   z-index: 1;
+}
+.input {
+  background-color: inherit;
+  border: 1px solid var(--gray);
+  border-radius: 5px;
 }
 </style>

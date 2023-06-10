@@ -12,7 +12,7 @@
         @click="data.activeMenu = 2"
         :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         href="./rolelist"
-        >Chức Vụ</a
+        >Vai Trò</a
       >
       <a
         @click="data.activeMenu = 3"
@@ -22,6 +22,53 @@
       >
     </div>
     <!-- Filter -->
+    <!-- Filter -->
+    <!-- <div class="border-hr mb-3"></div>
+    <div class="d-flex flex-column">
+      <span class="mx-3 mb-3 h6">Lọc Tài Khoản</span>
+      <div class="d-flex mx-3">
+        <div class="form-group w-100">
+          <Select
+            :title="`Khoảng thời gian`"
+            :entryValue="`Khoảng thời gian`"
+            :options="[
+              { name: '1 tuần', value: '1 tuần' },
+              { name: '1 tháng', value: '1 tháng' },
+              { name: '1 năm', value: '1 năm' },
+            ]"
+          />
+        </div>
+        <div class="d-flex">
+          <input
+            style=""
+            class="input px-2 form-group w-100 ml-3"
+            type="date"
+            name=""
+            id=""
+          />
+        </div>
+        
+
+        <div class="form-group ml-3">
+          <Select_Advanced_Account
+            :options="data.items"
+            style="width: 300px; height: 100%"
+            @searchSelect="
+              async (value) => (
+                await refresh(),
+                (data.items = data.items.filter((value1, index) => {
+                  console.log(value1, value);
+                  return value1.user_name.includes(value) || value.length == 0;
+                })),
+                console.log('searchSlect', value.length)
+              )
+            "
+            @delete="(value) => console.log('delete', value)"
+            @choosed="(value) => console.log('choosed', value)"
+          />
+        </div>
+      </div>
+    </div> -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">
@@ -66,9 +113,9 @@
           data-toggle="modal"
           data-target="#model-delete-all"
         >
-          <span id="delete-all" class="mx-2">Xóa Tất Cả</span>
+          <span id="delete-all" class="mx-2">Xóa</span>
         </button>
-        <DeleteAll :items="data.items" />
+        <!-- <DeleteAll :items="data.items" /> -->
         <button
           type="button"
           class="btn btn-primary"
@@ -77,26 +124,14 @@
         >
           <span id="addaccount" class="mx-2">Thêm</span>
         </button>
-        <AddAccount :item="data.itemAdd" @create="create" />
+        <AddAccount :item="data.itemAdd" :roles="data.roles" @create="create" />
       </div>
     </div>
-    <!-- Table{{ data.itemAdd }} -->
+
     <Table
       :items="setPages"
-      :fields="[
-        'Họ Tên',
-        'Tên Đăng Nhập',
-        'Email',
-        'Ngày Sinh',
-        'Ngày Đăng Ký',
-      ]"
-      :labels="[
-        'fullname',
-        'username',
-        'email',
-        'birthday',
-        'registrationdate',
-      ]"
+      :fields="['Tên Tài Khoản']"
+      :labels="['user_name']"
       @delete="(value) => deleteOne(value)"
       @edit="
         (value, value1) => (
@@ -115,24 +150,45 @@
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
-  <Edit
-    :item="data.editValue"
-    :class="[data.activeEdit ? 'show-modal' : 'd-none']"
-    @cancel="data.activeEdit = false"
-  />
+    <Edit
+      :item="data.editValue"
+      :roles="data.roles"
+      :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEdit = false"
+      @edit="edit(data.editValue)"
+    />
   </div>
 </template>
+
 <script>
-import Table from "../../components/table/table_duy.vue";
-import Pagination from "../../components/table/pagination_duy.vue";
-// import Dropdown from "../../components/form/dropdown.vue";
-import Select from "../../components/form/select.vue";
-import Search from "../../components/form/search.vue";
+import {
+  Table,
+  Pagination,
+  Select,
+  Search,
+  // compositions
+  reactive,
+  computed,
+  onBeforeMount,
+  // router
+  useRouter,
+  // service
+  Account,
+  Role,
+  // http service
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+  http_update,
+  // alert
+  alert_success,
+  alert_error,
+  alert_delete,
+} from "../common/import"
 import DeleteAll from "../../components/form/dlt_all_account.vue";
 import AddAccount from "./modal/AddAccount.vue";
 import Edit from "./modal/EditAccount.vue";
-import { reactive, computed } from "vue";
-import { useRouter } from "vue-router";
 export default {
   components: {
     Table,
@@ -143,107 +199,18 @@ export default {
     AddAccount,
     DeleteAll,
     Edit,
+    // Select_Advanced_Account
   },
   setup(ctx) {
     const data = reactive({
       items: [
         {
-          _id: "1",
-          fullname: "Trương Thiết Long",
-          username: "ttlong315",
-          email: "ttlong315@gmail.com",
-          birthday: "20/02/2001",
-          registrationdate: "20/05/2023",
+          // _id: "1",
+          // user_name: "meimey113",
+          // password: "11032002",
+          // roleId:"1",
+          // EmployeeId: "1"
         },
-        {
-          _id: "2",
-          fullname: "Trần Tuyết Mỹ",
-          username: "meimey113",
-          email: "meimei113@gmail.com",
-          birthday: "11/03/2002",
-          registrationdate: "20/05/2023",
-        },
-        {
-          _id: "3",
-          fullname: "Giang Văn Mít",
-          username: "janeSmith",
-          email: "janesmith@example.com",
-          birthday: "15/04/2004",
-          registrationdate: "18/05/2023",
-        },
-        {
-          _id: "4",
-          fullname: "Nguyễn Thị Vân Anh",
-          username: "vanh13",
-          email: "vanh@gmail.com",
-          birthday: "12/04/2002",
-          registrationdate: "21/05/2023",
-        },
-        {
-          _id: "5",
-          fullname: "Trần An Đông",
-          username: "adong",
-          email: "dong@gmail.com",
-          birthday: "12/02/2001",
-          registrationdate: "21/05/2023",
-        },
-        {
-          _id: "6",
-          fullname: "Nguyễn Hải Yến",
-          username: "hyen",
-          email: "yen@gmail.com",
-          birthday: "09/02/2001",
-          registrationdate: "21/05/2023",
-        },
-        {
-          _id: "7",
-          fullname: "Nguyễn Trung Tín",
-          username: "ttin",
-          email: "tin@gmail.com",
-          birthday: "02/01/2001",
-          registrationdate: "21/05/2023",
-        },
-        {
-          _id: "8",
-          fullname: "Nguyễn Thị Hương",
-          username: "huong.nguyen",
-          email: "huong.nguyen@gmail.com",
-          birthday: "15/07/1995",
-          registrationdate: "10/04/2023",
-        },
-        {
-          _id: "9",
-          fullname: "Phạm Văn Đức",
-          username: "duc.pham",
-          email: "duc.pham@gmail.com",
-          birthday: "03/11/1988",
-          registrationdate: "05/01/2023",
-        },
-        {
-          _id: "10",
-          fullname: "Trần Minh An",
-          username: "minhantran",
-          email: "minhantran@gmail.com",
-          birthday: "27/09/1990",
-          registrationdate: "15/03/2023",
-        },
-        {
-          _id: "11",
-          fullname: "Lê Thị Kim Anh",
-          username: "kimanh.le",
-          email: "kimanh.le@gmail.com",
-          birthday: "09/12/1985",
-          registrationdate: "22/02/2023",
-        },
-        {
-          _id: "12",
-          fullname: "Võ Hoàng Nam",
-          username: "nam.vo",
-          email: "nam.vo@gmail.com",
-          birthday: "01/06/1992",
-          registrationdate: "19/04/2023",
-        },
-        // Add more items as needed
       ],
       entryValue: 5,
       numberOfPages: 1,
@@ -254,28 +221,32 @@ export default {
       searchText: "",
       activeMenu: 1,
       itemAdd: {
-        fullname: "",
-        username: "",
-        email: "",
-        birthday: "",
-        registrationdate: "",
+        user_name: "",
+        password: "",
+        roleId: "",
+        EmployeeId: "",
       },
       activeEdit: false,
-      editValue: {
-        _id: "",
-        fullname: "",
-        username: "",
-        email: "",
-        birthday: "",
-        registrationdate: "",
-      },
+      editValue: {},
+      roles: [],
+      // searchSelect: "",
+      // optionSelect: [
+      //   {
+      //     _id: 1,
+      //     name: "1",
+      //   },
+      //   {
+      //     _id: 2,
+      //     name: "2",
+      //   },
+      // ],
     });
 
     // computed
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.fullname].join("").toLocaleLowerCase();
+        return [value.user_name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -312,26 +283,67 @@ export default {
       });
     });
 
-    // methods
-    const create = () => {
-      console.log("creating");
-    };
-    const update = (item) => {
-      console.log("updating", item);
-    };
-    const deleteOne = (_id) => {
-      console.log("deleting", _id);
-    };
-    const edit = () => {
-      console.log("edit");
-    };
-
     const router = useRouter();
 
     const view = (_id) => {
       console.log("view", _id);
       router.push({ name: "AccountList.view", params: { id: _id } });
     };
+
+    // methods
+    const create = async () => {
+      console.log(data.itemAdd);
+      const result = await http_create(Account, data.itemAdd);
+      console.log("result", result);
+      if (!result.error) {
+        alert_success(
+          `Thêm tài khỏan`,
+          `Tài khoản ${result.document.user_name} đã được tạo thành công.`
+        );
+        refresh();
+      } else if (result.error) {
+        alert_error(`Thêm tài khoản`, `${result.msg}`);
+      }
+    };
+    const update = (item) => {
+      console.log("updating", item);
+    };
+    const deleteOne = async (_id) => {
+      const account = await http_getOne(Account, _id);
+      console.log("deleting", account);
+      const isConfirmed = await alert_delete(
+        `Xoá tài khoản`,
+        `Bạn có chắc chắn muốn xoá tài khoản ${account.user_name} không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await http_deleteOne(Account, _id);
+        alert_success(
+          `Xoá tài khoản`,
+          `Bạn đã xoá thành công tài khoản ${result.document.user_name}.`
+        );
+        refresh();
+      }
+    };
+    const edit = async (editValue) => {
+      console.log(editValue);
+      const result = await http_update(Account, editValue._id, editValue);
+      if (!result.error) {
+        alert_success(`Sửa tài khoản`, `${result.msg}`);
+        refresh();
+      } else if (result.error) {
+        alert_error(`Sửa tài khoản`, `${result.msg}`);
+      }
+    };
+    const refresh = async () => {
+      data.items = await http_getAll(Account);
+      data.roles = await http_getAll(Role);
+    };
+    // Hàm callback được gọi trước khi component được mount (load)
+    onBeforeMount(async () => {
+      refresh();
+      // console.log(data.items);
+    });
     return {
       data,
       setPages,
@@ -340,6 +352,7 @@ export default {
       deleteOne,
       edit,
       view,
+      refresh
     };
   },
 };
@@ -379,5 +392,10 @@ export default {
   background-color: var(--dark);
   /* pointer-events: auto; */
   z-index: 1;
+}
+.input {
+  background-color: inherit;
+  border: 1px solid var(--gray);
+  border-radius: 5px;
 }
 </style>

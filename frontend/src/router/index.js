@@ -13,13 +13,6 @@ const routes = [
     name: 'Customer',
     component: () => import('../views/customer/index.vue'),
   },
-<<<<<<< HEAD
-  // Activity 
-  {
-    path: '/activity',
-    name: 'Activity',
-    component: () => import('../views/activity/index.vue'),
-=======
   {
     path: '/customer/:id',
     name: 'Customer.view',
@@ -61,7 +54,6 @@ const routes = [
     name: 'Habit.view',
     component: () => import('../views/habit/view.vue'),
     props: true,
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
   },
   // Employee 
   {
@@ -69,8 +61,6 @@ const routes = [
     name: 'Employee',
     component: () => import('../views/employee/index.vue'),
   },
-<<<<<<< HEAD
-=======
   {
     path: '/employee/:id',
     name: 'Employee.view',
@@ -87,33 +77,26 @@ const routes = [
     name: 'Position.view',
     component: () => import('../views/position/view.vue'),
   },
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
   // Unit 
   {
     path: '/unit',
     name: 'Unit',
-<<<<<<< HEAD
-=======
     component: () => import('../views/unit/unit.vue'),
   },
   {
     path: '/unit/:id',
     name: 'Unit.view',
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
     component: () => import('../views/unit/index.vue'),
   },
   // Level
   {
     path: '/level',
     name: 'Level',
-<<<<<<< HEAD
-=======
     component: () => import('../views/unit/index.vue'),
   },
   {
     path: '/level/:id',
     name: 'Level.view',
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
     component: () => import('../views/level/index.vue'),
   },
   // Assignment
@@ -122,13 +105,6 @@ const routes = [
     name: 'Assignment',
     component: () => import('../views/assignment/index.vue'),
   },
-<<<<<<< HEAD
-  // Appointment
-  {
-    path: '/appointment',
-    name: 'Appointment',
-    component: () => import('../views/appointment/index.vue'),
-=======
   {
     path: '/assignment/:id',
     name: 'Assignment.view',
@@ -140,7 +116,6 @@ const routes = [
     name: 'Assignment.appointment',
     component: () => import('../views/appointment/index.vue'),
     props: true,
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
   },
   // Account
   {
@@ -194,16 +169,6 @@ const routes = [
     name: 'Report',
     component: () => import('../views/report/index.vue'),
   },
-<<<<<<< HEAD
-  // report Staff assigned by learder 
-  {
-    path: '/staffassignedbyleader',
-    name: 'StaffAssignedByLeader',
-    component: () => import('../views/report/Staff_Assigned_by_Leadership.vue'),
-  },
- 
-=======
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
   // Setting
   {
     path: '/setting',

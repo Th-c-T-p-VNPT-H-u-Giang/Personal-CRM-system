@@ -1,14 +1,4 @@
 <script>
-<<<<<<< HEAD
-import { defineEmits } from "vue";
-
-export default {
-  setup() {
-    const emit = defineEmits(["updateMenuResponsive"]);
-    const updateMenuResponsive = () => {
-      console.log('starting')
-      emit("updateMenuResponsive", "true");
-=======
 import { defineEmits, inject } from "vue";
 
 export default {
@@ -20,7 +10,6 @@ export default {
     const updateMenuResponsive = () => {
       console.log('starting')
       ctx.emit("updateMenuResponsive", "true");
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
     };
     return {
       updateMenuResponsive,
@@ -35,11 +24,7 @@ export default {
   >
     <a class="text-dark h5 my-auto d-none d-xl-block">PERSONAL CRM SYSTEM</a>
     <a class="d-xl-none d-sm-block text-dark h5 my-auto"
-<<<<<<< HEAD
-      ><span class="material-symbols-outlined cursor-pointer" @click="updateMenuResponsive()"> menu </span></a
-=======
       ><span class="material-symbols-outlined cursor-pointer" @click="$emit('showMenu')"> menu </span></a
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
     >
     <div class="d-flex align-content-center justify-content-between">
       <a class="text-dark d-flex align-items-center"
@@ -71,13 +56,8 @@ export default {
         <div
           class="d-xl-flex d-none flex-column align-items-center justify-content-center ml-2"
         >
-<<<<<<< HEAD
-          <span class="font-size-13">Trần Tuấn Duy</span>
-          <span class="italic-text font-size-13">Nhân viên</span>
-=======
           <span class="font-size-13">Keyone</span>
           <span class="italic-text font-size-13">Employee</span>
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
         </div>
       </div>
     </div>

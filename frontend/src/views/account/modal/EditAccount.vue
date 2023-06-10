@@ -1,6 +1,5 @@
 <script>
-import { reactive, computed } from "vue";
-
+import { reactive } from "vue";
 
 export default {
   props: {
@@ -8,16 +7,19 @@ export default {
       type: Object,
       default: {},
     },
+    roles: {
+      type: Array,
+      default: []
+    }
   },
   setup(props, ctx) {
     const data = reactive({});
     const update = () => {
       if (
-        props.item.fullname.length > 0 &&
-        props.item.username.length > 0 &&
-        props.item.email.length > 0 &&
-        props.item.birthday.length > 0 &&
-        props.item.registrationdate.length > 0
+        props.item.user_name.length > 0 &&
+        props.item.password.length > 0 &&
+        props.item.roleId.length > 0 &&
+        props.item.EmployeeId > 0
       ) {
         ctx.emit("update");
       }
@@ -28,7 +30,6 @@ export default {
   },
 };
 </script>
-
 
 <template>
   <!-- The Modal -->
@@ -53,73 +54,55 @@ export default {
           <form class="was-validated">
             <div class="form-group">
               <label for="name"
-                >Họ Tên(<span style="color: red">*</span>):</label
+                >Tên Tài Khoản(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
                 class="form-control"
-                id="fullname"
-                name="fullname"
-                v-model="item.fullname"
+                id="user_name1"
+                name="user_name"
+                v-model="item.user_name"
                 required
               />
+            </div>
+            
+            <div class="form-group">
+              <label for="name"
+                >Chọn Vai Trò(<span style="color: red">*</span>):</label
+              >
+              <select
+                class="form-control"
+                id="roleId"
+                name="roleId"
+                v-model="item.roleId"
+                required
+              >
+                <option v-for="role in roles" :key="role" :value="role._id">
+                  {{ role.name }}
+                </option>
+              </select>
             </div>
             <div class="form-group">
               <label for="name"
-                >Tên Đăng Nhập(<span style="color: red">*</span>):</label
+                >Mã Nhân Viên(<span style="color: red">*</span>):</label
               >
               <input
                 type="text"
                 class="form-control"
-                id="username"
-                name="username"
-                v-model="item.username"
+                id="EmployeeId1"
+                name="EmployeeId"
+                v-model="item.EmployeeId"
                 required
               />
             </div>
-            <div class="form-group">
-              <label for="name"
-                >Email(<span style="color: red">*</span>):</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="email"
-                name="email"
-                v-model="item.email"
-                required
-              />
-            </div>
-            <div class="form-group">
-    <label for="name">Ngày Sinh(<span style="color: red">*</span>):</label>
-    <input
-      type="Date"
-      class="form-control"
-      id="birthday"
-      name="birthday"
-      v-model="item.birthday"
-      required
-    />
-  </div>
-  <div class="form-group">
-    <label for="name">Ngày Đăng Ký(<span style="color: red">*</span>):</label>
-    <input
-      type="Date"
-      class="form-control"
-      id="registrationdate"
-      name="registrationdate"
-      v-model="item.registrationdate"
-      required
-    />
-  </div>
             <button
               type="button"
               class="btn btn-warning px-3 py-2"
               style="font-size: 14px"
-              @click="create"
+              @click="$emit('edit')"
               id="edit"
             >
-              <span>Sửa</span>
+              <span>Cập Nhật</span>
             </button>
           </form>
         </div>

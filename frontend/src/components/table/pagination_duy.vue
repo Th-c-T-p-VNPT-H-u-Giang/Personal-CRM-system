@@ -50,13 +50,8 @@ export default {
 <template>
   <div class="d-flex justify-content-between align-items-center mt-2">
     <p>
-<<<<<<< HEAD
-      Showing {{ totalRow == 0 ? 0 : startRow }} to
-      {{ endRow > totalRow ? totalRow : endRow }} of {{ totalRow }} entries
-=======
-      Hiển thị {{ totalRow == 0 ? 0 : startRow }} đển
+      Hiển thị từ {{ totalRow == 0 ? 0 : startRow }} đển
       {{ endRow > totalRow ? totalRow : endRow }} của {{ totalRow }} bản ghi
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
     </p>
     <ul class="pagination">
       <li @click="updatePrevPage(currentPage)" class="page-item">
@@ -64,7 +59,7 @@ export default {
       </li>
       <li
         @click="updateCurrentPage(value)"
-        v-for="(value, index) in numberOfPages"
+        v-for="(value, index) in numberOfPages" :key="index"
         class="page-item"
       >
         <a

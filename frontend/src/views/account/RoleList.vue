@@ -12,7 +12,7 @@
         @click="Data.activeMenu = 2"
         :class="[Data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         href="./rolelist"
-        >Chức vụ</a
+        >Vai Trò</a
       >
       <a
         @click="Data.activeMenu = 3"
@@ -22,7 +22,7 @@
       >
     </div>
     <!-- Filter -->
-    
+
     <!-- Search -->
     <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">
@@ -67,9 +67,9 @@
           data-toggle="modal"
           data-target="#model-dlt-all-role"
         >
-          <span id="delete-all" class="mx-2">Xóa Tất Cả</span>
+          <span id="delete-all" class="mx-2">Xóa</span>
         </button>
-        <DeleteAllRole :items="Data.items" />
+        <!-- <DeleteAllRole :items="Data.items" /> -->
         <button
           type="button"
           class="btn btn-primary"
@@ -78,25 +78,14 @@
         >
           <span id="addrole" class="mx-2">Thêm</span>
         </button>
-        <AddRole :item="Data.itemAdd" @create="create" />
+        <AddRole :item="Data.itemAdd"  @create="create" />
       </div>
     </div>
-    <!-- {{ Data.itemAdd }} -->
     <!-- Table -->
     <Table
       :items="setPages"
-      :fields="[
-        'Họ Tên',
-        'Tên Đăng Nhập',
-        'Email',
-        'Chức Vụ',
-      ]"
-      :labels="[
-        'fullname',
-        'username',
-        'email',
-        'role',
-      ]"
+      :fields="['Vai Trò', 'Quyền']"
+      :labels="['name', 'permission']"
       @delete="(value) => deleteOne(value)"
       @edit="
         (value, value1) => (
@@ -112,28 +101,44 @@
       :startRow="Data.startRow"
       :endRow="Data.endRow"
       :currentPage="Data.currentPage"
-      @update:currentPage="(value) => Data.currentPage = value"
+      @update:currentPage="(value) => (Data.currentPage = value)"
       class="mx-3"
     />
-  <EditRole
-    :item="Data.editValue"
-    :class="[Data.activeEdit ? 'show-modal' : 'd-none']"
-    @cancel="Data.activeEdit = false"
-  />
+    <EditRole
+      :item="Data.editValue"
+      :permissions="Data.pers"
+      :class="[Data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="Data.activeEdit = false"
+      @edit="edit(Data.editValue)"
+    />
   </div>
 </template>
 
 <script>
-import Table from "../../components/table/table_duy.vue";
-import Pagination from "../../components/table/pagination_duy.vue";
-// import Dropdown from "../../components/form/dropdown.vue";
-import Select from "../../components/form/select.vue";
-import Search from "../../components/form/search.vue";
+import {
+  Table,
+  Pagination,
+  Search,
+  Select,
+  reactive, 
+  computed, 
+  onBeforeMount,
+  useRouter,
+  Role,
+  Permission,
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+  http_update,
+  alert_success,
+  alert_error,
+  alert_delete,
+} from "../common/import.js"
 import DeleteAllRole from "../../components/form/dlt_all_role.vue";
-import AddRole from "./modal/AddRole.vue"
-import EditRole from "./modal/EditRole.vue"
-import { reactive, computed } from "vue";
-import { useRouter } from "vue-router";
+import AddRole from "./modal/AddRole.vue";
+import EditRole from "./modal/EditRole.vue";
+
 export default {
   components: {
     Table,
@@ -143,97 +148,11 @@ export default {
     Search,
     AddRole,
     DeleteAllRole,
-    EditRole
+    EditRole,
   },
   setup(ctx) {
     const Data = reactive({
-      items: [
-        {
-          _id: "1",
-          fullname: "Trương Thiết Long",
-          username: "ttlong315",
-          email: "ttlong315@gmail.com",
-          role: "Admin",
-        },
-        {
-          _id: "2",
-          fullname: "Trần Tuyết Mỹ",
-          username: "meimey113",
-          email: "meimei113@gmail.com",
-          role: "Admin",
-        },
-        {
-          _id: "3",
-          fullname: "Giang Văn Mít",
-          username: "janeSmith",
-          email: "janesmith@example.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "4",
-          fullname: "Nguyễn Thị Vân Anh",
-          username: "vanh13",
-          email: "vanh@gmail.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "5",
-          fullname: "Trần An Đông",
-          username: "adong",
-          email: "dong@gmail.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "6",
-          fullname: "Nguyễn Hải Yến",
-          username: "hyen",
-          email: "yen@gmail.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "7",
-          fullname: "Nguyễn Trung Tín",
-          username: "ttin",
-          email: "tin@gmail.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "8",
-          fullname: "Nguyễn Thị Hương",
-          username: "huong.nguyen",
-          email: "huong.nguyen@gmail.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "9",
-          fullname: "Phạm Văn Đức",
-          username: "duc.pham",
-          email: "duc.pham@gmail.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "10",
-          fullname: "Trần Minh An",
-          username: "minhantran",
-          email: "minhantran@gmail.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "11",
-          fullname: "Lê Thị Kim Anh",
-          username: "kimanh.le",
-          email: "kimanh.le@gmail.com",
-          role: "abcdefg",
-        },
-        {
-          _id: "12",
-          fullname: "Võ Hoàng Nam",
-          username: "nam.vo",
-          email: "nam.vo@gmail.com",
-          role: "abcdefg",
-        },
-        // Add more items as needed
-      ],
+      items: [{}],
       entryValue: 5,
       numberOfPages: 1,
       totalRow: 0,
@@ -243,26 +162,17 @@ export default {
       searchText: "",
       activeMenu: 2,
       itemAdd: {
-        fullname: "",
-        username: "",
-        email: "",
-        role: "",
+        name: "",
       },
       activeEdit: false,
-      editValue: {
-        _id: "",
-        fullname: "",
-        username: "",
-        email: "",
-        role: "",
-      },
-
+      editValue: {},
+      pers: []
     });
     // computed
     const toString = computed(() => {
       console.log("Starting search");
       return Data.items.map((value, index) => {
-        return [value.fullname].join("").toLocaleLowerCase();
+        return [value.name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -291,7 +201,7 @@ export default {
       } else Data.numberOfPages = setNumberOfPages.value;
       Data.startRow = (Data.currentPage - 1) * Data.entryValue + 1;
       Data.endRow = Data.currentPage * Data.entryValue;
-      console.log(Data);
+      // console.log(Data);
       return filtered.value.filter((item, index) => {
         return (
           index + 1 > (Data.currentPage - 1) * Data.entryValue &&
@@ -299,30 +209,85 @@ export default {
         );
       });
     });
-    // methods
-    const create = () => {
-      console.log("creating");
-    };
-    const update = (item) => {
-      console.log("updating", item);
-    };
-    const deleteOne = (_id) => {
-      console.log("deleting", _id);
-    };
-    const edit = () => {
-      console.log("edit");
-    };
 
     const router = useRouter();
-
     const view = (_id) => {
       console.log("view", _id);
       router.push({ name: "RoleList.view", params: { id: _id } });
     };
+    // methods
+    // const create = async (item, permissions) => {
+    //   console.log(item);
+    //   const result = await http_create(Role, item); // Tạo một vai trò mới
+    //   if (!result.error) {
+    //     const roleId = result.document._id; // Lấy _id của vai trò vừa được tạo
+
+    //     // Tạo các bản ghi trong bảng role_permission
+    //     const rolePermissionRecords = permissions.map((permissionId) => ({
+    //       roleId: roleId,
+    //       permissionId: permissionId,
+    //     }));
+
+    //     // Thực hiện tạo nhiều bản ghi trong bảng role_permission
+    //     await http_create(Role_Permission, rolePermissionRecords);
+
+    //     alert_success(
+    //       `Thêm Vai Trò`,
+    //       `Vai Trò ${result.document.name} đã được thêm thành công vào tài khoản ${result.document.user_name}.`
+    //     );
+    //     refresh();
+    //   } else if (result.error) {
+    //     alert_error(`Lỗi`, `Đã xảy ra lỗi khi thêm vai trò: ${result.error}`);
+    //   }
+    // };
+
+    const update = (item) => {
+      console.log("updating", item);
+    };
+    const deleteOne = async (_id) => {
+      const role = await http_getOne(Role, _id);
+      console.log("deleting", role);
+      const isConfirmed = await alert_delete(
+        `Xoá vai trò`,
+        `Bạn có chắc chắn muốn xoá vai trò ${role.name} không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await http_deleteOne(Role, _id);
+        alert_success(
+          `Xoá vai trò`,
+          `Bạn đã xoá thành công vai trò ${result.document.name}.`
+        );
+        refresh();
+      }
+    };
+
+    const edit = async (editValue) => {
+      console.log(editValue);
+      const result = await http_update(Role, editValue._id, editValue);
+      if (!result.error) {
+        alert_success(`Sửa Vai Trò`, `${result.msg}`);
+        refresh();
+      } else if (result.error) {
+        alert_error(`Sửa Vai Trò`, `${result.msg}`);
+      }
+    };
+
+    const refresh = async () => {
+      Data.items = await http_getAll(Role);
+      Data.pers = await http_getAll(Permission);
+    };
+
+    // Hàm callback được gọi trước khi component được mount (load)
+    onBeforeMount(async () => {
+      await refresh();
+      console.log("Roles:",Data.items);
+      console.log("Permissions:",Data.pers);
+    });
     return {
       Data,
       setPages,
-      create,
+      // create,
       update,
       deleteOne,
       edit,

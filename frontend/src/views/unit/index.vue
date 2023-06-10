@@ -1,16 +1,4 @@
 <script>
-<<<<<<< HEAD
-
-</script>
-
-<template>
-
-</template>
-
-<style scoped>
-
-</style>
-=======
 import Table from "./form_table/table_lananh.vue";
 import Pagination from "./form_table/pagination_lananh.vue";
 import Dropdown from "../../components/form/dropdown.vue";
@@ -297,4 +285,3 @@ export default {
   }
 }
 </style>
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb

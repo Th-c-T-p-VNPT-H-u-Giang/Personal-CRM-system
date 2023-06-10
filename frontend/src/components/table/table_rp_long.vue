@@ -49,11 +49,7 @@ export default {
         <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
         <td v-if="activeActionView == true" class="action-cell">
           <div class="action-container">
-<<<<<<< HEAD
           <span id="view" class="material-symbols-outlined" @click="$emit('visibility', item, true)"> visibility </span>
-=======
-          <span id="view" class="material-symbols-outlined" @click="$emit('view', item._id)"> visibility </span>
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
           </div>
         </td>
       </tr>

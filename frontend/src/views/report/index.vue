@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <template>
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
@@ -382,16 +381,3 @@ export default {
   border-top: 1px solid var(--gray);
 }
 </style>
-=======
-<script>
-
-</script>
-
-<template>
-
-</template>
-
-<style scoped>
-
-</style>
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb

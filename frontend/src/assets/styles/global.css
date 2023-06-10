@@ -62,23 +62,6 @@ li {
 a {
   color: var(--dark);
 }
-<<<<<<< HEAD
-/* ACCOUNT */
-/* .btn-account {
-  margin-bottom: 20px;
-}
-.btn-add {
-  float: right;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  margin-right: 10px;
-}
-.formadd{
-  border: 1px dashed rgb(132, 132, 132);
-  padding: 16px;
-  border-radius: 10px;
-} */
-=======
 
 ::-webkit-scrollbar {
   width: 5px;
@@ -101,5 +84,3 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: #b30000;
 }
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
-

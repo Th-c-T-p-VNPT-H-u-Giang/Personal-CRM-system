@@ -1,16 +1,4 @@
 <script>
-<<<<<<< HEAD
-
-</script>
-
-<template>
-
-</template>
-
-<style scoped>
-
-</style>
-=======
 import Table from "../../components/table/table-appointment.vue";
 import Pagination from "../../components/table/pagination_duy.vue";
 import Dropdown from "../../components/form/dropdown.vue";
@@ -312,4 +300,3 @@ export default {
   font-size: 14px;
 }
 </style>
->>>>>>> 647811d30517bc047eefce4e74da086465d489fb
