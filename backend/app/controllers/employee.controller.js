@@ -63,19 +63,19 @@ exports.findAll = async (req, res, next) => {
       include: [
         {
           model: Position,
-          attributes: ["name"],
+          attributes: ["_id", "name"],
         },
         {
           model: Unit,
-          attributes: ["name"],
+          attributes: ["_id", "name"],
           include: [
             {
               model: Department,
-              attributes: ["name"],
+              attributes: ["_id", "name"],
               include: [
                 {
                   model: Center_VNPTHG,
-                  attributes: ["name"],
+                  attributes: ["_id", "name"],
                 },
               ],
             },
