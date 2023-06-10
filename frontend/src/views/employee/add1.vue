@@ -4,9 +4,9 @@ import Select from "../../components/form/select.vue";
 //***
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
 import Center from "../unit/center.vue";
-import centerServices from "../../services/center.services";
-import depServices from "../../services/dep.services";
-import unitServices from "../../services/unit.services";
+import centerServices from "../../services/center_vnpt.service";
+import depServices from "../../services/department.service";
+import unitServices from "../../services/unit.service";
 import Department from "../../views/unit/department.vue";
 export default {
   components: {

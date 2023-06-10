@@ -91,7 +91,7 @@
 
 <script>
 import { reactive, ref, onBeforeMount, onMounted } from "vue";
-import centerServices from "../../../services/center.services";
+import centerServices from "../../../services/center_vnpt.service";
 export default {
   name: "Add",
   props: {

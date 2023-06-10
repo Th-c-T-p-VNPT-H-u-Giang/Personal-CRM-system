@@ -7,11 +7,11 @@ import Search from "../../components/form/search.vue";
 import Add from "../../components/box_lananh/select_cdu.vue";
 import { reactive, computed, onBeforeMount, onMounted } from "vue";
 
-import departmentServices from "../../services/dep.services";
+import departmentServices from "../../services/department.service";
 import { useRouter, useRoute } from "vue-router";
 import Swal from "sweetalert2";
 import { http_getAll, http_getOne } from "../../assets/js/common.http";
-import centerServices from "../../services/center.services";
+import centerServices from "../../services/center_vnpt.service";
 import {
   alert_delete,
   alert_success,

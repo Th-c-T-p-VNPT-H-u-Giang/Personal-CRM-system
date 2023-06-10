@@ -13,9 +13,9 @@ import { useRouter } from "vue-router";
 //***
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
 import Center from "../../views/unit/center.vue";
-import CenterServices from "../../services/center.services";
-import departmentsServices from "../../services/dep.services";
-import unitsServices from "../../services/unit.services";
+import CenterServices from "../../services/center_vnpt.service";
+import departmentsServices from "../../services/department.service";
+import unitsServices from "../../services/unit.service";
 
 // Vanh
 import Employee from "../../services/employee.service";
@@ -34,8 +34,9 @@ import {
 } from "../../assets/js/common.alert";
 
 import Select_Advanced from "../../components/form/select_advanced.vue";
-import centerServices from "../../services/center.services";
+import centerServices from "../../services/center_vnpt.service";
 import Swal from "sweetalert2";
+import FormWizard from "../../components/form/form-wizard.vue";
 export default {
   components: {
     Table,
@@ -52,6 +53,7 @@ export default {
     Center,
     //
     Select_Advanced,
+    FormWizard,
   },
   setup(ctx) {
     const data = reactive({
@@ -98,6 +100,10 @@ export default {
       modelValue: "Trung tâm",
       modelDep: "Phòng",
       modelUnit: "Tổ",
+      test: {
+        a: "",
+        b: "",
+      },
     });
 
     // computed
@@ -657,20 +663,34 @@ export default {
           @newCenter="
             (value) => {
               centers.center = value;
+              centers.center.push({ _id: 'other', name: 'Khác' });
             }
           "
           @newDep="
             (value) => {
               departments.department = value;
+              departments.department.push({ _id: 'other', name: 'Khác' });
             }
           "
           @newUnit="
             (value) => {
               units.unit = value;
+              units.unit.push({ _id: 'other', name: 'Khác' });
             }
           "
           @restore="(value) => (updateAdd = value)"
         />
+        <!-- Thêm DUY -->
+        <!-- <button
+          type="button"
+          class="btn btn-primary"
+          data-toggle="modal"
+          data-target="#model-form-wizard"
+        >
+          <span class="mx-2">model-form-wizard</span>
+        </button>
+        {{ data.test }}
+        <FormWizard :item="data.test" /> -->
       </div>
     </div>
     <!-- Table -->

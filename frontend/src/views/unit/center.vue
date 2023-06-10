@@ -10,12 +10,12 @@ import Add from "./form_table/add_update_center.vue";
 
 import Form from "./form_table/formLevel.vue";
 import { reactive, computed, ref, watch, onBeforeMount, onMounted } from "vue";
-// import Swal from "./use/showSwal";
-import centerServices from "../../services/center.services";
+
+import centerServices from "../../services/center_vnpt.service";
 import { useRouter, useRoute } from "vue-router";
 
 import { http_getAll } from "../../assets/js/common.http";
-import CenterServices from "../../services/center.services";
+import CenterServices from "../../services/center_vnpt.service";
 import Swal from "sweetalert2";
 import {
   alert_delete,

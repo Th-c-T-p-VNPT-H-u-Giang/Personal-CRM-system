@@ -3,9 +3,9 @@ import { reactive, ref, watch, onMounted, watchEffect } from "vue";
 import Select from "../../components/form/select.vue";
 // ******
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
-import CenterServices from "../../services/center.services";
-import departmentsServices from "../../services/dep.services";
-import unitsServices from "../../services/unit.services";
+import CenterServices from "../../services/center_vnpt.service";
+import departmentsServices from "../../services/department.service";
+import unitsServices from "../../services/unit.service";
 import Swal from "sweetalert2";
 
 import {
@@ -14,7 +14,7 @@ import {
   alert_delete,
   alert_warning,
 } from "../../assets/js/common.alert";
-import centerServices from "../../services/center.services";
+import centerServices from "../../services/center_vnpt.service";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 
 import {
@@ -406,7 +406,7 @@ export default {
 
         <!-- Modal body -->
         <div class="modal-body">
-          <form action="/action_page.php" class="was-validated">
+          <form class="was-validated">
             <div class="form-group">
               <label for="name"
                 >Họ và tên(<span style="color: red">*</span>):</label
