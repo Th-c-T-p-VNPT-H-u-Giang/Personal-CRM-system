@@ -1,7 +1,10 @@
 <script>
 import { reactive, ref, watch, onMounted, watchEffect } from "vue";
 import Select from "../../components/form/select.vue";
+import Employee from "../../services/employee.service";
 // ******
+import Select_Advanced from "../../components/form/select_advanced.vue";
+import Position from "../../services/position.service";
 import SelectOption from "../../components/box_lananh/select_cdu.vue";
 import CenterServices from "../../services/center_vnpt.service";
 import departmentsServices from "../../services/department.service";
@@ -14,9 +17,6 @@ import {
   alert_delete,
   alert_warning,
 } from "../../assets/js/common.alert";
-import centerServices from "../../services/center_vnpt.service";
-import Select_Advanced from "../../components/form/select_advanced.vue";
-
 import {
   http_getAll,
   http_create,
@@ -31,37 +31,39 @@ export default {
     Select_Advanced,
   },
   props: {
-    item: {
-      type: Object,
-      default: {},
-    },
-    // VAnh
-    positions: {
-      type: Object,
-      default: {},
-    },
-    units: {
-      type: Object,
-      default: {},
-    },
-    //**
     updateAdd: { type: String, default: "" },
   },
   setup(props, ctx) {
     const data = reactive({
+      item: { name: "", birthday: "", phone: "", email: "", address: "" },
+      modelPos: "",
       modelValue: "",
       modelDep: "",
       modelUnit: "",
     });
-
-    const create = () => {
-      if (props.item.name.length > 0 && props.item.content.length > 0) {
-        ctx.emit("create");
+    const create = async () => {
+      data.item.unitId = selectedOptionUnit.value;
+      data.item.postionId = selectedOptionPosition.value;
+      console.log(data.item);
+      const result = await http_create(Employee, data.item);
+      if (!result.error) {
+        alert_success(
+          `Thêm nhân viên`,
+          `Nhân viên "${result.document.name}" đã được tạo thành công.`
+        );
+        refresh();
+      } else if (result.error) {
+        alert_error(`Thêm nhân viên`, `${result.msg}`);
       }
+      ctx.emit("create");
     };
     // ****REFRESH
     const refresh = async (name) => {
       switch (name) {
+        case "position": {
+          positions.position = await http_getAll(Position);
+          break;
+        }
         case "center": {
           centers.center = await http_getAll(CenterServices);
           break;
@@ -76,6 +78,46 @@ export default {
         }
       }
     };
+    //POSITION
+    const positions = reactive({ position: [] });
+    const selectedOptionPosition = ref("Chức vụ");
+    watch(selectedOptionPosition, async (newValue, oldValue) => {
+      console.log("New Position:", newValue);
+      // Alert add center
+      if (newValue == "other") {
+        const showSweetAlert = async () => {
+          const { value: PositionName } = await Swal.fire({
+            title: "Thêm mới chức vụ",
+            input: "text",
+            inputLabel: "Tên chức vụ",
+            inputValue: "",
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return "Tên chức vụ không được bỏ trống";
+              }
+            },
+          });
+
+          if (PositionName) {
+            const document = await Position.create({ name: PositionName });
+            if (document.error) {
+              alert_warning(`Đã tồn tại chức vụ `, `${PositionName}`);
+              return false;
+            }
+            alert_success(`Đã thêm chức vụ`, `${PositionName}`);
+            // console.log("idPos",PositionName);
+            await refresh("position");
+            data.modelPos = document.name;
+            positions.position.push({ _id: "other", name: "khác" });
+            ctx.emit("newPosition", positions.position);
+            selectedOptionPosition.value = document._id;
+          }
+          return true;
+        };
+        showSweetAlert();
+      }
+    });
     //CENTERS
     const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("");
@@ -109,8 +151,7 @@ export default {
           });
 
           if (CenterName) {
-            const document = await centerServices.create({ name: CenterName });
-            console.log("doc:", document.document.name);
+            const document = await CenterServices.create({ name: CenterName });
             // data.modelValue = document.document.name;
             if (document.error) {
               alert_warning(`Đã tồn tại trung tâm `, `${CenterName}`);
@@ -119,6 +160,7 @@ export default {
             alert_success(`Đã thêm trung tâm`, `${CenterName}`);
             await refresh("center");
             data.modelValue = document.document.name;
+            centers.center.push({ _id: "other", name: "khác" });
             ctx.emit("newCenter", centers.center);
             // selectedOptionCenter.value = document.document._id;
             // name.value = document.document.name;
@@ -129,6 +171,7 @@ export default {
       }
     });
 
+    //DEPARTMENTS
     //DEPARTMENTS
     const departments = reactive({ department: [] });
     const selectedOptionDepartment = ref("Phòng");
@@ -317,7 +360,10 @@ export default {
         showSweetAlert();
       }
     });
+
     const refresh_add = async () => {
+      positions.position = await Position.getAll();
+      positions.position.push({ _id: "other", name: "khác" });
       centers.center = await CenterServices.getAll();
       centers.center.push({ _id: "other", name: "khác" });
       departments.department = await departmentsServices.getAll();
@@ -326,11 +372,21 @@ export default {
       units.unit = await unitsServices.getAll();
       units.unit.push({ _id: "other", name: "khác" });
     };
+    const onDeletePosition = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await Position.delete(value._id);
+        alert_success("Bạn đã xóa chức vụ", value.name);
+        await refresh_add();
+        ctx.emit("newPosition", positions.position);
+      }
+    };
     const onDeleteCenter = async (value) => {
       console.log("Value delete:", value);
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
-        await centerServices.deleteOne(value._id);
+        await CenterServices.deleteOne(value._id);
         alert_success("Bạn đã xóa trung tâm", value.name);
         await refresh_add();
         ctx.emit("newCenter", centers.center);
@@ -372,16 +428,20 @@ export default {
     });
 
     return {
+      data,
       create,
       // ***
+      positions,
+      selectedOptionPosition,
       centers,
       selectedOptionCenter,
       departments,
       selectedOptionDepartment,
       units,
       selectedOptionUnit,
+      refresh,
       refresh_add,
-      data,
+      onDeletePosition,
       onDeleteCenter,
       onDeleteDep,
       onDeleteUnit,
@@ -391,6 +451,8 @@ export default {
 </script>
 
 <template>
+  <!-- The Modal -->
+  <!-- The Modal -->
   <div class="modal" id="model-add">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -406,7 +468,7 @@ export default {
 
         <!-- Modal body -->
         <div class="modal-body">
-          <form class="was-validated">
+          <form action="/action_page.php" class="was-validated">
             <div class="form-group">
               <label for="name"
                 >Họ và tên(<span style="color: red">*</span>):</label
@@ -416,7 +478,7 @@ export default {
                 class="form-control"
                 id="name"
                 name="name"
-                v-model="item.name"
+                v-model="data.item.name"
                 required
               />
             </div>
@@ -429,7 +491,21 @@ export default {
                 class="form-control"
                 id="birthday"
                 name="birthday"
-                v-model="item.birthday"
+                v-model="data.item.birthday"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="avatar"
+                >Avatar(<span style="color: red">*</span>):</label
+              >
+              <!-- Khum bít làm huhu -->
+              <input
+                type="text"
+                class="form-control"
+                id="avatar"
+                name="avatar"
+                v-model="data.item.avatar"
                 required
               />
             </div>
@@ -442,7 +518,7 @@ export default {
                 class="form-control"
                 id="address"
                 name="address"
-                v-model="item.address"
+                v-model="data.item.address"
                 required
               />
             </div>
@@ -455,7 +531,7 @@ export default {
                 class="form-control"
                 id="phone"
                 name="phone"
-                v-model="item.phone"
+                v-model="data.item.phone"
                 required
               />
             </div>
@@ -468,22 +544,60 @@ export default {
                 class="form-control"
                 id="email"
                 name="email"
-                v-model="item.email"
+                v-model="data.item.email"
                 required
               />
             </div>
+            <!-- <div class="form-group">
+              <label for="position"
+                >Chức vụ(<span style="color: red">*</span>):</label
+              >
+              <Select_Advanced
+                :modelValue="`Chức vụ`"
+                :options="positions.position"
+                @searchSelect="
+                  async (value) => (
+                    await refresh('position'),
+                    (positions.position = positions.position.filter((value1, index) => {
+                      console.log(value1, value);
+                      return value1.name.includes(value) || value.length == 0;
+                    })),
+                    console.log('searchSlect', value.length)
+                  )
+                "
+                @delete="(value) => deleteOne(value._id)"
+                @choosed="(value) => {
+                    selectedOptionPosition = value;
+                  }"
+              />
+            </div> -->
             <div class="form-group">
               <label for="">Chức vụ(<span style="color: red">*</span>):</label>
-              <select class="form-control" required v-model="item.postionId">
-                <!-- <option value="" disabled selected hidden>Chức vụ</option> -->
-                <option
-                  v-for="positions in positions"
-                  :key="positions"
-                  :value="positions._id"
-                >
-                  {{ positions.name }}
-                </option>
-              </select>
+              <div class="form-group w-100">
+                <Select_Advanced
+                  class="form-control"
+                  required
+                  :options="positions.position"
+                  :modelValue="data.modelPos"
+                  style="width: 100%; height: 100%"
+                  @searchSelect="
+                    async (value) => (
+                      await refresh_add(),
+                      (positions.position = positions.position.filter(
+                        (value1, index) => {
+                          console.log(value1, value);
+                          return (
+                            value1.name.includes(value) || value.length == 0
+                          );
+                        }
+                      )),
+                      console.log('searchSlect', value.length)
+                    )
+                  "
+                  @delete="(value) => onDeletePosition(value)"
+                  @choosed="(value) => (selectedOptionPosition = value)"
+                />
+              </div>
             </div>
             <div class="form-group">
               <label for=""
@@ -560,52 +674,6 @@ export default {
                 @choosed="(value) => (selectedOptionUnit = value)"
               />
             </div>
-            <!-- Lan Anh -->
-            <!-- <div class="form-group">
-              <label for="center"
-                >Trung tâm(<span style="color: red">*</span>):</label
-              >
-              <SelectOption
-                :selectedOption="selectedOptionCenter"
-                :field="centers.center"
-                :add="{ nameCDU: 'center' }"
-                @option="
-                  (value) => {
-                    selectedOptionCenter = value;
-                  }
-                "
-              />
-            </div>
-            <div class="form-group">
-              <label for="department"
-                >Phòng(<span style="color: red">*</span>):</label
-              >
-              <SelectOption
-                :selectedOption="selectedOptionDepartment"
-                :field="departments.department"
-                :add="{ nameCDU: 'dep' }"
-                @option="
-                  (value) => {
-                    selectedOptionDepartment = value;
-                  }
-                "
-              />
-            </div>
-            <div class="form-group">
-              <label for="department"
-                >Đơn vị(<span style="color: red">*</span>):</label
-              >
-              <SelectOption
-                :selectedOption="selectedOptionUnit"
-                :field="units.unit"
-                :add="{ nameCDU: 'unit' }"
-                @option="
-                  (value) => {
-                    selectedOptionUnit = value;
-                  }
-                "
-              />
-            </div> -->
             <b-button
               type="submit"
               class="btn btn-primary px-3 py-2"
@@ -623,8 +691,4 @@ export default {
   </div>
 </template>
 
-<style scoped>
-* {
-  box-sizing: border-box;
-}
-</style>
+<style scoped></style>

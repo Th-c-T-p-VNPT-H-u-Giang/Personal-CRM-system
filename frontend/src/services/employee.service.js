@@ -1,6 +1,6 @@
 import createApiClient from "./api.service";
 
-class EventService {
+class EmployeeService {
   constructor(baseUrl = "/api/employees") {
     this.api = createApiClient(baseUrl);
   }
@@ -24,4 +24,4 @@ class EventService {
   }
 }
 
-export default new EventService();
+export default new EmployeeService();

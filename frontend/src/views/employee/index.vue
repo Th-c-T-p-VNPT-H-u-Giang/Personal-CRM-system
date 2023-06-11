@@ -1,30 +1,34 @@
 <script>
+import Mail from "../../components/box_lananh/mail.vue";
+import mailService from "../../services/mai.service";
+/////
 import Table from "../../components/table/table_employee.vue";
 import Pagination from "../../components/table/pagination_duy.vue";
 import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
 import DeleteAll from "../../components/form/delete-all.vue";
-import Add from "./add.vue";
+import Add1 from "./add1.vue";
+// import Add from "./add.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
-import { reactive, computed, watch, ref, onMounted, onBeforeMount } from "vue";
+import Select_Advanced from "../../components/form/select_advanced.vue";
+import { reactive, computed, watch, ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
-//***
-import SelectOption from "../../components/box_lananh/select_cdu.vue";
-import Center from "../../views/unit/center.vue";
+//service
+import Employee from "../../services/employee.service";
+import Position from "../../services/position.service";
 import CenterServices from "../../services/center_vnpt.service";
 import departmentsServices from "../../services/department.service";
 import unitsServices from "../../services/unit.service";
-
-// Vanh
-import Employee from "../../services/employee.service";
-import Position from "../../services/position.service";
+import Swal from "sweetalert2";
+import FormWizard from "../../components/form/form-wizard.vue";
 import {
   http_getAll,
   http_create,
   http_getOne,
   http_deleteOne,
+  http_update,
 } from "../../assets/js/common.http";
 import {
   alert_success,
@@ -33,14 +37,6 @@ import {
   alert_warning,
 } from "../../assets/js/common.alert";
 
-import Select_Advanced from "../../components/form/select_advanced.vue";
-import centerServices from "../../services/center_vnpt.service";
-import Swal from "sweetalert2";
-import FormWizard from "../../components/form/form-wizard.vue";
-import positionService from "../../services/position.service";
-import Mail from "../../components/box_lananh/mail.vue";
-import mailService from "../../services/mai.service";
-
 export default {
   components: {
     Table,
@@ -48,17 +44,15 @@ export default {
     Dropdown,
     Select,
     Search,
-    Add,
+    // Add,
     DeleteAll,
     Edit,
     View,
-    // ***
-    SelectOption,
-    Center,
-    //
+
     Select_Advanced,
-    FormWizard,
+    Add1,
     Mail,
+    FormWizard,
   },
   setup(ctx) {
     const data = reactive({
@@ -85,7 +79,6 @@ export default {
           },
         },
       ],
-
       entryValue: 5,
       numberOfPages: 1,
       totalRow: 0,
@@ -93,33 +86,12 @@ export default {
       endRow: 0,
       currentPage: 1,
       searchText: "",
-      itemAdd: {
-        _id: "",
-        name: "",
-        birthday: "",
-        address: "",
-        phone: "",
-        email: "",
-        position: "",
-        unit: "",
-        department: "",
-        center: "",
-      },
       activeEdit: false,
-      editValue: {
-        _id: "",
-        name: "",
-        content: "",
-      },
-
+      editValue: {},
+      modelPositon: "Chức vụ",
       modelValue: "Trung tâm",
       modelDep: "Phòng",
       modelUnit: "Tổ",
-      modelPositon: "Chức vụ",
-      test: {
-        a: "",
-        b: "",
-      },
     });
 
     // computed
@@ -165,29 +137,26 @@ export default {
       } else return data.items.value;
     });
 
-    // methods
-    // VAnh
-    const create = async (value) => {
-      console.log("creating");
-      console.log("Data ItemAdd Employee: ", value);
-      const result = await http_create(Employee, value);
-      console.log("result", result);
-      if (!result.error) {
-        alert_success(
-          `Thêm nhân viên`,
-          `Nhân viên "${value.name}" đã được tạo thành công.`
-        );
-        refresh();
-      } else {
-        alert_error(`Thêm nhân viên`, `${value.name}`);
-      }
+    const router = useRouter();
+
+    const view = (_id) => {
+      console.log("view", _id);
+      router.push({ name: "Employee.view", params: { id: _id } });
     };
+
+    // watch
+    const activeMenu = ref(1);
+
+    // methods
+    const create = async () => {
+      refresh();
+    };
+
     const update = (item) => {
       console.log("updating", item);
     };
-    //Vanh
+
     const deleteOne = async (_id) => {
-      console.log("Deleting", _id);
       const employee = await http_getOne(Employee, _id);
       console.log("deleting", employee);
       const isConfirmed = await alert_delete(
@@ -204,7 +173,18 @@ export default {
         refresh();
       }
     };
-    //REFRESH
+
+    const edit = async (editValue) => {
+      console.log(editValue);
+      const result = await http_update(Employee, editValue._id, editValue);
+      if (!result.error) {
+        alert_success(`Sửa nhân viên`, `${result.msg}`);
+        refresh();
+      } else if (result.error) {
+        alert_error(`Sửa nhân viên`, `${result.msg}`);
+      }
+    };
+
     const refresh = async () => {
       data.positions = await http_getAll(Position);
       data.items = await http_getAll(Employee);
@@ -215,32 +195,16 @@ export default {
 
       units.unit = await unitsServices.getAll();
       units.unit.push({ _id: "other", name: "khác" });
-      positions.position = await positionService.getAll();
+      positions.position = await http_getAll(Position);
       positions.position.push({ _id: "other", name: "khác" });
     };
-    const edit = () => {
-      console.log("edit");
-    };
-
-    const router = useRouter();
-
-    const view = (_id) => {
-      console.log("view", _id);
-      router.push({ name: "Event.view", params: { id: _id } });
-    };
-
-    // watch
-    const activeMenu = ref(1);
-    watch(activeMenu, (newValue, oldValue) => {
-      router.push({ name: "Position" });
-    });
 
     // ****** trung tâm ******
     const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("Trung tâm");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
       const doc = ref("");
-      doc.value = await centerServices.getOne(selectedOptionCenter.value);
+      doc.value = await CenterServices.getOne(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
       data.items = await http_getAll(Employee);
       data.items = data.items.filter((val, index) => {
@@ -255,14 +219,12 @@ export default {
       units.unit = [];
       departments.department.push({ _id: "other", name: "khác" });
 
-      // console.log("data new", data.items);
       for (let val of departments.department) {
         var newData = await unitsServices.findAllUnitsOfADep(val._id);
         for (let value of newData) {
           units.unit.push(value);
         }
       }
-      // units.unit.push({ _id: "other", name: "khác" });
       if (newValue == "other") {
         const showSweetAlert = async () => {
           const { value: CenterName } = await Swal.fire({
@@ -279,7 +241,7 @@ export default {
           });
 
           if (CenterName) {
-            const document = await centerServices.create({ name: CenterName });
+            const document = await CenterServices.create({ name: CenterName });
             if (document.error) {
               alert_warning(`Đã tồn tại trung tâm `, `${CenterName}`);
               return false;
@@ -300,7 +262,7 @@ export default {
     const selectedOptionDepartment = ref("Phòng");
     watch(selectedOptionDepartment, async (newValue, oldValue) => {
       const doc = ref("");
-      doc.value = await centerServices.getOne(selectedOptionCenter.value);
+      doc.value = await CenterServices.getOne(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
       const docDep = ref("");
       docDep.value = await departmentsServices.getOne(
@@ -382,9 +344,8 @@ export default {
     });
     const selectedOptionUnit = ref("Đơn vị");
     watch(selectedOptionUnit, async (newValue, oldValue) => {
-      // console.log("New Unit:", newValue);
       const doc = ref("");
-      doc.value = await centerServices.getOne(selectedOptionCenter.value);
+      doc.value = await CenterServices.getOne(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
       // DEP
       const docDep = ref("");
@@ -507,7 +468,6 @@ export default {
             alert_success(`Đã thêm `, `${formValues.inputValue}`);
             data.modelUnit = document.document.name;
             await refresh("unit");
-            // ctx.emit("newUnit", units.unit);
             selectedOptionUnit.value = document.document._id;
             updateAdd.value = true;
           }
@@ -556,7 +516,7 @@ export default {
           });
 
           if (positionName) {
-            const document = await positionService.create({
+            const document = await Position.create({
               name: positionName,
             });
             if (document.error) {
@@ -564,9 +524,8 @@ export default {
               return false;
             }
             alert_success(`Đã thêm chức vụ`, `${positionName}`);
-            await refresh_add();
-            data.modelPositon = document.document.name;
-            ctx.emit("newPosition", positions.position);
+            await refresh();
+            data.modelPositon = document.name;
           }
           return true;
         };
@@ -575,11 +534,21 @@ export default {
     });
 
     const updateAdd = ref(false);
+    const onDeletePosition = async (value) => {
+      console.log("Value delete:", value);
+      const result = await alert_delete("Bạn muốn xóa", value.name);
+      if (result) {
+        await Position.delete(value._id);
+        alert_success("Bạn đã xóa chức vụ", value.name);
+        await refresh();
+      }
+      updateAdd.value = true;
+    };
     const onDeleteCenter = async (value) => {
       console.log("Value delete:", value);
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
-        await centerServices.deleteOne(value._id);
+        await CenterServices.deleteOne(value._id);
         alert_success("Bạn đã xóa trung tâm", value.name);
         await refresh();
       }
@@ -610,8 +579,8 @@ export default {
       console.log("new mail:", mail.list);
     });
     const sendEmail = async (value) => {
-      // console.log("mail:", value);
       const dataMail = reactive({ title: "", content: "", mail: "" });
+
       try {
         console.log("lenght:", mail.list.length);
         if (mail.list.length > 0) {
@@ -623,7 +592,10 @@ export default {
             await mailService.sendmail(dataMail);
             console.log("NDMail:", dataMail);
           }
+
           console.log("Email sent successfully.");
+        } else {
+          alert_warning("Bạn chưa chọn nhân viên", "");
         }
       } catch (error) {
         console.error("Error sending email:", error);
@@ -633,6 +605,9 @@ export default {
       await refresh();
     });
 
+    onBeforeMount(async () => {
+      await refresh();
+    });
     return {
       data,
       setPages,
@@ -642,7 +617,6 @@ export default {
       deleteOne,
       edit,
       view,
-      //***
       centers,
       selectedOptionCenter,
       departments,
@@ -651,7 +625,7 @@ export default {
       selectedOptionUnit,
       search,
       refresh,
-      //
+      onDeletePosition,
       onDeleteCenter,
       onDeleteDep,
       onDeleteUnit,
@@ -669,13 +643,8 @@ export default {
   <div class="border-box d-flex flex-column ml-2">
     <div class="d-flex flex-column mt-3">
       <span class="mx-3 mb-3 h6">Lọc nhân viên</span>
-
       <div class="d-flex mx-3">
         <div class="form-group w-100">
-          <!-- <select class="form-control">
-            <option value="" disabled selected hidden>Chức vụ</option>
-            <option v-for="positions in data.positions" :key="positions" :value="positions._id">{{ positions.name }}</option>
-          </select>             -->
           <Select_Advanced
             class="form-control"
             required
@@ -684,7 +653,7 @@ export default {
             style="width: 100%; height: 100%"
             @searchSelect="
               async (value) => (
-                await refresh_add(),
+                await refresh(),
                 (positions.position = positions.position.filter(
                   (value1, index) => {
                     console.log(value1, value);
@@ -694,11 +663,11 @@ export default {
                 console.log('searchSlect', value.length)
               )
             "
-            @delete="(value) => onDeleteCenter(value)"
+            @delete="(value) => onDeletePosition(value)"
             @choosed="(value) => (selectedOptionPosition = value)"
           />
         </div>
-        <!-- DUY -->
+        <!-- **** Lan Anh **** -->
         <div class="form-group w-100 ml-3">
           <Select_Advanced
             :options="centers.center"
@@ -758,8 +727,6 @@ export default {
             @choosed="(value) => (selectedOptionUnit = value)"
           />
         </div>
-
-        <div class="form-group"></div>
       </div>
     </div>
     <div class="border-hr mb-3"></div>
@@ -807,49 +774,41 @@ export default {
         >
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
-        <!-- <DeleteAll :items="data.items" /> -->
-        <!-- <button
-          type="button"
-          class="btn btn-primary"
-          data-toggle="modal"
-          data-target="#model-add"
-        >
-          <span id="add" class="mx-2">Thêm</span>
-        </button>
-        <Add
-          :item="data.itemAdd"
-          :positions="data.positions"
-          :updateAdd="updateAdd"
-          @create="create"
-          @newCenter="
-            (value) => {
-              centers.center = value;
-              centers.center.push({ _id: 'other', name: 'Khác' });
-            }
-          "
-          @newDep="
-            (value) => {
-              departments.department = value;
-              departments.department.push({ _id: 'other', name: 'Khác' });
-            }
-          "
-          @newUnit="
-            (value) => {
-              units.unit = value;
-              units.unit.push({ _id: 'other', name: 'Khác' });
-            }
-          "
-          @restore="(value) => (updateAdd = value)"
-        /> -->
-        <!-- Thêm DUY -->
+        <!-- <DeleteAll :item="data.items" /> -->
+
         <button
           type="button"
           class="btn btn-primary"
           data-toggle="modal"
           data-target="#model-form-wizard"
         >
-          <span class="mx-2">Thêm</span>
+          <span id="add" class="mx-2">Thêm</span>
         </button>
+        <Add1
+          @create="create"
+          :updateAdd="updateAdd"
+          @restore="(value) => (updateAdd = value)"
+          @newPosition="
+            (value) => {
+              positions.position = value;
+            }
+          "
+          @newCenter="
+            (value) => {
+              centers.center = value;
+            }
+          "
+          @newDep="
+            (value) => {
+              departments.department = value;
+            }
+          "
+          @newUnit="
+            (value) => {
+              units.unit = value;
+            }
+          "
+        />
         <button
           type="button"
           class="btn btn-warning ml-3"
@@ -859,32 +818,6 @@ export default {
           <span class="mx-2">Mail</span>
         </button>
         <Mail @sendEmail="(value) => sendEmail(value)"></Mail>
-        <FormWizard
-          @create="(value) => create(value)"
-          :updateAdd="updateAdd"
-          @restore="(value) => (updateAdd = value)"
-          @newCenter="
-            (value) => {
-              centers.center = value;
-            }
-          "
-          @newDep="
-            (value) => {
-              departments.department = value;
-            }
-          "
-          @newUnit="
-            (value) => {
-              units.unit = value;
-            }
-          "
-          @newPosition="
-            (value) => {
-              positions.position = value;
-              positions.position.push({ _id: 'other', name: 'Khác' });
-            }
-          "
-        />
       </div>
     </div>
     <!-- Table -->
@@ -920,11 +853,13 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
-
     <Edit
       :item="data.editValue"
       :class="[data.activeEdit ? 'show-modal' : 'd-none']"
       @cancel="data.activeEdit = false"
+      :position="data.items.postionId"
+      :unit="data.items.unitId"
+      @edit="edit(data.editValue)"
     />
     <View />
   </div>
@@ -957,5 +892,10 @@ export default {
 #add,
 #delete-all {
   font-size: 14px;
+}
+
+.form-control {
+  background-color: inherit;
+  border: 1px solid var(--gray);
 }
 </style>
