@@ -230,7 +230,7 @@ export default {
         </div>
 
         <!-- Modal body -->
-        <div class="model-body">
+        <div class="model-body" @click="closeModal">
           <div class="d-flex">
             <!-- steps -->
             <div class="d-flex flex-column" style="height: 100%">
