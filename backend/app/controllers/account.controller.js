@@ -1,4 +1,4 @@
-const { Account } = require("../models/index.model.js");
+const { Account , Role} = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
 const { DataTypes, Op } = require("sequelize");
@@ -49,7 +49,12 @@ exports.create = async (req, res, next) => {
 
 exports.findAll = async (req, res, next) => {
   try {
-    const documents = await Account.findAll({});
+    const documents = await Account.findAll({
+      include: {
+        model: Role,
+        attributes: ['name']
+      }
+    });
     return res.send(documents);
   } catch (error) {
     console.log(error);
@@ -97,23 +102,23 @@ exports.deleteOne = async (req, res, next) => {
 };
 
 exports.deleteAll = async (req, res, next) => {
-  try {
-    const result = await Account.destroy({
-      where: {},
-      truncate: true, // Truncate the table to remove all records
-    });
+  // try {
+  //   const result = await Account.destroy({
+  //     where: {},
+  //     truncate: true, // Truncate the table to remove all records
+  //   });
 
-    if (result === 0) {
-      // If no records were deleted, return an error
-      // return next(createError(404, 'No accounts found'));
-      return res.sendStatus(204); // Return 204 No Content if all records were deleted successfully
-    }
+  //   if (result === 0) {
+  //     // If no records were deleted, return an error
+  //     // return next(createError(404, 'No accounts found'));
+  //     return res.sendStatus(204); // Return 204 No Content if all records were deleted successfully
+  //   }
 
-    //   return res.sendStatus(204); // Return 204 No Content if all records were deleted successfully
-  } catch (error) {
-    console.log(error);
-    return next(createError(400, "Error deleting accounts"));
-  }
+  //   //   return res.sendStatus(204); // Return 204 No Content if all records were deleted successfully
+  // } catch (error) {
+  //   console.log(error);
+  //   return next(createError(400, "Error deleting accounts"));
+  // }
 };
 
 // exports.update = async (req, res, next) => {
@@ -150,12 +155,12 @@ exports.update = async (req, res, next) => {
   console.log("Update", req.body);
   const { EmployeeId, roleId, password, user_name } = req.body;
   // Kiểm tra xem dữ liệu cần thiết có bị thiếu không
-  if (!user_name || !password || !roleId || !EmployeeId) {
-    return res.send({
-      error: true,
-      msg: "Vui lòng điền đầy đủ thông tin.",
-    });
-  }
+  // if (!user_name || !password || !roleId || !EmployeeId) {
+  //   return res.send({
+  //     error: true,
+  //     msg: "Vui lòng điền đầy đủ thông tin.",
+  //   });
+  // }
   try {
     let accounts = [
       await Account.findOne({

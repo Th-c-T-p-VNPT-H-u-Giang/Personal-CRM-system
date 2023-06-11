@@ -1,4 +1,4 @@
-const { Role } = require("../models/index.model.js");
+const { Role, Account } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
 const { sequelize } = require("../config/index");
@@ -41,7 +41,12 @@ exports.create = async (req, res, next) => {
 
 exports.findAll = async (req, res, next) => {
   try {
-    const documents = await Role.findAll({});
+    const documents = await Role.findAll({
+      include: {
+        model: Account,
+        attributes: ['user_name']
+      }
+    });
     return res.send(documents);
   } catch (error) {
     console.log(error);
