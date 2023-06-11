@@ -48,7 +48,7 @@ const AccountRouter = require("./app/routes/account.route");
 const AppointmentRouter = require("./app/routes/appointment.route");
 const TaskRouter = require("./app/routes/task.route");
 const LogRouter = require("./app/routes/log.route");
-const MailRouter = require("./app/routes/mai.route");
+const MailRouter = require("./app/routes/mail.route");
 // use router
 app.use("/api/customers", customerRouter);
 app.use("/api/customer_types", customer_typesRouter);
@@ -79,8 +79,6 @@ app.use((err, req, res, next) => {
     message: err.message || "Internal Server Error",
   });
 });
-
-const nodemailer = require("nodemailer");
 
 // exports
 module.exports = app;
