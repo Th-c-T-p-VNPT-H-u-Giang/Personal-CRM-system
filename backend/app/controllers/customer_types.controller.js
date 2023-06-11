@@ -1,5 +1,6 @@
 const { Customer_Types } = require("../models/index.model.js");
 const createError = require("http-errors");
+const ID_CAN_NOT_DELETE = "705a7bc8-d6f3-4df9-a0bf-f3fc67c133e8";
 
 exports.create = async (req, res, next) => {
   const customerType = await Customer_Types.findAll();
@@ -7,7 +8,12 @@ exports.create = async (req, res, next) => {
   const name = req.body.name;
   let isCheck = true;
   for (const each of customerType) {
-    if (each.name.toLowerCase() == name.toLowerCase()) {
+    if (
+      each &&
+      name &&
+      each.name &&
+      each.name.toLowerCase() == name.toLowerCase()
+    ) {
       isCheck = false;
     }
   }
@@ -67,6 +73,12 @@ exports.findOne = async (req, res, next) => {
 
 exports.deleteOne = async (req, res, next) => {
   try {
+    if (req.params.id === ID_CAN_NOT_DELETE) {
+      return res.status(200).json({
+        msg: "Loại khách hàng này không thể xóa",
+        error: true,
+      });
+    }
     const customerType = await Customer_Types.destroy({
       where: {
         _id: req.params.id,

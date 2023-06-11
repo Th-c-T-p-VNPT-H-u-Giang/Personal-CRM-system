@@ -3,6 +3,8 @@ const {
   Customer_Work,
   Customer,
   Company_KH,
+  Event,
+  Habit,
 } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
@@ -37,6 +39,12 @@ exports.findAll = async (req, res, next) => {
           include: [
             {
               model: Customer_Types,
+            },
+            {
+              model: Event,
+            },
+            {
+              model: Habit,
             },
           ],
         },

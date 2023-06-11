@@ -102,8 +102,6 @@ const Customer = sequelize.define("Customer", {
   avatar: {
     type: DataTypes.STRING,
     allowNull: true,
-    default:
-      "https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png",
     validate: {
       notEmpty: {
         msg: "Ảnh khách hàng không được bỏ trống không được bỏ trống.",
@@ -341,6 +339,11 @@ const Habit = sequelize.define("Habit", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+    validate: {
+      notEmpty: {
+        msg: "Tên thói quen không được bỏ trống.",
+      },
+    },
     get() {
       return getDecrypt("name", this);
     },
@@ -707,7 +710,7 @@ const Log = sequelize.define("Log", {
 // checked
 Customer_Types.hasMany(Customer, {
   foreignKey: "customerTypesId",
-  onDelete: "SET NULL",
+  onDelete: "SET DEFAULT",
 });
 Customer.belongsTo(Customer_Types, { foreignKey: "customerTypesId" });
 
@@ -716,6 +719,7 @@ Customer.hasMany(Customer_Work, {
   foreignKey: "customerId",
   onDelete: "CASCADE",
 });
+
 Customer_Work.belongsTo(Customer, { foreignKey: "customerId" });
 
 // checked
@@ -764,13 +768,29 @@ Account.belongsTo(Role, { foreignKey: "roleId" });
 
 // checked
 const Customer_Event = sequelize.define("Customer_Event", {});
-Customer.belongsToMany(Event, { through: Customer_Event });
-Event.belongsToMany(Customer, { through: Customer_Event });
+Customer.belongsToMany(Event, {
+  through: Customer_Event,
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Event.belongsToMany(Customer, {
+  through: Customer_Event,
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
 // checked
 const Customer_Habit = sequelize.define("Customer_Habit", {});
-Customer.belongsToMany(Habit, { through: Customer_Habit });
-Habit.belongsToMany(Customer, { through: Customer_Habit });
+Customer.belongsToMany(Habit, {
+  through: Customer_Habit,
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
+Habit.belongsToMany(Customer, {
+  through: Customer_Habit,
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
+});
 
 // checked
 const Employee_Task = sequelize.define("Employee_Task", {});
@@ -800,11 +820,18 @@ Task.hasOne(FeedBack_Task);
 FeedBack_Task.belongsTo(Task);
 
 // Sync the model with the database
-Customer_Types.sync();
-Customer.sync();
+Customer_Types.sync({
+  alert: true,
+});
+Customer.sync({
+  alert: true,
+});
+
 Customer_Work.sync();
 Company_KH.sync();
-Event.sync();
+Event.sync({
+  alter: true,
+});
 Habit.sync();
 Position.sync();
 Center_VNPTHG.sync();

@@ -60,7 +60,7 @@ export default {
       <li
         @click="updateCurrentPage(value)"
         v-for="(value, index) in numberOfPages"
-        class="page-item"
+        class="page-item" :key="index"
       >
         <a
           class="page-link"

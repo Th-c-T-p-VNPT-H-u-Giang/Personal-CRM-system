@@ -1,22 +1,28 @@
 <script>
-import Table from "../../components/table/table_duy.vue";
-import Pagination from "../../components/table/pagination_duy.vue";
-import Dropdown from "../../components/form/dropdown.vue";
-import Select from "../../components/form/select.vue";
-import Search from "../../components/form/search.vue";
-import DeleteAll from "../../components/form/delete-all.vue";
-import Add from "./add.vue";
-import Edit from "./edit.vue";
-import { reactive, ref, onBeforeMount } from "vue";
-// import service
-import CustomerTypes from "../../services/customerType.service";
-import { http_getAll, http_create ,http_deleteOne ,http_getOne,http_update } from "../../assets/js/common.http";
 import {
+  Table,
+  Pagination,
+  Dropdown,
+  Select,
+  Search,
+  DeleteAll, 
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+  http_update,
+  reactive, ref, onBeforeMount,
+  Customer_Types,
   alert_success,
   alert_error,
   alert_delete,
-} from "../../assets/js/common.alert";
-import { formatDateTime } from "../../assets/js/common.js";
+  formatDateTime,
+} from '../common/import.js'
+
+import Add from "./add.vue";
+import Edit from "./edit.vue";
+// import service
+
 
 export default {
   components: {
@@ -53,13 +59,13 @@ export default {
 
     // method
     const refresh = async () => {
-      const res = await http_getAll(CustomerTypes);
+      const res = await http_getAll(Customer_Types);
       data.items = res.documents;
     };
 
 
     const handleCreate = async (name) => {
-      const res = await http_create(CustomerTypes, {name})
+      const res = await http_create(Customer_Types, {name})
       if(res.error) {
         alert_error(`Thêm loại khách hàng`, `${res.msg}`);
       }else{
@@ -74,7 +80,7 @@ export default {
     };
 
     const handleDelete = async (_id) => {
-      const res = await http_getOne(CustomerTypes, _id);
+      const res = await http_getOne(Customer_Types, _id);
       const customerType = res.document
       const isConfirmed = await alert_delete(
         `Xoá loại khách hàng`,
@@ -82,20 +88,25 @@ export default {
       );
 
       if(isConfirmed) {
-        const result = await http_deleteOne(CustomerTypes, _id);
-        alert_success(
+        const result = await http_deleteOne(Customer_Types, _id);
+        if(result.error) {
+          alert_error('Lổi', result.msg)
+        }else{
+          alert_success(
           `Xoá loại khách hàng`,
           `Bạn đã xoá thành công loại khách hàng ${customerType.name} lúc ${formatDateTime(
             new Date()
           )}.`
         );
         refresh();
+        }
+        
       }
     };
 
     const handleUpdate = async (item) => {
-      const rs = await http_update(CustomerTypes, item._id, {...item})
-      const doc = await http_getOne(CustomerTypes, item._id);
+      const rs = await http_update(Customer_Types, item._id, {...item})
+      const doc = await http_getOne(Customer_Types, item._id);
       console.log(doc.document);
       if(rs.error) {
         alert_error('Sửa loại khách hàng', `${rs.msg}`);

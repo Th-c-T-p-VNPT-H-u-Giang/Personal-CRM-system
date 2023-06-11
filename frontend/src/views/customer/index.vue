@@ -1,30 +1,28 @@
 <script>
 import Table from "../../components/table/table_customer.vue";
-import Pagination from "../../components/table/pagination_duy.vue";
-import Dropdown from "../../components/form/dropdown.vue";
-import Select from "../../components/form/select.vue";
-import Search from "../../components/form/search.vue";
-import DeleteAll from "../../components/form/delete-all.vue";
 import Add from "./add.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
-import { reactive, computed, watch, ref, onBeforeMount } from "vue";
+import { reactive, computed, ref, onBeforeMount } from "vue";
 import {
   http_getAll,
-  http_getOne,
   http_deleteOne,
-  http_update,
-  http_create,
-} from "../../assets/js/common.http";
-import CustomerWork from "../../services/customerWorks.service";
-import CustomerIn4 from "../../services/customer.service";
-import Company from '../../services/company.service'
-
-import {
   alert_success,
   alert_error,
   alert_delete,
-} from "../../assets/js/common.alert";
+  Pagination,
+  Dropdown,
+  Select,
+  Search,
+  DeleteAll,
+  Company_KH,
+  Customer_Work,
+  Customer,
+  formatDateTime,
+  formatDate,
+} from "../common/import";
+
+import Select_avanced from '../../components/form/select_advanced.vue';
 export default {
   components: {
     Table,
@@ -36,6 +34,7 @@ export default {
     DeleteAll,
     Edit,
     View,
+    Select_avanced,
   },
   setup(ctx) {
     const data = reactive({
@@ -62,10 +61,42 @@ export default {
         companyKH: "",
       },
       activeEdit: false,
+      viewValue: {
+        Customer: {
+          name: "",
+          birthday: "",
+          avatar: "",
+          phone: "",
+          email: "",
+          address: "",
+        },
+        Customer_Type: {
+          name: "",
+        },
+        Company_KH: {
+          name: ""
+        },
+        Events: [
+          {
+            name: "",
+            content: "",
+            time_duration: ""
+          }
+        ],
+        Habits: [
+          {
+            name: ""
+          }
+        ],
+        current_workplace: '',
+        work_history: "",
+        current_position: "",
+        work_temp: ''
+      }
     });
 
     const reFresh = async () => {
-      const rs = await http_getAll(CustomerWork);
+      const rs = await http_getAll(Customer_Work);
       data.items = rs.documents;
     };
 
@@ -101,18 +132,20 @@ export default {
       return Math.ceil(filtered.value.length / data.entryValue);
     });
     const setPages = computed(() => {
-      if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-        data.entryValue = data.items.length;
-        data.numberOfPages = 1;
-      } else data.numberOfPages = setNumberOfPages.value;
-      data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-      data.endRow = data.currentPage * data.entryValue;
-      return filtered.value.filter((item, index) => {
-        return (
-          index + 1 > (data.currentPage - 1) * data.entryValue &&
-          index + 1 <= data.currentPage * data.entryValue
-        );
-      });
+      if (data.items.length > 0) {
+        if (setNumberOfPages.value == 0 || data.entryValue == "All") {
+          data.entryValue = data.items.length;
+          data.numberOfPages = 1;
+        } else data.numberOfPages = setNumberOfPages.value;
+        data.startRow = (data.currentPage - 1) * data.entryValue + 1;
+        data.endRow = data.currentPage * data.entryValue;
+        return filtered.value.filter((item, index) => {
+          return (
+            index + 1 > (data.currentPage - 1) * data.entryValue &&
+            index + 1 <= data.currentPage * data.entryValue
+          );
+        });
+      } else return data.items.value;
     });
 
     // methods
@@ -122,9 +155,7 @@ export default {
     const deleteOne = (_id) => {
       console.log("deleting", _id);
     };
-    const edit = () => {
-      console.log("edit");
-    };
+
 
     // watch
     const activeMenu = ref(1);
@@ -132,25 +163,107 @@ export default {
     // CRUD
 
     const handleDelete = async (customerId, CompanyId) => {
-      const isConfirmed = await alert_delete('Xóa', 'Bạn có chắc là xóa khách hàng này không!!')
+      const isConfirmed = await alert_delete(
+        "Xóa",
+        "Bạn có chắc là xóa khách hàng này không!!"
+      );
 
       if (isConfirmed) {
-        const rsCustomer = await http_deleteOne(CustomerIn4, customerId)
+        const rsCustomer = await http_deleteOne(Customer, customerId);
         console.log(rsCustomer);
         if (rsCustomer.error) {
-          alert_error('Lổi ', rsCustomer.msg)
+          alert_error("Lổi ", rsCustomer.msg);
         } else {
-          const rsCompany = await http_deleteOne(Company, CompanyId)
+          const rsCompany = await http_deleteOne(Company_KH, CompanyId);
           console.log(rsCompany);
           if (rsCompany.error) {
-            alert_error('Lổi ', rsCompany.msg)
+            alert_error("Lổi ", rsCompany.msg);
           } else {
             reFresh();
-            alert_success('Thành công', 'Xóa khách hàng thành công')
+            alert_success("Thành công", "Xóa khách hàng thành công");
           }
         }
       }
+    };
+
+    const refresh_customer = () => {
+      reFresh();
     }
+
+    const view = (item) => {
+      data.viewValue = {
+        Customer: {
+          _id: item.Customer._id,
+          name: item.Customer.name,
+          birthday: item.Customer.birthday,
+          avatar: item.Customer.avatar,
+          phone: item.Customer.phone,
+          email: item.Customer.email,
+          address: item.Customer.address,
+        },
+        Customer_Type: {
+          _id: item.Customer.Customer_Type._id,
+          name: item.Customer.Customer_Type.name,
+        },
+        Company_KH: {
+          _id: item.Company_KH._id,
+          name: item.Company_KH.name
+        },
+        Events: [
+          ...item.Customer.Events
+
+          // {name: item.Customer.Events[0].name,
+          // content: item.Customer.Events[0].content,
+          // time_duration: item.Customer.Events[0].time_duration}
+        ]
+        ,
+        Habits: {
+          ...item.Customer.Habits
+        },
+        _id: item._id,
+        current_workplace: item.current_workplace,
+        work_history: item.work_history,
+        current_position: item.current_position,
+        work_temp: item.work_temp
+
+      };
+    }
+
+  //   formatDateTime,
+  // formatDate,
+    const edit = (item, isCheck) => {
+      console.log(item.Customer);
+       data.viewValue = {
+        Customer: {
+          _id: item.Customer._id,
+          name: item.Customer.name,
+          birthday: item.Customer.birthday,
+          avatar: item.Customer.avatar,
+          phone: item.Customer.phone,
+          email: item.Customer.email,
+          address: item.Customer.address,
+        },
+        Customer_Type: {
+          _id: item.Customer.Customer_Type._id,
+          name: item.Customer.Customer_Type.name,
+        },
+        Company_KH: {
+          _id: item.Company_KH._id,
+          name: item.Company_KH.name
+        },
+        _id: item._id,
+        current_workplace: item.current_workplace,
+        work_history: item.work_history,
+        current_position: item.current_position,
+        work_temp: item.work_temp,
+      }
+
+
+      data.activeEdit = isCheck
+      console.log('Edit data', data.viewValue);
+      console.log('Check edit', data.activeEdit)
+    };
+
 
     return {
       data,
@@ -159,7 +272,9 @@ export default {
       update,
       deleteOne,
       edit,
-      handleDelete
+      handleDelete,
+      refresh_customer,
+      view
     };
   },
 };
@@ -167,6 +282,7 @@ export default {
 
 <template>
   <div class="border-box d-flex flex-column ml-2">
+
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <router-link to="/customer" @click="activeMenu = 1" :class="[activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
@@ -222,11 +338,11 @@ export default {
         <button type="button" class="btn btn-danger mr-3" data-toggle="modal" data-target="#model-delete-all">
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
-        <DeleteAll :items="data.items" />
+        <!-- <DeleteAll :items="data.items" /> -->
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#model-add">
           <span id="add" class="mx-2">Thêm</span>
         </button>
-        <Add :item="data.itemAdd" @create="handleCreate" />
+        <Add @refresh_customer="refresh_customer" />
       </div>
     </div>
     <!-- Table -->
@@ -238,16 +354,15 @@ export default {
       'Công ty',
       'Loại khách hàng',
       'Trạng Thái',
-    ]" @delete="handleDelete" @edit="(value, value1) => (
-    (data.editValue = value), (data.activeEdit = value1)
-  )
-  " @view="(value) => view(value)" />
+    ]" @delete="handleDelete" @edit="edit" @view="view" />
     <!-- Pagination -->
     <Pagination :numberOfPages="data.numberOfPages" :totalRow="data.totalRow" :startRow="data.startRow"
       :endRow="data.endRow" :currentPage="data.currentPage" @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3" />
-    <Edit :item="data.editValue" :class="[data.activeEdit ? 'show-modal' : 'd-none']" @cancel="data.activeEdit = false" />
-    <View />
+    <Edit :item="data.viewValue" :class="[data.activeEdit ? 'show-modal' : 'd-none']" @cancel="data.activeEdit = false" @refresh_customer="refresh_customer"/>
+    <View :item="data.viewValue" />
+
+
   </div>
 </template>
 

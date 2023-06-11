@@ -4,6 +4,7 @@ const commonConfig = {
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
+    // "Content-Type": "multipart/form-data",
   },
 };
 export default (baseURL) => {

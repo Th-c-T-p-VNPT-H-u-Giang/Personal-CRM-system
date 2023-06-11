@@ -9,19 +9,23 @@ import {
   http_create,
   http_deleteOne,
   alert_delete,
+  http_getOne,
   Company_KH,
   Customer_Work,
   Customer,
+  CustomerEvent,
+  CustomerHabit,
   Event,
-  http_update,
-  ref,
-} from "../common/import";
+  Habit,
+} from "../../views/common/import";
 
 import Swal from "sweetalert2";
-import Select_Advanced from "../../components/form/select_advanced.vue";
+import Select_Advanced from "./select_advanced.vue";
+import axios from "axios";
 
 export default {
   components: {
+    // Select_Advanced
     Select_Advanced,
   },
   props: {
@@ -29,10 +33,13 @@ export default {
       type: Object,
       default: {},
     },
+    id_form: {
+      type: String,
+      default: "model-form-wizard",
+    },
   },
-  setup(props, ctx) {
-    console.log(props.item.Company_KH.name);
-    console.log(props.item);
+  setup(props, context) {
+    // declare variables
     const data = reactive({
       imgSrc: null,
       stepList: [
@@ -48,15 +55,36 @@ export default {
       activeStep: 1,
       dataSelect: null,
       items: null,
-      modelValue: "",
+      modelValue: "--Chọn--",
       customer: null,
       event: null,
     });
 
-    // biến kiểm tra người dùng có upload ảnh lên không
-    const isImageUploaded = ref(false);
+    const viewData = reactive({
+      customerInfo: {
+        avatar: "",
+        customerTypesId: 1,
+        name: "",
+        birthday: "",
+        address: "",
+        phone: "",
+        email: "",
+      },
+      customerCompany: {
+        name: "",
+        _id: "",
+      },
+      customerWork: {
+        customerId: "",
+        current_workplace: "",
+        work_history: "",
+        current_position: "",
+        work_temp: "",
+        companyId: "",
+      },
+    });
 
-    // method
+    // refresh method
     const refresh = async () => {
       const cusTypes = await http_getAll(Customer_Types);
       const company = await http_getAll(Company_KH);
@@ -74,28 +102,25 @@ export default {
       data.event = event.documents;
     };
 
+    // handle display img
     const onFileChange = (event) => {
-      props.item.Customer.avatar = event.target.files[0];
+      viewData.customerInfo.avatar = event.target.files[0];
 
       // handle display img
-      const files = event.target.files;
-      if (files && files.length > 0) {
-        isImageUploaded.value = true;
-      } else {
-        isImageUploaded.value = false;
-      }
-      console.log(props.item.Customer.avatar);
+      const file = event.target.files[0];
+      console.log(viewData.customerInfo.avatar);
       const reader = new FileReader();
 
       reader.onload = (event) => {
         data.imgSrc = event.target.result;
       };
 
-      reader.readAsDataURL(files);
+      reader.readAsDataURL(file);
     };
 
+    // handle create customer type
     const handleAddCustometType = async () => {
-      if (props.item.Customer_Type._id == "Add") {
+      if (viewData.customerInfo.customerTypesId === "Add") {
         const { value: customerType } = await Swal.fire({
           title: "Thêm loại khách hàng",
           input: "text",
@@ -111,7 +136,7 @@ export default {
         if (res.error) {
           alert_error(`Thêm loại khách hàng`, `${res.msg}`);
         } else {
-          props.item.Customer_Type._id = res.document._id;
+          viewData.customerInfo.customerTypesId = res.document._id;
           refresh();
           alert_success(
             `Thêm loại khách hàng`,
@@ -149,16 +174,16 @@ export default {
         } else {
           data.modelValue = companyName;
           refresh();
-          props.item.Company_KH._id = res.document._id;
-          console.log(props.item.Company_KH._id);
+          viewData.customerCompany._id = res.document._id;
+          console.log(viewData.customerCompany._id);
           alert_success(
             `Thành công`,
             `Công ty ${companyName}  đã được tạo thành công.`
           );
         }
       } else {
-        props.item.Company_KH._id = _id;
-        console.log(props.item.Company_KH._id);
+        viewData.customerCompany._id = _id;
+        console.log(viewData.customerCompany._id);
       }
     };
 
@@ -180,15 +205,16 @@ export default {
       }
     };
 
-    const update = async (event) => {
+    // handle create customer
+    const create = async (event) => {
       event.preventDefault();
       let isCheck = false;
       refresh();
       for (const value of data.customer) {
         if (
-          value.name == props.item.Customer.name &&
-          value.phone == props.item.Customer.phone &&
-          value.email == props.item.Customer.email
+          value.name == viewData.customerInfo.name &&
+          value.phone == viewData.customerInfo.phone &&
+          value.email == viewData.customerInfo.email
         ) {
           isCheck = true;
         }
@@ -196,71 +222,69 @@ export default {
       if (isCheck == true) {
         return alert_error(
           "Lổi",
-          `Thông tin khách hàng ${props.item.Customer.name} đã có`
+          `Thông tin khách hàng ${viewData.customerInfo.name} đã có`
         );
       } else {
         const formData = new FormData();
-        if (isImageUploaded.value == true) {
-          formData.append("avatar", props.item.Customer.avatar);
-        } else {
-          console.log("Không có thay đổi");
-        }
-        formData.append("name", props.item.Customer.name);
-        formData.append("birthday", props.item.Customer.birthday);
-        formData.append("address", props.item.Customer.address);
-        formData.append("phone", props.item.Customer.phone);
-        formData.append("email", props.item.Customer.email);
-        formData.append("customerTypesId", props.item.Customer_Type._id);
-
-        // console.log("Object formdata avatar" + props.item.Customer.avatar);
-        // console.log("Object formdata name" + props.item.Customer.name);
-        // console.log("Object formdata birthday" + props.item.Customer.birthday);
-        // console.log("Object formdata address" + props.item.Customer.address);
-        // console.log("Object formdata phone" + props.item.Customer.phone);
-        // console.log("Object formdata email" + props.item.Customer.email);
-        // console.log(
-        //   "Object formdata customerTypesId" + props.item.Customer_Type._id
-        // );
-        const res = await http_update(
-          Customer,
-          props.item.Customer._id,
-          formData
+        formData.append("avatar", viewData.customerInfo.avatar);
+        formData.append("name", viewData.customerInfo.name);
+        formData.append("birthday", viewData.customerInfo.birthday);
+        formData.append("address", viewData.customerInfo.address);
+        formData.append("phone", viewData.customerInfo.phone);
+        formData.append("email", viewData.customerInfo.email);
+        formData.append(
+          "customerTypesId",
+          viewData.customerInfo.customerTypesId
         );
+
+        console.log("avatar", viewData.customerInfo.avatar);
+        console.log("name", viewData.customerInfo.name);
+        console.log("birthday", viewData.customerInfo.birthday);
+        console.log("phone", viewData.customerInfo.phone);
+        console.log("email", viewData.customerInfo.email);
+        console.log("customerTypesId", viewData.customerInfo.customerTypesId);
+
+        const res = await http_create(Customer, formData);
+        console.log(res);
         if (res.error) {
           alert_error(`Lổi`, res.msg);
         } else {
           const object = {
-            customerId: props.item.Customer._id,
-            current_workplace: props.item.current_workplace,
-            work_history: props.item.work_history,
-            current_position: props.item.current_position,
-            work_temp: props.item.work_temp,
-            companyId: props.item.Company_KH._id,
+            customerId: res.document._id,
+            current_workplace: viewData.customerWork.current_workplace,
+            work_history: viewData.customerWork.work_history,
+            current_position: viewData.customerWork.current_position,
+            work_temp: viewData.customerWork.work_temp,
+            companyId: viewData.customerCompany._id,
           };
 
-          const result = await http_update(Customer_Work, props.item._id, object)
-          if (result.error) {
-            alert_error(`Lổi`, result.msg);
+          const customerWork = await http_create(Customer_Work, object);
+          console.log(customerWork);
+          if (customerWork.error) {
+            alert_error(`Lổi`, customerWork.msg);
           } else {
-            alert_success('Thành công', result.msg)
-            ctx.emit('refresh_customer')
+            alert_success('Thành công', customerWork.msg)
+            context.emit('refresh_customer')
           }
         }
       }
     };
 
+    //   CustomerEvent,
+    // CustomerHabit,
     // life cycle
     onBeforeMount(() => {
       refresh();
     });
     return {
+      create,
       data,
+      viewData,
       onFileChange,
       handleAddCustometType,
       searchSelect,
       choosed,
       deleted,
-      update,
     };
   },
 };
@@ -268,19 +292,19 @@ export default {
 
 <template>
   <!-- The Modal -->
-  <div class="modal" id="model-edit">
+  <div class="modal" :id="id_form">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Thêm sự kiện mới</h4>
+          <h4 class="modal-title" style="font-size: 15px">Thêm Khách Hàng</h4>
           <button type="button" class="close" data-dismiss="modal">
             &times;
           </button>
         </div>
 
         <!-- Modal body -->
-        <div class="model-body" style="min-height: 300px">
+        <div class="model-body" style="min-height: 250px">
           <div class="d-flex">
             <!-- steps -->
             <div class="d-flex flex-column" style="height: 100%">
@@ -293,36 +317,38 @@ export default {
             </div>
             <!-- form -->
             <div class="d-flex flex-grow-1 flex-column step-content px-3 my-3" style="width: 10000px">
-              <form action="" class="was-validated" style="width: 100%" method="put">
+              <form action="" class="was-validated" style="width: 100%" method="post">
                 <!--begin  page 1 -->
                 <div v-if="data.activeStep == 1" class="page-1">
                   <div class="form-row">
                     <div class="form-group col-md-6">
                       <label for="name">Tên (<span style="color: red">*</span>)</label>
-                      <input type="text" class="form-control" id="name" v-model="item.Customer.name" required />
+                      <input type="text" class="form-control" id="name" v-model="viewData.customerInfo.name" required />
                     </div>
                     <div class="form-group col-md-6">
                       <label for="birthdate">Ngày sinh (<span style="color: red">*</span>)</label>
-                      <input type="date" class="form-control" id="birthdate" v-model="item.Customer.birthday" required />
+                      <input type="date" class="form-control" id="birthdate" v-model="viewData.customerInfo.birthday"
+                        required />
                     </div>
                   </div>
                   <div class="form-group">
                     <label for="address">Địa chỉ (<span style="color: red">*</span>)</label>
-                    <input type="text" class="form-control" id="address" v-model="item.Customer.address" required />
+                    <input type="text" class="form-control" id="address" v-model="viewData.customerInfo.address"
+                      required />
                   </div>
                   <div class="form-group">
                     <label for="phone">Sdt (<span style="color: red">*</span>)</label>
-                    <input type="text" class="form-control" id="phone" v-model="item.Customer.phone" required />
+                    <input type="text" class="form-control" id="phone" v-model="viewData.customerInfo.phone" required />
                   </div>
                   <div class="form-row">
                     <div class="form-group col-md-6">
                       <label for="email">Email (<span style="color: red">*</span>)</label>
-                      <input type="text" class="form-control" id="email" v-model="item.Customer.email" required />
+                      <input type="text" class="form-control" id="email" v-model="viewData.customerInfo.email" required />
                     </div>
                     <div class="form-group col-md-6">
-                      <label for="type"> Loại khách hàng (<span style="color: red">*</span>) </label>
-                      <select id="type" class="form-control" @click="handleAddCustometType"
-                        v-model="item.Customer_Type._id">
+                      <label for="type"> Loại khách hàng </label>
+                      <select id="type" class="form-control" v-model="viewData.customerInfo.customerTypesId"
+                        @click="handleAddCustometType">
                         <option value="1" style="">--Chọn--</option>
                         <option v-for="(value, index) in data.dataSelect" :key="index" :value="value._id">
                           {{ value.name }}
@@ -335,18 +361,17 @@ export default {
                     <div class="col">
                       <input type="file" class="form-control" name="file" id="imageUpload" accept=".png, .jpg"
                         :maxFileSize="1000000" ref="fileInput" @change="onFileChange" />
-                      </div>
+                    </div>
                     <div class="col">
-                      <img v-if="!data.imgSrc" :src="item.Customer.avatar" alt="Ảnh củ" height="100" />
                       <img :src="data.imgSrc" alt="" height="100" />
                     </div>
                   </div>
 
                   <div class="form">
                     <div class="form-group">
-                      <label for="wor_work_history">Công ty (<span style="color: red">*</span>)</label>
-                      <Select_Advanced :modelValue="data.modelValue || item.Company_KH.name" :options="data.items"
-                        @searchSelect="searchSelect" @delete="deleted" @choosed="choosed" />
+                      <label for="wor_work_history">Công ty</label>
+                      <Select_Advanced :modelValue="data.modelValue" :options="data.items" @searchSelect="searchSelect"
+                        @delete="deleted" @choosed="choosed" />
                     </div>
                   </div>
                 </div>
@@ -357,30 +382,31 @@ export default {
                   <div class="form-row">
                     <div class="form-group col-md-6">
                       <label for="wor_current_workplace">Nơi đang công tác</label>
-                      <input type="text" class="form-control" id="wor_current_workplace" v-model="item.current_workplace"
-                        required />
+                      <input type="text" class="form-control" id="wor_current_workplace"
+                        v-model="viewData.customerWork.current_workplace" required />
                     </div>
                     <div class="form-group col-md-6">
                       <label for="wor_current_position">Chức vụ đang công tác</label>
-                      <input type="text" class="form-control" id="wor_current_position" v-model="item.current_position"
-                        required />
+                      <input type="text" class="form-control" id="wor_current_position"
+                        v-model="viewData.customerWork.current_position" required />
                     </div>
                   </div>
 
                   <div class="form-group">
                     <label for="wor_work_history">Lịch sử công tác</label>
-                    <textarea name="" class="form-control" required v-model="item.work_history"></textarea>
+                    <textarea name="" class="form-control" v-model="viewData.customerWork.work_history"
+                      required></textarea>
                   </div>
                   <div class="form-group">
                     <label for="wor_work_temp">Nhiệm kỳ</label>
-                    <input type="text" class="form-control" id="wor_work_temp" v-model="item.work_temp" required />
+                    <input type="text" class="form-control" id="wor_work_temp" v-model="viewData.customerWork.work_temp"
+                      required />
                   </div>
                 </div>
                 <!--end page 2 -->
-
-                <button type="submit" v-if="data.activeStep == data.stepList.length" @click="update"
+                <button type="submit" v-if="data.activeStep == data.stepList.length" @click="create"
                   class="btn btn-primary">
-                  Sửa
+                  Thêm
                 </button>
               </form>
 

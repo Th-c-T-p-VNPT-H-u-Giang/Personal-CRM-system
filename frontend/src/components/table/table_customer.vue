@@ -19,7 +19,7 @@
           <td>{{ item.Customer.address }}</td>
           <td>{{ item.current_position }}</td>
           <td>{{ item.Company_KH.name }}</td>
-          <td>{{ item.Customer.Customer_Type.name ? item.Customer.Customer_Type.name : defaultCustomerType }}</td>
+          <td>{{ item.Customer.Customer_Type.name }}</td>
           <td>Chưa chăm sóc</td>
 
           <td>
@@ -32,6 +32,7 @@
               <span
                 id="view"
                 class="material-symbols-outlined d-flex align-items-center"
+                @click="$emit('view', item)"
               >
                 visibility
               </span>
@@ -81,6 +82,7 @@ export default {
     },
   },
   setup(props, ntx) {
+    console.log(props.items);
     const defaultCustomerType = 'Thường'
     return {
       defaultCustomerType

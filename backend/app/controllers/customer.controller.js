@@ -189,7 +189,7 @@ exports.update = async (req, res, next) => {
           ? "Sửa thông tin khách hàng thành công!!"
           : "Không tìm thấy dử liệu để sửa!!",
         error: updatedCustomer ? false : true,
-        document: updatedCustomer,
+        document: updatedCustomer[0] > 0 ? newCustomer : null,
       });
     }
   } catch (error) {

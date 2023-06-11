@@ -1,21 +1,44 @@
 const { Company_KH } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
+const ID_NOT_DELETED = "8f7c1daf-9f04-46a3-b6f3-5f52fa25c60c";
 
 exports.create = async (req, res, next) => {
-  try {
-    const document = await Company_KH.create({
-      name: req.body.name,
-    });
+  const companies = await Company_KH.findAll();
+  console.log(companies);
+  const name = req.body.name;
+  let isCheck = false;
+  for (const each of companies) {
+    if (
+      each &&
+      name &&
+      each.name &&
+      each.name.toLowerCase() == name.toLowerCase()
+    ) {
+      isCheck = true;
+    }
+  }
+
+  if (isCheck == true) {
     return res.status(200).json({
-      msg: document
-        ? "Tạo công ty khách hàng thành công"
-        : "Tạo công ty khách hàng thất bại",
-      error: document ? false : true,
-      document,
+      error: true,
+      msg: "Tên công ty bị trùng",
     });
-  } catch (error) {
-    return next(createError(500, error.message));
+  } else {
+    try {
+      const document = await Company_KH.create({
+        name,
+      });
+      return res.status(200).json({
+        msg: document
+          ? "Tạo công ty khách hàng thành công"
+          : "Tạo công ty khách hàng thất bại",
+        error: document ? false : true,
+        document,
+      });
+    } catch (error) {
+      return next(createError(500, error.message));
+    }
   }
 };
 
@@ -52,6 +75,13 @@ exports.findOne = async (req, res, next) => {
 exports.deleteOne = async (req, res, next) => {
   const { id } = req.params;
   try {
+    if (id === ID_NOT_DELETED) {
+      return res.status(200).json({
+        error: true,
+        msg: "Bạn không thể xóa trường dử liệu này",
+      });
+    }
+
     const document = await Company_KH.destroy({
       where: {
         _id: id,
