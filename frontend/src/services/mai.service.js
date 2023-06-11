@@ -4,8 +4,8 @@ class EventService {
   constructor(baseUrl = "/api/mail") {
     this.api = createApiClient(baseUrl);
   }
-  async sendmail() {
-    return (await this.api.post("/")).data;
+  async sendmail(data) {
+    return (await this.api.post("/", data)).data;
   }
 }
 

@@ -1,5 +1,5 @@
 <script>
-import { reactive } from "vue";
+import { reactive, watchEffect, ref } from "vue";
 export default {
   props: {
     items: {
@@ -27,7 +27,35 @@ export default {
       default: false,
     },
   },
-  setup(props, ntx) {},
+  setup(props, ntx) {
+    const checkedValues = ref([]);
+
+    const handleCheckboxChange = (value, checked) => {
+      console.log("change");
+      if (checked) {
+        // Checkbox được chọn, thêm giá trị vào mảng checkedValues nếu chưa tồn tại
+        if (!checkedValues.value.includes(value)) {
+          checkedValues.value.push(value);
+        }
+      } else {
+        // Checkbox bị bỏ chọn, loại bỏ giá trị khỏi mảng checkedValues nếu tồn tại
+        const index = checkedValues.value.indexOf(value);
+        if (index > -1) {
+          checkedValues.value.splice(index, 1);
+        }
+      }
+      console.log("change", checkedValues.value);
+      ntx.emit("checkbox", checkedValues.value);
+    };
+
+    // watchEffect(() => {
+    //   console.log(checkedValues.value);
+    // });
+
+    return {
+      handleCheckboxChange,
+    };
+  },
 };
 </script>
 
@@ -46,7 +74,17 @@ export default {
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
-        <td><input type="checkbox" name="" id="" /></td>
+        <td>
+          <input
+            type="checkbox"
+            name=""
+            :id="`checkbox ${index}`"
+            :value="`${item.email}`"
+            @change="
+              handleCheckboxChange($event.target.value, $event.target.checked)
+            "
+          />
+        </td>
         <td>{{ index + 1 }}</td>
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}
@@ -92,6 +130,7 @@ export default {
           </span>
         </td>
       </tr>
+      <!-- <button @click="getSelectedCheckboxes()">Lấy các checkbox đã chọn</button> -->
     </tbody>
   </table>
 </template>

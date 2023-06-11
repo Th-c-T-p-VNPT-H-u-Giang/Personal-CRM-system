@@ -38,7 +38,7 @@ import centerServices from "../../services/center_vnpt.service";
 import Swal from "sweetalert2";
 import FormWizard from "../../components/form/form-wizard.vue";
 import positionService from "../../services/position.service";
-
+import Mail from "../../components/box_lananh/mail.vue";
 export default {
   components: {
     Table,
@@ -56,6 +56,7 @@ export default {
     //
     Select_Advanced,
     FormWizard,
+    Mail,
   },
   setup(ctx) {
     const data = reactive({
@@ -67,6 +68,7 @@ export default {
             _id: "",
             name: "",
           },
+          unitId: "",
           Unit: {
             _id: "",
             name: "",
@@ -396,7 +398,8 @@ export default {
       data.items = data.items.filter((val, index) => {
         return (
           val.Unit.Department.Center_VNPTHG._id == selectedOptionCenter.value &&
-          val.Unit.Department._id == selectedOptionDepartment.value
+          val.Unit.Department._id == selectedOptionDepartment.value &&
+          val.unitId == selectedOptionUnit.value
         );
       });
       if (newValue == "other") {
@@ -600,6 +603,10 @@ export default {
       }
       updateAdd.value = true;
     };
+    const mail = reactive({ list: [] });
+    watch(mail, (newValue, oldValue) => {
+      console.log("new mail:", mail.list);
+    });
     onBeforeMount(async () => {
       await refresh();
     });
@@ -629,6 +636,7 @@ export default {
       updateAdd,
       positions,
       selectedOptionPosition,
+      mail,
     };
   },
 };
@@ -819,7 +827,15 @@ export default {
         >
           <span class="mx-2">Thêm</span>
         </button>
-
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-toggle="modal"
+          data-target="#model-form-mail"
+        >
+          <span class="mx-2">Mail</span>
+        </button>
+        <Mail></Mail>
         <FormWizard
           @create="(value) => create(value)"
           :updateAdd="updateAdd"
@@ -869,6 +885,7 @@ export default {
         )
       "
       @view="(value) => view(value)"
+      @checkbox="(value) => (mail.list = value)"
     />
     <!-- Pagination -->
     <Pagination
