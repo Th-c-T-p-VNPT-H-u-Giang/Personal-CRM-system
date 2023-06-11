@@ -55,27 +55,21 @@ export const alert_info = (title, text) => {
 // alert response
 
 export const alert_delete = async (title, text) => {
-    let isConfirmed = false;
-    await Swal.fire({
-        icon: 'question',
-        title: title,
-        text: text,
-        background: '#fff',
-        didOpen: () => {
-            const popup = Swal.getPopup();
-            popup.style.border = '2px solid #fff';
-        },
-        showCancelButton: true,
-        showConfirmButton: true,
-        reverseButtons: true,
-    }).then((result) => {
-        isConfirmed = result.isConfirmed;
-    })
-    return isConfirmed;
-}
-
-
-
-
-
-
+  let isConfirmed = false;
+  await Swal.fire({
+    icon: "question",
+    title: title,
+    text: text,
+    background: "#fff",
+    didOpen: () => {
+      const popup = Swal.getPopup();
+      popup.style.border = "2px solid #fff";
+    },
+    showCancelButton: true,
+    showConfirmButton: true,
+    reverseButtons: true,
+  }).then((result) => {
+    isConfirmed = result.isConfirmed;
+  });
+  return isConfirmed;
+};

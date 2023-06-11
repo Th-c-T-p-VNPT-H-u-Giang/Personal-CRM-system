@@ -1,17 +1,15 @@
-<script></script>
-
 <template>
   <!-- The Modal -->
-  <div class="modal" id="model-add">
+  <div class="modal" id="model-add-unit">
     <div class="modal-dialog">
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Level</h4>
+          <h4 class="modal-title" style="font-size: 15px">Đơn vị</h4>
           <button
             type="button"
             class="close"
-            data-dismiss="modal"
+            data-dismiss="modal2"
             @click="turn_off"
           >
             &times;
@@ -23,24 +21,46 @@
           <form @submit.prevent="save" class="was-validated">
             <div class="form-group">
               <label for="name"
-                >Tên cấp(<span style="color: red">*</span>):</label
+                >Tên trung tâm(<span style="color: red">*</span>):</label
               >
               <select
                 class="pl-2 form-control"
-                @change="getLevel"
+                @change="getCenter"
                 v-model="selectValue"
                 required
               >
                 <option disabled selected hidden value="#"></option>
                 <option
-                  :value="`${value.lev_id}`"
+                  :value="`${value.cen_id}`"
                   :key="index"
-                  v-for="(value, index) in levels"
+                  v-for="(value, index) in centers"
                 >
-                  {{ value.lev_name }}
+                  {{ value.cen_name }}
                 </option>
               </select>
             </div>
+
+            <div class="form-group">
+              <label for="name"
+                >Tên trung tâm(<span style="color: red">*</span>):</label
+              >
+              <select
+                class="pl-2 form-control"
+                @change="getDep"
+                v-model="selectValue"
+                required
+              >
+                <option disabled selected hidden value="#"></option>
+                <option
+                  :value="`${value.dep_id}`"
+                  :key="index"
+                  v-for="(value, index) in departments"
+                >
+                  {{ value.dep_name }}
+                </option>
+              </select>
+            </div>
+
             <div class="form-group">
               <label for="name"
                 >Tên đơn vị(<span style="color: red">*</span>):</label
@@ -58,20 +78,20 @@
               </div>
             </div>
             <button
+              v-if="newData.uni_id != ''"
               type="submit"
+              class="btn btn-warning px-3 py-2"
+              style="font-size: 14px"
+            >
+              Sửa
+            </button>
+            <button
               v-if="newData.uni_id == ''"
+              type="submit"
               class="btn btn-primary px-3 py-2"
               style="font-size: 14px"
             >
               Thêm
-            </button>
-            <button
-              type="submit"
-              v-if="newData.uni_id != ''"
-              class="btn btn-primary px-3 py-2"
-              style="font-size: 14px"
-            >
-              Sửa
             </button>
           </form>
         </div>
@@ -81,36 +101,38 @@
 </template>
 
 <script>
-import { ref, reactive } from "vue";
+import { reactive, ref } from "vue";
 export default {
   name: "Add",
   props: {
     newData: { type: Object },
   },
+
   setup({ newData }, ntx) {
-    const levels = reactive([
-      { lev_id: 1, lev_name: "Tổng công ty VNPT " },
-      { lev_id: 2, lev_name: "Phòng" },
+    const centers = reactive([{ cen_id: 1, cen_name: "VNPT Hậu giang" }]);
+    const departments = reactive([
+      { dep_id: 1, dep_name: "Phòng chăm sóc khách hàng" },
+      { dep_id: 2, dep_name: "Phòng tài chính" },
     ]);
-    const selectValue = ref("");
     const errors = reactive({
-      lev_id: "",
       uni_name: "",
     });
-    const getLevel = (event) => {
-      console.log(event.target.value);
-      newData.lev_id = event.target.value;
+    const getCenter = (event) => {
+      console.log("change:", event.target.value);
+      newData.cen_id = event.target.value;
+      console.log("cenid:", newData.cen_id);
+    };
+    const getDep = (event) => {
+      console.log("change:", event.target.value);
+      newData.dep_id = event.target.value;
+      console.log("depid:", newData.dep_id);
     };
     const validate = () => {
       let valid = ref(true);
-      errors.lev_id = "";
       errors.uni_name = "";
-      if (newData.lev_id.trim() == "") {
-        errors.lev_id = "Level is not empty";
-        valid.value = false;
-      }
+
       if (newData.uni_name.trim() == "") {
-        errors.uni_name = "Name is not empty";
+        errors.uni_name = "Tên đơn vị không được bỏ trống";
         valid.value = false;
       }
       console.log(errors);
@@ -118,17 +140,20 @@ export default {
     };
     const save = async () => {
       if (validate().value) {
-        console.log("save:", newData);
         ntx.emit("addorupdate", newData);
-        selectValue.value = "";
       } else {
         console.log("Data not empty");
       }
     };
     const turn_off = () => {
-      document.getElementById("model-add").style.display = "none";
+      document.getElementById("model-add-unit").style.display = "none";
+      newData.cen_id = "";
+      newData.dep_id = "";
+      newData.uni_name = "";
+      newData.uni_id = "";
+      newData.uni = "";
     };
-    return { save, levels, getLevel, turn_off, selectValue, errors };
+    return { centers, getCenter, departments, getDep, save, turn_off, errors };
   },
 };
 </script>

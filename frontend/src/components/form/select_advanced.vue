@@ -34,7 +34,7 @@
         <span
           @click="
             [
-              $emit('chose', option._id),
+              $emit('choosed', option._id),
               (activeSelect = false),
               (modelValue = option.name),
               (searchText = modelValue),
@@ -64,19 +64,12 @@
 <script>
 export default {
   props: {
+    name: "",
     modelValue: "",
-    options: {
-      type: Array,
-      default: [],
-    },
+    options: [],
     disabled: {
       type: String,
       default: `false`,
-    },
-  },
-  watch: {
-    modelValue() {
-      this.searchText = this.modelValue;
     },
   },
   data() {
@@ -85,13 +78,19 @@ export default {
       searchText: this.modelValue,
     };
   },
-  mounted() {
-    // this.searchText = this.modelValue;
+
+  watch: {
+    modelValue() {
+      this.searchText = this.modelValue;
+    },
   },
 };
 </script>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+}
 .select-border {
   position: relative;
   width: 100%;
@@ -113,7 +112,7 @@ input {
   border: 1px solid var(--gray);
   border-radius: 5px;
   z-index: 10;
-  margin-top: 50px;
+  margin-top: 40px;
   background-color: var(--light);
 }
 
@@ -121,5 +120,4 @@ input {
   cursor: pointer;
   width: 100%;
 }
-
 </style>

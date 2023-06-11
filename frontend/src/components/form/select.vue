@@ -12,7 +12,7 @@ export default {
     },
     title: {
       type: String,
-    }
+    },
   },
   setup(props) {
     const data = reactive({

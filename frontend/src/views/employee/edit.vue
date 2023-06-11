@@ -1,6 +1,7 @@
 <script>
 import Select from "../../components/form/select.vue";
 import { reactive } from "vue";
+import SelectOption from "../../components/box_lananh/select_cdu.vue";
 export default {
   components: {
     Select,
@@ -10,13 +11,27 @@ export default {
       type: Object,
       default: {},
     },
+    position: {
+      type: Object,
+      default: {},
+    },
+    center: {
+      type: Object,
+      default: {},
+    },
+    department: {
+      type: Object,
+      default: {},
+    },
+    unit: {
+      type: Object,
+      default: {},
+    },
   },
   setup(props, ctx) {
     const data = reactive({});
     const update = () => {
-      if (props.item.name.length > 0 && props.item.content.length > 0) {
-        ctx.emit("update");
-      }
+      ctx.emit("update");
     };
     return {
       update,
@@ -75,6 +90,19 @@ export default {
               />
             </div>
             <div class="form-group">
+              <label for="avatar"
+                >Avatar(<span style="color: red">*</span>):</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="avatar"
+                name="avatar"
+                v-model="item.avatar"
+                required
+              />
+            </div>
+            <div class="form-group">
               <label for="address"
                 >Địa chỉ(<span style="color: red">*</span>):</label
               >
@@ -114,28 +142,67 @@ export default {
               />
             </div>
             <div class="form-group">
-              <label for="center"
-                >Center(<span style="color: red">*</span>):</label
+              <label for="position"
+                >Chức vụ(<span style="color: red">*</span>):</label
               >
-              <Select :title="`Trung tâm`" :entryValue="`Trung tâm`" />
+              <select
+                id=""
+                class="form-control"
+                required
+                v-model="item.postionId"
+              >
+                <option
+                  v-for="position in position"
+                  :key="position"
+                  :value="position._id"
+                >
+                  {{ position.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="center"
+                >Trung tâm(<span style="color: red">*</span>):</label
+              >
+              <select id="" class="form-control" required>
+                <option
+                  v-for="center in center"
+                  :key="center"
+                  :value="center._id"
+                >
+                  {{ center.name }}
+                </option>
+              </select>
             </div>
             <div class="form-group">
               <label for="department"
                 >Phòng(<span style="color: red">*</span>):</label
               >
-              <Select :title="`Phòng`" :entryValue="`Phòng`" />
+              <select id="" class="form-control" required>
+                <option
+                  v-for="department in department"
+                  :key="department"
+                  :value="department._id"
+                >
+                  {{ department.name }}
+                </option>
+              </select>
             </div>
             <div class="form-group">
-              <label for="department"
+              <label for="unit"
                 >Đơn vị(<span style="color: red">*</span>):</label
               >
-              <Select :title="`Đơn vị`" :entryValue="`Đơn vị`" />
+              <select id="" class="form-control" required v-model="item.unitId">
+                <option v-for="unit in unit" :key="unit" :value="unit._id">
+                  {{ unit.name }}
+                </option>
+              </select>
             </div>
             <button
               type="button"
               class="btn btn-warning px-3 py-2"
               style="font-size: 14px"
-              @click="create, $emit('cancel')"
+              @click="$emit('edit')"
               id="edit"
               data-dismiss="modal"
             >

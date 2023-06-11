@@ -101,7 +101,7 @@ export default {
       test: {
         a: "",
         b: "",
-      }
+      },
     });
     const toString = computed(() => {
       console.log("Starting search");
@@ -254,6 +254,7 @@ export default {
 
 <template>
   <div class="border-box d-flex flex-column ml-2">
+    {{ data.searchSelect }}
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <a
@@ -355,6 +356,16 @@ export default {
           <span id="add" class="mx-2">Thêm</span>
         </button>
         <Add :item="data.itemAdd" @create="create" />
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-toggle="modal"
+          data-target="#model-form-wizard"
+        >
+          <span class="mx-2">model-form-wizard</span>
+        </button>
+        {{ data.test }}
+        <FormWizard :item="data.test" />
       </div>
     </div>
     <!-- Table -->
@@ -383,14 +394,21 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
+    <Edit
+      :item="data.editValue"
+      :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEdit = false"
+      @edit="edit(data.editValue)"
+    />
+    <View />
+    <Edit
+      :item="data.editValue"
+      :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEdit = false"
+      @edit="edit(data.editValue)"
+    />
+    <View />
   </div>
-  <Edit
-    :item="data.editValue"
-    :class="[data.activeEdit ? 'show-modal' : 'd-none']"
-    @cancel="data.activeEdit = false"
-    @edit="edit(data.editValue)"
-  />
-  <View />
 </template>
 
 <style scoped>

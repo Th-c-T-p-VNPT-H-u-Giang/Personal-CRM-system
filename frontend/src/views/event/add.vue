@@ -11,6 +11,7 @@ export default {
     const data = reactive({});
     const create = () => {
       ctx.emit("create");
+      ctx.emit("create");
     };
     return {
       create,
@@ -36,7 +37,9 @@ export default {
         <div class="modal-body">
           <form action="" class="was-validated">
             <div class="form-group">
-              <label for="name">Tên sự kiện(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Tên sự kiện(<span style="color: red">*</span>):</label
+              >
               <input
                 type="text"
                 class="form-control"
@@ -60,7 +63,8 @@ export default {
             </div>
             <div class="form-group">
               <label for="content"
-                >Thời gian diễn ra sự kiện(<span style="color: red">*</span>):</label
+                >Thời gian diễn ra sự kiện(<span style="color: red">*</span
+                >):</label
               >
               <input
                 type="datetime-local"
@@ -87,6 +91,4 @@ export default {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

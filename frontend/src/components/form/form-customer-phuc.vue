@@ -132,7 +132,7 @@
       </div>
 
       <div class="form">
-        <div class="form-group ">
+        <div class="form-group">
           <label for="wor_work_history">Công ty</label>
           <input
             type="text"
@@ -175,7 +175,7 @@ export default {
       ...props.item,
     });
 
-    console.log(viewData.birthdate);
+    // console.log(viewData.birthdate);
     const tagView = props.view;
     const checkView = computed(() => {
       return props.view ? true : false;

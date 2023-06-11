@@ -27,14 +27,15 @@ export default {
       default: false,
     },
   },
+  // ####
   setup(props, ntx) {
     const data = reactive({
-        a: true,
-        items_new: props.items,
+      a: true,
+      items_new: props.items,
     });
     return {
-        data,
-    }
+      data,
+    };
   },
 };
 </script>
@@ -48,15 +49,25 @@ export default {
       <tr>
         <th></th>
         <th>Id</th>
-        <th v-for="(value, index) in fields">{{ value }}</th>
+        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in items">
-        <td><input :checked="item.delete" v-model="data.items_new[index].delete" type="checkbox" name="" id="" /></td>
+      <tr v-for="(item, index) in items" :key="index">
+        <td>
+          <input
+            :checked="item.delete"
+            v-model="data.items_new[index].delete"
+            type="checkbox"
+            name=""
+            id=""
+          />
+        </td>
         <td>{{ index + 1 }}</td>
-        <td v-for="(label, index1) in labels">{{ item[label] }}</td>
+        <td v-for="(label, index1) in labels" :key="index1">
+          {{ item[label] }}
+        </td>
         <td v-if="activeAction == true">
           <span id="view" class="material-symbols-outlined"> visibility </span>
           <span id="edit" class="material-symbols-outlined mx-2"> edit </span>

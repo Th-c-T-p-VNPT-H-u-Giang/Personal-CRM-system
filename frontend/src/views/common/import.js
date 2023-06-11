@@ -32,72 +32,71 @@ import Unit from "../../services/unit.service";
 
 // http methods
 import {
-    http_getAll,
-    http_create,
-    http_getOne,
-    http_deleteOne,
-    http_update,
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+  http_update,
 } from "../../assets/js/common.http";
 
 // alert methods
 import {
-    alert_success,
-    alert_error,
-    alert_delete,
-    alert_warning,
-    alert_info
+  alert_success,
+  alert_error,
+  alert_delete,
+  alert_warning,
+  alert_info,
 } from "../../assets/js/common.alert";
 
 export {
-    // components
-    Table,
-    Pagination,
-    Dropdown,
-    Select,
-    Search,
-    DeleteAll,
-    Select_Advanced,
-    // compositions
-    reactive,
-    computed,
-    watch,
-    ref,
-    onBeforeMount,
-    // router
-    useRouter,
-    // format date or datetime
-    formatDateTime,
-    formatDate,
-    // service
-    Event,
-    Habit,
-    Account,
-    Appointment,
-    Center_VNPT,
-    Company_KH,
-    Customer_Types,
-    Customer_Work,
-    Customer,
-    Cycle,
-    Department,
-    Employee,
-    Log,
-    Permission,
-    Position,
-    Role,
-    Task,
-    Unit,
-    // http service
-    http_getAll,
-    http_create,
-    http_getOne,
-    http_deleteOne,
-    http_update,
-    // alert
-    alert_success,
-    alert_error,
-    alert_delete,
-    alert_warning,
-    alert_info
-}
-
+  // components
+  Table,
+  Pagination,
+  Dropdown,
+  Select,
+  Search,
+  DeleteAll,
+  Select_Advanced,
+  // compositions
+  reactive,
+  computed,
+  watch,
+  ref,
+  onBeforeMount,
+  // router
+  useRouter,
+  // format date or datetime
+  formatDateTime,
+  formatDate,
+  // service
+  Event,
+  Habit,
+  Account,
+  Appointment,
+  Center_VNPT,
+  Company_KH,
+  Customer_Types,
+  Customer_Work,
+  Customer,
+  Cycle,
+  Department,
+  Employee,
+  Log,
+  Permission,
+  Position,
+  Role,
+  Task,
+  Unit,
+  // http service
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+  http_update,
+  // alert
+  alert_success,
+  alert_error,
+  alert_delete,
+  alert_warning,
+  alert_info,
+};
