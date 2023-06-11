@@ -3,12 +3,6 @@ import { createWebHistory, createRouter } from "vue-router";
 const routes = [
   // Dashboard
   {
-    path: "/mail",
-    name: "Mail",
-    component: () => import("../views/mail/mail.vue"),
-  },
-  // Dashboard
-  {
     path: "/",
     name: "Dashboard",
     component: () => import("../views/dashboard/index.vue"),

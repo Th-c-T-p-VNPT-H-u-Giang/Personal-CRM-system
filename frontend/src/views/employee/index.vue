@@ -612,19 +612,19 @@ export default {
     const sendEmail = async (value) => {
       // console.log("mail:", value);
       const dataMail = reactive({ title: "", content: "", mail: "" });
-
       try {
         console.log("lenght:", mail.list.length);
-        for (let i = 0; i < mail.list.length; i++) {
-          dataMail.title = value.title;
-          dataMail.content = value.content;
-          dataMail.mail = mail.list[i];
-          await mailService.sendmail(dataMail);
-          console.log("NDMail:", dataMail);
+        if (mail.list.length > 0) {
+          alert_success("Mail đã được gửi", "");
+          for (let i = 0; i < mail.list.length; i++) {
+            dataMail.title = value.title;
+            dataMail.content = value.content;
+            dataMail.mail = mail.list[i];
+            await mailService.sendmail(dataMail);
+            console.log("NDMail:", dataMail);
+          }
+          console.log("Email sent successfully.");
         }
-        alert_success("Mail đã được gửi", "");
-
-        console.log("Email sent successfully.");
       } catch (error) {
         console.error("Error sending email:", error);
       }
