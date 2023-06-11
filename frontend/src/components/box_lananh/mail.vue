@@ -3,20 +3,21 @@ import { reactive, ref } from "vue";
 import axios from "axios";
 import mailService from "../../services/mai.service";
 export default {
-  setup() {
+  setup(props, ntx) {
     const item = reactive({
       title: "",
       content: "",
-      mail: "anh626801@gmail.com",
+      mail: "",
     });
     const sendEmail = async () => {
-      console.log("mail:", item);
-      try {
-        await mailService.sendmail(item);
-        console.log("Email sent successfully.");
-      } catch (error) {
-        console.error("Error sending email:", error);
-      }
+      // console.log("mail:", item);
+      ntx.emit("sendEmail", item);
+      // try {
+      //   await mailService.sendmail(item);
+      //   console.log("Email sent successfully.");
+      // } catch (error) {
+      //   console.error("Error sending email:", error);
+      // }
     };
 
     return {

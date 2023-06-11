@@ -39,6 +39,8 @@ import Swal from "sweetalert2";
 import FormWizard from "../../components/form/form-wizard.vue";
 import positionService from "../../services/position.service";
 import Mail from "../../components/box_lananh/mail.vue";
+import mailService from "../../services/mai.service";
+
 export default {
   components: {
     Table,
@@ -607,6 +609,26 @@ export default {
     watch(mail, (newValue, oldValue) => {
       console.log("new mail:", mail.list);
     });
+    const sendEmail = async (value) => {
+      // console.log("mail:", value);
+      const dataMail = reactive({ title: "", content: "", mail: "" });
+
+      try {
+        console.log("lenght:", mail.list.length);
+        for (let i = 0; i < mail.list.length; i++) {
+          dataMail.title = value.title;
+          dataMail.content = value.content;
+          dataMail.mail = mail.list[i];
+          await mailService.sendmail(dataMail);
+          console.log("NDMail:", dataMail);
+        }
+        alert_success("Mail đã được gửi", "");
+
+        console.log("Email sent successfully.");
+      } catch (error) {
+        console.error("Error sending email:", error);
+      }
+    };
     onBeforeMount(async () => {
       await refresh();
     });
@@ -637,6 +659,7 @@ export default {
       positions,
       selectedOptionPosition,
       mail,
+      sendEmail,
     };
   },
 };
@@ -829,13 +852,13 @@ export default {
         </button>
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn-warning ml-3"
           data-toggle="modal"
           data-target="#model-form-mail"
         >
           <span class="mx-2">Mail</span>
         </button>
-        <Mail></Mail>
+        <Mail @sendEmail="(value) => sendEmail(value)"></Mail>
         <FormWizard
           @create="(value) => create(value)"
           :updateAdd="updateAdd"
