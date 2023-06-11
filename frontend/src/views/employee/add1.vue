@@ -194,7 +194,7 @@ export default {
           const { value: formValues } = await Swal.fire({
             title: "Thêm phòng mới",
             html: `
-      <select id="my-select" class="swal2-input  mx-2" style="width:92%"  >
+      <select id="my-select" class="swal2-input form-control  ml-3 mx-2" style="width:92%"  >
         <option value="">Trung tâm</option>
         ${centers.center
           .map(
@@ -262,7 +262,7 @@ export default {
           const { value: formValues } = await Swal.fire({
             title: "Thêm phòng mới",
             html: `
-      <select id="my-select-center" class="swal2-input  mx-2" style="width:92%">
+      <select id="my-select-center" class="swal2-input form-control  ml-3 mb-3 mx-2" style="width:92%">
         <option value="">Trung tâm</option>
         ${centers.center
           .map(
@@ -272,7 +272,7 @@ export default {
           )
           .join("")}
       </select>
-      <select id="my-select-dep" class="swal2-input  mx-2" style="width:92%" >
+      <select id="my-select-dep" class="swal2-input form-control  ml-3  mx-2" style="width:92%" >
         <option value="">Phòng</option>
         
       </select>

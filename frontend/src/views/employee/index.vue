@@ -860,6 +860,11 @@ export default {
       :position="data.items.postionId"
       :unit="data.items.unitId"
       @edit="edit(data.editValue)"
+      @refresh="
+        async () => {
+          await refresh();
+        }
+      "
     />
     <View />
   </div>
