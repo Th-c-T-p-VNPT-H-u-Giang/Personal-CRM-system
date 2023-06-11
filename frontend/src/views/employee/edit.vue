@@ -174,21 +174,13 @@ export default {
     });
 
     const showModal = ref(false);
-    const name = ref("");
-    const email = ref("");
-
-    const openModal = () => {
-      showModal.value = true;
-    };
 
     const closeModal = async () => {
       console.log("close modal");
       showModal.value = false;
       ctx.emit("refresh");
     };
-    watch(showModal, (newValue) => {
-      console.log("change:", newValue);
-    });
+
     onMounted(async () => {
       console.log("Mouted updateAdd:", props.updateAdd);
       await refresh_add();
