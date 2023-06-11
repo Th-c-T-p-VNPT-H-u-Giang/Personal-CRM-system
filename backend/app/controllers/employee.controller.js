@@ -15,9 +15,9 @@ exports.create = async (req, res, next) => {
     const employees = await Employee.findAll();
     for (let value of employees) {
       if (
-        value.name == name ||
-        value.avatar == avatar ||
-        value.phone == phone ||
+        value.name == name &&
+        value.avatar == avatar &&
+        value.phone == phone &&
         value.email == email
       ) {
         return res.send({
