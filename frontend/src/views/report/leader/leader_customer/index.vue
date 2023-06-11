@@ -45,7 +45,7 @@
           <Select
             class="d-flex justify-content-start"
             :options="options"
-            @update:entryValue="handleUpdateEntryValue"
+            @update:entryValue="(value) => (data.entryValue = value)"
             :entryValue="data.entryValue"
           />
           <Search
@@ -55,27 +55,26 @@
           />
         </div>
         <div class="d-flex align-items-start">
+          <button class="btn btn-warning">
+            <span id="delete-all" class="mx-2">Mail</span>
+          </button>
           <button
             type="button"
-            class="btn btn-primary"
-            @click="handlePrintReport"
+            class="btn btn-primary mx-2"
+            @click="handlePrintData"
           >
-            <span id="add" class="mx-2">In</span>
+            <span id="printrp" class="mx-2">In</span>
           </button>
         </div>
       </div>
-  
       <!-- Table -->
+  
       <table-phuc-report
-        id="table-report"
-        :fields="['Tên', 'Email', 'Địa chỉ', 'Lần sử dụng gần nhất']"
         :items="setPages"
-        :labels="['name', 'email', 'address', 'recent_using']"
-        :isCustomerLongTime="true"
+        :fields="['Khách hàng', 'Quản trị', 'Ngày']"
+        :labels="['nameCT', 'nameQT', 'date']"
+        :isLeaderCustomer="true"
       />
-      <!-- <table :fields="['Name','Email', 'Address', 'Work', 'Type']"
-          :labels="['name', 'email', 'address', 'wor_current_position', 'type']" :items="setPages" :nameRoute="'report'" :isReport="true"/> -->
-      <!-- Pagination -->
       <pagination-phuc
         :numberOfPages="data.numberOfPages"
         :totalRow="data.totalRow"
@@ -83,11 +82,12 @@
         :endRow="data.endRow"
         :currentPage="data.currentPage"
         @update:currentPage="(value) => (data.currentPage = value)"
+        class="mx-3"
       />
   
-      <div class="container pdf-content" ref="pdfContent">
+      <div class="container pdf-content" v-show="true" ref="pdfContent">
         <img
-          src="../../assets/images/vnpt-logo1.png"
+          src="../../../../assets/images/vnpt-logo1.png"
           class="rounded-circle"
           alt="Cinque Terre"
           style="height: 70px"
@@ -104,8 +104,9 @@
           <p>....ngày....tháng....năm</p>
         </div>
         <div class="text-center mt-4 font-weight-bold">
-          <h3 class="font-weight-bold text-center">
-            Báo Cáo <br> Danh Sách Khách Hàng Đã Lâu Chưa Chăm Sóc
+          <h3 class="font-weight-bold">
+            Báo Cáo <br />
+            Danh Sách Khách Hàng Do Lãnh Đạo Phụ Trách
           </h3>
         </div>
         <div class="">
@@ -118,16 +119,17 @@
         <table class="table table-bordered mt-4">
           <thead>
             <tr>
-              <th v-for="(value, index) in labels" :key="index">{{ value }}</th>
+              <th v-for="(value, index) in labels" :key="index">
+                {{ value }}
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(item, index) in data.items" :key="index">
-              <td>{{ item.id }}</td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.email }}</td>
-              <td>{{ item.phone }}</td>
-              <td>{{ item.recent_using }}</td>
+              <td>{{ item._id }}</td>
+              <td>{{ item.nameCT }}</td>
+              <td>{{ item.nameQT }}</td>
+              <td>{{ item.date }}</td>
             </tr>
           </tbody>
         </table>
@@ -139,156 +141,25 @@
       </div>
     </div>
   </template>
-    
+  
   <script>
   import { reactive, computed, ref } from "vue";
-  import PaginationPhuc from "../../components/table/pagination-phuc.vue";
-  import Search from "../../components/form/search.vue";
-  import Select from "../../components/form/select.vue";
-  import TablePhucReport from "../../components/table/table-phuc-report.vue";
-  
-  import jsPDF from "jspdf";
+  import Select from "../../../../components/form/select.vue";
+  import PaginationPhuc from "../../../../components/table/pagination-phuc.vue";
+  import Search from "../../../../components/form/search.vue";
+  import TablePhucReport from "../../../../components/table/table-phuc-report.vue";
+  import jsPDF from "jspdf"; //in
   import html2canvas from "html2canvas";
   
   export default {
-    components: { PaginationPhuc, Search, Select, TablePhucReport },
+    components: {
+      Select,
+      PaginationPhuc,
+      Search,
+      TablePhucReport,
+    },
     setup() {
-      let shortDate_1 = new Date("2021-08-08");
-  
-      const labels = [
-        "STT",
-        "Tên khách hàng",
-        "Email khách hàng",
-        "SDT khách hàng",
-        "Lần cuối sử dụng dịch vụ",
-      ];
-  
-      const data = reactive({
-        items: [
-          {
-            id: 1,
-            name: "Dang Van Phuc",
-            birthdate: shortDate_1,
-            address: "Dong Thap",
-            phone: "039977732",
-            email: "phuc@gmail.com",
-            type: "VIP",
-            avatar:
-              "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
-            wor_current_workplace: "CTU",
-            wor_work_history: "VNPT",
-            wor_current_position: "Student",
-            recent_using: "20-10-2020",
-            wor_work_temp: "HKII",
-          },
-          {
-            id: 2,
-            name: "Pham Thanh Phong",
-            birthdate: shortDate_1,
-            address: "Dong Thap",
-            phone: "039977732",
-            email: "phuc@gmail.com",
-            type: "VIP",
-            avatar:
-              "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
-            wor_current_workplace: "CTU",
-            wor_work_history: "VNPT",
-            wor_current_position: "Student",
-            recent_using: "20-10-2020",
-            wor_work_temp: "HKII",
-          },
-          {
-            id: 3,
-            name: "Nguyen Anh Nam",
-            birthdate: shortDate_1,
-            address: "Dong Thap",
-            phone: "039977732",
-            email: "phuc@gmail.com",
-            type: "VIP",
-            avatar:
-              "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
-            wor_current_workplace: "CTU",
-            wor_work_history: "VNPT",
-            wor_current_position: "Student",
-            recent_using: "20-10-2020",
-            wor_work_temp: "HKII",
-          },
-          {
-            id: 4,
-            name: "Le Quoc Thinh",
-            birthdate: shortDate_1,
-            address: "Dong Thap",
-            phone: "039977732",
-            email: "phuc@gmail.com",
-            type: "VIP",
-            avatar:
-              "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
-            wor_current_workplace: "CTU",
-            wor_work_history: "VNPT",
-            wor_current_position: "Student",
-            recent_using: "20-10-2020",
-            wor_work_temp: "HKII",
-          },
-          {
-            id: 5,
-            name: "Vo Van Thach",
-            birthdate: shortDate_1,
-            address: "Dong Thap",
-            phone: "039977732",
-            email: "phuc@gmail.com",
-            type: "VIP",
-            avatar:
-              "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
-            wor_current_workplace: "CTU",
-            wor_work_history: "VNPT",
-            wor_current_position: "Student",
-            recent_using: "20-10-2020",
-            wor_work_temp: "HKII",
-          },
-          {
-            id: 6,
-            name: "Tran Minh Sang",
-            birthdate: shortDate_1,
-            address: "Dong Thap",
-            phone: "039977732",
-            email: "phuc@gmail.com",
-            type: "VIP",
-            avatar:
-              "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
-            wor_current_workplace: "CTU",
-            wor_work_history: "VNPT",
-            wor_current_position: "Student",
-            recent_using: "20-10-2020",
-            wor_work_temp: "HKII",
-          },
-          {
-            id: 7,
-            name: "Nguyen Hoang Trong Tien",
-            birthdate: shortDate_1,
-            address: "Dong Thap",
-            phone: "039977732",
-            email: "phuc@gmail.com",
-            type: "VIP",
-            avatar:
-              "https://i.pinimg.com/736x/ed/80/f7/ed80f704afb25270ea9dac456da6407a.jpg",
-            wor_current_workplace: "CTU",
-            wor_work_history: "VNPT",
-            wor_current_position: "Student",
-            recent_using: "20-10-2020",
-            wor_work_temp: "HKII",
-          },
-        ],
-        entryValue: 5, // total record in page
-        numberOfPages: 1,
-        totalRow: 0, // total row data
-        startRow: 0,
-        endRow: 0,
-        currentPage: 1,
-        searchText: "",
-        activeMenu: 2,
-      });
-  
-      const options = reactive([
+      const options = [
         {
           name: 5,
           value: 5,
@@ -307,36 +178,82 @@
         },
         {
           name: "All",
-          value: 9999,
+          value: "All",
         },
-      ]);
+      ];
   
-      // handle update entry value
-      const handleUpdateEntryValue = (value) => {
-        data.entryValue = value;
-      };
+      const labels = ["STT", "Tên khách hàng", "Tên Lảnh đạo", "Ngày"];
   
-      //handle update search text
-      const handleUpdateSearchText = (value) => {
-        data.searchText = value;
-      };
-      // // handle pagination
-      const toString = computed(() => {
-        return data.items.map((value, index) => {
-          return [value.name].join("").toLocaleLowerCase(); // convert to array having is string
-          // Example: ['Dang Van Phuc', 'Pham Thanh Phong', 'Nguyen Anh Nam', 'Le Quoc Thinh', 'Vo Van Thach', 'Tran Minh Sang', 'Nguyen Hoang Trong Tien']
-        });
+      const data = reactive({
+        items: [
+          {
+            _id: "1",
+            nameCT: "Tran Tuan Duy",
+            nameQT: "Nguyen Van A",
+            date: "2023-01-01",
+          },
+          {
+            _id: "2",
+            nameCT: "Nguyen Lan Anh",
+            nameQT: "Nguyen Van A",
+            date: "2023-01-01",
+          },
+          {
+            _id: "3",
+            nameCT: "Nguyen Thi Thanh Truc",
+            nameQT: "Nguyen Van A",
+            date: "2023-01-01",
+          },
+          {
+            _id: "4",
+            nameCT: "Nguyen Ngoc Van Anh",
+            nameQT: "Nguyen Van B",
+            date: "2023-01-01",
+          },
+          {
+            _id: "5",
+            nameCT: "Truong Thiet Long",
+            nameQT: "Nguyen Van B",
+            date: "2023-01-01",
+          },
+          {
+            _id: "6",
+            nameCT: "Dang Van Phuc",
+            nameQT: "Nguyen Van B",
+            date: "2023-01-01",
+          },
+        ],
+        entryValue: 5,
+        numberOfPages: 1,
+        totalRow: 0,
+        startRow: 0,
+        endRow: 0,
+        currentPage: 1,
+        searchText: "",
+        activeMenu: 3,
+        deleteValue: {
+          _id: "",
+          nameCT: "",
+          nameEM: "",
+          date: "",
+          cycle: "",
+        },
       });
   
+      // computed
+      const toString = computed(() => {
+        console.log("Starting search");
+        return data.items.map((value, index) => {
+          return [value.nameCT].join("").toLocaleLowerCase();
+        });
+      });
       const filter = computed(() => {
-        // filter array  objects having search text
         return data.items.filter((value, index) => {
           return toString.value[index].includes(
-            data.searchText.toLocaleLowerCase() //
+            data.searchText.toLocaleLowerCase()
           );
         });
       });
-  
       const filtered = computed(() => {
         if (!data.searchText) {
           data.totalRow = data.items.length;
@@ -346,11 +263,9 @@
           return filter.value;
         }
       });
-  
       const setNumberOfPages = computed(() => {
         return Math.ceil(filtered.value.length / data.entryValue);
-      }); // get total pages
-  
+      });
       const setPages = computed(() => {
         if (setNumberOfPages.value == 0 || data.entryValue == "All") {
           data.entryValue = data.items.length;
@@ -366,9 +281,17 @@
         });
       });
   
-      // handle print data
+      // methods
+      const update = (item) => {
+        console.log("updating", item);
+      };
+  
+      const handleUpdateSearchText = (value) => {
+        data.searchText = value;
+      };
+  
       const pdfContent = ref(null);
-      const handlePrintReport = async () => {
+      const handlePrintData = () => {
         const doc = new jsPDF();
   
         if (pdfContent.value) {
@@ -388,7 +311,7 @@
               doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight); // Đặt kích thước ảnh là kích thước trang PDFF
   
               // Tải xuống tệp PDF
-              doc.save("DanhSachKhachHangLauChuaChamSoc.pdf");
+              doc.save("DanhSachKhachHangDoLanhDaoPhuTrach.pdf");
             };
   
             // Thiết lập nguồn dữ liệu cho hình ảnh và kích hoạt sự kiện onload
@@ -396,35 +319,26 @@
           });
         }
       };
+  
       return {
+        options,
         data,
         setPages,
-        options,
-        handleUpdateEntryValue,
         handleUpdateSearchText,
-        handlePrintReport,
+        handlePrintData,
         labels,
         pdfContent,
       };
     },
   };
   </script>
-    
-  <style scoped>
   
+  <style scoped>
   .pdf-content {
     position: absolute;
     left: -9999px;
     top: -9999px;
   }
-  .material-symbols-outlined {
-    font-size: 18px;
-  }
-  
-  .navbar {
-    margin-top: -8px;
-  }
-  
   .border-box {
     border: 1px solid var(--gray);
     border-radius: 5px;
@@ -454,9 +368,11 @@
     border-top: 1px solid var(--gray);
   }
   
-  #add,
-  #delete-all {
-    font-size: 14px;
+  .show-modal {
+    display: block;
+    opacity: 1;
+    background-color: var(--dark);
+    /* pointer-events: auto; */
+    z-index: 1;
   }
   </style>
-    
