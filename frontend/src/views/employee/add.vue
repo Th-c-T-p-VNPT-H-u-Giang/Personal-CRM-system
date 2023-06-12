@@ -65,7 +65,7 @@ export default {
     const create = async () => {
       data.item.unitId = selectedOptionUnit.value;
       data.item.postionId = selectedOptionPosition.value;
-      console.log('aaaaa', data.item);
+      console.log("aaaaa", data.item);
       const result = await http_create(Employee, data.item);
       if (!result.error) {
         alert_success(
@@ -410,7 +410,7 @@ export default {
       console.log("Value delete:", value);
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
-        await CenterServices.deleteOne(value._id);
+        await CenterServices.delete(value._id);
         alert_success("Bạn đã xóa trung tâm", value.name);
         await refresh_add();
         ctx.emit("newCenter", centers.center);
@@ -652,7 +652,12 @@ export default {
                         )
                       "
                       @delete="(value) => onDeletePosition(value)"
-                      @chose="(value, value1) => (selectedOptionPosition = value, data.modelPos = value1.name)"
+                      @chose="
+                        (value, value1) => (
+                          (selectedOptionPosition = value),
+                          (data.modelPos = value1.name)
+                        )
+                      "
                     />
                   </div>
                 </div>
@@ -681,7 +686,12 @@ export default {
                         )
                       "
                       @delete="(value) => onDeleteCenter(value)"
-                      @chose="(value, value1) => (selectedOptionCenter = value, data.modelValue = value1.name)"
+                      @chose="
+                        (value, value1) => (
+                          (selectedOptionCenter = value),
+                          (data.modelValue = value1.name)
+                        )
+                      "
                     />
                   </div>
                 </div>
@@ -709,7 +719,12 @@ export default {
                       )
                     "
                     @delete="(value) => onDeleteDep(value)"
-                    @chose="(value, value1) => (selectedOptionDepartment = value, data.modelDep = value1.name)"
+                    @chose="
+                      (value, value1) => (
+                        (selectedOptionDepartment = value),
+                        (data.modelDep = value1.name)
+                      )
+                    "
                   />
                 </div>
                 <div class="form-group flex-grow-1">
@@ -731,7 +746,13 @@ export default {
                       )
                     "
                     @delete="(value) => onDeleteUnit(value)"
-                    @chose="(value, value1) => (selectedOptionUnit = value, value, data.modelUnit = value1.name)"
+                    @chose="
+                      (value, value1) => (
+                        (selectedOptionUnit = value),
+                        value,
+                        (data.modelUnit = value1.name)
+                      )
+                    "
                   />
                 </div>
                 <b-button

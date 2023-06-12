@@ -1,11 +1,54 @@
 <script>
+import { watch, ref } from "vue";
 export default {
   props: {
     item: {
       type: Object,
     },
   },
-  setup(props, context) {},
+  setup(props, context) {
+    const showPersonalInfo = ref(false);
+    const showCustomerWork = ref(false);
+
+    watch(showPersonalInfo, (newValue, oldValue) => {
+      const modalContent = document.getElementById("personal-info");
+      if (!showPersonalInfo.value) {
+        console.log("showPersonalInfo:", showPersonalInfo.value);
+        modalContent.style.opacity = "0.7";
+        setTimeout(() => {
+          modalContent.style.display = "none";
+        }, 300);
+        // document.getElementById("personal-info").style.display = "none";
+      } else {
+        modalContent.style.opacity = "1";
+        setTimeout(() => {
+          modalContent.style.display = "block";
+        }, 300);
+      }
+    });
+
+    watch(showCustomerWork, (newValue, oldValue) => {
+      const modalContent = document.getElementById("customer-work");
+      if (!showCustomerWork.value) {
+        console.log("showCustomerWork:", showCustomerWork.value);
+        modalContent.style.opacity = "0.7";
+        setTimeout(() => {
+          modalContent.style.display = "none";
+        }, 300);
+      } else {
+        modalContent.style.opacity = "1";
+        setTimeout(() => {
+          modalContent.style.display = "block";
+        }, 300);
+      }
+    });
+
+    return {
+      close,
+      showPersonalInfo,
+      showCustomerWork,
+    };
+  },
 };
 </script>
 
@@ -28,6 +71,7 @@ export default {
               data-toggle="collapse"
               class="px-3 py-2 h6"
               data-target="#personal-info"
+              @click="showPersonalInfo = !showPersonalInfo"
             >
               Thông tin cá nhân
             </button>
@@ -63,6 +107,7 @@ export default {
               data-toggle="collapse"
               class="px-3 py-2 h6"
               data-target="#customer-work"
+              @click="showCustomerWork = !showCustomerWork"
             >
               Công việc
             </button>
