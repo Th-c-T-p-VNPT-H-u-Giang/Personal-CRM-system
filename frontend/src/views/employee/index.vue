@@ -1,4 +1,5 @@
 <script>
+// qqqq
 import Mail from "../../components/box_lananh/mail.vue";
 import mailService from "../../services/mail.service";
 /////
@@ -247,15 +248,11 @@ export default {
     const refresh = async () => {
       data.positions = await http_getAll(Position);
       data.items = await http_getAll(Employee);
-      centers.center = await CenterServices.getAll();
-      // centers.center.push({ _id: "other", name: "khác" });
-      departments.department = await departmentsServices.getAll();
-      // departments.department.push({ _id: "other", name: "khác" });
 
+      centers.center = await CenterServices.getAll();
+      departments.department = await departmentsServices.getAll();
       units.unit = await unitsServices.getAll();
-      // units.unit.push({ _id: "other", name: "khác" });
       positions.position = await http_getAll(Position);
-      // positions.position.push({ _id: "other", name: "khác" });
     };
 
     // ****** trung tâm ******
