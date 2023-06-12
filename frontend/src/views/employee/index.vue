@@ -921,7 +921,7 @@ export default {
         }
       "
     />
-    <View :item="data.viewValue" @view="view(data.viewValue)" />
+    <View :item="data.viewValue"  />
   </div>
 </template>
 

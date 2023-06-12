@@ -3,53 +3,13 @@ import { watch, ref } from "vue";
 export default {
   props: {
     item: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   setup(props, context) {
-    const showPersonalInfo = ref(false);
-    const showCustomerWork = ref(false);
 
-    watch(showPersonalInfo, (newValue, oldValue) => {
-      const modalContent = document.getElementById("personal-info");
-      if (!showPersonalInfo.value) {
-        console.log("showPersonalInfo:", showPersonalInfo.value);
-        modalContent.style.opacity = "0.7";
-        setTimeout(() => {
-          modalContent.style.display = "none";
-        }, 300);
-        // document.getElementById("personal-info").style.display = "none";
-      } else {
-        modalContent.style.opacity = "1";
-        setTimeout(() => {
-          modalContent.style.display = "block";
-        }, 300);
-      }
-    });
-
-    watch(showCustomerWork, (newValue, oldValue) => {
-      const modalContent = document.getElementById("customer-work");
-      if (!showCustomerWork.value) {
-        console.log("showCustomerWork:", showCustomerWork.value);
-        modalContent.style.opacity = "0.7";
-        setTimeout(() => {
-          modalContent.style.display = "none";
-        }, 300);
-      } else {
-        modalContent.style.opacity = "1";
-        setTimeout(() => {
-          modalContent.style.display = "block";
-        }, 300);
-      }
-    });
-
-    return {
-      close,
-      showPersonalInfo,
-      showCustomerWork,
-    };
-  },
-};
+  }
+}
 </script>
 
 <template>
@@ -67,12 +27,7 @@ export default {
         <!-- Modal body -->
         <div class="modal-body">
           <div class="">
-            <button
-              data-toggle="collapse"
-              class="px-3 py-2 h6"
-              data-target="#personal-info"
-              @click="showPersonalInfo = !showPersonalInfo"
-            >
+            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#personal-info">
               Thông tin cá nhân
             </button>
             <div id="personal-info" class="collapse mx-2">
@@ -102,16 +57,11 @@ export default {
               </div>
             </div>
           </div>
-          <div class="mt-2">
-            <button
-              data-toggle="collapse"
-              class="px-3 py-2 h6"
-              data-target="#customer-work"
-              @click="showCustomerWork = !showCustomerWork"
-            >
+          <div class=" mt-2">
+            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#customer-type">
               Công việc
             </button>
-            <div id="customer-work" class="collapse mx-2">
+            <div id="customer-type" class="collapse mx-2">
               <div class="row">
                 <div class="col-md-4">Chức vụ:</div>
                 <div>{{ item.Position.name }}</div>
@@ -130,36 +80,24 @@ export default {
               </div>
             </div>
           </div>
-          <div class="mt-2">
-            <button
-              data-toggle="collapse"
-              class="px-3 py-2 h6"
-              data-target="#assignment"
-            >
+          <div class=" mt-2">
+            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#assignment">
               Danh sách chăm sóc khách hàng
             </button>
             <div id="assignment" class="collapse mx-2">
               Lorem ipsum dolor text....
             </div>
           </div>
-          <div class="mt-2">
-            <button
-              data-toggle="collapse"
-              class="px-3 py-2 h6"
-              data-target="#event"
-            >
+          <div class=" mt-2">
+            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#event">
               Danh sách sự kiện
             </button>
             <div id="event" class="collapse mx-2">
               Lorem ipsum dolor text....
             </div>
           </div>
-          <div class="mt-2">
-            <button
-              data-toggle="collapse"
-              class="px-3 py-2 h6"
-              data-target="#habit"
-            >
+          <div class=" mt-2">
+            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#habit">
               Danh sách thói quen khách hàng
             </button>
             <div id="habit" class="collapse mx-2">
