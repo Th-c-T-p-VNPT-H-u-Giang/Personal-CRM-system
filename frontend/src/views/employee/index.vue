@@ -261,21 +261,31 @@ export default {
 
     // ****** trung tâm ******
     const centers = reactive({ center: [] });
-    const selectedOptionCenter = ref("Trung tâm");
+    const selectedOptionCenter = ref("");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
       const doc = ref("");
       doc.value = await CenterServices.get(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
       data.items = await http_getAll(Employee);
-      data.items = data.items.filter((val, index) => {
-        return (
-          val.Unit.Department.Center_VNPTHG._id == selectedOptionCenter.value
-        );
-      });
-      console.log("new", data.items);
+      if (selectedOptionPosition.value != "") {
+        data.items = data.items.filter((val, index) => {
+          return (
+            val.Unit.Department.Center_VNPTHG._id ==
+              selectedOptionCenter.value &&
+            val.Position._id == selectedOptionPosition.value
+          );
+        });
+      } else {
+        data.items = data.items.filter((val, index) => {
+          return (
+            val.Unit.Department.Center_VNPTHG._id == selectedOptionCenter.value
+          );
+        });
+      }
       departments.department = await departmentsServices.findAllDepOfACenter(
         newValue
       );
+
       units.unit = [];
       // departments.department.push({ _id: "other", name: "khác" });
 
@@ -314,12 +324,16 @@ export default {
           return true;
         };
         showSweetAlert();
+      } else if (newValue == "all") {
+        await refresh();
+        // data.modelDep = "";
+        // data.modelUnit = "";
       }
     });
 
     //DEP
     const departments = reactive({ department: [] });
-    const selectedOptionDepartment = ref("Phòng");
+    const selectedOptionDepartment = ref("");
     watch(selectedOptionDepartment, async (newValue, oldValue) => {
       const doc = ref("");
       doc.value = await CenterServices.get(selectedOptionCenter.value);
@@ -330,12 +344,25 @@ export default {
       );
       data.modelDep = docDep.value.name;
       data.items = await http_getAll(Employee);
-      data.items = data.items.filter((val, index) => {
-        return (
-          val.Unit.Department.Center_VNPTHG._id == selectedOptionCenter.value &&
-          val.Unit.Department._id == selectedOptionDepartment.value
-        );
-      });
+
+      if (selectedOptionPosition.value != "") {
+        data.items = data.items.filter((val, index) => {
+          return (
+            val.Unit.Department.Center_VNPTHG._id ==
+              selectedOptionCenter.value &&
+            val.Unit.Department._id == selectedOptionDepartment.value &&
+            val.Position._id == selectedOptionPosition.value
+          );
+        });
+      } else {
+        data.items = data.items.filter((val, index) => {
+          return (
+            val.Unit.Department.Center_VNPTHG._id ==
+              selectedOptionCenter.value &&
+            val.Unit.Department._id == selectedOptionDepartment.value
+          );
+        });
+      }
 
       units.unit = await unitsServices.findAllUnitsOfADep(newValue);
       // units.unit.push({ _id: "other", name: "khác" });
@@ -395,6 +422,9 @@ export default {
 
         // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
         showSweetAlert();
+      } else if (newValue == "all") {
+        await refresh();
+        console.log(data.items);
       }
     });
 
@@ -402,7 +432,7 @@ export default {
     const units = reactive({
       unit: [],
     });
-    const selectedOptionUnit = ref("Đơn vị");
+    const selectedOptionUnit = ref("");
     watch(selectedOptionUnit, async (newValue, oldValue) => {
       const doc = ref("");
       doc.value = await CenterServices.get(selectedOptionCenter.value);
@@ -418,13 +448,26 @@ export default {
       data.modelUnit = docUnit.value.name;
 
       data.items = await http_getAll(Employee);
-      data.items = data.items.filter((val, index) => {
-        return (
-          val.Unit.Department.Center_VNPTHG._id == selectedOptionCenter.value &&
-          val.Unit.Department._id == selectedOptionDepartment.value &&
-          val.unitId == selectedOptionUnit.value
-        );
-      });
+      if (selectedOptionPosition.value != "") {
+        data.items = data.items.filter((val, index) => {
+          return (
+            val.Unit.Department.Center_VNPTHG._id ==
+              selectedOptionCenter.value &&
+            val.Unit.Department._id == selectedOptionDepartment.value &&
+            val.unitId == selectedOptionUnit.value &&
+            val.Position._id == selectedOptionPosition.value
+          );
+        });
+      } else {
+        data.items = data.items.filter((val, index) => {
+          return (
+            val.Unit.Department.Center_VNPTHG._id ==
+              selectedOptionCenter.value &&
+            val.Unit.Department._id == selectedOptionDepartment.value &&
+            val.unitId == selectedOptionUnit.value
+          );
+        });
+      }
       if (newValue == "other") {
         const showSweetAlert = async () => {
           const { value: formValues } = await Swal.fire({
@@ -535,6 +578,8 @@ export default {
 
         // Gọi hàm showSweetAlert khi bạn muốn hiển thị SweetAlert
         showSweetAlert();
+      } else if (newValue == "all") {
+        await refresh();
       }
     });
     const search = async (value) => {
@@ -547,7 +592,7 @@ export default {
 
     //POSITION
     const positions = reactive({ position: [] });
-    const selectedOptionPosition = ref("Chức vụ");
+    const selectedOptionPosition = ref("");
     watch(selectedOptionPosition, async (newValue, oldValue) => {
       const docPosition = ref("");
       docPosition.value = await http_getOne(
@@ -557,9 +602,39 @@ export default {
       data.modelPositon = docPosition.value.name;
 
       data.items = await http_getAll(Employee);
-      data.items = data.items.filter((val, index) => {
-        return val.Position._id == selectedOptionPosition.value;
-      });
+      if (
+        selectedOptionCenter.value != "" &&
+        selectedOptionDepartment.value != "" &&
+        selectedOptionUnit.value != ""
+      ) {
+        data.items = data.items.filter((val, index) => {
+          console.log("đủ 3");
+          return (
+            val.Position._id == selectedOptionPosition.value &&
+            val.Unit.Department.Center_VNPTHG._id ==
+              selectedOptionCenter.value &&
+            val.Unit.Department._id == selectedOptionDepartment.value &&
+            val.unitId == selectedOptionUnit.value
+          );
+        });
+      } else if (
+        selectedOptionCenter.value != "" &&
+        selectedOptionDepartment.value != ""
+      ) {
+        console.log("đủ 2");
+        data.items = data.items.filter((val, index) => {
+          return (
+            val.Position._id == selectedOptionPosition.value &&
+            val.Unit.Department.Center_VNPTHG._id ==
+              selectedOptionCenter.value &&
+            val.Unit.Department._id == selectedOptionDepartment.value
+          );
+        });
+      } else {
+        data.items = data.items.filter((val, index) => {
+          return val.Position._id == selectedOptionPosition.value;
+        });
+      }
       if (newValue == "other") {
         const showSweetAlert = async () => {
           const { value: positionName } = await Swal.fire({
@@ -590,6 +665,9 @@ export default {
           return true;
         };
         showSweetAlert();
+      } else if (newValue == "all") {
+        await refresh();
+        console.log(data.items);
       }
     });
 
@@ -793,7 +871,7 @@ export default {
             :title="`Chức vụ`"
             :field="positions.position"
             :selectedOption="selectedOptionPosition"
-            @optipn="(value) => (selectedOptionPosition = value)"
+            @option="(value) => (selectedOptionPosition = value)"
           />
         </div>
         <div class="form-group w-100">
