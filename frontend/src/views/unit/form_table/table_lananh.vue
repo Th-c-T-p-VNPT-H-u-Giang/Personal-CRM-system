@@ -28,20 +28,20 @@ export default {
       type: Boolean,
       default: false,
     },
-    name_id: { type: String },
+    name_id: { type: String, default: "" },
   },
   setup(props, ntx) {
     const router = useRouter();
     const get = (data) => {
-      console.log("id get:", data);
+      // console.log("id get:", data);
       ntx.emit("update", data);
     };
     const onDelete = (data) => {
       ntx.emit("onDelete", data);
     };
     const detail = (data) => {
-      router.push({ name: "unit_level", params: { id: data } });
-      // ntx.emit("detail", data);
+      // router.push({ name: "Center.view", params: { id: data } });
+      ntx.emit("detail", data);
     };
 
     return { get, onDelete, detail };
@@ -59,7 +59,13 @@ export default {
         <tr>
           <th></th>
           <th>STT</th>
-          <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
+          <th
+            v-for="(value, index) in fields"
+            :key="index"
+            :class="[value == '' ? 'truncate' : '']"
+          >
+            {{ value }}
+          </th>
           <th v-if="activeAction == true">Thao tác</th>
         </tr>
       </thead>
@@ -75,14 +81,18 @@ export default {
             />
           </td>
           <td>{{ index + 1 }}</td>
-          <td v-for="(label, index1) in labels" :key="index1">
+          <td
+            v-for="(label, index1) in labels"
+            :key="index1"
+            :class="[label == '_id' ? 'truncate' : '']"
+          >
             {{ item[label] }}
           </td>
           <td v-if="activeAction == true">
             <span
               id="view"
               class="material-symbols-outlined"
-              @click="detail(item[`${name_id}`])"
+              @click="detail(item._id)"
               v-if="name_id != 'uni_id'"
             >
               visibility
@@ -90,7 +100,7 @@ export default {
 
             <span
               class="material-symbols-outlined mx-2"
-              @click="get(item[`${name_id}`])"
+              @click="get(item._id)"
               id="edit"
             >
               edit
@@ -99,7 +109,7 @@ export default {
             <span
               id="delete"
               class="material-symbols-outlined"
-              @click="onDelete(item[`${name_id}`])"
+              @click="onDelete(item._id)"
             >
               delete
             </span>
@@ -114,6 +124,7 @@ export default {
 .my-table {
   width: 100%;
   border-collapse: collapse;
+  text-align: center;
 }
 
 .border-table-all {
@@ -154,5 +165,12 @@ export default {
 }
 #delete:hover {
   color: var(--red);
+}
+.truncate {
+  max-width: 100px; /* Đặt chiều rộng tối đa cho phần tử */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: none;
 }
 </style>
