@@ -55,7 +55,7 @@ export default {
         <td>{{ item.Employee.name }}</td>
         <td>{{ item.Cycle.name }}</td>
         <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
-        <td>{{ item.Status_Task.status }}</td>
+        <td>{{ item.Status_Task.status == 'true' ? 'Thành công' : 'Thất bại' }}</td>
         <td v-if="activeAction == true">
           <button
             type="button"

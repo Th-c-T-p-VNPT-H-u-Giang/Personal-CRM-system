@@ -131,7 +131,7 @@ export default {
             data.modelPos = document.document.name;
             positions.position.push({ _id: "other", name: "khác" });
             ctx.emit("newPosition", positions.position);
-            // selectedOptionPosition.value = document._id;
+            selectedOptionPosition.value = document._id;
           }
           return true;
         };
