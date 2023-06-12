@@ -43,7 +43,7 @@
           "
           class="mr-2"
           style="cursor: pointer; font-size: 15px"
-          onmouseover="this.style.color='green';"
+          onmouseover="(this.style.color = 'green')"
           onmouseout="this.style.color='';"
           >{{ option.name }}</span
         >

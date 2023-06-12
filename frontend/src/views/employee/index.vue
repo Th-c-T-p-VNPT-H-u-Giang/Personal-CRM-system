@@ -37,6 +37,8 @@ import {
   alert_delete,
   alert_warning,
 } from "../../assets/js/common.alert";
+import Select_filter from "../../components/form/select_filter.vue";
+import SelectCDU from "../../components/box_lananh/select_cdu.vue";
 
 export default {
   components: {
@@ -54,6 +56,8 @@ export default {
     Add1,
     Mail,
     FormWizard,
+    Select_filter,
+    SelectCDU,
   },
   setup(ctx) {
     const data = reactive({
@@ -273,7 +277,7 @@ export default {
         newValue
       );
       units.unit = [];
-      departments.department.push({ _id: "other", name: "khác" });
+      // departments.department.push({ _id: "other", name: "khác" });
 
       for (let val of departments.department) {
         var newData = await unitsServices.findAllUnitsOfADep(val._id);
@@ -334,7 +338,7 @@ export default {
       });
 
       units.unit = await unitsServices.findAllUnitsOfADep(newValue);
-      units.unit.push({ _id: "other", name: "khác" });
+      // units.unit.push({ _id: "other", name: "khác" });
 
       if (newValue == "other") {
         const showSweetAlert = async () => {
@@ -697,7 +701,7 @@ export default {
     <div class="d-flex flex-column mt-3">
       <span class="mx-3 mb-3 h6">Lọc nhân viên</span>
       <div class="d-flex mx-3">
-        <div class="form-group w-100">
+        <!-- <div class="form-group w-100">
           <Select_Advanced
             required
             :options="positions.position"
@@ -719,9 +723,9 @@ export default {
             @delete="(value) => onDeletePosition(value)"
             @chose="(value) => (selectedOptionPosition = value)"
           />
-        </div>
+        </div> -->
         <!-- **** Lan Anh **** -->
-        <div class="form-group w-100 ml-3">
+        <!-- <div class="form-group w-100 ml-3">
           <Select_Advanced
             :options="centers.center"
             :modelValue="data.modelValue"
@@ -781,6 +785,42 @@ export default {
             "
             @delete="(value) => onDeleteUnit(value)"
             @chose="(value) => (selectedOptionUnit = value)"
+          />
+        </div> -->
+        <div class="form-group w-100">
+          <SelectCDU
+            class="d-flex justify-content-start"
+            :title="`Chức vụ`"
+            :field="positions.position"
+            :selectedOption="selectedOptionPosition"
+            @optipn="(value) => (selectedOptionPosition = value)"
+          />
+        </div>
+        <div class="form-group w-100">
+          <SelectCDU
+            class="d-flex justify-content-start"
+            :title="`Trung tâm`"
+            :field="centers.center"
+            :selectedOption="selectedOptionCenter"
+            @option="(value) => (selectedOptionCenter = value)"
+          />
+        </div>
+        <div class="form-group w-100">
+          <SelectCDU
+            class="d-flex justify-content-start"
+            :title="`Phòng`"
+            :field="departments.department"
+            :selectedOption="selectedOptionDepartment"
+            @option="(value) => (selectedOptionDepartment = value)"
+          />
+        </div>
+        <div class="form-group w-100">
+          <SelectCDU
+            class="d-flex justify-content-start"
+            :title="`Tổ`"
+            :selectedOption="selectedOptionUnit"
+            :field="units.unit"
+            @option="(value) => (selectedOptionUnit = value)"
           />
         </div>
       </div>
@@ -921,7 +961,7 @@ export default {
         }
       "
     />
-    <View :item="data.viewValue"  />
+    <View :item="data.viewValue" />
   </div>
 </template>
 
