@@ -870,7 +870,7 @@ export default {
                     data.activeStep < data.stepList.length
                   "
                   class="btn-next d-flex align-items-center px-3 py-1"
-                  @click="data.activeStep = 2"
+                  @click="data.activeStep = data.activeStep + 1"
                   >Next
                   <span
                     class="material-symbols-outlined d-flex align-items-center"
@@ -884,7 +884,7 @@ export default {
                     data.activeStep <= data.stepList.length
                   "
                   class="btn-prev d-flex align-items-center px-3 py-1 ml-3"
-                  @click="data.activeStep = 1"
+                  @click="data.activeStep = data.activeStep - 1"
                   ><span
                     class="material-symbols-outlined d-flex align-items-center"
                   >

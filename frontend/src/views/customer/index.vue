@@ -3,6 +3,7 @@ import Table from "../../components/table/table_customer.vue";
 import Add from "./add.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
+import AddHabit from "../habit/add.vue";
 import { reactive, computed, ref, onBeforeMount } from "vue";
 import {
   http_getAll,
@@ -10,6 +11,7 @@ import {
   alert_success,
   alert_error,
   alert_delete,
+  alert_warning,
   Pagination,
   Dropdown,
   Select,
@@ -35,6 +37,7 @@ export default {
     Edit,
     View,
     Select_Advanced,
+    AddHabit,
   },
   setup(ctx) {
     const data = reactive({
@@ -94,26 +97,26 @@ export default {
         work_temp: "",
       },
       customerTypeValue: "",
+      customerValue: {},
+      showAddHabit: false,
     });
 
     const reFresh = async () => {
       const rs = await http_getAll(Customer_Work);
       data.items = rs.documents;
-
+      for (let value of data.items) {
+        value.checked = false;
+      }
       if (data.custypeTypeValue.length != 0) {
-        data.items = data.items.filter(
-          (value, index) => {
-            return value.name == 'vip';
-          }
-        )
+        data.items = data.items.filter((value, index) => {
+          return value.name == "vip";
+        });
       }
 
       if (data.custypeTypeValue.length != 0) {
-        data.items = data.items.filter(
-          (value, index) => {
-            return value.name == 'vip';
-          }
-        )
+        data.items = data.items.filter((value, index) => {
+          return value.name == "vip";
+        });
       }
     };
 
@@ -125,7 +128,9 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.Customer.name, value.Customer.phone].join("").toLocaleLowerCase();
+        return [value.Customer.name, value.Customer.phone]
+          .join("")
+          .toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -171,6 +176,21 @@ export default {
     };
     const deleteOne = (_id) => {
       console.log("deleting", _id);
+    };
+
+    const showAddHabit = () => {
+      data.customerValue = {};
+      data.showAddHabit = false;
+      for (let value of data.items) {
+        if (value.checked == true) {
+          data.customerValue = value;
+          data.showAddHabit = true;
+          break;
+        }
+      }
+      if (data.showAddHabit == false) {
+        alert_warning(`Thêm thói quen khách hàng`, `Vui lòng chọn khách hàng.`);
+      }
     };
 
     // watch
@@ -287,6 +307,7 @@ export default {
       handleDelete,
       refresh_customer,
       view,
+      showAddHabit,
     };
   },
 };
@@ -384,6 +405,16 @@ export default {
           <span id="add" class="mx-2">Thêm</span>
         </button>
         <Add @refresh_customer="refresh_customer" />
+        <button
+          type="button"
+          class="btn btn-secondary ml-3"
+          data-toggle="modal"
+          data-target="#model-addHabit"
+          @click="showAddHabit()"
+        >
+          <span id="add" class="mx-2">Thêm thói quen</span>
+        </button>
+        <AddHabit v-if="data.showAddHabit" :item="data.customerValue" />
       </div>
     </div>
     <!-- Table -->
