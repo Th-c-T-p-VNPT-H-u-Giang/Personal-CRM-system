@@ -95,23 +95,23 @@ export default {
         avatar: "",
         address: "",
         phone: "",
-        email: "",          
+        email: "",
         Position: {
           _id: "",
-          name: "",          
+          name: "",
         },
         Unit: {
           _id: "",
-          name: "",          
+          name: "",
           Department: {
             _id: "",
             name: "",
             Center_VNPTHG: {
-                name: "",
-                _id: "",
-            }
-          }
-        }
+              name: "",
+              _id: "",
+            },
+          },
+        },
       },
       modelPositon: "Chức vụ",
       modelValue: "Trung tâm",
@@ -123,7 +123,15 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.name].join("").toLocaleLowerCase();
+        return [
+          value.name,
+          value.phone,
+          value.Position.name,
+          value.Unit.Department.name,
+          value.Unit.Department.Center_VNPTHG.name,
+        ]
+          .join("")
+          .toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -173,27 +181,27 @@ export default {
           avatar: item.Employee.avatar,
           address: item.Employee.address,
           phone: item.Employee.phone,
-          email: item.Employee.email,          
+          email: item.Employee.email,
         },
         Position: {
           _id: item.Employee.Position._id,
-          name: item.Employee.Position.name,          
+          name: item.Employee.Position.name,
         },
         Unit: {
           _id: item.Employee.Unit._id,
-          name: item.Employee.Unit.name,          
+          name: item.Employee.Unit.name,
           Department: {
             _id: item.Employee.Unit.Department.name,
             name: item.Employee.Unit.Department._id,
             Center_VNPTHG: {
-                name: item.Employee.Unit.Department.Center_VNPTHG._id,
-                _id: item.Employee.Unit.Department.Center_VNPTHG.name,
-            }
-          }
-        }
+              name: item.Employee.Unit.Department.Center_VNPTHG._id,
+              _id: item.Employee.Unit.Department.Center_VNPTHG.name,
+            },
+          },
+        },
       };
-      console.log('Edit data', data.viewValue);
-    }
+      console.log("Edit data", data.viewValue);
+    };
 
     // watch
     const activeMenu = ref(1);
@@ -240,14 +248,14 @@ export default {
       data.positions = await http_getAll(Position);
       data.items = await http_getAll(Employee);
       centers.center = await CenterServices.getAll();
-      centers.center.push({ _id: "other", name: "khác" });
+      // centers.center.push({ _id: "other", name: "khác" });
       departments.department = await departmentsServices.getAll();
-      departments.department.push({ _id: "other", name: "khác" });
+      // departments.department.push({ _id: "other", name: "khác" });
 
       units.unit = await unitsServices.getAll();
-      units.unit.push({ _id: "other", name: "khác" });
+      // units.unit.push({ _id: "other", name: "khác" });
       positions.position = await http_getAll(Position);
-      positions.position.push({ _id: "other", name: "khác" });
+      // positions.position.push({ _id: "other", name: "khác" });
     };
 
     // ****** trung tâm ******
@@ -255,7 +263,7 @@ export default {
     const selectedOptionCenter = ref("Trung tâm");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
       const doc = ref("");
-      doc.value = await CenterServices.getOne(selectedOptionCenter.value);
+      doc.value = await CenterServices.get(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
       data.items = await http_getAll(Employee);
       data.items = data.items.filter((val, index) => {
@@ -313,7 +321,7 @@ export default {
     const selectedOptionDepartment = ref("Phòng");
     watch(selectedOptionDepartment, async (newValue, oldValue) => {
       const doc = ref("");
-      doc.value = await CenterServices.getOne(selectedOptionCenter.value);
+      doc.value = await CenterServices.get(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
       const docDep = ref("");
       docDep.value = await departmentsServices.getOne(
@@ -396,7 +404,7 @@ export default {
     const selectedOptionUnit = ref("Đơn vị");
     watch(selectedOptionUnit, async (newValue, oldValue) => {
       const doc = ref("");
-      doc.value = await CenterServices.getOne(selectedOptionCenter.value);
+      doc.value = await CenterServices.get(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
       // DEP
       const docDep = ref("");
@@ -652,9 +660,6 @@ export default {
         console.error("Error sending email:", error);
       }
     };
-    onBeforeMount(async () => {
-      await refresh();
-    });
 
     onBeforeMount(async () => {
       await refresh();
@@ -697,11 +702,11 @@ export default {
       <div class="d-flex mx-3">
         <div class="form-group w-100">
           <Select_Advanced
-            class="form-control"
             required
             :options="positions.position"
             :modelValue="data.modelPositon"
-            style="width: 100%; height: 100%"
+            :add="false"
+            style="height: 40px"
             @searchSelect="
               async (value) => (
                 await refresh(),
@@ -715,7 +720,7 @@ export default {
               )
             "
             @delete="(value) => onDeletePosition(value)"
-            @choosed="(value) => (selectedOptionPosition = value)"
+            @chose="(value) => (selectedOptionPosition = value)"
           />
         </div>
         <!-- **** Lan Anh **** -->
@@ -723,7 +728,8 @@ export default {
           <Select_Advanced
             :options="centers.center"
             :modelValue="data.modelValue"
-            style="width: 300px; height: 100%"
+            :add="false"
+            style="height: 40px"
             @searchSelect="
               async (value) => (
                 await refresh(),
@@ -735,14 +741,15 @@ export default {
               )
             "
             @delete="(value) => onDeleteCenter(value)"
-            @choosed="(value) => (selectedOptionCenter = value)"
+            @chose="(value) => (selectedOptionCenter = value)"
           />
         </div>
         <div class="form-group w-100 ml-3">
           <Select_Advanced
             :options="departments.department"
             :modelValue="data.modelDep"
-            style="width: 300px; height: 100%"
+            :add="false"
+            style="height: 40px"
             @searchSelect="
               async (value) => (
                 await refresh(),
@@ -756,14 +763,15 @@ export default {
               )
             "
             @delete="(value) => onDeleteDep(value)"
-            @choosed="(value) => (selectedOptionDepartment = value)"
+            @chose="(value) => (selectedOptionDepartment = value)"
           />
         </div>
         <div class="form-group w-100 ml-3">
           <Select_Advanced
             :options="units.unit"
             :modelValue="data.modelUnit"
-            style="width: 300px; height: 100%"
+            :add="false"
+            style="height: 40px"
             @searchSelect="
               async (value) => (
                 await refresh(),
@@ -775,7 +783,7 @@ export default {
               )
             "
             @delete="(value) => onDeleteUnit(value)"
-            @choosed="(value) => (selectedOptionUnit = value)"
+            @chose="(value) => (selectedOptionUnit = value)"
           />
         </div>
       </div>
@@ -916,7 +924,7 @@ export default {
         }
       "
     />
-    <View :item="data.viewValue" @view="view(data.viewValue)"/>
+    <View :item="data.viewValue" @view="view(data.viewValue)" />
   </div>
 </template>
 

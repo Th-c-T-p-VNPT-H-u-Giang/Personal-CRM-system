@@ -14,7 +14,7 @@
       type="text"
       class="px-2"
       v-model="searchText"
-      style="font-size: 16px;"
+      style="font-size: 16px"
       @input="
         (activeSelect = true),
           $emit('searchSelect', searchText.toLocaleLowerCase())
@@ -42,13 +42,13 @@
             ]
           "
           class="mr-2"
-          style="cursor: pointer; font-size: 15px;"
+          style="cursor: pointer; font-size: 15px"
           onmouseover="this.style.color='green';"
           onmouseout="this.style.color='';"
           >{{ option.name }}</span
         >
         <span
-          v-if="option._id != 'other'"
+          v-if="option._id != 'other' && add == true"
           @click="[$emit('delete', option)]"
           class="material-symbols-outlined"
           style="font-size: 15px; cursor: pointer"
@@ -73,6 +73,10 @@ export default {
     disabled: {
       type: String,
       default: `false`,
+    },
+    add: {
+      type: Boolean,
+      default: true,
     },
   },
   watch: {
@@ -122,5 +126,4 @@ input {
   cursor: pointer;
   width: 100%;
 }
-
 </style>

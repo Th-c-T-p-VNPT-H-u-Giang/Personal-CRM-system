@@ -2,15 +2,12 @@
 export default {
   props: {
     item: {
-      type: Object
-    }
+      type: Object,
+    },
   },
-  setup(props, context) {
-
-  }
-}
+  setup(props, context) {},
+};
 </script>
-
 
 <template>
   <div class="modal" id="model-view">
@@ -27,7 +24,11 @@ export default {
         <!-- Modal body -->
         <div class="modal-body">
           <div class="">
-            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#personal-info">
+            <button
+              data-toggle="collapse"
+              class="px-3 py-2 h6"
+              data-target="#personal-info"
+            >
               Thông tin cá nhân
             </button>
             <div id="personal-info" class="collapse mx-2">
@@ -57,8 +58,12 @@ export default {
               </div>
             </div>
           </div>
-          <div class=" mt-2">
-            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#customer-work">
+          <div class="mt-2">
+            <button
+              data-toggle="collapse"
+              class="px-3 py-2 h6"
+              data-target="#customer-work"
+            >
               Công việc
             </button>
             <div id="customer-work" class="collapse mx-2">
@@ -69,7 +74,7 @@ export default {
               <div class="row">
                 <div class="col-md-4">Trung tâm:</div>
                 <div>{{ item.Unit.Department.Center_VNPTHG.name }}</div>
-              </div>              
+              </div>
               <div class="row">
                 <div class="col-md-4">Phòng:</div>
                 <div>{{ item.Unit.Department.name }}</div>
@@ -80,24 +85,36 @@ export default {
               </div>
             </div>
           </div>
-          <div class=" mt-2">
-            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#assignment">
+          <div class="mt-2">
+            <button
+              data-toggle="collapse"
+              class="px-3 py-2 h6"
+              data-target="#assignment"
+            >
               Danh sách chăm sóc khách hàng
             </button>
             <div id="assignment" class="collapse mx-2">
               Lorem ipsum dolor text....
             </div>
           </div>
-          <div class=" mt-2">
-            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#event">
+          <div class="mt-2">
+            <button
+              data-toggle="collapse"
+              class="px-3 py-2 h6"
+              data-target="#event"
+            >
               Danh sách sự kiện
             </button>
             <div id="event" class="collapse mx-2">
               Lorem ipsum dolor text....
             </div>
           </div>
-          <div class=" mt-2">
-            <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#habit">
+          <div class="mt-2">
+            <button
+              data-toggle="collapse"
+              class="px-3 py-2 h6"
+              data-target="#habit"
+            >
               Danh sách thói quen khách hàng
             </button>
             <div id="habit" class="collapse mx-2">
