@@ -1,4 +1,4 @@
-const { Task, Appointment, Employee, Cycle, Customer, Status_Task } = require('../models/index.model.js');
+const { Task, Appointment, Employee, Cycle, Customer, Status_Task , Customer_Types} = require('../models/index.model.js');
 const createError = require('http-errors');
 const { v4: uuidv4 } = require('uuid');
 
