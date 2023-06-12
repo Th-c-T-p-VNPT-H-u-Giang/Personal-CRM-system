@@ -48,6 +48,8 @@ export default {
         leaderId: "",
       },
       modelValue: "",
+      modelEm:"",
+      modelCus: "",
     });
 
     const cycles = reactive({ cycle: [] });
@@ -174,38 +176,41 @@ export default {
               <label for="name"
                 >Khách hàng(<span style="color: red">*</span>):</label
               >
-              <select
-                id=""
-                class="form-control"
-                required
-                v-model="data.itemAdd.customerId"
-              >
-                <option value="" disabled selected hidden></option>
-                <option v-for="cus in cus" :key="cus" :value="cus._id">
-                  {{ cus.name }}
-                </option>
-              </select>
+              <Select_Advanced style="height: 40px;" required
+              :options="cus"
+              :modelValue="data.modelCus"
+                @searchSelect="
+                  async (value) => (
+                    await refresh(),
+                    (customers.customer = customers.customer.filter((value1, index) => {
+                      console.log(value1, value);
+                      return value1.name.includes(value) || value.length == 0;
+                    })),
+                    console.log('searchSlect', value.length)
+                  )
+                "
+                @chose="(value,value1) => (data.itemAdd.customerId = value, data.modelCus=value1.name)"
+              />
             </div>
-
             <div class="form-group">
               <label for=""
                 >Nhân viên(<span style="color: red">*</span>):</label
               >
-              <select
-                id=""
-                class="form-control"
-                required
-                v-model="data.itemAdd.leaderId"
-              >
-                <option value="" disabled selected hidden></option>
-                <option
-                  v-for="employee in employee"
-                  :key="employee"
-                  :value="employee._id"
-                >
-                  {{ employee.name }}
-                </option>
-              </select>
+              <Select_Advanced style="height: 40px;" required
+              :options="employee"
+              :modelValue="data.modelEm"
+                @searchSelect="
+                  async (value) => (
+                    await refresh(),
+                    (employees.employee = employees.employee.filter((value1, index) => {
+                      console.log(value1, value);
+                      return value1.name.includes(value) || value.length == 0;
+                    })),
+                    console.log('searchSlect', value.length)
+                  )
+                "
+                @chose="(value,value1) => (data.itemAdd.leaderId = value, data.modelEm = value1.name)"
+              />
             </div>
 
             <div class="form-group">

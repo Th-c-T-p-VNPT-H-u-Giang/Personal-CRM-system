@@ -1,4 +1,20 @@
-<script></script>
+<script>
+import { formatDate } from "../../assets/js/common"
+export default {
+  props: {
+    item: {
+      type: Object,
+      default: {},
+    },
+    viewValue: {
+      type: Object,
+      default: {},
+    }
+  },
+  setup(ctx) {
+  }
+}
+</script>
 
 <template>
   <div class="modal" id="model-view">
@@ -16,31 +32,54 @@
         <div class="modal-body">
           <div class="">
             <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#personal-info">
-              Thông tin cá nhân
+              Thông tin phân công
             </button>
             <div id="personal-info" class="collapse mx-2">
-              Lorem ipsum dolor text....
+               <!-- <ul style="font-size:16px">
+                  <li>Khách hàng: {{ viewValue.Customer.name }}</li>
+                  <li>Nhân viên phụ trách: {{ viewValue.Employee.name }}</li>
+                  <li>Ngày bắt đầu: {{ viewValue.start_date }}</li>
+                  <li>Ngày kết thúc: {{ viewValue.end_date }}</li>
+                  <li>Chu kỳ chăm sóc: {{ viewValue.Cycle.name }}</li>
+                  <li>Nội dung chăm sóc: {{ viewValue.content }}</li>
+                  <li>Trạng thái: {{ viewValue.Status_Task.status }}</li>
+                  <li>Nội dung trạng thái: {{ viewValue.Status_Task.reason }}</li>
+               </ul> -->
             </div>
           </div>
           <div class=" mt-2">
             <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#customer-type">
-              Loại khách hàng
+              Thông tin khách hàng
             </button>
             <div id="customer-type" class="collapse mx-2">
-              Lorem ipsum dolor text....
+              <!-- <ul style="font-size:16px">
+                  <li>Khách hàng: {{ viewValue.Customer.name }}</li>
+                  <li>Ngày sinh: {{ viewValue.Customer.birthday }}</li>
+                  <li>Avatar: {{ viewValue.Customer.avatar }}</li>
+                  <li>Địa chỉ: {{ viewValue.Customer.address }}</li>
+                  <li>Số điện thoại: {{ viewValue.Customer.phone }}</li>
+                  <li>Email: {{ viewValue.Customer.email }}</li>
+               </ul> -->
             </div>
           </div>
           <div class=" mt-2">
             <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#customer-work">
-              Công việc
+              Nhân viên phụ trách
             </button>
             <div id="customer-work" class="collapse mx-2">
-              Lorem ipsum dolor text....
+              <!-- <ul style="font-size:16px">
+                  <li>Nhân viên: {{ viewValue.Employee.name }}</li>
+                  <li>Ngày sinh: {{ viewValue.Employee.birthday }}</li>
+                  <li>Avatar: {{ viewValue.Employee.avatar }}</li>
+                  <li>Địa chỉ: {{ viewValue.Employee.address }}</li>
+                  <li>Số điện thoại: {{ viewValue.Employee.phone }}</li>
+                  <li>Email: {{ viewValue.Employee.email }}</li>
+               </ul> -->
             </div>
           </div>
           <div class=" mt-2">
             <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#assignment">
-              Danh sách chăm sóc khách hàng
+              Chi tiết lịch hẹn
             </button>
             <div id="assignment" class="collapse mx-2">
               Lorem ipsum dolor text....
@@ -48,20 +87,20 @@
           </div>
           <div class=" mt-2">
             <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#event">
-              Danh sách sự kiện
+              Feeback
             </button>
             <div id="event" class="collapse mx-2">
               Lorem ipsum dolor text....
             </div>
           </div>
-          <div class=" mt-2">
+          <!-- <div class=" mt-2">
             <button data-toggle="collapse" class="px-3 py-2 h6" data-target="#habit">
               Danh sách thói quen khách hàng
             </button>
             <div id="habit" class="collapse mx-2">
               Lorem ipsum dolor text....
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>

@@ -4,6 +4,8 @@ import Pagination from "../../components/table/pagination_duy.vue";
 import Dropdown from "../../components/form/dropdown.vue";
 import Select from "../../components/form/select.vue";
 import Search from "../../components/form/search.vue";
+import SelectFilter from "../../components/form/select_task_truc.vue";
+import InputFilter from "../../components/form/form_filter_truc.vue";
 import DeleteAll from "../../components/form/delete-all.vue";
 import Add from "./add.vue";
 import Edit from "./edit.vue";
@@ -29,6 +31,7 @@ import {
   alert_error,
   alert_delete,
 } from "../../assets/js/common.alert";
+import { formatDate } from "../../assets/js/common"
 export default {
   components: {
     Select_Advanced,
@@ -41,6 +44,8 @@ export default {
     DeleteAll,
     Edit,
     View,
+    SelectFilter,
+    InputFilter,
   },
   setup(ctx) {
     const data = reactive({
@@ -89,18 +94,68 @@ export default {
           reason: "",
         },
       },
+      viewValue: {},
       addcycle: {},
       cus: [],
       employee: [],
+      
+    });
+    const cycleValue = ref('');
+    const startdateValue = ref('');
+    const statusValue = ref('');
+    const enddateValue = ref('');
+    const cycles = reactive({ cycle: [] });
+
+    //watch lọc
+    watch(cycleValue,async (newValue, oldValue) =>{
+      console.log("hhhh",newValue)
+      await refresh();
+      if(newValue == 0 ){
+        return await refresh();
+      }
+      if(cycleValue.length != 0){
+        data.items = data.items.filter((value, index) => {
+        return value.cycleId == cycleValue.value
+        })
+      }
+    });
+    watch(statusValue, async (newValue, oldValue)=>{
+      console.log("status",newValue)
+      await refresh();
+      if(statusValue.length != 0){
+        data.items = data.items.filter((value, index) => {
+          // console.log('name', value.Status_Task.status)
+        return value.Status_Task.status == statusValue.value
+        })
+      }
     });
 
-    const cycles = reactive({ cycle: [] });
+    watch(startdateValue, async (newValue, oldValue)=>{
+      console.log("start date",newValue)
+      await refresh();
+      if(startdateValue.length != 0){
+        data.items = data.items.filter((value, index) => {
+        return value.start_date == startdateValue.value
+        })
+      }
+    });
+
+    watch(enddateValue, async (newValue, oldValue)=>{
+      console.log("end date",newValue)
+      await refresh();
+      if(enddateValue.length != 0){
+        data.items = data.items.filter((value, index) => {
+        return value.end_date == enddateValue.value
+        })
+      }
+    })
+
 
     // computed
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.name].join("").toLocaleLowerCase();
+        return [value.Customer.name, value.Employee.name, value.Cycle.name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -123,18 +178,20 @@ export default {
       return Math.ceil(filtered.value.length / data.entryValue);
     });
     const setPages = computed(() => {
-      if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-        data.entryValue = data.items.length;
-        data.numberOfPages = 1;
-      } else data.numberOfPages = setNumberOfPages.value;
-      data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-      data.endRow = data.currentPage * data.entryValue;
-      return filtered.value.filter((item, index) => {
-        return (
-          index + 1 > (data.currentPage - 1) * data.entryValue &&
-          index + 1 <= data.currentPage * data.entryValue
-        );
-      });
+      if (data.items.length > 0) {
+        if (setNumberOfPages.value == 0 || data.entryValue == "All") {
+          data.entryValue = data.items.length;
+          data.numberOfPages = 1;
+        } else data.numberOfPages = setNumberOfPages.value;
+        data.startRow = (data.currentPage - 1) * data.entryValue + 1;
+        data.endRow = data.currentPage * data.entryValue;
+        return filtered.value.filter((item, index) => {
+          return (
+            index + 1 > (data.currentPage - 1) * data.entryValue &&
+            index + 1 <= data.currentPage * data.entryValue
+          );
+        });
+      } else return data.items.value;
     });
 
     // methods
@@ -144,23 +201,6 @@ export default {
       console.log("new task");
       data.items = await http_getAll(Task);
     };
-
-    // const update = async (item) => {
-    //   console.log("updating", item);
-    //   const result = await http_update(Task,data.editValue._id, data.editValue );
-    //   console.log("result", result);
-    //   if (!result.error) {
-    //     // const task = await http_getOne(Task,result.document._id);
-    //     // console.log("task", task);
-    //     alert_success(
-    //       `Chỉnh sửa phân công`,
-    //       `Đã chỉnh sửa phân công khách hàng của nhân viên thành công.`
-    //     );
-    //     refresh();
-    //   } else if (result.error) {
-    //     alert_error(`Thêm phân công`, `${result.msg}`);
-    //   }
-    // };
 
     const update = async (item) => {
       const result = await http_update(Task, editValue._id, editValue);
@@ -219,9 +259,12 @@ export default {
       console.log("aaa", data.cus);
       data.employee = await http_getAll(Employee);
       data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
+      }
+      
     };
-
-    // handle http methods
 
     // Hàm callback được gọi trước khi component được mount (load)
     onBeforeMount(async () => {
@@ -240,8 +283,6 @@ export default {
     //   console.log("cycle", data.cycles);
     // });
     // watch
-
-    // const task_status = ref("Status_Task['status']")
     return {
       data,
       setPages,
@@ -252,6 +293,10 @@ export default {
       view,
       appointment,
       cycles,
+      cycleValue,
+      statusValue,
+      startdateValue,
+      enddateValue,
     };
   },
 };
@@ -266,16 +311,38 @@ export default {
       <span class="mx-3 mb-3 h6">Lọc phân công</span>
       <div class="d-flex mx-3">
         <div class="form-group w-100">
-          <Select :title="`Chu kỳ`" :entryValue="`Chu kỳ`" />
+          <SelectFilter 
+          :title="`Chu kỳ`" 
+          @update:entryValue="(value) => cycleValue = value"
+          :entryValue="`Chu kỳ`"
+          :options="cycles.cycle"
+          />
         </div>
         <div class="form-group w-100 ml-3">
-          <Select :title="`Trạng thái`" :entryValue="`Trạng thái`" />
+          <Select 
+          :title="`Trạng thái`" 
+          :entryValue="`Trạng thái`"
+          @update:entryValue="(value) => statusValue = value"
+          :options="[
+            {
+              name: 'Thành công',
+              value: 'true',
+            },
+            {
+              name: 'Thất bại',
+              value: 'false',
+            },
+          ]" />
         </div>
         <div class="form-group w-100 ml-3">
-          <Select :title="`Ngày bắt đầu`" :entryValue="`Ngày bắt đầu`" />
+          <InputFilter 
+            @update:entryValue="(value) => startdateValue = value"
+            :title="`Ngày bắt đầu`" :entryValue="`Ngày bắt đầu`"  />
         </div>
         <div class="form-group w-100 ml-3">
-          <Select :title="`Ngày kết thúc`" :entryValue="`Ngày kết thúc`" />
+          <InputFilter 
+            @update:entryValue="(value) => enddateValue = value"
+            :title="`Ngày kết thúc`" :entryValue="`Ngày kết thúc`"  />
         </div>
         <div class="form-group"></div>
       </div>
@@ -356,14 +423,14 @@ export default {
         'Nội dung chăm sóc',
         'Trạng thái',
       ]"
-      :labels="['start_date', 'end_date', 'content']"
+      :labels="['start_date_format', 'end_date_format', 'content']"
       @delete="(value) => deleteOne(value)"
       @edit="
         (value, value1) => (
           (data.editValue = value), (data.activeEdit = value1)
         )
       "
-      @view="(value) => view(value)"
+      @view="(value) => (data.viewValue = value)"
       @appointment="(value) => appointment(value)"
     />
     <!-- Pagination -->
@@ -376,8 +443,8 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
-  </div>
-  <Edit
+
+    <Edit
     :item="data.editValue"
     :class="[data.activeEdit ? 'show-modal' : 'd-none']"
     @cancel="data.activeEdit = false"
@@ -386,7 +453,12 @@ export default {
     :employee="data.employee"
     @edit="edit(data.editValue)"
   />
-  <View />
+    <View
+    :viewValue="data.viewValue" 
+   />
+  </div>
+  
+  
 </template>
 
 <style scoped>

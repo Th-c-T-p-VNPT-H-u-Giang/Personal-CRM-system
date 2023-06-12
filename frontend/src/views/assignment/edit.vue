@@ -144,8 +144,8 @@ export default {
                   <input
                     type="date"
                     class="form-control w-100"
-                    id="name"
-                    name="name"
+                    id=""
+                    name=""
                     v-model="item.start_date"
                     required
                   />
@@ -157,8 +157,8 @@ export default {
                   <input
                     type="date"
                     class="form-control w-100"
-                    id="name"
-                    name="name"
+                    id=""
+                    name=""
                     v-model="item.end_date"
                     required
                   />
@@ -223,14 +223,19 @@ export default {
                   <label for="content"
                     >Trạng thái(<span style="color: red">*</span>):</label
                   >
-                  <input
+                  <!-- <input
                     type="text"
                     class="form-control w-100"
                     id="name"
                     name="name"
                     v-model="item.Status_Task.status"
                     required
-                  />
+                  /> -->
+                  <select id="" class="form-control" required v-model="item.Status_Task.status">
+                    <option value="" disabled selected hidden></option>
+                    <option value="true"> Thành công </option>
+                    <option value="false"> Thất bại </option>
+                  </select>
                 </div>
                 <div class="form-group flex-grow-1">
                   <label for="content"
