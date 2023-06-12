@@ -179,7 +179,9 @@ export default {
           return true;
         };
         showSweetAlert();
+        // data.modelValue = "";
       }
+      // else modelDep = selectedOptionUnit.value;
     });
 
     //DEPARTMENTS
@@ -639,10 +641,16 @@ export default {
                         )
                       "
                       @delete="(value) => onDeletePosition(value)"
-                      @choosed="(value) => (selectedOptionPosition = value)"
+                      @choosed="
+                        (value, value1) => (
+                          (selectedOptionPosition = value),
+                          (data.modelPos = value1)
+                        )
+                      "
                     />
                   </div>
                 </div>
+                {{ data.modelValue }}
                 <div class="form-group flex-grow-1">
                   <label for=""
                     >Trung tâm(<span style="color: red">*</span>):</label
@@ -669,7 +677,12 @@ export default {
                         )
                       "
                       @delete="(value) => onDeleteCenter(value)"
-                      @choosed="(value) => (selectedOptionCenter = value)"
+                      @choosed="
+                        (value, value1) => (
+                          (selectedOptionCenter = value),
+                          (data.modelValue = value1)
+                        )
+                      "
                     />
                   </div>
                 </div>
@@ -698,7 +711,12 @@ export default {
                       )
                     "
                     @delete="(value) => onDeleteDep(value)"
-                    @choosed="(value) => (selectedOptionDepartment = value)"
+                    @choosed="
+                      (value, value1) => (
+                        (selectedOptionDepartment = value),
+                        (data.modelDep = value1)
+                      )
+                    "
                   />
                 </div>
                 <div class="form-group flex-grow-1">
@@ -721,7 +739,11 @@ export default {
                       )
                     "
                     @delete="(value) => onDeleteUnit(value)"
-                    @choosed="(value) => (selectedOptionUnit = value)"
+                    @choosed="
+                      (value, value1) => (
+                        (selectedOptionUnit = value), (data.modelUnit = value1)
+                      )
+                    "
                   />
                 </div>
                 <b-button

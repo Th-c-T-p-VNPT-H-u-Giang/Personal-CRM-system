@@ -108,7 +108,7 @@ export default {
             alert_success(`Đã thêm chức vụ`, `${PositionName}`);
             // console.log("idPos",PositionName);
             await refresh("position");
-            data.modelPos = document.name;
+            data.modelPos = document.document.name;
             positions.position.push({ _id: "other", name: "khác" });
             ctx.emit("newPosition", positions.position);
             selectedOptionPosition.value = document._id;

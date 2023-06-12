@@ -1,6 +1,11 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 const routes = [
+  {
+    path: "/noti",
+    name: "Noti",
+    component: () => import("../views/noti/noti.vue"),
+  },
   // Dashboard
   {
     path: "/",

@@ -34,7 +34,7 @@
         <span
           @click="
             [
-              $emit('choosed', option._id),
+              $emit('choosed', option._id, option.name),
               (activeSelect = false),
               (modelValue = option.name),
               (searchText = modelValue),
