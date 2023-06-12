@@ -3,20 +3,25 @@
     <div
       class="row justify-content-center align-items-center vh-100"
       style="
-        background-image: url(https://www.ebillity.com/wp-content/uploads/2019/08/CRM.jpg);
+        background-image: url(https://scontent.fsgn5-9.fna.fbcdn.net/v/t1.15752-9/353750920_309726468058593_5702642470140917900_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=ae9488&_nc_ohc=6O2OCipxapYAX8Q7lGw&_nc_oc=AQkQcG2cxnOrp1VjrSwV0VKQxWCgHVuVQyjVockT_Had_IgRwNvn2KI61Aq6VIlTD-CGSL4XNw2060JwRAezzQF6&_nc_ht=scontent.fsgn5-9.fna&oh=03_AdQq2QB6ZGymtdx9KeS9Vvtdso5EO0j5fYeibueoBmXZVQ&oe=64AD6C81);
         background-repeat: no-repeat;
-        background-size: 100%;
+        background-size: cover;
       "
     >
       <div class="col-lg-4">
-        <div class="card shadow bg-bray">
+        <div class="card shadow bg-bray" style="background: #20262E">
           <div class="card-body p-5">
             <h5 class="card-title text-center mb-4">
-              <img src="./assets/images/logo.png" alt="" style="width: 200px" />
+              <img src="./assets/images/logo2.png" alt="" style="width: 230px" />
             </h5>
+            <h3 class="text-center mb-4" style="font-weight: bold; color: white">
+              ĐĂNG NHẬP
+            </h3>
             <form @submit.prevent="login">
               <div class="mb-3">
-                <label for="text" class="form-label">User Name</label>
+                <label for="text" class="form-label" style="font-weight: bold; color: white;margin-bottom:15px">
+                  Tên Tài Khoản(<span style="color: red">*</span>):
+                </label>
                 <input
                   v-model="user_name"
                   type="text"
@@ -26,16 +31,33 @@
                 />
               </div>
               <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input
-                  v-model="password"
-                  type="password"
-                  class="form-control"
-                  id="password"
-                  required
-                />
+                <label for="password" class="form-label" style="font-weight: bold; color: white;margin-bottom:15px;margin-top:10px">
+                  Mật Khẩu(<span style="color: red">*</span>):
+                </label>
+                <div class="input-group">
+      <input
+        v-model="password"
+        :type="showPassword ? 'text' : 'password'"
+        class="form-control"
+        id="password"
+        required
+      />
+      <div class="input-group-append">
+        <span class="input-group-text">
+          <i
+            class="fa"
+            :class="{'fa-eye': showPassword, 'fa-eye-slash': !showPassword}"
+            @click="togglePasswordVisibility"
+            style="cursor: pointer;"
+          ></i>
+        </span>
+      </div>
+    </div>
               </div>
-              <button type="submit" class="btn btn-primary w-100">Login</button>
+              
+              <button type="submit" class="btn btn-primary w-100" style="font-weight: bold; margin-top: 20px">
+                Đăng Nhập
+              </button>
             </form>
           </div>
         </div>
@@ -43,17 +65,20 @@
     </div>
   </div>
 </template>
+
 <script>
 import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-
 export default {
   setup() {
+    const showPassword = ref(false);
     const user_name = ref("");
     const password = ref("");
     const router = useRouter();
-
+    const togglePasswordVisibility = () => {
+      showPassword.value = !showPassword.value;
+    };
     // Xử lý sự kiện đăng nhập
     const login = async () => {
       try {
@@ -82,6 +107,7 @@ export default {
         console.log(error);
       }
     };
+
     const check = () => {
       const token = localStorage.getItem("token");
       if (token) {
@@ -90,25 +116,29 @@ export default {
         router.push("/login");
       }
     };
-    check()
+
+    check();
+
     return {
       user_name,
       password,
-      login,
-
+      login,togglePasswordVisibility,
+      showPassword
     };
   },
 };
 </script>
 
 <style scoped>
-.container {
+.container-fluid {
   background-color: #f8f9fa;
 }
 
 .card {
   border: none;
   border-radius: 10px;
+  width: 550px;
+  height: 580px;
 }
 
 .btn-primary {

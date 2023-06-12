@@ -16,8 +16,7 @@ export default{
 </script>
 
 <template>
-      <button class="header__right-link text-decoration-none text-white bg-dark" style="outline: none; border: none;" @click="handleLogout">
-          <i class="fa-solid fa-power-off"></i>
+      <button class="btn btn-outline-danger" @click="handleLogout">
           Đăng xuất
         </button>
 </template>

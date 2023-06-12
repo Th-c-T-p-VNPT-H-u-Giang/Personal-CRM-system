@@ -27,7 +27,8 @@ export default {
 </script>
 
 <template>
-  <!-- <Login /> -->
+  <Login />
+  <!-- <Login />
   <div class="container-fluid">
     <div class="row position-relative">
       <div
@@ -44,7 +45,7 @@ export default {
         <Footer />
       </div>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <style scoped></style>

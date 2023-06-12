@@ -51,7 +51,7 @@ export default {
   },
   setup(props, ctx) {
     const data = reactive({});
-
+    const socket = io();
     const create = () => {
       if (props.item.name.length > 0) {
         ctx.emit("create");
