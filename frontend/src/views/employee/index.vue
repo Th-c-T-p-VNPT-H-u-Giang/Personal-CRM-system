@@ -177,37 +177,6 @@ export default {
 
     const router = useRouter();
 
-    const view = (item) => {
-      data.viewValue = {
-        Employee: {
-          _id: item.Employee._id,
-          name: item.Employee.name,
-          birthday: item.Employee.birthday,
-          avatar: item.Employee.avatar,
-          address: item.Employee.address,
-          phone: item.Employee.phone,
-          email: item.Employee.email,
-        },
-        Position: {
-          _id: item.Employee.Position._id,
-          name: item.Employee.Position.name,
-        },
-        Unit: {
-          _id: item.Employee.Unit._id,
-          name: item.Employee.Unit.name,
-          Department: {
-            _id: item.Employee.Unit.Department.name,
-            name: item.Employee.Unit.Department._id,
-            Center_VNPTHG: {
-              name: item.Employee.Unit.Department.Center_VNPTHG._id,
-              _id: item.Employee.Unit.Department.Center_VNPTHG.name,
-            },
-          },
-        },
-      };
-      console.log("Edit data", data.viewValue);
-    };
-
     // watch
     const activeMenu = ref(1);
 
@@ -790,7 +759,6 @@ export default {
       update,
       deleteOne,
       edit,
-      view,
       centers,
       selectedOptionCenter,
       departments,
