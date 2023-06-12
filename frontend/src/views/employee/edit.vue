@@ -376,7 +376,12 @@ export default {
                         )
                       "
                       @delete="(value) => onDeletePosition(value)"
-                      @choosed="(value) => (item.postionId = value)"
+                      @chose="
+                        (value, value1) => {
+                          item.postionId = value;
+                          item.Position.name = value1.name;
+                        }
+                      "
                     />
                   </div>
                 </div>
@@ -439,7 +444,12 @@ export default {
                       )
                     "
                     @delete="(value) => onDeleteDep(value)"
-                    @chose="(value) => (selectedOptionDepartment = value)"
+                    @chose="
+                      (value, value1) => {
+                        (selectedOptionDepartment = value),
+                          (item.Unit.Department.name = value1.name);
+                      }
+                    "
                   />
                 </div>
                 <div class="form-group flex-grow-1">
@@ -461,7 +471,11 @@ export default {
                       )
                     "
                     @delete="(value) => onDeleteUnit(value)"
-                    @chose="(value) => (item.unitId = value)"
+                    @chose="
+                      (value, value1) => {
+                        (item.unitId = value), (item.Unit.name = value1.name);
+                      }
+                    "
                   />
                 </div>
                 <button
