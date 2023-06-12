@@ -263,6 +263,10 @@ export default {
     const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
+      if (newValue == "") {
+        return;
+      }
+
       const doc = ref("");
       doc.value = await CenterServices.get(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
@@ -326,8 +330,10 @@ export default {
         showSweetAlert();
       } else if (newValue == "all") {
         await refresh();
-        // selectedOptionDepartment.value = "all";
-        // selectedOptionUnit.value = "all";
+        selectedOptionCenter.value = "";
+        selectedOptionDepartment.value = "";
+        selectedOptionUnit.value = "";
+        selectedOptionPosition.value = "";
       }
     });
 
@@ -335,6 +341,9 @@ export default {
     const departments = reactive({ department: [] });
     const selectedOptionDepartment = ref("");
     watch(selectedOptionDepartment, async (newValue, oldValue) => {
+      if (newValue == "") {
+        return;
+      }
       const doc = ref("");
       doc.value = await CenterServices.get(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
@@ -424,7 +433,10 @@ export default {
         showSweetAlert();
       } else if (newValue == "all") {
         await refresh();
-        console.log(data.items);
+        selectedOptionCenter.value = "";
+        selectedOptionDepartment.value = "";
+        selectedOptionUnit.value = "";
+        selectedOptionPosition.value = "";
       }
     });
 
@@ -434,6 +446,13 @@ export default {
     });
     const selectedOptionUnit = ref("");
     watch(selectedOptionUnit, async (newValue, oldValue) => {
+      if (newValue == "") {
+        return;
+      }
+      if (newValue == "") {
+        return;
+      }
+
       const doc = ref("");
       doc.value = await CenterServices.get(selectedOptionCenter.value);
       data.modelValue = doc.value.name;
@@ -580,6 +599,10 @@ export default {
         showSweetAlert();
       } else if (newValue == "all") {
         await refresh();
+        selectedOptionCenter.value = "";
+        selectedOptionDepartment.value = "";
+        selectedOptionUnit.value = "";
+        selectedOptionPosition.value = "";
       }
     });
     const search = async (value) => {
@@ -594,6 +617,10 @@ export default {
     const positions = reactive({ position: [] });
     const selectedOptionPosition = ref("");
     watch(selectedOptionPosition, async (newValue, oldValue) => {
+      if (newValue == "") {
+        return;
+      }
+
       const docPosition = ref("");
       docPosition.value = await http_getOne(
         Position,
@@ -676,7 +703,10 @@ export default {
         showSweetAlert();
       } else if (newValue == "all") {
         await refresh();
-        console.log(data.items);
+        selectedOptionCenter.value = "";
+        selectedOptionDepartment.value = "";
+        selectedOptionUnit.value = "";
+        selectedOptionPosition.value = "";
       }
     });
 
@@ -875,6 +905,7 @@ export default {
           />
         </div> -->
         <div class="form-group w-100">
+          <label for="name">Chức vụ</label>
           <SelectCDU
             class="d-flex justify-content-start"
             :title="`Chức vụ`"
@@ -884,6 +915,8 @@ export default {
           />
         </div>
         <div class="form-group w-100">
+          <label for="name">Trung tâm</label>
+
           <SelectCDU
             class="d-flex justify-content-start"
             :title="`Trung tâm`"
@@ -893,6 +926,8 @@ export default {
           />
         </div>
         <div class="form-group w-100">
+          <label for="name">Phòng</label>
+
           <SelectCDU
             class="d-flex justify-content-start"
             :title="`Phòng`"
@@ -902,6 +937,8 @@ export default {
           />
         </div>
         <div class="form-group w-100">
+          <label for="name">Tổ</label>
+
           <SelectCDU
             class="d-flex justify-content-start"
             :title="`Tổ`"

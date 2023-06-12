@@ -4,7 +4,9 @@
       class="form-control d-flex justify-content-start pl-2 mr-2"
       @change="changed"
     >
-      <option disabled selected hidden>{{ title }}</option>
+      <option disabled hidden :selected="selectedOption == ''"></option>
+
+      <!-- <option disabled selected hidden value="">{{ title }}</option> -->
       <option
         v-for="(val, index) in field"
         :key="index"
@@ -13,6 +15,7 @@
       >
         {{ val.name }}
       </option>
+      <option value="all" :selected="selectedOption == 'all'">tất cả</option>
       <option
         v-if="add.name == 'position'"
         value="other"
