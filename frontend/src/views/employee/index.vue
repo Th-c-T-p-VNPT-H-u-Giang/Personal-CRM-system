@@ -88,6 +88,31 @@ export default {
       searchText: "",
       activeEdit: false,
       editValue: {},
+      viewValue: {
+        _id: "",
+        name: "",
+        birthday: "",
+        avatar: "",
+        address: "",
+        phone: "",
+        email: "",          
+        Position: {
+          _id: "",
+          name: "",          
+        },
+        Unit: {
+          _id: "",
+          name: "",          
+          Department: {
+            _id: "",
+            name: "",
+            Center_VNPTHG: {
+                name: "",
+                _id: "",
+            }
+          }
+        }
+      },
       modelPositon: "Chức vụ",
       modelValue: "Trung tâm",
       modelDep: "Phòng",
@@ -139,10 +164,36 @@ export default {
 
     const router = useRouter();
 
-    const view = (_id) => {
-      console.log("view", _id);
-      router.push({ name: "Employee.view", params: { id: _id } });
-    };
+    const view = (item) => {
+      data.viewValue = {
+        Employee: {
+          _id: item.Employee._id,
+          name: item.Employee.name,
+          birthday: item.Employee.birthday,
+          avatar: item.Employee.avatar,
+          address: item.Employee.address,
+          phone: item.Employee.phone,
+          email: item.Employee.email,          
+        },
+        Position: {
+          _id: item.Employee.Position._id,
+          name: item.Employee.Position.name,          
+        },
+        Unit: {
+          _id: item.Employee.Unit._id,
+          name: item.Employee.Unit.name,          
+          Department: {
+            _id: item.Employee.Unit.Department.name,
+            name: item.Employee.Unit.Department._id,
+            Center_VNPTHG: {
+                name: item.Employee.Unit.Department.Center_VNPTHG._id,
+                _id: item.Employee.Unit.Department.Center_VNPTHG.name,
+            }
+          }
+        }
+      };
+      console.log('Edit data', data.viewValue);
+    }
 
     // watch
     const activeMenu = ref(1);
@@ -839,7 +890,7 @@ export default {
           (data.editValue = value), (data.activeEdit = value1)
         )
       "
-      @view="(value) => view(value)"
+      @view="(value) => (data.viewValue = value)"
       @checkbox="(value) => (mail.list = value)"
     />
     <!-- Pagination -->
@@ -865,7 +916,7 @@ export default {
         }
       "
     />
-    <View />
+    <View :item="data.viewValue" @view="view(data.viewValue)"/>
   </div>
 </template>
 
