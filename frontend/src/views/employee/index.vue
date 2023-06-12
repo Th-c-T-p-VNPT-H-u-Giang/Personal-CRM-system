@@ -326,8 +326,8 @@ export default {
         showSweetAlert();
       } else if (newValue == "all") {
         await refresh();
-        // data.modelDep = "";
-        // data.modelUnit = "";
+        // selectedOptionDepartment.value = "all";
+        // selectedOptionUnit.value = "all";
       }
     });
 
@@ -621,7 +621,7 @@ export default {
         selectedOptionCenter.value != "" &&
         selectedOptionDepartment.value != ""
       ) {
-        console.log("đủ 2");
+        console.log(data.items);
         data.items = data.items.filter((val, index) => {
           return (
             val.Position._id == selectedOptionPosition.value &&
@@ -630,7 +630,16 @@ export default {
             val.Unit.Department._id == selectedOptionDepartment.value
           );
         });
+      } else if (selectedOptionCenter.value != "") {
+        console.log(data.items);
+        data.items = data.items.filter((val, index) => {
+          return (
+            val.Position._id == selectedOptionPosition.value &&
+            val.Unit.Department.Center_VNPTHG._id == selectedOptionCenter.value
+          );
+        });
       } else {
+        console.log("đủ 1");
         data.items = data.items.filter((val, index) => {
           return val.Position._id == selectedOptionPosition.value;
         });
