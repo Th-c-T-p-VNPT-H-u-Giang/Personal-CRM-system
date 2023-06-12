@@ -79,6 +79,45 @@ app.use((err, req, res, next) => {
     message: err.message || "Internal Server Error",
   });
 });
+/////////////////////////////////
+const http = require("http");
+const { Server } = require("socket.io");
+
+const server = http.createServer();
+const io = new Server(server);
+
+const connectedEmployees = {};
+
+io.on("connection", (socket) => {
+  console.log("A client connected.");
+
+  // Lưu socket ID vào danh sách nhân viên đang kết nối
+  const employeeId = socket.handshake.query.employeeId;
+  connectedEmployees[employeeId] = socket.id;
+
+  socket.on("disconnect", () => {
+    console.log("A client disconnected.");
+
+    // Xóa socket ID của nhân viên khi họ ngắt kết nối
+    delete connectedEmployees[employeeId];
+  });
+});
+
+function sendNotificationToEmployee(employeeId, message) {
+  const socketId = connectedEmployees[employeeId];
+
+  if (socketId) {
+    io.to(socketId).emit("notification", message);
+  }
+}
+
+// Sử dụng hàm sendNotificationToEmployee(employeeId, message) để gửi thông báo cho nhân viên cụ thể
+
+// Khởi động máy chủ
+const port = 3000;
+server.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
 
 // exports
 module.exports = app;

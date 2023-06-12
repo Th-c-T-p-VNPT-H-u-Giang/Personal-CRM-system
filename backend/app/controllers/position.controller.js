@@ -1,54 +1,33 @@
 const { Position } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
-const crypto = require("crypto");
 
-const encryptionKey = "12345678912345678901234567890121";
-const iv = "0123456789abcdef";
-
-const setEncrypt = (value) => {
-  const cipher = crypto.createCipheriv("aes-256-cbc", encryptionKey, iv);
-  let encrypted = cipher.update(value, "utf8", "hex");
-  encrypted += cipher.final("hex");
-  return encrypted;
-};
-const getDecrypt = (name) => {
-  if (name) {
-    const decipher = crypto.createDecipheriv("aes-256-cbc", encryptionKey, iv);
-    let decrypted = decipher.update(name, "hex", "utf8");
-    decrypted += decipher.final("utf8");
-    return decrypted;
-  }
-};
 exports.create = async (req, res, next) => {
-  if (Object.keys(req.body).length >= 1) {
-    const name = setEncrypt(req.body.name);
-    const center = await Position.findOne({
-      where: {
-        name: name,
-      },
-    });
-    if (center) {
-      return res.send({
-        error: true,
-        msg: `Đã tồn tại trung tâm ${getDecrypt(name)}.`,
-      });
+  if (Object.keys(req.body).length === 1) {
+    const { name } = req.body;
+    const positions = await Position.findAll();
+    for (let value of positions) {
+      if (value.name == name) {
+        return res.send({
+          error: true,
+          msg: `Đã tồn tại chức vụ '${name}'`,
+        });
+      }
     }
     try {
       const document = await Position.create({
         name: req.body.name,
       });
-
       return res.send({
         error: false,
-        msg: `Bạn đã tạo thành công trung tâm ${document.name} `,
+        msg: `Bạn đã tạo thành công chức vụ '${document.name}'`,
         document: document,
       });
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       return res.send({
         error: true,
-        msg: error.errors[0].message,
+        msg: error.message,
       });
     }
   } else {
@@ -78,19 +57,31 @@ exports.findOne = async (req, res, next) => {
     });
     return res.send(documents);
   } catch (error) {
-    return next(createError(400, "Error finding position !"));
+    return next(createError(400, `Xóa thành công chức vụ '${document.name}'`));
   }
 };
 
-exports.deleteOne = async (req, res, next) => {};
+exports.deleteOne = async (req, res, next) => {
+  try {
+    const document = await Position.destroy({
+      where: { _id: req.params.id },
+    });
+    return res.send({
+      msg: `Đã xoá thành công chức vụ`,
+      document: Position,
+    });
+  } catch (error) {
+    return next(createError(400, "Lỗi không xóa được chức vụ!"));
+  }
+};
 
 exports.deleteAll = async (req, res, next) => {
-  try {
-    const documents = await Position.destroy({ where: {} });
-    return res.send(`Đã xóa.`);
-  } catch (error) {
-    return next(createError(400, "Error delete employees !"));
-  }
+  // try {
+  //     const documents = await Position.destroy({ where: {} });
+  //     return res.send(`Đã xóa.`);
+  // } catch (error) {
+  //     return next(createError(400, "Error delete employees !"));
+  // }
 };
 
 exports.update = async (req, res, next) => {};
