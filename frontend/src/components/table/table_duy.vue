@@ -36,7 +36,8 @@ export default {
 </script>
 
 <template>
-  <table
+<div>
+    <table
     class="my-table mb-2"
     :class="[borderTableAll ? 'border-table-all' : '']"
   >
@@ -44,15 +45,15 @@ export default {
       <tr>
         <th></th>
         <th>Stt</th>
-        <th v-for="(value, index) in fields">{{ value }}</th>
+        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Hành động</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in items">
+      <tr v-for="(item, index) in items" :key="index">
         <td><input type="checkbox" v-model="item.checked" name="" id="" /></td>
         <td>{{ index + 1 }}</td>
-        <td v-for="(label, index1) in labels">{{ item[label] }}</td>
+        <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
         <td v-if="activeAction == true">
           <button
             v-if="showActionList[0] == true"
@@ -98,6 +99,7 @@ export default {
   <p v-if="items.length == 0" class="text-center mt-2">
     Không tồn tại bản ghi.
   </p>
+</div>
 </template>
 
 <style scoped>

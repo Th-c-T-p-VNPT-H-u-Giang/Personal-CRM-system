@@ -1,4 +1,4 @@
-const { Role } = require("../models/index.model.js");
+const { Role, Permission } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
 const { sequelize } = require("../config/index");
@@ -41,7 +41,13 @@ exports.create = async (req, res, next) => {
 
 exports.findAll = async (req, res, next) => {
   try {
-    const documents = await Role.findAll({});
+    const documents = await Role.findAll({
+      include: [
+        {
+          model: Permission,
+        },
+      ],
+    });
     return res.send(documents);
   } catch (error) {
     console.log(error);
@@ -134,12 +140,12 @@ exports.deleteAll = async (req, res, next) => {
 // };
 exports.update = async (req, res, next) => {
   console.log("Update", req.body);
-  console.log('name');
+  console.log("name");
   const { name } = req.body;
-  console.log('name');
+  console.log("name");
   // Kiểm tra xem dữ liệu cần thiết có bị thiếu không
   try {
-    console.log('cc');
+    console.log("cc");
     let roles = [
       await Role.findOne({
         where: {
@@ -147,7 +153,7 @@ exports.update = async (req, res, next) => {
         },
       }),
     ];
-    console.log('roles', roles);
+    console.log("roles", roles);
     roles = roles.filter((value, index) => {
       return value.name == name;
     });
