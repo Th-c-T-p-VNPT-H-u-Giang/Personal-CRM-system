@@ -143,28 +143,120 @@ export default {
     const cycles = reactive({ cycle: [] });
 
         //watch lọc
-        watch(cycleValue,async (newValue, oldValue) =>{
+    watch(cycleValue,async (newValue, oldValue) =>{
       console.log("hhhh",newValue)
       await refresh();
       if(newValue == 0 ){
         return await refresh();
       }
-      if(cycleValue.length != 0){
-        console.log("status",statusValue);
-        console.log("startdate",startdateValue);
-        console.log("end",enddateValue);
-
-        data.items = data.items.filter((value, index) => {
-          return value.cycleId == cycleValue.value
-        })
-      
-
-      }
-    });
+          console.log("status",statusValue.value);
+          console.log("startdate",startdateValue.value);
+          console.log("end",enddateValue.value);
+          if(statusValue.value !='' && startdateValue.value !='' && enddateValue.value !=''){
+            console.log("trúc")
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+            })
+          }
+          else if(statusValue.value!= '' && startdateValue.value !=''){
+              data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+            })
+          }
+          else if(enddateValue.value !='' && startdateValue.value !=''){
+              data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+            })
+          }
+          else if(statusValue.value!= '' && enddateValue.value !=''){
+              data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.Status_Task.status == statusValue.value
+                && value.end_date == enddateValue.value
+            })
+          }
+          else if(statusValue.value!= ''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.Status_Task.status == statusValue.value
+            })
+          }
+          else if(startdateValue.value !=''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+            })
+          }
+          else if(enddateValue.value !=''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.end_date == enddateValue.value
+            })
+          }
+          else{
+            console.log("hhhttttt:",newValue)
+            data.items = data.items.filter((value, index) => {
+            return value.cycleId== cycleValue.value
+            })
+          }
+      });
     watch(statusValue, async (newValue, oldValue)=>{
       console.log("status",newValue)
-      await refresh();
-      if(statusValue.length != 0){
+      console.log("status",cycleValue.value)
+      await refresh()
+      
+      if(cycleValue.value != '' && startdateValue.value !='' && enddateValue.value !=''){
+        console.log("hello");
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+              && value.start_date == startdateValue.value
+              && value.end_date == enddateValue.value
+          })
+      }
+      else if(startdateValue.value !='' && enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+              return value.Status_Task.status == statusValue.value
+              && value.start_date == startdateValue.value
+              && value.end_date == enddateValue.value
+          })
+      }
+      else if(startdateValue.value !='' && cycleValue.value != ''){
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == cycleValue.value
+              && value.start_date == startdateValue.value
+              && value.Status_Task.status == statusValue.value
+          })
+      }
+      else if(enddateValue.value !=''&& cycleValue.value != ''){
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == cycleValue.value
+              && value.end_date == enddateValue.value
+              && value.Status_Task.status == statusValue.value
+          })
+      }
+      else if(cycleValue.value != ''){
+        data.items = data.items.filter((value, index) => {
+          return value.cycleId== cycleValue.value && value.Status_Task.status == statusValue.value
+          })
+      }
+      else if(startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+              return value.Status_Task.status == statusValue.value
+              && value.start_date == startdateValue.value
+          })
+      }
+      else if(enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+              return value.end_date == enddateValue.value
+              && value.Status_Task.status == statusValue.value
+          })
+      } 
+      else{
         data.items = data.items.filter((value, index) => {
           // console.log('name', value.Status_Task.status)
         return value.Status_Task.status == statusValue.value
@@ -175,9 +267,55 @@ export default {
     watch(startdateValue, async (newValue, oldValue)=>{
       console.log("start date",newValue)
       await refresh();
-      if(startdateValue.length != 0){
-        data.items = data.items.filter((value, index) => {
-        return value.start_date == startdateValue.value
+      if(statusValue.value !='' && enddateValue.value !='' && cycleValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '' && statusValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+        })
+      }
+      else if(statusValue.value !='' && enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '' && enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+        })
+      }
+      else if(statusValue.value !='')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+        })
+      } else if(enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      } else{
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
         })
       }
     });
@@ -185,12 +323,60 @@ export default {
     watch(enddateValue, async (newValue, oldValue)=>{
       console.log("end date",newValue)
       await refresh();
-      if(enddateValue.length != 0){
-        data.items = data.items.filter((value, index) => {
-        return value.end_date == enddateValue.value
+      
+      if(statusValue.value !='' && startdateValue.value !='' && cycleValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
         })
       }
-    })
+      else if(cycleValue.value != '' && statusValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(statusValue.value !='' && startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '' && startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(statusValue.value !='')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task.status == statusValue.value 
+                && value.end_date == enddateValue.value
+        })
+      } else if(startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      } else{
+        data.items= data.items.filter((value, index)=> {
+                return value.end_date == enddateValue.value
+        })
+      }
+
+    });
 
 
     // computed
@@ -220,18 +406,20 @@ export default {
       return Math.ceil(filtered.value.length / data.entryValue);
     });
     const setPages = computed(() => {
-      if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-        data.entryValue = data.items.length;
-        data.numberOfPages = 1;
-      } else data.numberOfPages = setNumberOfPages.value;
-      data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-      data.endRow = data.currentPage * data.entryValue;
-      return filtered.value.filter((item, index) => {
-        return (
-          index + 1 > (data.currentPage - 1) * data.entryValue &&
-          index + 1 <= data.currentPage * data.entryValue
-        );
-      });
+      if (data.items.length > 0) {
+        if (setNumberOfPages.value == 0 || data.entryValue == "All") {
+          data.entryValue = data.items.length;
+          data.numberOfPages = 1;
+        } else data.numberOfPages = setNumberOfPages.value;
+        data.startRow = (data.currentPage - 1) * data.entryValue + 1;
+        data.endRow = data.currentPage * data.entryValue;
+        return filtered.value.filter((item, index) => {
+          return (
+            index + 1 > (data.currentPage - 1) * data.entryValue &&
+            index + 1 <= data.currentPage * data.entryValue
+          );
+        });
+      } else return data.items.value;
     });
 
     // methods
