@@ -32,7 +32,7 @@ import {
   alert_error,
   alert_delete,
 } from "../../assets/js/common.alert";
-import { formatDate } from "../../assets/js/common"
+import { formatDate } from "../../assets/js/common";
 export default {
   components: {
     SelectFilter,
@@ -74,10 +74,10 @@ export default {
             reason: "",
           },
           Appoitment: {
-            _id:"",
+            _id: "",
             date_time: "",
             content: "",
-          }
+          },
         },
       ],
       entryValue: 5,
@@ -102,32 +102,32 @@ export default {
         },
       },
       viewValue: {
+        _id: "",
+        start_date: "",
+        end_date: "",
+        content: "",
+        Customer: {
           _id: "",
-          start_date: "",
-          end_date: "",
-          content: "",
-          Customer: {
-            _id: "",
-            name: "",
-          },
-          Cycle: {
-            _id: "",
-            name: "",
-          },
-          Employee: {
-            _id: "",
-            name: "",
-          },
-          Status_Task: {
-            status: "",
-            reason: "",
-          },
-          Appoitment: {
-            _id:"",
-            date_time: "",
-            content: "",
-          }
+          name: "",
         },
+        Cycle: {
+          _id: "",
+          name: "",
+        },
+        Employee: {
+          _id: "",
+          name: "",
+        },
+        Status_Task: {
+          status: "",
+          reason: "",
+        },
+        Appoitment: {
+          _id: "",
+          date_time: "",
+          content: "",
+        },
+      },
       addcycle: {},
       cus: [],
       employee: [],
@@ -135,69 +135,67 @@ export default {
       taskObject: {},
     });
 
-
-    const cycleValue = ref('');
-    const startdateValue = ref('');
-    const statusValue = ref('');
-    const enddateValue = ref('');
+    const cycleValue = ref("");
+    const startdateValue = ref("");
+    const statusValue = ref("");
+    const enddateValue = ref("");
     const cycles = reactive({ cycle: [] });
 
-        //watch lọc
-        watch(cycleValue,async (newValue, oldValue) =>{
-      console.log("hhhh",newValue)
+    //watch lọc
+    watch(cycleValue, async (newValue, oldValue) => {
+      console.log("hhhh", newValue);
       await refresh();
-      if(newValue == 0 ){
+      if (newValue == 0) {
         return await refresh();
       }
-      if(cycleValue.length != 0){
-        console.log("status",statusValue);
-        console.log("startdate",startdateValue);
-        console.log("end",enddateValue);
+      if (cycleValue.length != 0) {
+        console.log("status", statusValue);
+        console.log("startdate", startdateValue);
+        console.log("end", enddateValue);
 
         data.items = data.items.filter((value, index) => {
-          return value.cycleId == cycleValue.value
-        })
-      
-
+          return value.cycleId == cycleValue.value;
+        });
       }
     });
-    watch(statusValue, async (newValue, oldValue)=>{
-      console.log("status",newValue)
+    watch(statusValue, async (newValue, oldValue) => {
+      console.log("status", newValue);
       await refresh();
-      if(statusValue.length != 0){
+      if (statusValue.length != 0) {
         data.items = data.items.filter((value, index) => {
           // console.log('name', value.Status_Task.status)
-        return value.Status_Task.status == statusValue.value
-        })
+          return value.Status_Task.status == statusValue.value;
+        });
       }
     });
 
-    watch(startdateValue, async (newValue, oldValue)=>{
-      console.log("start date",newValue)
+    watch(startdateValue, async (newValue, oldValue) => {
+      console.log("start date", newValue);
       await refresh();
-      if(startdateValue.length != 0){
+      if (startdateValue.length != 0) {
         data.items = data.items.filter((value, index) => {
-        return value.start_date == startdateValue.value
-        })
+          return value.start_date == startdateValue.value;
+        });
       }
     });
 
-    watch(enddateValue, async (newValue, oldValue)=>{
-      console.log("end date",newValue)
+    watch(enddateValue, async (newValue, oldValue) => {
+      console.log("end date", newValue);
       await refresh();
-      if(enddateValue.length != 0){
+      if (enddateValue.length != 0) {
         data.items = data.items.filter((value, index) => {
-        return value.end_date == enddateValue.value
-        })
+          return value.end_date == enddateValue.value;
+        });
       }
-    })
-
+    });
 
     // computed
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.name].join("").toLocaleLowerCase();
+        return [value.Customer.name, value.Employee.name, value.Cycle.name]
+          .join("")
+          .toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -372,38 +370,43 @@ export default {
       <span class="mx-3 mb-3 h6">Lọc phân công</span>
       <div class="d-flex mx-3">
         <div class="form-group w-100">
-          <SelectFilter 
-          :title="`Chu kỳ`" 
-          @update:entryValue="(value) => cycleValue = value"
-          :entryValue="`Chu kỳ`"
-          :options="cycles.cycle"
+          <SelectFilter
+            :title="`Chu kỳ`"
+            @update:entryValue="(value) => (cycleValue = value)"
+            :entryValue="`Chu kỳ`"
+            :options="cycles.cycle"
           />
         </div>
         <div class="form-group w-100 ml-3">
-          <Select 
-          :title="`Trạng thái`" 
-          :entryValue="`Trạng thái`"
-          @update:entryValue="(value) => statusValue = value"
-          :options="[
-            {
-              name: 'Thành công',
-              value: 'true',
-            },
-            {
-              name: 'Thất bại',
-              value: 'false',
-            },
-          ]" />
+          <Select
+            :title="`Trạng thái`"
+            :entryValue="`Trạng thái`"
+            @update:entryValue="(value) => (statusValue = value)"
+            :options="[
+              {
+                name: 'Thành công',
+                value: 'true',
+              },
+              {
+                name: 'Thất bại',
+                value: 'false',
+              },
+            ]"
+          />
         </div>
         <div class="form-group w-100 ml-3">
-          <InputFilter 
-            @update:entryValue="(value) => startdateValue = value"
-            :title="`Ngày bắt đầu`" :entryValue="`Ngày bắt đầu`"  />
+          <InputFilter
+            @update:entryValue="(value) => (startdateValue = value)"
+            :title="`Ngày bắt đầu`"
+            :entryValue="`Ngày bắt đầu`"
+          />
         </div>
         <div class="form-group w-100 ml-3">
-          <InputFilter 
-            @update:entryValue="(value) => enddateValue = value"
-            :title="`Ngày kết thúc`" :entryValue="`Ngày kết thúc`"  />
+          <InputFilter
+            @update:entryValue="(value) => (enddateValue = value)"
+            :title="`Ngày kết thúc`"
+            :entryValue="`Ngày kết thúc`"
+          />
         </div>
         <div class="form-group"></div>
       </div>
@@ -506,24 +509,22 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
+    <Edit
+      :item="data.editValue"
+      :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEdit = false"
+      :cycles="cycles.cycle"
+      :cus="data.cus"
+      :employee="data.employee"
+      @edit="edit(data.editValue)"
+    />
+    <AddAppointment
+      v-if="data.taskId.length > 0"
+      :taskId="data.taskId"
+      :task="data.taskObject"
+    />
+    <View :viewValue="data.viewValue" />
   </div>
-  <Edit
-    :item="data.editValue"
-    :class="[data.activeEdit ? 'show-modal' : 'd-none']"
-    @cancel="data.activeEdit = false"
-    :cycles="cycles.cycle"
-    :cus="data.cus"
-    :employee="data.employee"
-    @edit="edit(data.editValue)"
-  />
-  <AddAppointment
-    v-if="data.taskId.length > 0"
-    :taskId="data.taskId"
-    :task="data.taskObject"
-  />
-  <View
-  :viewValue="data.viewValue" 
-   />
 </template>
 
 <style scoped>

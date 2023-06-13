@@ -220,14 +220,14 @@ export default {
       data.positions = await http_getAll(Position);
       data.items = await http_getAll(Employee);
       centers.center = await CenterServices.getAll();
-      centers.center.push({ _id: "other", name: "khác" });
+      // centers.center.push({ _id: "other", name: "khác" });
       departments.department = await departmentsServices.getAll();
-      departments.department.push({ _id: "other", name: "khác" });
+      // departments.department.push({ _id: "other", name: "khác" });
 
       units.unit = await unitsServices.getAll();
       units.unit.push({ _id: "other", name: "khác" });
       positions.position = await http_getAll(Position);
-      positions.position.push({ _id: "other", name: "khác" });
+      // positions.position.push({ _id: "other", name: "khác" });
     };
 
     // ****** trung tâm ******
@@ -261,7 +261,7 @@ export default {
         newValue
       );
       units.unit = [];
-      departments.department.push({ _id: "other", name: "khác" });
+      // departments.department.push({ _id: "other", name: "khác" });
 
       for (let val of departments.department) {
         var newData = await unitsServices.findAllUnitsOfADep(val._id);
@@ -343,7 +343,7 @@ export default {
       }
 
       units.unit = await unitsServices.findAllUnitsOfADep(newValue);
-      units.unit.push({ _id: "other", name: "khác" });
+      // units.unit.push({ _id: "other", name: "khác" });
 
       if (newValue == "other") {
         const showSweetAlert = async () => {
@@ -413,7 +413,7 @@ export default {
     const units = reactive({
       unit: [],
     });
-    const selectedOptionUnit = ref("Đơn vị");
+    const selectedOptionUnit = ref("");
     watch(selectedOptionUnit, async (newValue, oldValue) => {
       if (newValue == "") {
         return;
@@ -580,7 +580,7 @@ export default {
 
     //POSITION
     const positions = reactive({ position: [] });
-    const selectedOptionPosition = ref("Chức vụ");
+    const selectedOptionPosition = ref("");
     watch(selectedOptionPosition, async (newValue, oldValue) => {
       if (newValue == "") {
         return;

@@ -14,8 +14,8 @@ export default {
     Navbar,
     Sidebar,
     Login,
-    RouterView
-},
+    RouterView,
+  },
   setup() {
     const data = reactive({
       activeMenuResponsive: false,
@@ -24,19 +24,19 @@ export default {
     const updateMenuResponsive = () => {
       console.log("Received event from child component:");
     };
-    
-    onBeforeMount(() =>{
-      // const token = localStorage.getItem("token");
-      // if(token){
-      //   checkLogin.value = true
-      // }else{
-      //   checkLogin.value = false
-      // }
-    })
+
+    onBeforeMount(() => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        checkLogin.value = true;
+      } else {
+        checkLogin.value = false;
+      }
+    });
     return {
       data,
-      updateMenuResponsive, 
-      checkLogin
+      updateMenuResponsive,
+      checkLogin,
       // isRootPath
     };
   },
@@ -47,12 +47,14 @@ export default {
   <!-- <Login /> -->
   <!-- v-if="checkLogin" -->
   <div>
-    <div class="container-fluid">
+    <div class="container-fluid" v-if="checkLogin">
       <div class="row position-relative">
         <div
           class="z-index-3"
           :class="[
-            data.activeMenuResponsive ? 'd-block' : 'col-xl-2 d-none d-xl-block',
+            data.activeMenuResponsive
+              ? 'd-block'
+              : 'col-xl-2 d-none d-xl-block',
           ]"
         >
           <Sidebar />
@@ -64,9 +66,9 @@ export default {
         </div>
       </div>
     </div>
-    <!-- <div v-else>
-     <RouterView></RouterView>
-    </div> -->
+    <div v-else>
+      <RouterView></RouterView>
+    </div>
   </div>
 </template>
 
