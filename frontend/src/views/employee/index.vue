@@ -541,7 +541,20 @@ export default {
       }
       units.unit = value;
     };
-
+    const mail = ref(false);
+    const showMail = () => {
+      const count = data.items.filter(
+        (element) => element.checked === true
+      ).length;
+      console.log("c", count);
+      if (count > 0) {
+        mail.value = true;
+      } else {
+        mail.value = false;
+        alert_warning("Bạn chưa chọn nhân viên", "");
+      }
+      console.log(mail.value);
+    };
     onBeforeMount(async () => {
       await refresh();
     });
@@ -574,6 +587,8 @@ export default {
       sendEmail,
       updateDep,
       updateUnit,
+      mail,
+      showMail,
     };
   },
 };
@@ -706,10 +721,11 @@ export default {
           class="btn btn-warning ml-3"
           data-toggle="modal"
           data-target="#model-form-mail"
+          @click="showMail"
         >
           <span class="mx-2">Mail</span>
         </button>
-        <Mail @sendEmail="(value) => sendEmail(value)"></Mail>
+        <Mail v-if="mail" @sendEmail="(value) => sendEmail(value)"></Mail>
       </div>
     </div>
     <!-- Table -->
