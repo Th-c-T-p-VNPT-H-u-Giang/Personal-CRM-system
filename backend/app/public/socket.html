@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO Example</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // Kết nối tới máy chủ socket.io
+      const socket = io();
+
+      // Gửi tin nhắn khi nhấn nút
+      function sendMessage() {
+        const messageInput = document.getElementById("message");
+        const message = messageInput.value;
+        socket.emit("chat message", message);
+        messageInput.value = "";
+      }
+
+      // Nhận tin nhắn từ máy chủ và hiển thị lên giao diện
+      socket.on("chat message", function (message) {
+        const messagesContainer = document.getElementById("messages");
+        const messageElement = document.createElement("li");
+        messageElement.textContent = message;
+        messagesContainer.appendChild(messageElement);
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Socket.IO Example</h1>
+    <input type="text" id="message" placeholder="Enter a message" />
+    <button onclick="sendMessage()">Send</button>
+    <ul id="messages"></ul>
+  </body>
+</html>
