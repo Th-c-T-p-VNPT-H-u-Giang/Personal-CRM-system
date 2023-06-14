@@ -30,20 +30,25 @@ export default {
       type: Array,
       default: [true, true, true],
     },
+    isActiveCheckbox: {
+      type: Boolean,
+      default: true,
+    }
   },
   setup(props, ntx) {},
 };
 </script>
 
 <template>
-<div>
-    <table
-    class="my-table mb-2"
+<div class="">
+  <div class="table-responsive">
+ <table
+    class="my-table mb-2 table"
     :class="[borderTableAll ? 'border-table-all' : '']"
   >
-    <thead>
+    <thead style="max-width: 100px; overflow: auto;">
       <tr>
-        <th></th>
+        <th v-if="isActiveCheckbox"></th>
         <th>Stt</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Hành động</th>
@@ -51,8 +56,8 @@ export default {
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
-        <td><input type="checkbox" v-model="item.checked" name="" id="" /></td>
-        <td>{{ index + 1 }}</td>
+        <td v-if="isActiveCheckbox"><input type="checkbox" v-model="item.checked" name="" id="" /></td>
+        <td>{{Math.ceil(index) + 1 }}</td>
         <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
         <td v-if="activeAction == true">
           <button
@@ -95,10 +100,12 @@ export default {
         </td>
       </tr>
     </tbody>
-  </table>
-  <!-- <p v-if="items.length == 0" class="text-center mt-2">
+  </table> 
+  </div>
+    
+  <p v-if="items.length == 0" class="text-center mt-2">
     Không tồn tại bản ghi.
-  </p> -->
+  </p>
 </div>
 </template>
 

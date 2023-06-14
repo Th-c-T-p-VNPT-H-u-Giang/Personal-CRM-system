@@ -123,13 +123,15 @@ export default {
           title: "Thêm loại khách hàng",
           input: "text",
           inputLabel: "Tên loại khách hàng",
+          showCancelButton: true,
           inputValidator: (value) => {
             if (!value) {
               return "Bạn không được phép để trường này trống!";
+            }else {
+              console.log('running');
             }
           },
         });
-
         const res = await http_create(Customer_Types, { name: customerType });
         if (res.error) {
           alert_error(`Thêm loại khách hàng`, `${res.msg}`);
@@ -201,6 +203,8 @@ export default {
           data.modelValue = "--Chọn--";
           refresh();
         }
+      }else{
+        data.modelValue = "--Chọn--";
       }
     };
 

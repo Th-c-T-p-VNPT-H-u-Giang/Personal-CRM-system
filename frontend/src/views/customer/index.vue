@@ -100,6 +100,7 @@ export default {
       customerValue: {},
       showAddHabit: false,
       customerType: null,
+      viewCareCus: null
     });
 
     const entryValueCustomerType = ref("Loại khách hàng");
@@ -269,6 +270,18 @@ export default {
         current_position: item.current_position,
         work_temp: item.work_temp,
       };
+
+      data.viewCareCus = item.Customer.Tasks.map( (value) => {
+        return {
+          start_date: value.start_date,
+          end_date: value.end_date,
+          content: value.content,
+          customerName: item.Customer.name,
+          cycleName: value.Cycle.name, // join bản sao
+          statusName: value.Status_Task.status == 'false' ? 'Thất bại' : 'Thành công',
+          statusReason: value.Status_Task.reason
+        }
+      })
     };
 
     //   formatDateTime,
@@ -499,7 +512,7 @@ export default {
       @cancel="data.activeEdit = false"
       @refresh_customer="refresh_customer"
     />
-    <View :item="data.viewValue" />
+    <View :item="data.viewValue" :itemViewCareCus="data.viewCareCus"/>
   </div>
 </template>
 

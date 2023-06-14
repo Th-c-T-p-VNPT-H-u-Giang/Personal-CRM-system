@@ -357,11 +357,11 @@ export default {
 #delete-all {
   font-size: 14px;
 }
-.show-modal {
-  /* display: block;
+/* .show-modal {
+  display: block;
   opacity: 1;
   background-color: var(--dark);
   pointer-events: auto;
-  z-index: 1; */
-}
+  z-index: 1;
+} */
 </style>

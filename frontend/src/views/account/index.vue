@@ -205,6 +205,7 @@ export default {
 
     const refresh = async () => {
       data.items = await http_getAll(Account);
+
       data.items = data.items.map((value, index) => {
         return {
           _id: value._id,
@@ -216,6 +217,9 @@ export default {
           ]
         };
       });
+      
+      console.log('Data items', data.items);
+
 
       const roles = await http_getAll(Role)
       data.optionSelect = [
@@ -250,7 +254,6 @@ export default {
     // Hàm callback được gọi trước khi component được mount (load)
     onBeforeMount(async () => {
       refresh();
-      console.log('data.items', data.items);
     });
 
     return {
