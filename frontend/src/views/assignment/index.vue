@@ -8,6 +8,7 @@ import SelectFilter from "../../components/form/select_task_truc.vue";
 import InputFilter from "../../components/form/form_filter_truc.vue";
 import DeleteAll from "../../components/form/delete-all.vue";
 import Add from "./add.vue";
+import Add_TaskEmployee from "./add_task_employee.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
@@ -31,6 +32,7 @@ import {
   alert_success,
   alert_error,
   alert_delete,
+  alert_warning,
 } from "../../assets/js/common.alert";
 import { formatDate } from "../../assets/js/common"
 export default {
@@ -48,6 +50,7 @@ export default {
     Edit,
     View,
     AddAppointment,
+    Add_TaskEmployee,
   },
   setup(ctx) {
     const data = reactive({
@@ -128,11 +131,38 @@ export default {
             content: "",
           }
         },
-      addcycle: {},
       cus: [],
       employee: [],
       taskId: "",
       taskObject: {},
+      taskEmployee: {
+          _id: "",
+          start_date: "",
+          end_date: "",
+          content: "",
+          Customer: {
+            _id: "",
+            name: "",
+          },
+          Cycle: {
+            _id: "",
+            name: "",
+          },
+          Employee: {
+            _id: "",
+            name: "",
+          },
+          Status_Task: {
+            status: "",
+            reason: "",
+          },
+          Appoitment: {
+            _id:"",
+            date_time: "",
+            content: "",
+          }
+      },
+      showTask_Employee : false,
     });
 
 
@@ -142,7 +172,7 @@ export default {
     const enddateValue = ref('');
     const cycles = reactive({ cycle: [] });
 
-        //watch lọc
+    //watch lọc
     watch(cycleValue,async (newValue, oldValue) =>{
       console.log("hhhh",newValue)
       await refresh();
@@ -423,30 +453,28 @@ export default {
     });
 
     // methods
+    const showTask_Employee = () =>{
+      console.log("day ne")
+      data.showTask_Employee = false;
+      for (let value of data.items) {
+        if (value.checked == true) {
+          console.log('item', value );
+          data.taskEmployee = value;
+          data.showTask_Employee = true;
+          break;
+        }
+      }
+      if (data.showTask_Employee == false) {
+        alert_warning(`Thêm phân công cho nhân viên`, `Vui lòng chọn phân công để giao việc cho nhân viên.`);
+      } 
+    }
 
     const create = async () => {
       //await refresh();
       console.log("new task");
       data.items = await http_getAll(Task);
-      refresh();
+      await refresh();
     };
-
-    // const update = async (item) => {
-    //   console.log("updating", item);
-    //   const result = await http_update(Task,data.editValue._id, data.editValue );
-    //   console.log("result", result);
-    //   if (!result.error) {
-    //     // const task = await http_getOne(Task,result.document._id);
-    //     // console.log("task", task);
-    //     alert_success(
-    //       `Chỉnh sửa phân công`,
-    //       `Đã chỉnh sửa phân công khách hàng của nhân viên thành công.`
-    //     );
-    //     refresh();
-    //   } else if (result.error) {
-    //     alert_error(`Thêm phân công`, `${result.msg}`);
-    //   }
-    // };
 
     const update = async (item) => {
       const result = await http_update(Task, editValue._id, editValue);
@@ -493,7 +521,6 @@ export default {
       console.log("view", _id);
       router.push({ name: "Assignment.view", params: { id: _id } });
     };
-
     const appointment = (_id) => {
       // router.push({ name: "Assignment.appointment", params: { id: _id } });
     };
@@ -521,17 +548,7 @@ export default {
       console.log("employee", data.employee);
       console.log("customer", data.cus);
     });
-    // onBeforeMount(async () => {
-    //   data.items = await getAll(Task);
-    //   data.cycles = await getAll(Cycle);
-    //   data.cus = await getAll(Customer);
-    //   data.employee = await getAll(Employee);
-    //   console.log("task", data.items[0].Status_Task['status']);
-    //   console.log("cycle", data.cycles);
-    // });
-    // watch
 
-    // const task_status = ref("Status_Task['status']")
     return {
       data,
       setPages,
@@ -546,6 +563,7 @@ export default {
       statusValue,
       startdateValue,
       enddateValue,
+      showTask_Employee,
     };
   },
 };
@@ -633,6 +651,18 @@ export default {
         />
       </div>
       <div class="d-flex align-items-start">
+        <Add_TaskEmployee v-if="data.showTask_Employee"
+        :item="data.taskEmployee"
+        />
+        <button
+          type="button"
+          class="btn btn-warning mr-3"
+          data-toggle="modal"
+          data-target="#model-form-task_em"
+          @click="showTask_Employee()"
+        >
+          <span class="mx-2">Giao việc</span>
+        </button>
         <button
           type="button"
           class="btn btn-danger mr-3"
@@ -694,8 +724,7 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
-  </div>
-  <Edit
+    <Edit
     :item="data.editValue"
     :class="[data.activeEdit ? 'show-modal' : 'd-none']"
     @cancel="data.activeEdit = false"
@@ -712,6 +741,8 @@ export default {
   <View
   :viewValue="data.viewValue" 
    />
+  </div>
+
 </template>
 
 <style scoped>
