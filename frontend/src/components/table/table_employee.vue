@@ -30,30 +30,30 @@ export default {
   setup(props, ntx) {
     const checkedValues = ref([]);
 
-    const handleCheckboxChange = (value, checked) => {
-      console.log("change");
-      if (checked) {
-        // Checkbox được chọn, thêm giá trị vào mảng checkedValues nếu chưa tồn tại
-        if (!checkedValues.value.includes(value)) {
-          checkedValues.value.push(value);
-        }
-      } else {
-        // Checkbox bị bỏ chọn, loại bỏ giá trị khỏi mảng checkedValues nếu tồn tại
-        const index = checkedValues.value.indexOf(value);
-        if (index > -1) {
-          checkedValues.value.splice(index, 1);
-        }
-      }
-      console.log("change", checkedValues.value);
-      ntx.emit("checkbox", checkedValues.value);
-    };
+    // const handleCheckboxChange = (value, checked) => {
+    //   console.log("change");
+    //   if (checked) {
+    //     // Checkbox được chọn, thêm giá trị vào mảng checkedValues nếu chưa tồn tại
+    //     if (!checkedValues.value.includes(value)) {
+    //       checkedValues.value.push(value);
+    //     }
+    //   } else {
+    //     // Checkbox bị bỏ chọn, loại bỏ giá trị khỏi mảng checkedValues nếu tồn tại
+    //     const index = checkedValues.value.indexOf(value);
+    //     if (index > -1) {
+    //       checkedValues.value.splice(index, 1);
+    //     }
+    //   }
+    //   console.log("change", checkedValues.value);
+    //   ntx.emit("checkbox", checkedValues.value);
+    // };
 
     // watchEffect(() => {
     //   console.log(checkedValues.value);
     // });
 
     return {
-      handleCheckboxChange,
+      //   handleCheckboxChange,
     };
   },
 };
@@ -75,15 +75,7 @@ export default {
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
         <td>
-          <input
-            type="checkbox"
-            name=""
-            :id="`checkbox ${index}`"
-            :value="`${item.email}`"
-            @change="
-              handleCheckboxChange($event.target.value, $event.target.checked)
-            "
-          />
+          <input type="checkbox" v-model="item.checked" name="" id="" />
         </td>
         <td>{{ index + 1 }}</td>
         <td v-for="(label, index1) in labels" :key="index1">
@@ -93,7 +85,7 @@ export default {
         <td>{{ item.Unit.name }}</td>
         <td>{{ item.Unit.Department.name }}</td>
         <td>{{ item.Unit.Department.Center_VNPTHG.name }}</td>
-        <td v-if="activeAction == true">
+        <td v-if="activeAction == true" style="width: 100px">
           <button
             type="button"
             class=""
