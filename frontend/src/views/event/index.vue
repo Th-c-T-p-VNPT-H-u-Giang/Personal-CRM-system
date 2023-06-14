@@ -24,26 +24,8 @@ import {
   useRouter,
   // format date or datetime
   formatDateTime,
-  formatDate,
   // service
   Event,
-  Habit,
-  Account,
-  Appointment,
-  Center_VNPT,
-  Company_KH,
-  Customer_Types,
-  Customer_Work,
-  Customer,
-  Cycle,
-  Department,
-  Employee,
-  Log,
-  Permission,
-  Position,
-  Role,
-  Task,
-  Unit,
   // http service
   http_getAll,
   http_create,
@@ -157,7 +139,9 @@ export default {
     // watch
     const activeMenu = ref(1);
     watch(activeMenu, (newValue, oldValue) => {
-      router.push({ name: "Habit" });
+      if(newValue == 2) {
+        router.push({ name: "Habit" });
+      }
     });
 
     // methods
@@ -287,6 +271,7 @@ export default {
 </script>
 
 <template>
+<div>
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
@@ -435,6 +420,7 @@ export default {
     @edit="edit(data.editValue)"
   />
   <View />
+</div>
 </template>
 
 <style scoped>

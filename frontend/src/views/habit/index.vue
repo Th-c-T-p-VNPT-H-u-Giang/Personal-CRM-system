@@ -192,8 +192,11 @@ export default {
 
     // watch
     const activeMenu = ref(2);
+
     watch(activeMenu, (newValue, oldValue) => {
+      if(newValue == 1) {
       router.push({ name: "Event" });
+      }
     });
 
     // Hàm callback được gọi trước khi component được mount (load)
@@ -217,7 +220,8 @@ export default {
 </script>
 
 <template>
-  <div class="border-box d-flex flex-column ml-2">
+  <div>
+    <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <a
@@ -322,6 +326,7 @@ export default {
     @cancel="data.activeEdit = false"
     @edit="edit(data.editValue)"
   />
+  </div>
 </template>
 
 <style scoped>

@@ -144,13 +144,13 @@ export default {
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <router-link
-        to="/customer"
+        to="/admin/home/customer"
         @click="activeMenu = 1"
         :class="[activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
         >Khách hàng
       </router-link>
       <router-link
-        to="/customer_types"
+        to="/admin/home/customer_types"
         @click="activeMenu = 2"
         :class="[activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         

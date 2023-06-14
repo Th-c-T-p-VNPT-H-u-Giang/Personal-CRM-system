@@ -97,12 +97,12 @@ export default {
           console.log("PASSWORD:", password.value);
 
           // Đăng nhập thành công, chuyển hướng đến trang chủ
-          router.push("/");
-          location.reload()
+          // router.push("/");
+          // location.reload()
         } else {
           // Đăng nhập thất bại, xử lý thông báo lỗi hoặc hiển thị thông báo lỗi trên giao diện
           console.log(response.data.message);
-          router.push("/login");
+          // router.push("/login");
         }
       } catch (error) {
         console.log(error);
@@ -112,9 +112,9 @@ export default {
     const check = () => {
       const token = localStorage.getItem("token");
       if (token) {
-        router.push("/");
+        // router.push("/");
       } else {
-        router.push("/login");
+        // router.push("/login");
       }
     };
 
