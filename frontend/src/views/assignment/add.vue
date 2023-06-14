@@ -86,6 +86,7 @@ export default {
     const create = async () => {
       data.itemAdd.cycleId = selectedOptionCycle.value;
       console.log(data.itemAdd);
+      data.itemAdd.leaderId = sessionStorage.getItem("employeeId");
       const result = await http_create(Task, data.itemAdd);
       console.log("result", result);
       if (!result.error) {
@@ -189,7 +190,7 @@ export default {
                 @chose="(value,value1) => (data.itemAdd.customerId = value, data.modelCus=value1.name)"
               />
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
               <label for=""
                 >Nhân viên(<span style="color: red">*</span>):</label
               >

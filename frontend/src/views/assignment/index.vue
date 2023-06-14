@@ -8,6 +8,7 @@ import SelectFilter from "../../components/form/select_task_truc.vue";
 import InputFilter from "../../components/form/form_filter_truc.vue";
 import DeleteAll from "../../components/form/delete-all.vue";
 import Add from "./add.vue";
+import Add_TaskEmployee from "./add_taskemployee.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
@@ -31,6 +32,7 @@ import {
   alert_success,
   alert_error,
   alert_delete,
+  alert_warning,
 } from "../../assets/js/common.alert";
 import { formatDate } from "../../assets/js/common"
 export default {
@@ -48,6 +50,7 @@ export default {
     Edit,
     View,
     AddAppointment,
+    Add_TaskEmployee,
   },
   setup(ctx) {
     const data = reactive({
@@ -128,11 +131,38 @@ export default {
             content: "",
           }
         },
-      addcycle: {},
       cus: [],
       employee: [],
       taskId: "",
       taskObject: {},
+      taskEmployee: {
+          _id: "",
+          start_date: "",
+          end_date: "",
+          content: "",
+          Customer: {
+            _id: "",
+            name: "",
+          },
+          Cycle: {
+            _id: "",
+            name: "",
+          },
+          Employee: {
+            _id: "",
+            name: "",
+          },
+          Status_Task: {
+            status: "",
+            reason: "",
+          },
+          Appoitment: {
+            _id:"",
+            date_time: "",
+            content: "",
+          }
+      },
+      showTask_Employee : false,
     });
 
 
@@ -142,29 +172,121 @@ export default {
     const enddateValue = ref('');
     const cycles = reactive({ cycle: [] });
 
-        //watch lọc
-        watch(cycleValue,async (newValue, oldValue) =>{
+    //watch lọc
+    watch(cycleValue,async (newValue, oldValue) =>{
       console.log("hhhh",newValue)
       await refresh();
       if(newValue == 0 ){
         return await refresh();
       }
-      if(cycleValue.length != 0){
-        console.log("status",statusValue);
-        console.log("startdate",startdateValue);
-        console.log("end",enddateValue);
-
-        data.items = data.items.filter((value, index) => {
-          return value.cycleId == cycleValue.value
-        })
-      
-
-      }
-    });
+          console.log("status",statusValue.value);
+          console.log("startdate",startdateValue.value);
+          console.log("end",enddateValue.value);
+          if(statusValue.value !='' && startdateValue.value !='' && enddateValue.value !=''){
+            console.log("trúc")
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+            })
+          }
+          else if(statusValue.value!= '' && startdateValue.value !=''){
+              data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+            })
+          }
+          else if(enddateValue.value !='' && startdateValue.value !=''){
+              data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+            })
+          }
+          else if(statusValue.value!= '' && enddateValue.value !=''){
+              data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.Status_Task.status == statusValue.value
+                && value.end_date == enddateValue.value
+            })
+          }
+          else if(statusValue.value!= ''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.Status_Task.status == statusValue.value
+            })
+          }
+          else if(startdateValue.value !=''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+            })
+          }
+          else if(enddateValue.value !=''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.end_date == enddateValue.value
+            })
+          }
+          else{
+            console.log("hhhttttt:",newValue)
+            data.items = data.items.filter((value, index) => {
+            return value.cycleId== cycleValue.value
+            })
+          }
+      });
     watch(statusValue, async (newValue, oldValue)=>{
       console.log("status",newValue)
-      await refresh();
-      if(statusValue.length != 0){
+      console.log("status",cycleValue.value)
+      await refresh()
+      
+      if(cycleValue.value != '' && startdateValue.value !='' && enddateValue.value !=''){
+        console.log("hello");
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+              && value.start_date == startdateValue.value
+              && value.end_date == enddateValue.value
+          })
+      }
+      else if(startdateValue.value !='' && enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+              return value.Status_Task.status == statusValue.value
+              && value.start_date == startdateValue.value
+              && value.end_date == enddateValue.value
+          })
+      }
+      else if(startdateValue.value !='' && cycleValue.value != ''){
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == cycleValue.value
+              && value.start_date == startdateValue.value
+              && value.Status_Task.status == statusValue.value
+          })
+      }
+      else if(enddateValue.value !=''&& cycleValue.value != ''){
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == cycleValue.value
+              && value.end_date == enddateValue.value
+              && value.Status_Task.status == statusValue.value
+          })
+      }
+      else if(cycleValue.value != ''){
+        data.items = data.items.filter((value, index) => {
+          return value.cycleId== cycleValue.value && value.Status_Task.status == statusValue.value
+          })
+      }
+      else if(startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+              return value.Status_Task.status == statusValue.value
+              && value.start_date == startdateValue.value
+          })
+      }
+      else if(enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+              return value.end_date == enddateValue.value
+              && value.Status_Task.status == statusValue.value
+          })
+      } 
+      else{
         data.items = data.items.filter((value, index) => {
           // console.log('name', value.Status_Task.status)
         return value.Status_Task.status == statusValue.value
@@ -175,9 +297,55 @@ export default {
     watch(startdateValue, async (newValue, oldValue)=>{
       console.log("start date",newValue)
       await refresh();
-      if(startdateValue.length != 0){
-        data.items = data.items.filter((value, index) => {
-        return value.start_date == startdateValue.value
+      if(statusValue.value !='' && enddateValue.value !='' && cycleValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '' && statusValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+        })
+      }
+      else if(statusValue.value !='' && enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '' && enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+        })
+      }
+      else if(statusValue.value !='')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+        })
+      } else if(enddateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      } else{
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
         })
       }
     });
@@ -185,12 +353,60 @@ export default {
     watch(enddateValue, async (newValue, oldValue)=>{
       console.log("end date",newValue)
       await refresh();
-      if(enddateValue.length != 0){
-        data.items = data.items.filter((value, index) => {
-        return value.end_date == enddateValue.value
+      
+      if(statusValue.value !='' && startdateValue.value !='' && cycleValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
         })
       }
-    })
+      else if(cycleValue.value != '' && statusValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value && value.Status_Task.status == statusValue.value 
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(statusValue.value !='' && startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task.status == statusValue.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '' && startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(cycleValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == cycleValue.value
+                && value.end_date == enddateValue.value
+        })
+      }
+      else if(statusValue.value !='')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task.status == statusValue.value 
+                && value.end_date == enddateValue.value
+        })
+      } else if(startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value
+        })
+      } else{
+        data.items= data.items.filter((value, index)=> {
+                return value.end_date == enddateValue.value
+        })
+      }
+
+    });
 
 
     // computed
@@ -220,45 +436,45 @@ export default {
       return Math.ceil(filtered.value.length / data.entryValue);
     });
     const setPages = computed(() => {
-      if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-        data.entryValue = data.items.length;
-        data.numberOfPages = 1;
-      } else data.numberOfPages = setNumberOfPages.value;
-      data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-      data.endRow = data.currentPage * data.entryValue;
-      return filtered.value.filter((item, index) => {
-        return (
-          index + 1 > (data.currentPage - 1) * data.entryValue &&
-          index + 1 <= data.currentPage * data.entryValue
-        );
-      });
+      if (data.items.length > 0) {
+        if (setNumberOfPages.value == 0 || data.entryValue == "All") {
+          data.entryValue = data.items.length;
+          data.numberOfPages = 1;
+        } else data.numberOfPages = setNumberOfPages.value;
+        data.startRow = (data.currentPage - 1) * data.entryValue + 1;
+        data.endRow = data.currentPage * data.entryValue;
+        return filtered.value.filter((item, index) => {
+          return (
+            index + 1 > (data.currentPage - 1) * data.entryValue &&
+            index + 1 <= data.currentPage * data.entryValue
+          );
+        });
+      } else return data.items.value;
     });
 
     // methods
+    const showTask_Employee = () =>{
+      console.log("day ne")
+      data.showTask_Employee = false;
+      for (let value of data.items) {
+        if (value.checked == true) {
+          console.log('item', value );
+          data.taskEmployee = value;
+          data.showTask_Employee = true;
+          break;
+        }
+      }
+      if (data.showTask_Employee == false) {
+        alert_warning(`Thêm phân công cho nhân viên`, `Vui lòng chọn phân công để giao việc cho nhân viên.`);
+      } 
+    }
 
     const create = async () => {
       //await refresh();
       console.log("new task");
       data.items = await http_getAll(Task);
-      refresh();
+      await refresh();
     };
-
-    // const update = async (item) => {
-    //   console.log("updating", item);
-    //   const result = await http_update(Task,data.editValue._id, data.editValue );
-    //   console.log("result", result);
-    //   if (!result.error) {
-    //     // const task = await http_getOne(Task,result.document._id);
-    //     // console.log("task", task);
-    //     alert_success(
-    //       `Chỉnh sửa phân công`,
-    //       `Đã chỉnh sửa phân công khách hàng của nhân viên thành công.`
-    //     );
-    //     refresh();
-    //   } else if (result.error) {
-    //     alert_error(`Thêm phân công`, `${result.msg}`);
-    //   }
-    // };
 
     const update = async (item) => {
       const result = await http_update(Task, editValue._id, editValue);
@@ -305,7 +521,6 @@ export default {
       console.log("view", _id);
       router.push({ name: "Assignment.view", params: { id: _id } });
     };
-
     const appointment = (_id) => {
       // router.push({ name: "Assignment.appointment", params: { id: _id } });
     };
@@ -333,17 +548,7 @@ export default {
       console.log("employee", data.employee);
       console.log("customer", data.cus);
     });
-    // onBeforeMount(async () => {
-    //   data.items = await getAll(Task);
-    //   data.cycles = await getAll(Cycle);
-    //   data.cus = await getAll(Customer);
-    //   data.employee = await getAll(Employee);
-    //   console.log("task", data.items[0].Status_Task['status']);
-    //   console.log("cycle", data.cycles);
-    // });
-    // watch
 
-    // const task_status = ref("Status_Task['status']")
     return {
       data,
       setPages,
@@ -358,6 +563,7 @@ export default {
       statusValue,
       startdateValue,
       enddateValue,
+      showTask_Employee,
     };
   },
 };
@@ -445,6 +651,18 @@ export default {
         />
       </div>
       <div class="d-flex align-items-start">
+        <Add_TaskEmployee v-if="data.showTask_Employee"
+        :item="data.taskEmployee"
+        />
+        <button
+          type="button"
+          class="btn btn-warning mr-3"
+          data-toggle="modal"
+          data-target="#model-form-task_em"
+          @click="showTask_Employee()"
+        >
+          <span class="mx-2">Giao việc</span>
+        </button>
         <button
           type="button"
           class="btn btn-danger mr-3"
@@ -506,8 +724,7 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
-  </div>
-  <Edit
+    <Edit
     :item="data.editValue"
     :class="[data.activeEdit ? 'show-modal' : 'd-none']"
     @cancel="data.activeEdit = false"
@@ -524,6 +741,8 @@ export default {
   <View
   :viewValue="data.viewValue" 
    />
+  </div>
+
 </template>
 
 <style scoped>

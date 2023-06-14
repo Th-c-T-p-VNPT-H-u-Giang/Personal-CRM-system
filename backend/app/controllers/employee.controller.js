@@ -3,7 +3,7 @@ const createError = require('http-errors');
 const { v4: uuidv4 } = require('uuid');
 
 exports.create = async (req, res, next) => {
-    if (Object.keys(req.body).length >= 8) {
+    if (Object.keys(req.body).length >= 7) {
         const { name, birthday, address, phone, email, postionId, unitId } = req.body;
         const employees = await Employee.findAll();
         for (let value of employees) {
