@@ -3,41 +3,54 @@ import Navbar from "./components/layout/navbar.vue";
 import Footer from "./components/layout/footer.vue";
 import Sidebar from "./components/layout/sidebar.vue";
 import Login from "./login.vue";
-// import { reactive, defineComponent } from "vue";
-import { reactive, defineComponent, watchEffect, ref, computed } from "vue";
-import { RouterView } from "vue-router";
-import { onBeforeMount } from "vue";
-// import { useRouter, useRoute } from "vue-router";
+import {
+  reactive,
+  defineComponent,
+  watchEffect,
+  ref,
+  computed,
+  watch,
+  onMounted,
+} from "vue";
+import { useRouter, useRoute } from "vue-router";
 export default {
   components: {
     Footer,
     Navbar,
     Sidebar,
     Login,
-    RouterView,
   },
+
   setup() {
     const data = reactive({
       activeMenuResponsive: false,
     });
-    const checkLogin = ref(false);
+
     const updateMenuResponsive = () => {
       console.log("Received event from child component:");
     };
 
-    onBeforeMount(() => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        checkLogin.value = true;
-      } else {
-        checkLogin.value = false;
+    //
+    const route = useRoute();
+    const isRootPath = ref(false);
+    watch(
+      () => route.fullPath,
+      (newPath, oldPath) => {
+        if (newPath == "/login") isRootPath.value = true;
+        else {
+          isRootPath.value = false;
+        }
+        // Xử lý khi chuyển trang xảy ra
+        console.log("Đã chuyển từ:", oldPath);
+        console.log("Đã chuyển đến:", newPath);
+        // Thực hiện các hành động khác khi chuyển trang xảy ra
       }
-    });
+    );
+
     return {
       data,
       updateMenuResponsive,
-      checkLogin,
-      // isRootPath
+      isRootPath,
     };
   },
 };
@@ -45,9 +58,10 @@ export default {
 
 <template>
   <!-- <Login /> -->
-  <!-- v-if="checkLogin" -->
+  <!-- v-if="!isRootPath" -->
   <div>
-    <div class="container-fluid" v-if="checkLogin">
+    <RouterView v-if="isRootPath"></RouterView>
+    <div class="container-fluid" v-if="!isRootPath">
       <div class="row position-relative">
         <div
           class="z-index-3"
@@ -65,9 +79,6 @@ export default {
           <Footer />
         </div>
       </div>
-    </div>
-    <div v-else>
-      <RouterView></RouterView>
     </div>
   </div>
 </template>

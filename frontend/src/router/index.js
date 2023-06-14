@@ -1,6 +1,11 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 const routes = [
+  // {
+  //   path: "/socket",
+  //   name: "Socket",
+  //   component: () => import("../views/socke/socket.vue"),
+  // },
   // Dashboard
   {
     path: "/",

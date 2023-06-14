@@ -9,17 +9,28 @@
       "
     >
       <div class="col-lg-4">
-        <div class="card shadow bg-bray" style="background: #20262E">
+        <div class="card shadow bg-bray" style="background: #20262e">
           <div class="card-body p-5">
             <h5 class="card-title text-center mb-4">
-              <img src="./assets/images/logo2.png" alt="" style="width: 230px" />
+              <img
+                src="./assets/images/logo2.png"
+                alt=""
+                style="width: 230px"
+              />
             </h5>
-            <h3 class="text-center mb-4" style="font-weight: bold; color: white">
+            <h3
+              class="text-center mb-4"
+              style="font-weight: bold; color: white"
+            >
               ĐĂNG NHẬP
             </h3>
             <form @submit.prevent="login">
               <div class="mb-3">
-                <label for="text" class="form-label" style="font-weight: bold; color: white;margin-bottom:15px">
+                <label
+                  for="text"
+                  class="form-label"
+                  style="font-weight: bold; color: white; margin-bottom: 15px"
+                >
                   Tên Tài Khoản(<span style="color: red">*</span>):
                 </label>
                 <input
@@ -31,31 +42,47 @@
                 />
               </div>
               <div class="mb-3">
-                <label for="password" class="form-label" style="font-weight: bold; color: white;margin-bottom:15px;margin-top:10px">
+                <label
+                  for="password"
+                  class="form-label"
+                  style="
+                    font-weight: bold;
+                    color: white;
+                    margin-bottom: 15px;
+                    margin-top: 10px;
+                  "
+                >
                   Mật Khẩu(<span style="color: red">*</span>):
                 </label>
                 <div class="input-group">
-      <input
-        v-model="password"
-        :type="showPassword ? 'text' : 'password'"
-        class="form-control"
-        id="password"
-        required
-      />
-      <div class="input-group-append">
-        <span class="input-group-text">
-          <i
-            class="fa"
-            :class="{'fa-eye': showPassword, 'fa-eye-slash': !showPassword}"
-            @click="togglePasswordVisibility"
-            style="cursor: pointer;"
-          ></i>
-        </span>
-      </div>
-    </div>
+                  <input
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    class="form-control"
+                    id="password"
+                    required
+                  />
+                  <div class="input-group-append">
+                    <span class="input-group-text">
+                      <i
+                        class="fa"
+                        :class="{
+                          'fa-eye': showPassword,
+                          'fa-eye-slash': !showPassword,
+                        }"
+                        @click="togglePasswordVisibility"
+                        style="cursor: pointer"
+                      ></i>
+                    </span>
+                  </div>
+                </div>
               </div>
-              
-              <button type="submit" class="btn btn-primary w-100" style="font-weight: bold; margin-top: 20px">
+
+              <button
+                type="submit"
+                class="btn btn-primary w-100"
+                style="font-weight: bold; margin-top: 20px"
+              >
                 Đăng Nhập
               </button>
             </form>
@@ -98,7 +125,7 @@ export default {
 
           // Đăng nhập thành công, chuyển hướng đến trang chủ
           router.push("/");
-          location.reload()
+          // location.reload();
         } else {
           // Đăng nhập thất bại, xử lý thông báo lỗi hoặc hiển thị thông báo lỗi trên giao diện
           console.log(response.data.message);
@@ -123,8 +150,9 @@ export default {
     return {
       user_name,
       password,
-      login,togglePasswordVisibility,
-      showPassword
+      login,
+      togglePasswordVisibility,
+      showPassword,
     };
   },
 };

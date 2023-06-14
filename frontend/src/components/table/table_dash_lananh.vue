@@ -1,6 +1,6 @@
 <script>
 import { reactive, ref } from "vue";
-import { useRouter } from "vue-router";
+import { stringifyQuery, useRouter } from "vue-router";
 export default {
   components: {},
   props: {
@@ -28,27 +28,18 @@ export default {
       type: Boolean,
       default: false,
     },
-    name_id: { type: String, default: "" },
+    name_id: { type: String },
+    take_care: { type: Boolean },
+    assign: { type: Boolean },
+    isassign: { type: Boolean },
   },
   setup(props, ntx) {
     const router = useRouter();
-    const get = (data) => {
-      // console.log("id get:", data);
-      ntx.emit("update", data);
-    };
-    const onDelete = (data) => {
-      ntx.emit("onDelete", data);
-    };
-    const detail = (data) => {
-      // router.push({ name: "Center.view", params: { id: data } });
-      ntx.emit("detail", data);
-    };
 
-    return { get, onDelete, detail };
+    return {};
   },
 };
 </script>
-
 <template>
   <div>
     <table
@@ -62,7 +53,7 @@ export default {
           <th
             v-for="(value, index) in fields"
             :key="index"
-            :class="[value == '' ? 'truncate' : '']"
+            :class="{ none: value == 'Lịch hẹn' && take_care }"
           >
             {{ value }}
           </th>
@@ -71,48 +62,27 @@ export default {
       </thead>
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
-          <td>
-            <input
-              :checked="item.delete"
-              v-model="item.delete"
-              type="checkbox"
-              name=""
-              id=""
-            />
-          </td>
+          <td><input type="checkbox" name="" id="" /></td>
           <td>{{ index + 1 }}</td>
           <td
             v-for="(label, index1) in labels"
             :key="index1"
-            :class="[label == '_id' ? 'truncate' : '']"
+            style="overflow-wrap;: break-word;"
+            :class="{ none: label == 'app_day' && take_care }"
           >
             {{ item[label] }}
           </td>
-          <td v-if="activeAction == true">
+          <td v-if="activeAction == true" class="bet">
+            <span id="mail" class="material-symbols-outlined mx-2"> mail </span>
+            <!-- <span id="phone" class="material-symbols-outlined">
+              phone_in_talk
+            </span> -->
             <span
-              id="view"
-              class="material-symbols-outlined"
-              @click="detail(item._id)"
-              v-if="name_id != 'uni_id'"
-            >
-              visibility
-            </span>
-
-            <span
+              v-if="isassign && !assign"
+              id="assign"
               class="material-symbols-outlined mx-2"
-              @click="get(item._id)"
-              id="edit"
+              >assignment_add</span
             >
-              edit
-            </span>
-
-            <span
-              id="delete"
-              class="material-symbols-outlined"
-              @click="onDelete(item._id)"
-            >
-              delete
-            </span>
           </td>
         </tr>
       </tbody>
@@ -121,10 +91,12 @@ export default {
 </template>
 
 <style scoped>
+* {
+  box-sizing: border-box;
+}
 .my-table {
   width: 100%;
   border-collapse: collapse;
-  text-align: center;
 }
 
 .border-table-all {
@@ -148,29 +120,43 @@ export default {
   font-size: 13px;
 }
 
-#view,
-#edit,
-#delete {
+#appointment,
+#mail,
+#phone,
+#assign {
   font-size: 22px;
   cursor: pointer;
   border: 1px solid var(--gray);
   border-radius: 4px;
   padding: 1px;
 }
-#view:hover {
+#appointment:hover {
   color: var(--blue);
 }
-#edit:hover {
+#mail:hover {
   color: var(--yellow);
 }
-#delete:hover {
-  color: var(--red);
+#phone:hover {
+  color: var(--green);
 }
-.truncate {
-  max-width: 100px; /* Đặt chiều rộng tối đa cho phần tử */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+#assign:hover {
+  color: red;
+}
+.none {
   display: none;
+}
+@media screen and (max-width: 739px) {
+  #mail {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+  #mail,
+  #appointment {
+    margin: 2px auto;
+    text-align: center;
+  }
+  .bet {
+    text-align: center;
+  }
 }
 </style>
