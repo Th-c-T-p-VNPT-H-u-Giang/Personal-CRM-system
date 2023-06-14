@@ -49,7 +49,9 @@ export default {
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
         <td><input type="checkbox" v-model="item.checked" name="" id="" /></td>
-        
+        {{
+          item
+        }}
         <td>{{ index + 1 }}</td>
         <td>{{ item.Customer.name }}</td>
         <td>{{ item.Employee.name }}</td>
@@ -57,7 +59,9 @@ export default {
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}
         </td>
-        <td>{{ item.Status_Task.status == 'false' ? 'Thất bại' : 'Thành công' }}</td>
+        <td>
+          {{ item.Status_Task.status == "false" ? "Thất bại" : "Thành công" }}
+        </td>
         <td v-if="activeAction == true">
           <button
             type="button"

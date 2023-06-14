@@ -296,6 +296,7 @@ export default {
             alert_success(`Đã thêm phòng`, `${formValues.inputValue}`);
             data.modelDep = document.document.name;
             await refresh("department");
+            departments.department.push({ _id: "other", name: "khác" });
             ctx.emit("newDep", departments.department);
           }
         };
@@ -382,7 +383,7 @@ export default {
                   (await departmentsServices.findAllDepOfACenter(Id)) || [];
 
                 dep.innerHTML = `
-          <option value="">Select a product</option>
+      
           ${departments.department
             .map(
               (option) =>
@@ -416,6 +417,8 @@ export default {
             alert_success(`Đã thêm `, `${formValues.inputValue}`);
 
             await refresh("unit");
+            units.unit.push({ _id: "other", name: "khác" });
+
             ctx.emit("newUnit", units.unit);
             selectedOptionUnit.value = document.document._id;
             data.modelUnit = document.document.name;
