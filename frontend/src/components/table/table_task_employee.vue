@@ -27,35 +27,24 @@ export default {
       default: false,
     },
   },
-  setup(props, ntx) {
-    const checkedValues = ref([]);
+  setup(ctx) {
+    const data = reactive({
+      activeSelectAll: false
+    })
+    const handleCheckAll = (checked)=>{
+      if(checked){
+          
+      }else{
 
-    const handleCheckboxChange = (value, checked) => {
-      console.log("change");
-      if (checked) {
-        // Checkbox được chọn, thêm giá trị vào mảng checkedValues nếu chưa tồn tại
-        if (!checkedValues.value.includes(value)) {
-          checkedValues.value.push(value);
-        }
-      } else {
-        // Checkbox bị bỏ chọn, loại bỏ giá trị khỏi mảng checkedValues nếu tồn tại
-        const index = checkedValues.value.indexOf(value);
-        if (index > -1) {
-          checkedValues.value.splice(index, 1);
-        }
       }
-      console.log("change", checkedValues.value);
-      ntx.emit("checkbox", checkedValues.value);
-    };
+    }
 
-    // watchEffect(() => {
-    //   console.log(checkedValues.value);
-    // });
 
     return {
-      handleCheckboxChange,
-    };
-  },
+     handleCheckAll,
+    }
+  }
+  
   
 };
 </script>
@@ -67,7 +56,11 @@ export default {
   >
     <thead>
       <tr>
-        <th></th>
+        <th><input type="checkbox" name="" id="" 
+          @change="
+              handleCheckAll($event.target.checked)
+            "
+        /></th>
         <th>Stt</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
       </tr>
@@ -77,11 +70,8 @@ export default {
         <td>
             <input 
             type="checkbox"
-            :id="`checkbox ${index}`"
-            :value="`${item._id}`"
-            @change="
-              handleCheckboxChange($event.target.value, $event.target.checked)
-            ">
+            v-model="item.checked"
+        >
         </td>
         <td>{{ index + 1 }}</td>
         <td v-for="(label, index1) in labels" :key="index1">

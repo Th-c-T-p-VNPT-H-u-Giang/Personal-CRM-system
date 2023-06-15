@@ -116,28 +116,6 @@ export default {
                   </select>
                 </div>
                 <div class="form-group flex-grow-1">
-                  <label for="content"
-                    >Nhân viên(<span style="color: red">*</span>):</label
-                  >
-                  <select
-                    id=""
-                    class="form-control"
-                    required
-                    v-model="item.leaderId"
-                  >
-                    <option value="" disabled selected hidden>
-                      Chọn nhân viên
-                    </option>
-                    <option
-                      v-for="employee in employee"
-                      :key="employee"
-                      :value="employee._id"
-                    >
-                      {{ employee.name }}
-                    </option>
-                  </select>
-                </div>
-                <div class="form-group flex-grow-1">
                   <label for="name"
                     >Ngày bắt đầu(<span style="color: red">*</span>):</label
                   >

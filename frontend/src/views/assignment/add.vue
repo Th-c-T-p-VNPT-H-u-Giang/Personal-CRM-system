@@ -87,6 +87,7 @@ export default {
       data.itemAdd.cycleId = selectedOptionCycle.value;
       console.log(data.itemAdd);
       data.itemAdd.leaderId = sessionStorage.getItem("employeeId");
+      console.log('leaderId:', sessionStorage.getItem("employeeId"))
       const result = await http_create(Task, data.itemAdd);
       console.log("result", result);
       if (!result.error) {

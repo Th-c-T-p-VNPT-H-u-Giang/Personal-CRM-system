@@ -77,11 +77,11 @@ export default {
             </button>
             <div id="assignment" class="collapse mx-2">
               Cập nhật sau
-              <!-- <ul v-for="(item, index) in viewValue.Appoitment " style="font-size:16px">
+              <ul v-for="(item, index) in viewValue.Appoitment " style="font-size:16px">
                   <h2>{{ index + 1 }}</h2>
                   <li>Ngày hẹn: {{ item.date_time }}</li>
                   <li>Nội dung: {{ item.content }}</li>
-               </ul> -->
+               </ul>
             </div>
           </div>
           <div class=" mt-2">

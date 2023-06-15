@@ -517,12 +517,12 @@ export default {
             
             <button
               type="button"
-              class="btn btn-primary px-3 py-2"
+              class="btn btn-warning px-3 py-2"
               style="font-size: 14px"
               @click="createTaskEm"
-              id="add"
+              id="edit"
             >
-              <span>Thêm</span>
+              <span>Chỉnh sửa</span>
             </button>
           </form>
           </div>

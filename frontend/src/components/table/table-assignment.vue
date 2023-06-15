@@ -40,7 +40,6 @@ export default {
         <th></th>
         <th>Stt</th>
         <th>Khách hàng</th>
-        <th>Giao việc</th>
         <th>Chu kỳ</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Hành động</th>
@@ -52,7 +51,6 @@ export default {
 
         <td>{{ index + 1 }}</td>
         <td>{{ item.Customer.name }}</td>
-        <td>{{ item.Employee.name }}</td>
         <td>{{ item.Cycle.name }}</td>
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}

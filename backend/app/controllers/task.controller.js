@@ -1,4 +1,4 @@
-const { Task, Appointment, Employee, Cycle, Customer, Status_Task } = require('../models/index.model.js');
+const { Task, Appointment, Employee, Cycle, Customer, Status_Task, Employee_Task } = require('../models/index.model.js');
 const createError = require('http-errors');
 const { v4: uuidv4 } = require('uuid');
 
@@ -49,28 +49,16 @@ exports.create = async (req, res, next) => {
             msg: `Vui lòng nhập đủ thông tin.`
         })
     }
-    // try {
-    //     const document = await Task.create({
-    //         start_date: req.body.start_date,
-    //         end_date: req.body.end_date,
-    //         content: req.body.content,
-    //         cycleId: req.body.cycleId,
-    //         customerId: req.body.customerId,
-    //         leaderId: req.body.leaderId,
-    //     });
-    //     return res.send(document);
-    // } catch (error) {
-    //     console.log(error);
-    //     return next(
-    //         createError(400, 'Error creating task!')
-    //     )
-    // }
 }
 
 exports.findAll = async (req, res, next) => {
     try {
         const documents = await Task.findAll({
-            include: [{
+            include: [
+            {
+                model: Employee,
+            },
+            {
                 model: Status_Task,
                 // attribute: ['status','reason']
             },
@@ -78,14 +66,11 @@ exports.findAll = async (req, res, next) => {
                 model: Customer,
             },
             {
-                model: Employee,
-            },
-            {
                 model: Cycle,
             },
             {
-                model: Appointment,
-            },
+                model:Appointment,
+            }
             ]
 
         });
@@ -117,6 +102,9 @@ exports.findOne = async (req, res, next) => {
             {
                 model: Cycle,
             },
+            {
+                model: Appointment,
+            }
             ]
         });
         return res.send(documents);

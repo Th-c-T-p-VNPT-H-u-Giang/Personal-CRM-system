@@ -1,4 +1,4 @@
-const { Permission, Role_Permission, Role, Employee_Task, Task, Employee } = require("../models/index.model.js");
+const {  Employee_Task, Task, Employee } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
 const { sequelize } = require("../config/index");

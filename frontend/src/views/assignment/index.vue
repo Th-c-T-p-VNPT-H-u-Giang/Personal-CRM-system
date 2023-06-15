@@ -20,6 +20,8 @@ import Task from "../../services/task.service";
 import Cycle from "../../services/cycle.service";
 import Employee from "../../services/employee.service";
 import Customer from "../../services/customer.service";
+import Employees_Task from "../../services/task_employee.service";
+import Appointment from "../../services/appointment.service";
 import AddAppointment from "../appointment/add.vue";
 import {
   http_getAll,
@@ -98,7 +100,7 @@ export default {
         content: "",
         customerId: "",
         cycleId: "",
-        employeeId: "",
+        leaderId: "",
         Status_Task: {
           status: "",
           reason: "",
@@ -148,9 +150,13 @@ export default {
             _id: "",
             name: "",
           },
-          Employee: {
+          Employees_Task: {
             _id: "",
-            name: "",
+            TaskId: "",
+            Employee:{
+              _id: "",
+              name: "",
+            },
           },
           Status_Task: {
             status: "",
@@ -161,7 +167,7 @@ export default {
             date_time: "",
             content: "",
           }
-      },
+        },
       showTask_Employee : false,
     });
 
@@ -413,7 +419,7 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.name].join("").toLocaleLowerCase();
+        return [value.Customer.name, value.Cycle.name, value.start_date, value.end_date].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
