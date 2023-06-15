@@ -7,6 +7,7 @@ const {
   Status_Task,
   Event,
   Habit,
+  Cycle,
 } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
@@ -44,6 +45,9 @@ exports.findAll = async (req, res, next) => {
               include: [
                 {
                   model: Status_Task,
+                },
+                {
+                  model: Cycle,
                 },
               ],
             },

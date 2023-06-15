@@ -15,6 +15,7 @@ import {
   Event,
   http_update,
   ref,
+  alert_warning,
 } from "../common/import";
 
 import Swal from "sweetalert2";
@@ -88,13 +89,11 @@ export default {
       console.log(props.item.Customer.avatar);
       const reader = new FileReader();
 
-      console.log('qua met moi1')
 
       reader.onload = (event) => {
         data.imgSrc = event.target.result;
       };
 
-      console.log('qua met moi2')
 
       reader.readAsDataURL(files);
     };
@@ -193,23 +192,24 @@ export default {
       //   if (
       //     value.name == props.item.Customer.name &&
       //     value.phone == props.item.Customer.phone &&
-      //     value.email == props.item.Customer.email
+      //     value.email == props.item.Customer.email && 
+      //     value.address == props.item.Customer.address && 
+      //     value.customerTypesId == props.item.Customer.customerTypesId && 
+      //     value
       //   ) {
       //     isCheck = true;
       //   }
       // }
-      if (isCheck == true) {
-        return alert_error(
-          "Lổi",
-          `Thông tin khách hàng ${props.item.Customer.name} chưa được thay đổi.`
-        );
-      } else {
         const formData = new FormData();
-        if (isImageUploaded.value == true) {
+        if (isImageUploaded.value == false) {
           formData.append("avatar", props.item.Customer.avatar);
         } else {
-          console.log("Không có thay đổi");
+          console.log("Ảnh không có Không có thay đổi");
         }
+
+        
+        console.log('Avatar after isImageUploaded: ' , props.item.Customer.avatar);
+
         formData.append("name", props.item.Customer.name);
         formData.append("birthday", props.item.Customer.birthday);
         formData.append("address", props.item.Customer.address);
@@ -231,6 +231,8 @@ export default {
           props.item.Customer._id,
           formData
         );
+
+        console.log('Customer after updated : ',  res);
         if (res.error) {
           alert_error(`Lổi`, res.msg);
         } else {
@@ -248,6 +250,9 @@ export default {
             props.item._id,
             object
           );
+
+          console.log('Customer work after updated : ' , res);
+
           if (result.error) {
             alert_error(`Lổi`, result.msg);
           } else {
@@ -255,8 +260,7 @@ export default {
             ctx.emit("refresh_customer");
           }
         }
-      }
-    };
+      };
 
     // life cycle
     onBeforeMount(() => {
@@ -503,7 +507,7 @@ export default {
                       class="form-control"
                       id="wor_work_temp"
                       v-model="item.work_temp"
-                      required
+                      required style="border-color: #28a745 !important;"
                     />
                   </div>
                 </div>

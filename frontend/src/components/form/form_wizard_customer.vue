@@ -244,7 +244,7 @@ export default {
         console.log("customerTypesId", viewData.customerInfo.customerTypesId);
         console.log(formData);
         const res = await http_create(Customer, formData);
-        console.log(res);
+        console.log('Customer info', res);
         if (res.error) {
           alert_error(`Lổi`, res.msg);
         } else {
@@ -256,9 +256,8 @@ export default {
             work_temp: viewData.customerWork.work_temp,
             companyId: viewData.customerCompany._id,
           };
-
           const customerWork = await http_create(Customer_Work, object);
-          console.log(customerWork);
+          console.log('Customer work', customerWork);
           if (customerWork.error) {
             alert_error(`Lổi`, customerWork.msg);
           } else {
@@ -500,14 +499,14 @@ export default {
                   </div>
                   <div class="form-group">
                     <label for="wor_work_temp"
-                      >Nhiệm kỳ (<span style="color: red">*</span>)</label
+                      >Nhiệm kỳ</label
                     >
                     <input
                       type="text"
                       class="form-control"
                       id="wor_work_temp"
                       v-model="viewData.customerWork.work_temp"
-                      required
+                      required style="border-color: #28a745 !important;"
                     />
                   </div>
                 </div>
