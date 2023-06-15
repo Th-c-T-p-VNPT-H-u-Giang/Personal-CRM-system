@@ -6,6 +6,8 @@ const {
   Center_VNPTHG,
   Employee_Task,
   Task,
+  Cycle,
+  Customer,
 } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
@@ -119,7 +121,29 @@ exports.findOne = async (req, res, next) => {
         },
       ],
     });
+    // console.log("id:", employee1.dataValues.Tasks[0].cycleId);
+
+    var i;
+    console.log("lenght:", employee1.dataValues.Tasks.length);
+    for (i = 0; i < employee1.dataValues.Tasks.length; i++) {
+      // console.log("i=", i, employee1.dataValues.Tasks[i].cycleId);
+      const cycles = await Cycle.findOne({
+        where: {
+          _id: employee1.dataValues.Tasks[i].cycleId,
+        },
+      });
+      const customer = await Customer.findOne({
+        where: {
+          _id: employee1.dataValues.Tasks[i].customerId,
+        },
+      });
+      employee1.dataValues.Tasks[i].dataValues.Cycles = cycles.dataValues;
+      employee1.dataValues.Tasks[i].dataValues.Customers = customer.dataValues;
+      // console.log("Employee cyles:", employee1.dataValues.Tasks[i].cycle);
+      // console.log("customer:", customer);
+    }
     documents.dataValues["Tasks"] = employee1.dataValues.Tasks;
+    console.log("employee task:", employee1.dataValues.Tasks);
 
     // return res.send(employee1.Tasks);
     return res.send(documents);

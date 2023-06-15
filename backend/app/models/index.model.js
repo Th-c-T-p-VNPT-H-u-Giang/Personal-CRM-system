@@ -987,6 +987,7 @@ Habit.belongsToMany(Customer, {
 
 // checked
 const Employee_Task = sequelize.define("Employee_Task", {});
+
 Employee.belongsToMany(Task, {
   through: Employee_Task,
   onDelete: "CASCADE",
@@ -997,7 +998,6 @@ Task.belongsToMany(Employee, {
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
-
 // checked
 const Role_Permission = sequelize.define("Role_Permission", {});
 Role.belongsToMany(Permission, {
