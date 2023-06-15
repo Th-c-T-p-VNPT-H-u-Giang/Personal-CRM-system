@@ -4,6 +4,8 @@ const {
   Position,
   Department,
   Center_VNPTHG,
+  Employee_Task,
+  Task,
 } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
@@ -109,6 +111,17 @@ exports.findOne = async (req, res, next) => {
         },
       ],
     });
+    const employee1 = await Employee.findByPk(req.params.id, {
+      include: [
+        {
+          model: Task,
+          // through: { attributes: [] }, // Đảm bảo không lấy các trường trong bảng trung gian
+        },
+      ],
+    });
+    documents.dataValues["Tasks"] = employee1.dataValues.Tasks;
+
+    // return res.send(employee1.Tasks);
     return res.send(documents);
   } catch (error) {
     return next(createError(400, "Error finding employee !"));
