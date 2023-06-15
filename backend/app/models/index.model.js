@@ -59,6 +59,74 @@ const Customer_Types = sequelize.define('Customer_Types', {
     }
 });
 
+const Notification = sequelize.define('Notification', {
+    _id: setPrimary,
+    title: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Tiêu đề thông báo không được bỏ trống.',
+            },
+        },
+        get() {
+            return getDecrypt('title', this);
+        },
+        set(value) {
+            setEncrypt(value, 'title', this);
+        },
+    },
+    content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Nội dung thông báo không được bỏ trống.',
+            },
+        },
+        get() {
+            return getDecrypt('content', this);
+        },
+        set(value) {
+            setEncrypt(value, 'content', this);
+        },
+    },
+    isRead: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+    },
+    recipient: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Người nhận không được bỏ trống.',
+            },
+        },
+        get() {
+            return getDecrypt('recipient', this);
+        },
+        set(value) {
+            setEncrypt(value, 'recipient', this);
+        },
+    },
+    sender: {
+        type: DataTypes.TEXT,
+        validate: {
+            notEmpty: {
+                msg: 'Người gửi không được bỏ trống.',
+            },
+        },
+        get() {
+            return getDecrypt('sender', this);
+        },
+        set(value) {
+            setEncrypt(value, 'sender', this);
+        },
+    },
+});
+
 const Customer = sequelize.define("Customer", {
     _id: setPrimary,
     name: {

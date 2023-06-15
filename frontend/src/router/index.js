@@ -464,12 +464,12 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from, next) => {
-  // const isAuthenticated = sessionStorage.getItem('token'); // Kiểm tra xem người dùng đã đăng nhập hay chưa
+  const isAuthenticated = sessionStorage.getItem('token'); // Kiểm tra xem người dùng đã đăng nhập hay chưa
   // console.log(`isAuthenticated `, isAuthenticated);
   // const customerId = sessionStorage.getItem("customerId");
   // const customerName = sessionStorage.getItem("customerName");
   // const role = sessionStorage.getItem("role");
-  // console.log(customerId, customerName, role);
+  console.log("Employee ID",sessionStorage.getItem("employeeId"));
   if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
     // Nếu trang yêu cầu xác thực và người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
     next({ name: 'Login' });

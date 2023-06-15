@@ -94,12 +94,20 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { alert_error, alert_success } from "./assets/js/common.alert";
+import socket from '../socket';
+import {
+  http_getAll,
+} from "./assets/js/common.http";
+import Employee from "./services/employee.service";
 export default {
   setup() {
+    const data = reactive({
+      items: [],
+    });
     const showPassword = ref(false);
     const user_name = ref("");
     const password = ref("");
@@ -107,6 +115,12 @@ export default {
     const togglePasswordVisibility = () => {
       showPassword.value = !showPassword.value;
     };
+
+
+    socket.on("connect", () => {
+      console.log("connection:",socket.connected); // true
+    });
+
     // Xử lý sự kiện đăng nhập
     const login = async () => {
       try {
@@ -140,6 +154,14 @@ export default {
           sessionStorage.setItem("role", response.data.document.Role.name);
           // router.push({ name: "Dashboard" });
           location.reload();
+          data.items = await http_getAll(Employee);
+          socket.emit('birthday',data.items);
+          socket.on('upcoming_birthday', (data) => {
+            if (data.name.length!=null){
+              console.log('Sắp tới sinh nhật của khách hàng:', data.name);
+              console.log('Ngày sinh nhật:', data.birthday);
+            }
+          });
         } else {
           // Đăng nhập thất bại, xử lý thông báo lỗi hoặc hiển thị thông báo lỗi trên giao diện
           console.log(response.data.msg);
