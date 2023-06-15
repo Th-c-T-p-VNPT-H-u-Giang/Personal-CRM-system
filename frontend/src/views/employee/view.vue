@@ -1,10 +1,17 @@
 <script>
 import { watch, ref } from "vue";
+import Table from "../../components/table/table_employee_task.vue";
+// import { Table } from "../common/import";
+// import Table from "../../components/table/table_duy.vue";
+
 export default {
   props: {
     item: {
       type: Object,
     },
+  },
+  components: {
+    Table,
   },
   setup(props, context) {
     const isActive = ref(false);
@@ -114,43 +121,39 @@ export default {
               </div>
             </div>
           </div>
-
-          <!-- <div class="mt-2">
+          <div class="">
             <button
+              style="margin-bottom: 0px"
               data-toggle="collapse"
-              class="px-3 py-2 h6"
+              class="px-3 py-2 h6 border-none"
               data-target="#assignment"
+              @click="handleActiveCus"
             >
               Danh sách chăm sóc khách hàng
             </button>
-            <div id="assignment" class="collapse mx-2">
-              Lorem ipsum dolor text....
+            <div v-if="isActive" id="assignment" class="collapse my-3">
+              <div class="table-responsive">
+                <Table
+                  :items="item.Tasks"
+                  :fields="[
+                    'Ngày bắt đầu',
+                    'Ngày kết thúc',
+                    'Nội dung chăm sóc',
+                  ]"
+                  :labels="['start_date', 'end_date', 'content']"
+                  :borderTableAll="true"
+                  :showActionList="[false, false, false]"
+                  :activeAction="false"
+                  :isActiveCheckbox="false"
+                />
+              </div>
+              <!-- <div v-for="(value, index) in item.Tasks" :key="index">
+              <p> Ngày bắt đầu:  {{ value.start_date }}</p>
+              <p> Ngày kết thúc: {{ value.end_date }}</p>
+              <p> Nội dung: {{ value.content }}</p>
+              </div> -->
             </div>
           </div>
-          <div class="mt-2">
-            <button
-              data-toggle="collapse"
-              class="px-3 py-2 h6"
-              data-target="#event"
-            >
-              Danh sách sự kiện
-            </button>
-            <div id="event" class="collapse mx-2">
-              Lorem ipsum dolor text....
-            </div>
-          </div>
-          <div class="mt-2">
-            <button
-              data-toggle="collapse"
-              class="px-3 py-2 h6"
-              data-target="#habit"
-            >
-              Danh sách thói quen khách hàng
-            </button>
-            <div id="habit" class="collapse mx-2">
-              Lorem ipsum dolor text....
-            </div>
-          </div> -->
         </div>
       </div>
     </div>

@@ -37,6 +37,8 @@ import {
   alert_warning,
 } from "../../assets/js/common.alert";
 import SelectCDU from "../../components/box_lananh/select_cdu.vue";
+import { Task } from "../common/import";
+import employeeService from "../../services/employee.service";
 export default {
   components: {
     Table,
@@ -78,9 +80,22 @@ export default {
               },
             },
           },
+          Tasks: {
+            start_date: "",
+            end_date: "",
+            content: "",
+            _id: "",
+            customerId: "",
+            cycleId: "",
+            leaderId: "",
+            Employee_Task: {
+              TaskId: "",
+              EmployeeId: "",
+            },
+          },
         },
       ],
-      entryValue: 5,
+      entryValue: 2,
       numberOfPages: 1,
       totalRow: 0,
       startRow: 0,
@@ -114,13 +129,30 @@ export default {
             },
           },
         },
+        Tasks: {
+          start_date: "",
+          end_date: "",
+          content: "",
+          _id: "",
+          customerId: "",
+          cycleId: "",
+          leaderId: "",
+          Employee_Task: {
+            TaskId: "",
+            EmployeeId: "",
+          },
+        },
       },
       modelPositon: "Chức vụ",
       modelValue: "Trung tâm",
       modelDep: "Phòng",
       modelUnit: "Tổ",
     });
-
+    const view = async (value) => {
+      console.log("data view:", value);
+      data.viewValue = await employeeService.get(value);
+      data.viewValue = data.viewValue;
+    };
     // computed
     const toString = computed(() => {
       console.log("Starting search");
@@ -208,6 +240,7 @@ export default {
 
     const edit = async (editValue) => {
       console.log(editValue);
+
       const result = await http_update(Employee, editValue._id, editValue);
       if (!result.error) {
         alert_success(`Sửa nhân viên`, `${result.msg}`);
@@ -220,6 +253,7 @@ export default {
     const refresh = async () => {
       data.positions = await http_getAll(Position);
       data.items = await http_getAll(Employee);
+      // console.log("A");
       centers.center = await CenterServices.getAll();
       departments.department = await departmentsServices.getAll();
 
@@ -310,13 +344,13 @@ export default {
 
       units.unit = await unitsServices.findAllUnitsOfADep(newValue);
 
-      if (newValue == "all") {
-        await refresh();
-        selectedOptionCenter.value = "";
-        selectedOptionDepartment.value = "";
-        selectedOptionUnit.value = "";
-        selectedOptionPosition.value = "";
-      }
+      // if (newValue == "all") {
+      //   await refresh();
+      //   selectedOptionCenter.value = "";
+      //   selectedOptionDepartment.value = "";
+      //   selectedOptionUnit.value = "";
+      //   selectedOptionPosition.value = "";
+      // }
     });
 
     //UNIT
@@ -488,10 +522,7 @@ export default {
       }
       updateAdd.value = true;
     };
-    // const mail = reactive({ list: [] });
-    // watch(mail, (newValue, oldValue) => {
-    //   console.log("new mail:", mail.list);
-    // });
+
     const sendEmail = async (value) => {
       const dataMail = reactive({ title: "", content: "", mail: "" });
       const count = data.items.filter(
@@ -589,6 +620,7 @@ export default {
       updateUnit,
       mail,
       showMail,
+      view,
     };
   },
 };
@@ -747,7 +779,11 @@ export default {
           (data.editValue = value), (data.activeEdit = value1)
         )
       "
-      @view="(value) => (data.viewValue = value)"
+      @view="
+        (value) => {
+          view(value);
+        }
+      "
     />
     <!-- Pagination -->
     <Pagination

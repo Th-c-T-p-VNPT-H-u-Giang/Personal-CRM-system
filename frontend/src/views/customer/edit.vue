@@ -15,6 +15,7 @@ import {
   Event,
   http_update,
   ref,
+  alert_warning,
 } from "../common/import";
 
 import Swal from "sweetalert2";
@@ -75,7 +76,7 @@ export default {
     };
 
     const onFileChange = (event) => {
-      console.log('qua met moi')
+      console.log("qua met moi");
       props.item.Customer.avatar = event.target.files[0];
 
       // handle display img
@@ -88,13 +89,9 @@ export default {
       console.log(props.item.Customer.avatar);
       const reader = new FileReader();
 
-      console.log('qua met moi1')
-
       reader.onload = (event) => {
         data.imgSrc = event.target.result;
       };
-
-      console.log('qua met moi2')
 
       reader.readAsDataURL(files);
     };
@@ -193,67 +190,67 @@ export default {
       //   if (
       //     value.name == props.item.Customer.name &&
       //     value.phone == props.item.Customer.phone &&
-      //     value.email == props.item.Customer.email
+      //     value.email == props.item.Customer.email &&
+      //     value.address == props.item.Customer.address &&
+      //     value.customerTypesId == props.item.Customer.customerTypesId &&
+      //     value
       //   ) {
       //     isCheck = true;
       //   }
       // }
-      if (isCheck == true) {
-        return alert_error(
-          "Lổi",
-          `Thông tin khách hàng ${props.item.Customer.name} chưa được thay đổi.`
-        );
+      const formData = new FormData();
+      if (isImageUploaded.value == false) {
+        formData.append("avatar", props.item.Customer.avatar);
       } else {
-        const formData = new FormData();
-        if (isImageUploaded.value == true) {
-          formData.append("avatar", props.item.Customer.avatar);
-        } else {
-          console.log("Không có thay đổi");
-        }
-        formData.append("name", props.item.Customer.name);
-        formData.append("birthday", props.item.Customer.birthday);
-        formData.append("address", props.item.Customer.address);
-        formData.append("phone", props.item.Customer.phone);
-        formData.append("email", props.item.Customer.email);
-        formData.append("customerTypesId", props.item.Customer_Type._id);
+        console.log("Ảnh không có Không có thay đổi");
+      }
 
-        // console.log("Object formdata avatar" + props.item.Customer.avatar);
-        // console.log("Object formdata name" + props.item.Customer.name);
-        // console.log("Object formdata birthday" + props.item.Customer.birthday);
-        // console.log("Object formdata address" + props.item.Customer.address);
-        // console.log("Object formdata phone" + props.item.Customer.phone);
-        // console.log("Object formdata email" + props.item.Customer.email);
-        // console.log(
-        //   "Object formdata customerTypesId" + props.item.Customer_Type._id
-        // );
-        const res = await http_update(
-          Customer,
-          props.item.Customer._id,
-          formData
-        );
-        if (res.error) {
-          alert_error(`Lổi`, res.msg);
-        } else {
-          const object = {
-            customerId: props.item.Customer._id,
-            current_workplace: props.item.current_workplace,
-            work_history: props.item.work_history,
-            current_position: props.item.current_position,
-            work_temp: props.item.work_temp,
-            companyId: props.item.Company_KH._id,
-          };
+      console.log("Avatar after isImageUploaded: ", props.item.Customer.avatar);
 
-          const result = await http_update(
-            Customer_Work,
-            props.item._id,
-            object
-          );
-          if (result.error) {
-            alert_error(`Lổi`, result.msg);
-          } else {
-            alert_success("Thành công", result.msg);
-            ctx.emit("refresh_customer");
-          }
+      formData.append("name", props.item.Customer.name);
+      formData.append("birthday", props.item.Customer.birthday);
+      formData.append("address", props.item.Customer.address);
+      formData.append("phone", props.item.Customer.phone);
+      formData.append("email", props.item.Customer.email);
+      formData.append("customerTypesId", props.item.Customer_Type._id);
+
+      // console.log("Object formdata avatar" + props.item.Customer.avatar);
+      // console.log("Object formdata name" + props.item.Customer.name);
+      // console.log("Object formdata birthday" + props.item.Customer.birthday);
+      // console.log("Object formdata address" + props.item.Customer.address);
+      // console.log("Object formdata phone" + props.item.Customer.phone);
+      // console.log("Object formdata email" + props.item.Customer.email);
+      // console.log(
+      //   "Object formdata customerTypesId" + props.item.Customer_Type._id
+      // );
+      const res = await http_update(
+        Customer,
+        props.item.Customer._id,
+        formData
+      );
+
+      console.log("Customer after updated : ", res);
+      if (res.error) {
+        alert_error(`Lổi`, res.msg);
+      } else {
+        const object = {
+          customerId: props.item.Customer._id,
+          current_workplace: props.item.current_workplace,
+          work_history: props.item.work_history,
+          current_position: props.item.current_position,
+          work_temp: props.item.work_temp,
+          companyId: props.item.Company_KH._id,
+        };
+
+        const result = await http_update(Customer_Work, props.item._id, object);
+
+        console.log("Customer work after updated : ", res);
+
+        if (result.error) {
+          alert_error(`Lổi`, result.msg);
+        } else {
+          alert_success("Thành công", result.msg);
+          ctx.emit("refresh_customer");
         }
       }
     };
@@ -504,6 +501,7 @@ export default {
                       id="wor_work_temp"
                       v-model="item.work_temp"
                       required
+                      style="border-color: #28a745 !important"
                     />
                   </div>
                 </div>

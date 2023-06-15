@@ -1,5 +1,5 @@
 <script>
-import { reactive, watchEffect, ref, watch, onBeforeMount } from "vue";
+import { reactive } from "vue";
 export default {
   props: {
     items: {
@@ -26,18 +26,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    showActionList: {
+      type: Array,
+      default: [true, true, true],
+    },
   },
-  setup(props, ntx) {
-    const selectAll = ref(false);
-    watch(selectAll, (value) => {
-      for (let i = 0; i < props.items.length; i++) {
-        props.items[i].checked = value;
-      }
-    });
-    return {
-      selectAll,
-    };
-  },
+  setup(props, ntx) {},
 };
 </script>
 
@@ -48,29 +42,20 @@ export default {
   >
     <thead>
       <tr>
-        <th>
-          <input type="checkbox" v-model="selectAll" name="" id="" />
-        </th>
+        <th></th>
         <th>Stt</th>
-        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
+        <th v-for="(value, index) in fields">{{ value }}</th>
         <th v-if="activeAction == true">Hành động</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in items" :key="index">
-        <td>
-          <input type="checkbox" v-model="item.checked" name="" id="" />
-        </td>
+      <tr v-for="(item, index) in items">
+        <td><input type="checkbox" v-model="item.checked" name="" id="" /></td>
         <td>{{ index + 1 }}</td>
-        <td v-for="(label, index1) in labels" :key="index1">
-          {{ item[label] }}
-        </td>
-        <td>{{ item.Position.name }}</td>
-        <td>{{ item.Unit.name }}</td>
-        <td>{{ item.Unit.Department.name }}</td>
-        <td>{{ item.Unit.Department.Center_VNPTHG.name }}</td>
-        <td v-if="activeAction == true" style="width: 100px">
+        <td v-for="(label, index1) in labels">{{ item[label] }}</td>
+        <td v-if="activeAction == true">
           <button
+            v-if="showActionList[0] == true"
             type="button"
             class=""
             data-toggle="modal"
@@ -79,12 +64,12 @@ export default {
             <span
               id="view"
               class="material-symbols-outlined d-flex align-items-center"
-              @click="$emit('view', item._id)"
             >
               visibility
             </span>
           </button>
           <button
+            v-if="showActionList[1] == true"
             type="button"
             class="mx-2"
             data-toggle="modal"
@@ -99,17 +84,20 @@ export default {
             </span>
           </button>
           <span
+            v-if="showActionList[2] == true"
             id="delete"
             class="material-symbols-outlined"
-            @click="$emit('delete', item._id)"
+            @click="$emit('delete', item._id, item)"
           >
             delete
           </span>
         </td>
       </tr>
-      <!-- <button @click="getSelectedCheckboxes()">Lấy các checkbox đã chọn</button> -->
     </tbody>
   </table>
+  <p v-if="items.length == 0" class="text-center mt-2">
+    Không tồn tại bản ghi.
+  </p>
 </template>
 
 <style scoped>

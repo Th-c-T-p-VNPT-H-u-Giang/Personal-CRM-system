@@ -47,7 +47,7 @@ export default {
       startRow: 0,
       endRow: 0,
       currentPage: 1,
-      searchText: "",
+      // searchText: "",
       itemAdd: {
         name: "",
         birthdate: "",
@@ -100,7 +100,10 @@ export default {
       customerValue: {},
       showAddHabit: false,
       customerType: null,
+      viewCareCus: null,
     });
+
+    const searchText = ref("");
 
     const entryValueCustomerType = ref("Loại khách hàng");
     const entryValueStatusTask = ref("Trạng thái chăm sóc");
@@ -119,14 +122,14 @@ export default {
         });
       }
 
-      if(entryValueStatusTask.value != 'Trạng thái chăm sóc') {
-        
-        data.items = data.items.filter( (cusWork) => {
-          return cusWork.Customer.Tasks.filter( task => {
-            return task.Status_Task.status == entryValueStatusTask.value;
-          }).length > 0
-
-        })
+      if (entryValueStatusTask.value != "Trạng thái chăm sóc") {
+        data.items = data.items.filter((cusWork) => {
+          return (
+            cusWork.Customer.Tasks.filter((task) => {
+              return task.Status_Task.status == entryValueStatusTask.value;
+            }).length > 0
+          );
+        });
       }
     };
 
@@ -150,11 +153,20 @@ export default {
       reFresh();
     });
 
+    // watch
+    watch(searchText, (newValue, oldValue) => {
+      reFresh();
+      // data.items = setPage()
+      data.items.filter((value) => {
+        console.log("Customer name", value.Customer.name);
+      });
+    });
+
     // computed
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.Customer.name,value.Customer.email,value.Customer.phone]
+        return [value.Customer.name, value.Customer.email, value.Customer.phone]
           .join("")
           .toLocaleLowerCase();
       });
@@ -162,12 +174,12 @@ export default {
     const filter = computed(() => {
       return data.items.filter((value, index) => {
         return toString.value[index].includes(
-          data.searchText.toLocaleLowerCase()
+          searchText.value.toLocaleLowerCase()
         );
       });
     });
     const filtered = computed(() => {
-      if (!data.searchText) {
+      if (!searchText.value) {
         data.totalRow = data.items.length;
         return data.items;
       } else {
@@ -180,6 +192,7 @@ export default {
     });
     const setPages = computed(() => {
       if (data.items.length > 0) {
+        console.log("data.items setpages: " + data.items);
         if (setNumberOfPages.value == 0 || data.entryValue == "All") {
           data.entryValue = data.items.length;
           data.numberOfPages = 1;
@@ -219,14 +232,7 @@ export default {
         if (rsCustomer.error) {
           alert_error("Lổi ", rsCustomer.msg);
         } else {
-          const rsCompany = await http_deleteOne(Company_KH, CompanyId);
-          console.log(rsCompany);
-          if (rsCompany.error) {
-            alert_error("Lổi ", rsCompany.msg);
-          } else {
-            reFresh();
-            alert_success("Thành công", "Xóa khách hàng thành công");
-          }
+          alert_success("Thành công", "Xóa khách hàng thành công");
         }
       }
     };
@@ -254,12 +260,8 @@ export default {
           _id: item.Company_KH._id,
           name: item.Company_KH.name,
         },
-        Events: [
-          ...item.Customer.Events,
-        ],
-        Tasks: [
-          ...item.Customer.Tasks,
-        ],
+        Events: [...item.Customer.Events],
+        Tasks: [...item.Customer.Tasks],
         Habits: {
           ...item.Customer.Habits,
         },
@@ -269,6 +271,19 @@ export default {
         current_position: item.current_position,
         work_temp: item.work_temp,
       };
+
+      data.viewCareCus = item.Customer.Tasks.map((value) => {
+        return {
+          start_date: value.start_date,
+          end_date: value.end_date,
+          content: value.content,
+          customerName: item.Customer.name,
+          cycleName: value.Cycle.name, // join bản sao
+          statusName:
+            value.Status_Task.status == "false" ? "Thất bại" : "Thành công",
+          statusReason: value.Status_Task.reason,
+        };
+      });
     };
 
     //   formatDateTime,
@@ -330,6 +345,10 @@ export default {
       }
     });
 
+    const handleSearchText = (value) => {
+      searchText.value = value;
+    };
+
     return {
       update,
       deleteOne,
@@ -340,6 +359,7 @@ export default {
       showAddHabit,
       updateEntryValueCustomerType,
       updateEntryValueStatusTask,
+      handleSearchText,
       entryValueCustomerType,
       entryValueStatusTask,
       data,
@@ -355,13 +375,13 @@ export default {
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
       <router-link
-        to="/admin/home/customer"
+        to="/customer"
         @click="activeMenu = 1"
         :class="[activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
         >Khách hàng
       </router-link>
       <router-link
-        to="/admin/home/customer_types"
+        to="/customer_types"
         @click="activeMenu = 2"
         :class="[activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
         >Loại khách hàng
@@ -434,7 +454,7 @@ export default {
         <Search
           class="ml-3"
           style="width: 300px"
-          @update:searchText="(value) => (data.searchText = value)"
+          @update:searchText="handleSearchText;"
         />
       </div>
       <div class="d-flex align-items-start">
@@ -499,7 +519,7 @@ export default {
       @cancel="data.activeEdit = false"
       @refresh_customer="refresh_customer"
     />
-    <View :item="data.viewValue" />
+    <View :item="data.viewValue" :itemViewCareCus="data.viewCareCus" />
   </div>
 </template>
 
