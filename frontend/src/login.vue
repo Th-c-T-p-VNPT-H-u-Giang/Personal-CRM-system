@@ -139,7 +139,7 @@ export default {
           sessionStorage.setItem("employeeName", response.data.document.Employee.name);
           sessionStorage.setItem("role", response.data.document.Role.name);
           // router.push({ name: "Dashboard" });
-          location.reload();
+          router.push("/");
         } else {
           // Đăng nhập thất bại, xử lý thông báo lỗi hoặc hiển thị thông báo lỗi trên giao diện
           console.log(response.data.msg);

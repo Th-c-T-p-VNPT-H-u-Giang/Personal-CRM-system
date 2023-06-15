@@ -4,12 +4,54 @@ const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
+const moment = require('moment');
 
 // initialize
 const app = express();
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+
+//socket
+const http = require('http');
+const server = http.createServer(app);
+const io = require("socket.io")(server,{
+    cors: {
+        origin: "*"
+    }
+});
+
+io.on('connection', (socket) => {
+  console.log('a user connected');
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+
+  socket.on('birthday', (data) => {
+    io.emit('upcoming_birthday', data);
+  });
+
+  // socket.on('birthday', (customers) => {
+  //   const today = moment(); // Lấy ngày hiện tại
+  //   customers.forEach(customer => {
+  //     console.log(customer);
+  //     const birthday = moment(customer.birthday, 'YYYY-MM-DD'); 
+  //     const customerBirthday = { month: birthday.month(), date: birthday.date() };
+  //     const todayDate = { month: today.month(), date: today.date() };
+  //     if (
+  //       todayDate.month === customerBirthday.month && todayDate.date === customerBirthday.date
+  //     ) {
+  //       io.emit('upcoming_birthday', { name: customer.name, birthday: customer.birthday });
+  //       console.log("Khách hàng nào: ",{ name: customer.name, birthday: customer.birthday });
+  //     }
+  //   });
+  // });
+});
+
+server.listen(3000, () => {
+  console.log(`Server is listening on port`);
+});
+
 
 // config path
 const pathPublic = path.join(__dirname, "./app/public");

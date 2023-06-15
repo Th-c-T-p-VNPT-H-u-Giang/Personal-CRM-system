@@ -464,7 +464,7 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from, next) => {
-  // const isAuthenticated = sessionStorage.getItem('token'); // Kiểm tra xem người dùng đã đăng nhập hay chưa
+  const isAuthenticated = sessionStorage.getItem('token'); // Kiểm tra xem người dùng đã đăng nhập hay chưa
   // console.log(`isAuthenticated `, isAuthenticated);
   // const customerId = sessionStorage.getItem("customerId");
   // const customerName = sessionStorage.getItem("customerName");
