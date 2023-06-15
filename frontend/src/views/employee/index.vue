@@ -39,6 +39,7 @@ import {
 import SelectCDU from "../../components/box_lananh/select_cdu.vue";
 import { Task } from "../common/import";
 import employeeService from "../../services/employee.service";
+import cycleService from "../../services/cycle.service";
 export default {
   components: {
     Table,
@@ -141,6 +142,7 @@ export default {
             TaskId: "",
             EmployeeId: "",
           },
+          Cycles: {},
         },
       },
       modelPositon: "Chức vụ",
@@ -151,7 +153,11 @@ export default {
     const view = async (value) => {
       console.log("data view:", value);
       data.viewValue = await employeeService.get(value);
-      data.viewValue = data.viewValue;
+
+      for (let i = 0; i <= data.viewValue.Tasks.length; i++) {
+        console.log("ID");
+        const cycleName = await cycleService.get(data.viewValue.Tasks.cycleId);
+      }
     };
     // computed
     const toString = computed(() => {
@@ -254,11 +260,16 @@ export default {
       data.positions = await http_getAll(Position);
       data.items = await http_getAll(Employee);
       // console.log("A");
+      var i;
+      for (i = 0; i < data.items.length; i++) {
+        data.items[i].checked = false;
+      }
       centers.center = await CenterServices.getAll();
       departments.department = await departmentsServices.getAll();
 
       units.unit = await unitsServices.getAll();
       positions.position = await http_getAll(Position);
+      console.log("refresh:", data.items);
     };
 
     // ****** trung tâm ******
@@ -586,6 +597,16 @@ export default {
       }
       console.log(mail.value);
     };
+
+    //CHECKALL
+    const checkAll = (value) => {
+      console.log("index", value, data.items.length);
+      var i;
+      for (i = 0; i < data.items.length; i++) {
+        data.items[i].checked = true;
+      }
+      console.log("check all:", data.items[0].checked);
+    };
     onBeforeMount(async () => {
       await refresh();
     });
@@ -621,6 +642,7 @@ export default {
       mail,
       showMail,
       view,
+      checkAll,
     };
   },
 };
@@ -784,6 +806,7 @@ export default {
           view(value);
         }
       "
+      @selectAll="(value) => checkAll(value)"
     />
     <!-- Pagination -->
     <Pagination

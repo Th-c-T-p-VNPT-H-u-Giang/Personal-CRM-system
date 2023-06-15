@@ -30,9 +30,11 @@ export default {
   setup(props, ntx) {
     const selectAll = ref(false);
     watch(selectAll, (value) => {
-      for (let i = 0; i < props.items.length; i++) {
-        props.items[i].checked = value;
-      }
+      // for (let i = 0; i < props.items.length; i++) {
+      //   props.items[i].checked = value;
+      // }
+      console.log("table_ selectAll", value);
+      ntx.emit("selectAll", true);
     });
     return {
       selectAll,
