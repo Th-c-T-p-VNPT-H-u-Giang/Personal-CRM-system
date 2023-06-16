@@ -1,5 +1,6 @@
 <script>
 import { defineEmits, inject, reactive } from "vue";
+import socket from "../../socket";
 
 export default {
   props: {
@@ -15,6 +16,33 @@ export default {
       console.log('starting')
       ctx.emit("updateMenuResponsive", "true");
     };
+
+
+
+
+
+    const token = sessionStorage.getItem('token')
+    const check = (token) => {
+      if (token) {
+      const _idEmployee = sessionStorage.getItem("employeeId");
+      const _nameEmployee = sessionStorage.getItem("employeeName");
+      const object = {
+        _id: _idEmployee,
+        name: _nameEmployee
+      }
+        socket.emit('birthday', object)
+        socket.on('upcoming_birthday', (data) => {
+          if (data) {
+            console.log('Data received from server' , data);
+          } else {
+            console.log('Data not received from server');
+          }
+        });
+    }
+    }
+
+    check(token)
+
     return {
       updateMenuResponsive,
       data
@@ -24,43 +52,28 @@ export default {
 </script>
 
 <template>
-  <nav
-    class="d-flex align-items-center justify-content-between my-3 ml-2 py-1 border-nav px-2"
-  >
+  <nav class="d-flex align-items-center justify-content-between my-3 ml-2 py-1 border-nav px-2">
     <a class="text-dark h5 my-auto d-none d-xl-block">PERSONAL CRM SYSTEM</a>
-    <a class="d-xl-none d-sm-block text-dark h5 my-auto"
-      ><span class="material-symbols-outlined cursor-pointer" @click="$emit('showMenu')"> menu </span></a
-    >
+    <a class="d-xl-none d-sm-block text-dark h5 my-auto"><span class="material-symbols-outlined cursor-pointer"
+        @click="$emit('showMenu')"> menu </span></a>
     <div class="d-flex align-content-center justify-content-between">
-      <a class="text-dark d-flex align-items-center"
-        ><span class="material-symbols-outlined cursor-pointer">
+      <a class="text-dark d-flex align-items-center"><span class="material-symbols-outlined cursor-pointer">
           search
-        </span></a
-      >
-      <a class="text-dark d-flex align-items-center mx-2"
-        ><span class="material-symbols-outlined cursor-pointer">
+        </span></a>
+      <a class="text-dark d-flex align-items-center mx-2"><span class="material-symbols-outlined cursor-pointer">
           translate
-        </span></a
-      >
-      <a class="text-dark d-flex align-items-center"
-        ><span class="material-symbols-outlined cursor-pointer">
+        </span></a>
+      <a class="text-dark d-flex align-items-center"><span class="material-symbols-outlined cursor-pointer">
           light_mode
-        </span></a
-      >
-      <a class="text-dark d-flex align-items-center mx-2"
-        ><span class="material-symbols-outlined cursor-pointer">
+        </span></a>
+      <a class="text-dark d-flex align-items-center mx-2"><span class="material-symbols-outlined cursor-pointer">
           notifications
-        </span></a
-      >
+        </span></a>
       <div class="d-flex align-content-center">
-        <img
-          class="rounded-circle avatar cursor-pointer"
+        <img class="rounded-circle avatar cursor-pointer"
           src="https://s1.media.ngoisao.vn/resize_580/news/2022/06/08/trieu-le-dinh-3-ngoisaovn-w1365-h2048.jpg"
-          alt="Avatar"
-        />
-        <div
-          class="d-xl-flex d-none flex-column align-items-center justify-content-center ml-2"
-        >
+          alt="Avatar" />
+        <div class="d-xl-flex d-none flex-column align-items-center justify-content-center ml-2">
           <span class="font-size-13">{{ data.employeeName }}</span>
           <span class="italic-text font-size-13">{{ data.role }}</span>
         </div>
@@ -73,20 +86,25 @@ export default {
 .color-dark {
   color: var(--dark);
 }
+
 .border-nav {
   border: 1px solid var(--gray);
   border-radius: 5px;
 }
+
 .avatar {
   width: 50px;
   height: 50px;
 }
+
 .italic-text {
   font-style: italic;
 }
+
 .cursor-pointer {
   cursor: pointer;
 }
+
 .font-size-13 {
   font-size: 13px;
 }

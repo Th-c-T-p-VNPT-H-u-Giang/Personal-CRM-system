@@ -287,6 +287,7 @@ export default {
 </script>
 
 <template>
+<div>
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="d-flex menu my-3 mx-3 justify-content-end">
@@ -435,6 +436,7 @@ export default {
     @edit="edit(data.editValue)"
   />
   <View />
+</div>
 </template>
 
 <style scoped>

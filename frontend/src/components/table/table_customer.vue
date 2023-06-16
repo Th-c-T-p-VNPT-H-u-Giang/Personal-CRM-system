@@ -12,7 +12,7 @@
       </thead>
       <tbody>
         <tr v-for="(item, index) in items" :key="index">
-          <td><input type="checkbox" v-model="item.checked" name="" id="" /></td>
+          <td><input type="checkbox" v-model="item.checked" name="" id=""/></td>
           <td>{{ index + 1 }}</td>
           <td>{{ item.Customer.name }}</td>
           <td>{{ item.Customer.email }}</td>
@@ -81,10 +81,10 @@ export default {
     },
   },
   setup(props, ntx) {
-    console.log(props.items);
+    // console.log(props.items);
     const defaultCustomerType = 'Thường'
     return {
-      defaultCustomerType
+      defaultCustomerType,
     }
   },
 };

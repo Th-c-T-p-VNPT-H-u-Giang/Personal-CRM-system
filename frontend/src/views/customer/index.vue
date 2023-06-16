@@ -234,6 +234,8 @@ export default {
           alert_error("Lổi ", rsCustomer.msg);
         } else {
           alert_success("Thành công", "Xóa khách hàng thành công");
+          reFresh();
+
         }
       }
     };
