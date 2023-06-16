@@ -70,7 +70,7 @@ export default {
             <div class="d-flex flex-column" style="height: 100%">
               <div
                 class="d-flex mt-3 mx-3"
-                v-for="(value, index) in data.stepList"
+                v-for="(value, index) in data.stepList" :key="index"
               >
                 <span
                   @click="data.activeStep = index + 1"
@@ -112,28 +112,6 @@ export default {
                     </option>
                     <option v-for="cus in cus" :key="cus" :value="cus._id">
                       {{ cus.name }}
-                    </option>
-                  </select>
-                </div>
-                <div class="form-group flex-grow-1">
-                  <label for="content"
-                    >Nhân viên(<span style="color: red">*</span>):</label
-                  >
-                  <select
-                    id=""
-                    class="form-control"
-                    required
-                    v-model="item.leaderId"
-                  >
-                    <option value="" disabled selected hidden>
-                      Chọn nhân viên
-                    </option>
-                    <option
-                      v-for="employee in employee"
-                      :key="employee"
-                      :value="employee._id"
-                    >
-                      {{ employee.name }}
                     </option>
                   </select>
                 </div>
