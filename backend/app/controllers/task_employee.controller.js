@@ -66,11 +66,12 @@ exports.findOne = async (req, res, next) => {
 };
 
 exports.deleteOne = async (req, res, next) => {
+  // console.log("req.body DET:", req.body, "------------");
   try {
     const documents = await Employee_Task.destroy({
       where: {
-        TaskId: req.body.taskid,
-        EmployeeId: req.body.employeeid,
+        TaskId: req.body.TaskId,
+        EmployeeId: req.body.EmployeeId,
       },
     });
     return res.send(`Đã xóa công việc của nhân viên`);

@@ -177,10 +177,10 @@ exports.findOne = async (req, res, next) => {
       const center = await Center_VNPTHG.findOne({
         where: { _id: department.dataValues.centerVNPTHGId },
       });
-      console.log("position:", unit);
-      console.log("dep:", department);
-      console.log("center:", center);
-      console.log("nhân viên:", employee.dataValues);
+      // console.log("position:", unit);
+      // console.log("dep:", department);
+      // console.log("center:", center);
+      // console.log("nhân viên:", employee.dataValues);
       employee.dataValues.name = getDecrypt(employee.dataValues.name);
       employee.dataValues.phone = getDecrypt(employee.dataValues.phone);
       employee.dataValues.email = getDecrypt(employee.dataValues.email);
