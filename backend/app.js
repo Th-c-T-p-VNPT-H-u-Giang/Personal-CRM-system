@@ -101,6 +101,7 @@ const Customer_HabitRouter = require('./app/routes/customer_habit.route');
 const Task_EmployeeRouter = require('./app/routes/task_employee.route');
 const MailRouter = require("./app/routes/mail.route");
 const LoginRouter = require('./app/routes/login.route');
+const notificationRouter = require('./app/routes/notification.route');
 
 // use router
 app.use('/api/customers', customerRouter);
@@ -127,6 +128,7 @@ app.use('/api/customer_habits', Customer_HabitRouter);
 app.use('/api/task_employees', Task_EmployeeRouter);
 app.use("/api/mail", MailRouter);
 app.use('/api/login', LoginRouter);
+app.use('/api/notification', notificationRouter);
 // check errors
 app.use((req, res, next) => {
     return next(

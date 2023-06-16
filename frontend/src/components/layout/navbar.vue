@@ -3,6 +3,20 @@ import { defineEmits, inject, ref ,reactive, onMounted} from "vue";
 import io from "socket.io-client";
 import socket from '../../../socket';
 import employeeService from "../../services/employee.service";
+import notificationService from "../../services/notification.service";
+import {
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+  http_update,
+} from "../../assets/js/common.http";
+import {
+  alert_success,
+  alert_error,
+  alert_delete,
+  alert_warning,
+} from "../../assets/js/common.alert";
 
 export default {
   props: {},
@@ -65,7 +79,8 @@ export default {
             reason: "",
           },
         },
-      }
+      },
+      Notice: {}
     })
     const emit = inject("emit");
     const hasNotification = ref(false);
@@ -76,6 +91,53 @@ export default {
     const updateMenuResponsive = () => {
       console.log("starting");
       ctx.emit("updateMenuResponsive", "true");
+    };
+
+
+    const deleteOne = async (_id) => {
+      const notification = await http_getOne(notificationService, _id);
+      console.log("ID ne", _id);
+      console.log("deleting", notification);
+      const isConfirmed = await alert_delete(
+        `Xoá thông báo`,
+        `Bạn có chắc chắn muốn xoá thông báo  của nhân viên  không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await http_deleteOne(notificationService, _id);
+        alert_success(
+          `Xoá thông báo`,
+          `Bạn đã xoá thành công thông báo  của nhân viên `
+        );
+        refresh();
+      }
+    };
+
+
+    // const deleteAll = async (_id) => {
+    //   const notification = await http_getOne(notificationService, _id);
+    //   console.log("deletingall", notification);
+    //   const isConfirmed = await alert_delete(
+    //     `Xoá thông báo`,
+    //     `Bạn có chắc chắn muốn xoá hết tất cả thông báo không?`
+    //   );
+    //   console.log(isConfirmed);
+    //   if (isConfirmed == true) {
+    //     const result = await http_deleteAll(notificationService, _id);
+    //     alert_success(
+    //       `Xoá thông báo`,
+    //       `Bạn đã xoá thành công tất cả thông báo`
+    //     );
+    //     refresh();
+    //   }
+    // };
+
+    const refresh = async () => {
+      const _idEmployee = sessionStorage.getItem("employeeId");
+      data.List = await employeeService.get(_idEmployee);
+      console.log("Tên khách hàng",data.List.Tasks)
+      data.Notice = await notificationService.get(_idEmployee);
+      console.log("Tên thông báo",data.Notice)
     };
 
     const token = sessionStorage.getItem('token')
@@ -90,24 +152,26 @@ export default {
           // console.log("data view:", value);
           
         ///////////////////////
-        socket.emit('birthday', object)
-        socket.on('upcoming_birthday', (data) => {
-          hasNotification.value = true;
-          count.value++;
-          upcomingBirthdayData.value.push(data);
-          console.log("Đếm",count.value);
-          if (data) {
-            console.log('Data received from server' , data);
-          } else {
-            console.log('Data not received from server');
-          }
-        });
+        // socket.emit('birthday', object)
+        // socket.on('upcoming_birthday', (data) => {
+        //   hasNotification.value = true;
+        //   count.value++;
+        //   upcomingBirthdayData.value.push(data);
+        //   console.log("Đếm",count.value);
+        //   if (data) {
+        //     console.log('Data received from server' , data);
+        //   } else {
+        //     console.log('Data not received from server');
+        //   }
+        // });
     }
     onMounted(async () => {
       const _idEmployee = sessionStorage.getItem("employeeId");
       data.List = await employeeService.get(_idEmployee);
       console.log("Tên khách hàng",data.List.Tasks)
-          
+      data.Notice = await notificationService.get(_idEmployee);
+      console.log("Tên thông báo",data.Notice)
+      count.value = data.Notice.documents.length
     });
     const toggleNotification = () => {
       showNotification.value = !showNotification.value;
@@ -131,7 +195,8 @@ export default {
       toggleNotification,
       showNotification,
       currentDateTime,
-      data
+      data,
+      deleteOne
     };
   },
 };
@@ -182,18 +247,17 @@ export default {
           <button @click="markUnread" class="btn btn-primary">Chưa Đọc</button>
         </div>
         <div
-          v-for="item in upcomingBirthdayData"
-          :key="item.birthday"
+          v-for="item in data.Notice.documents"
+          :key="item"
           class="d-flex justify-content-between mb-3"
         >
           <p class="NoticeDetails">
-            Hôm nay là sinh nhật của <strong>{{ item.name }}</strong
-            ><br />
-            {{ currentDateTime }}
+            <strong>{{ item.title }}</strong>
+            <br><strong>{{ item.sender }}</strong> {{ item.content }} 
           </p>
-          <p>x</p>
+          <p style="cursor: pointer" @click="deleteOne(item._id)">x</p>
         </div>
-        <button @click="clearNotification" class="clearNotification">
+        <button @click="deleteAll(item.idRecipient)" class="clearNotification">
           Xóa Thông Báo
         </button>
       </div>
@@ -246,6 +310,7 @@ h6 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px;
   margin-right: 14px;
+  z-index: 3;
   /* display: grid;
   grid-template-columns: 250px 100px;
   grid-gap: 10px; */

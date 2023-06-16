@@ -11,6 +11,7 @@ import CenterServices from "../../services/center_vnpt.service";
 import departmentsServices from "../../services/department.service";
 import unitsServices from "../../services/unit.service";
 import EmployeeTask from "../../services/task_employee.service";
+import Notification from "../../services/notification.service";
 import {
   http_getAll,
   http_create,
@@ -361,6 +362,25 @@ export default {
           try {
             newData.EmployeeId = data.itemEm[i]._id;
             const result = await http_create(EmployeeTask, newData);
+
+
+
+            ////////////////////////////
+            const token = sessionStorage.getItem('token')
+            if (token) {
+              const _idEmployee = sessionStorage.getItem("employeeId");
+              const _nameEmployee = sessionStorage.getItem("employeeName");
+              const object = {
+                _id: _idEmployee,
+                name: _nameEmployee
+              }                  
+              const notiAssignment = reactive ({title:"Phân công mới",content:"đã giao cho bạn 1 phân công mới",isRead: "false",recipient:"", sender:"",idRecipient:""});
+              notiAssignment.recipient = data.itemEm[i].name
+              notiAssignment.sender = _nameEmployee
+              notiAssignment.idRecipient = data.itemEm[i]._id
+              const result1 = await http_create(Notification, notiAssignment);
+            }
+            ////////////////////////////
             console.log("ss", data.itemEm[i]);
 
           } catch (error) {
