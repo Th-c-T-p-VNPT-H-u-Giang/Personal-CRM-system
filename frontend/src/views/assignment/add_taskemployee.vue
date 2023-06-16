@@ -23,7 +23,8 @@ import {
   alert_delete,
   alert_warning,
 } from "../../assets/js/common.alert";
-import { Task } from "../common/import";
+import { Task, TaskEmployee } from "../common/import";
+import TaskEmployeeService from "../../services/task_employee.service";
 export default {
   components: {
     Select_Advanced,
@@ -341,66 +342,14 @@ export default {
     });
 
     // method
-    //giao việc cho nhân viên
-    const createTaskEm = async () => {
-      console.log("đây nè");
-      console.log("id dang chon:", props.item._id);
-      const newData = reactive({ TaskId: " ", EmployeeId: " " });
-      newData.TaskId = props.item._id;
-      console.log("dài:", data.itemEm.length);
-      const count = data.itemEm.filter(
-        (element) => element.checked === true
-      ).length;
-      console.log("so luong", count);
-      if (count == 0) {
-        alert_warning("Bạn chưa chọn nhân viên", "");
-        return;
-      }
-      for (let i = 0; i < data.itemEm.length; i++) {
-        if (data.itemEm[i].checked == true) {
-          // console.log("ss", data.itemEm[i]);
-          try {
-            newData.EmployeeId = data.itemEm[i]._id;
-            const result = await http_create(EmployeeTask, newData);
-            console.log("ss", data.itemEm[i]);
-          } catch (error) {
-            console.error("Lỗi tạo công việc:", error);
-          }
-        }
-      }
-      await refresh();
-      alert_success(
-        `Thêm công việc`,
-        `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`
-      );
-    };
-
-    //CHECKALL
-    const checkAll = async (value) => {
-      console.log("index", value, data.itemEm.length);
-
-      var i;
-      if (value == true) {
-        for (i = 0; i < data.itemEm.length; i++) {
-          data.itemEm[i].checked = true;
-        }
-      } else {
-        // for (i = 0; i < data.itemEm.length; i++) {
-        //   data.itemEm[i].checked = false;
-        // }
-        await refresh();
-      }
-
-      // console.log("check all:", data.itemEm[0].checked);
-    };
-
+    //***REFRESH
+    const employeeTask = reactive({ data: [] });
     const refresh = async () => {
       // data.cycleSelect = [...rs];
       console.log("REFRESH");
       data.positions = await http_getAll(Position);
       data.itemEm = await http_getAll(Employee);
-      // ***
-      const employeeTask = reactive({ data: [] });
+
       employeeTask.data = await http_getOne(Task, props.item._id);
 
       var i;
@@ -426,6 +375,70 @@ export default {
       positions.position = await http_getAll(Position);
       // positions.position.push({ _id: "other", name: "khác" });
     };
+    //giao việc cho nhân viên
+    const createTaskEm = async () => {
+      console.log("đây nè");
+      console.log("id Task dang chon:", props.item._id);
+      const newData = reactive({ TaskId: " ", EmployeeId: " " });
+      newData.TaskId = props.item._id;
+      console.log("số lượng nhân viên:", data.itemEm.length);
+      const count = data.itemEm.filter(
+        (element) => element.checked === true
+      ).length;
+      if (count == 0) {
+        alert_warning("Bạn chưa chọn nhân viên", "");
+        return;
+      }
+
+      var j;
+      for (j = 0; j < employeeTask.data.Employees.length; j++) {
+        const dataDel = reactive({
+          data: {
+            TaskId: props.item._id,
+            EmployeeId: employeeTask.data.Employees[j]._id,
+          },
+        });
+        const result = await TaskEmployeeService.deleteOne(dataDel.data);
+      }
+      for (let i = 0; i < data.itemEm.length; i++) {
+        if (data.itemEm[i].checked == true) {
+          // console.log("ss", data.itemEm[i]);
+          try {
+            newData.EmployeeId = data.itemEm[i]._id;
+            const result = await http_create(EmployeeTask, newData);
+            console.log("ss", data.itemEm[i]);
+          } catch (error) {
+            console.error("Lỗi tạo công việc:", error);
+          }
+        }
+      }
+
+      alert_success(
+        `Thêm công việc`,
+        `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`
+      );
+      await refresh();
+    };
+
+    //CHECKALL
+    const checkAll = async (value) => {
+      console.log("index", value, data.itemEm.length);
+
+      var i;
+      if (value == true) {
+        for (i = 0; i < data.itemEm.length; i++) {
+          data.itemEm[i].checked = true;
+        }
+      } else {
+        // for (i = 0; i < data.itemEm.length; i++) {
+        //   data.itemEm[i].checked = false;
+        // }
+        await refresh();
+      }
+
+      // console.log("check all:", data.itemEm[0].checked);
+    };
+
     const closeModal = async () => {
       console.log("close modal");
 
