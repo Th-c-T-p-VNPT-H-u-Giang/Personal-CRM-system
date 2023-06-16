@@ -40,8 +40,7 @@ export default {
         <th></th>
         <th>Stt</th>
         <th>Khách hàng</th>
-        <th>Giao việc</th>
-        <th>Chu kỳ</th>
+        <th v-if="activeCycle == true">Chu kỳ</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Hành động</th>
       </tr>
@@ -52,12 +51,11 @@ export default {
 
         <td>{{ index + 1 }}</td>
         <td>{{ item.Customer.name }}</td>
-        <td>{{ item.Employee.name }}</td>
         <td>{{ item.Cycle.name }}</td>
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}
         </td>
-        <td>
+        <td v-if="activeStatus_Task == true">
           {{ item.Status_Task.status == "false" ? "Thất bại" : "Thành công" }}
         </td>
         <td v-if="activeAction == true">
@@ -70,7 +68,7 @@ export default {
             <span
               id="view"
               class="material-symbols-outlined d-flex align-items-center"
-              @click="$emit('view', item)"
+              @click="$emit('view', item._id)"
             >
               visibility
             </span>

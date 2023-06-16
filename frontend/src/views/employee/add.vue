@@ -106,11 +106,12 @@ export default {
         if (!result.error) {
           data.item.EmployeeId = result.document._id;
           const account = await http_create(Account, data.item);
-          await mailService.sendmail(dataMail);
           alert_success(
             `Thêm nhân viên`,
             `Nhân viên "${result.document.name}" đã được tạo thành công.`
           );
+          await mailService.sendmail(dataMail);
+
           refresh();
         } else if (result.error) {
           alert_error(`Thêm nhân viên`, `${result.msg}`);

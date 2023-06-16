@@ -578,7 +578,6 @@ export default {
       for (let i = 0; i < data.items.length; i++) {
         if (data.items[i].checked == true) {
           try {
-            alert_success("Mail đã được gửi", "");
             dataMail.title = value.title;
             dataMail.content = value.content;
             dataMail.mail = data.items[i].email;
@@ -589,10 +588,9 @@ export default {
           } catch (error) {
             console.error("Error sending email:", error);
           }
-        } else {
-          console.log("i=", i);
         }
       }
+      alert_success("Mail đã được gửi", "");
     };
     const updateDep = async (value) => {
       console.log("center:", selectedOptionCenter.value);

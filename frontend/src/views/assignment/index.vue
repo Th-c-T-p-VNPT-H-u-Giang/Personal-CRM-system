@@ -20,6 +20,8 @@ import Task from "../../services/task.service";
 import Cycle from "../../services/cycle.service";
 import Employee from "../../services/employee.service";
 import Customer from "../../services/customer.service";
+import Employees_Task from "../../services/task_employee.service";
+import Appointment from "../../services/appointment.service";
 import AddAppointment from "../appointment/add.vue";
 import {
   http_getAll,
@@ -76,14 +78,18 @@ export default {
             status: "",
             reason: "",
           },
-          Appoitment: {
+          Appointments: {
             _id: "",
             date_time: "",
             content: "",
+            Status_App: {
+              status: "",
+              reason: "",
+            },
           },
         },
       ],
-      entryValue: 1,
+      entryValue: 5,
       numberOfPages: 1,
       totalRow: 0,
       startRow: 0,
@@ -98,7 +104,7 @@ export default {
         content: "",
         customerId: "",
         cycleId: "",
-        employeeId: "",
+        leaderId: "",
         Status_Task: {
           status: "",
           reason: "",
@@ -109,26 +115,36 @@ export default {
         start_date: "",
         end_date: "",
         content: "",
+        leaderId: "",
         Customer: {
           _id: "",
           name: "",
+          birthday: "",
+          avatar: "",
+          address: "",
+          email: "",
+          Customers_Type: {
+            _id: "",
+            name: "",
+          },
         },
         Cycle: {
           _id: "",
           name: "",
         },
-        Employee: {
-          _id: "",
-          name: "",
-        },
+        Employees: {},
         Status_Task: {
           status: "",
           reason: "",
         },
-        Appoitment: {
+        Appointments: {
           _id: "",
           date_time: "",
           content: "",
+          Status_App: {
+            status: "",
+            reason: "",
+          },
         },
       },
       cus: [],
@@ -148,21 +164,31 @@ export default {
           _id: "",
           name: "",
         },
-        Employee: {
+        Employees_Task: {
           _id: "",
-          name: "",
+          TaskId: "",
+          Employee: {
+            _id: "",
+            name: "",
+          },
         },
         Status_Task: {
           status: "",
           reason: "",
         },
-        Appoitment: {
+        Appointments: {
           _id: "",
           date_time: "",
           content: "",
+          Status_App: {
+            status: "",
+            reason: "",
+          },
         },
       },
       showTask_Employee: false,
+      listAppoiment: {},
+      listEmployeeTask: {},
     });
 
     const cycleValue = ref("");
@@ -460,7 +486,14 @@ export default {
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
-        return [value.name].join("").toLocaleLowerCase();
+        return [
+          value.Customer.name,
+          value.Cycle.name,
+          value.start_date,
+          value.end_date,
+        ]
+          .join("")
+          .toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
@@ -552,14 +585,14 @@ export default {
       console.log("deleting", task);
       const isConfirmed = await alert_delete(
         `Xoá sự phân công`,
-        `Bạn có chắc chắn muốn xoá phân công của nhân viên ${task.Employee.name} không ?`
+        `Bạn có chắc chắn muốn xoá phân công của khách hàng ${task.Customer.name} không ?`
       );
       console.log(isConfirmed);
       if (isConfirmed == true) {
         const result = await http_deleteOne(Task, _id);
         alert_success(
           `Xoá phân công`,
-          `Bạn đã xoá thành công phân công của nhân viên ${task.Employee.name} .`
+          `Bạn đã xoá thành công phân công của khách hàng ${task.Customer.name} .`
         );
         refresh();
       }
@@ -567,10 +600,12 @@ export default {
 
     const router = useRouter();
 
-    const view = (_id) => {
-      console.log("view", _id);
-      router.push({ name: "Assignment.view", params: { id: _id } });
+    const view = async (id) => {
+      console.log(id);
+      data.viewValue = await http_getOne(Task, id);
+      console.log(data.viewValue);
     };
+
     const appointment = (_id) => {
       // router.push({ name: "Assignment.appointment", params: { id: _id } });
     };
@@ -765,7 +800,7 @@ export default {
           (data.editValue = value), (data.activeEdit = value1)
         )
       "
-      @view="(value) => (data.viewValue = value)"
+      @view="(value) => view(value)"
       @appointment="
         (value, value1) => ((data.taskId = value), (data.taskObject = value1))
       "

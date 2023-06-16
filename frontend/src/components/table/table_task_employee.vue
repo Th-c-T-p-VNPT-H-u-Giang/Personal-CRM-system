@@ -1,5 +1,5 @@
 <script>
-import { reactive, watchEffect, ref } from "vue";
+import { reactive, watchEffect, ref, watch } from "vue";
 export default {
   props: {
     items: {
@@ -27,33 +27,21 @@ export default {
       default: false,
     },
   },
-  setup(props, ntx) {
-    const checkedValues = ref([]);
-
-    const handleCheckboxChange = (value, checked) => {
-      console.log("change");
-      if (checked) {
-        // Checkbox được chọn, thêm giá trị vào mảng checkedValues nếu chưa tồn tại
-        if (!checkedValues.value.includes(value)) {
-          checkedValues.value.push(value);
-        }
-      } else {
-        // Checkbox bị bỏ chọn, loại bỏ giá trị khỏi mảng checkedValues nếu tồn tại
-        const index = checkedValues.value.indexOf(value);
-        if (index > -1) {
-          checkedValues.value.splice(index, 1);
-        }
-      }
-      console.log("change", checkedValues.value);
-      ntx.emit("checkbox", checkedValues.value);
-    };
-
-    watchEffect(() => {
-      console.log(checkedValues.value);
+  setup(ctx, ntx) {
+    const data = reactive({
+      activeSelectAll: false,
+    });
+    const selectAll = ref(false);
+    watch(selectAll, (value) => {
+      // for (let i = 0; i < props.items.length; i++) {
+      //   props.items[i].checked = value;
+      // }
+      console.log("table_ selectAll", value);
+      ntx.emit("selectAll", value);
     });
 
     return {
-      handleCheckboxChange,
+      selectAll,
     };
   },
 };
@@ -66,22 +54,15 @@ export default {
   >
     <thead>
       <tr>
-        <th></th>
+        <th><input type="checkbox" name="" id="" v-model="selectAll" /></th>
         <th>Stt</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-        <th v-if="activeAction == true">Hành động</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
         <td>
-          <input
-            type="checkbox"
-            :value="`${item.email}`"
-            @change="
-              handleCheckboxChange($event.target.value, $event.target.checked)
-            "
-          />
+          <input type="checkbox" v-model="item.checked" />
         </td>
         <td>{{ index + 1 }}</td>
         <td v-for="(label, index1) in labels" :key="index1">
@@ -91,43 +72,6 @@ export default {
         <td>{{ item.Unit.name }}</td>
         <td>{{ item.Unit.Department.name }}</td>
         <td>{{ item.Unit.Department.Center_VNPTHG.name }}</td>
-        <td v-if="activeAction == true">
-          <button
-            type="button"
-            class=""
-            data-toggle="modal"
-            data-target="#model-view"
-          >
-            <span
-              id="view"
-              class="material-symbols-outlined d-flex align-items-center"
-              @click="$emit('view', item)"
-            >
-              visibility
-            </span>
-          </button>
-          <button
-            type="button"
-            class="mx-2"
-            data-toggle="modal"
-            data-target="#model-edit"
-          >
-            <span
-              id="edit"
-              class="material-symbols-outlined d-flex align-items-center justify-content-center"
-              @click="$emit('edit', item, true)"
-            >
-              edit
-            </span>
-          </button>
-          <span
-            id="delete"
-            class="material-symbols-outlined"
-            @click="$emit('delete', item._id)"
-          >
-            delete
-          </span>
-        </td>
       </tr>
       <!-- <button @click="getSelectedCheckboxes()">Lấy các checkbox đã chọn</button> -->
     </tbody>

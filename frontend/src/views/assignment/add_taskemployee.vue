@@ -23,6 +23,7 @@ import {
   alert_delete,
   alert_warning,
 } from "../../assets/js/common.alert";
+import { Task } from "../common/import";
 export default {
   components: {
     Select_Advanced,
@@ -340,41 +341,81 @@ export default {
     });
 
     // method
-    const taskEms = reactive({ taskems: [] });
+    //giao việc cho nhân viên
     const createTaskEm = async () => {
       console.log("đây nè");
-      console.log("ds nv:", taskEms.taskems);
-      console.log("do dai", taskEms.taskems.length);
       console.log("id dang chon:", props.item._id);
       const newData = reactive({ TaskId: " ", EmployeeId: " " });
       newData.TaskId = props.item._id;
-      try {
-        if (taskEms.taskems.length != 0) {
-          for (let i = 0; i < taskEms.taskems.length; i++) {
-            //console.log("id nv:", taskEms.taskems[i]);
-            newData.EmployeeId = taskEms.taskems[i];
-            const result = await http_create(EmployeeTask, newData);
-            console.log(result);
-          }
-          alert_success(
-            `Thêm công việc`,
-            `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`
-          );
-        } else {
-          alert_warning(
-            `Thêm công việc`,
-            `Vui lòng chọn nhân viên để giao việc.`
-          );
-        }
-      } catch (error) {
-        console.error("Lỗi khi thêm phân công cho nhân viên", error);
+      console.log("dài:", data.itemEm.length);
+      const count = data.itemEm.filter(
+        (element) => element.checked === true
+      ).length;
+      console.log("so luong", count);
+      if (count == 0) {
+        alert_warning("Bạn chưa chọn nhân viên", "");
+        return;
       }
+      for (let i = 0; i < data.itemEm.length; i++) {
+        if (data.itemEm[i].checked == true) {
+          // console.log("ss", data.itemEm[i]);
+          try {
+            newData.EmployeeId = data.itemEm[i]._id;
+            const result = await http_create(EmployeeTask, newData);
+            console.log("ss", data.itemEm[i]);
+          } catch (error) {
+            console.error("Lỗi tạo công việc:", error);
+          }
+        }
+      }
+      await refresh();
+      alert_success(
+        `Thêm công việc`,
+        `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`
+      );
+    };
+
+    //CHECKALL
+    const checkAll = async (value) => {
+      console.log("index", value, data.itemEm.length);
+
+      var i;
+      if (value == true) {
+        for (i = 0; i < data.itemEm.length; i++) {
+          data.itemEm[i].checked = true;
+        }
+      } else {
+        // for (i = 0; i < data.itemEm.length; i++) {
+        //   data.itemEm[i].checked = false;
+        // }
+        await refresh();
+      }
+
+      // console.log("check all:", data.itemEm[0].checked);
     };
 
     const refresh = async () => {
       // data.cycleSelect = [...rs];
+      console.log("REFRESH");
       data.positions = await http_getAll(Position);
       data.itemEm = await http_getAll(Employee);
+      // ***
+      const employeeTask = reactive({ data: [] });
+      employeeTask.data = await http_getOne(Task, props.item._id);
+
+      var i;
+      for (i = 0; i < data.itemEm.length; i++) {
+        data.itemEm[i].checked = false;
+      }
+      for (i = 0; i < data.itemEm.length; i++) {
+        for (var j = 0; j < employeeTask.data.Employees.length; j++) {
+          if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
+            data.itemEm[i].checked = true;
+          }
+        }
+      }
+      console.log("check:", data.itemEm);
+
       centers.center = await CenterServices.getAll();
       // centers.center.push({ _id: "other", name: "khác" });
       departments.department = await departmentsServices.getAll();
@@ -385,7 +426,12 @@ export default {
       positions.position = await http_getAll(Position);
       // positions.position.push({ _id: "other", name: "khác" });
     };
+    const closeModal = async () => {
+      console.log("close modal");
 
+      await refresh();
+      showModal.value = false;
+    };
     onBeforeMount(() => {
       refresh();
     });
@@ -404,7 +450,8 @@ export default {
       selectedOptionUnit,
       positions,
       selectedOptionPosition,
-      taskEms,
+      checkAll,
+      closeModal,
     };
   },
 };
@@ -420,7 +467,12 @@ export default {
           <h4 class="modal-title" style="font-size: 15px">
             Thêm phân công cho nhân viên
           </h4>
-          <button type="button" class="close" data-dismiss="modal">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            @click="closeModal"
+          >
             &times;
           </button>
         </div>
@@ -500,10 +552,10 @@ export default {
                   </div>
                 </div>
                 <Table
+                  @selectAll="(value) => checkAll(value)"
                   :items="setPages"
                   :fields="['Tên', 'Chức vụ', 'Đơn vị', 'Phòng', 'Trung tâm']"
                   :labels="['name']"
-                  @checkbox="(value) => (taskEms.taskems = value)"
                 />
                 <Pagination
                   :numberOfPages="data.numberOfPages"
@@ -519,11 +571,20 @@ export default {
               <button
                 type="button"
                 class="btn btn-primary px-3 py-2"
-                style="font-size: 14px"
+                style="font-size: 14px; margin-right: 24px"
                 @click="createTaskEm"
                 id="add"
               >
-                <span>Thêm</span>
+                <span>Giao việc</span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary px-3 py-2"
+                style="font-size: 14px"
+                @click="refresh"
+                id=""
+              >
+                <span>Tải lại</span>
               </button>
             </form>
           </div>

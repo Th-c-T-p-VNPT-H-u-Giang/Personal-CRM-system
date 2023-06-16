@@ -23,9 +23,7 @@ export default {
   components: {
     Select_Advanced,
   },
-  props: {
-
-  },
+  props: {},
   setup(props, ctx) {
     const data = reactive({
       itemAdd: {
@@ -37,7 +35,7 @@ export default {
         leaderId: "",
       },
       modelValue: "",
-      modelEm:"",
+      modelEm: "",
       modelCus: "",
     });
 
@@ -86,6 +84,8 @@ export default {
     const create = async () => {
       data.itemAdd.cycleId = selectedOptionCycle.value;
       console.log(data.itemAdd);
+      data.itemAdd.leaderId = sessionStorage.getItem("employeeId");
+      console.log("leaderId:", sessionStorage.getItem("employeeId"));
       const result = await http_create(Task, data.itemAdd);
       console.log("result", result);
       if (!result.error) {
@@ -93,7 +93,7 @@ export default {
         console.log("task", task);
         alert_success(
           `Thêm phân công`,
-          `Phân công khách hàng "${task.Customer.name}" cho nhân viên "${task.Employee.name}" đã được tạo thành công.`
+          `Phân công khách hàng "${task.Customer.name}" đã được tạo thành công.`
         );
         data.itemAdd = {};
       } else if (result.error) {
@@ -172,42 +172,60 @@ export default {
               <label for="name"
                 >Khách hàng(<span style="color: red">*</span>):</label
               >
-              <Select_Advanced style="height: 40px;" required
-              :add="false"
-              :options="customers.customer"
-              :modelValue="data.modelCus"
+              <Select_Advanced
+                style="height: 40px"
+                required
+                :add="false"
+                :options="customers.customer"
+                :modelValue="data.modelCus"
                 @searchSelect="
                   async (value) => (
                     await refresh(),
-                    (customers.customer = customers.customer.filter((value1, index) => {
-                      console.log(value1, value);
-                      return value1.name.includes(value) || value.length == 0;
-                    })),
+                    (customers.customer = customers.customer.filter(
+                      (value1, index) => {
+                        console.log(value1, value);
+                        return value1.name.includes(value) || value.length == 0;
+                      }
+                    )),
                     console.log('searchSlect', value.length)
                   )
                 "
-                @chose="(value,value1) => (data.itemAdd.customerId = value, data.modelCus=value1.name)"
+                @chose="
+                  (value, value1) => (
+                    (data.itemAdd.customerId = value),
+                    (data.modelCus = value1.name)
+                  )
+                "
               />
             </div>
-            <div class="form-group">
+            <div class="form-group" hidden>
               <label for=""
                 >Nhân viên(<span style="color: red">*</span>):</label
               >
-              <Select_Advanced style="height: 40px;" required
-              :add="false"
-              :options="employees.employee"
-              :modelValue="data.modelEm"
+              <Select_Advanced
+                style="height: 40px"
+                required
+                :add="false"
+                :options="employees.employee"
+                :modelValue="data.modelEm"
                 @searchSelect="
                   async (value) => (
                     await refresh(),
-                    (employees.employee = employees.employee.filter((value1, index) => {
-                      console.log(value1, value);
-                      return value1.name.includes(value) || value.length == 0;
-                    })),
+                    (employees.employee = employees.employee.filter(
+                      (value1, index) => {
+                        console.log(value1, value);
+                        return value1.name.includes(value) || value.length == 0;
+                      }
+                    )),
                     console.log('searchSlect', value.length)
                   )
                 "
-                @chose="(value,value1) => (data.itemAdd.leaderId = value, data.modelEm = value1.name)"
+                @chose="
+                  (value, value1) => (
+                    (data.itemAdd.leaderId = value),
+                    (data.modelEm = value1.name)
+                  )
+                "
               />
             </div>
 
@@ -240,7 +258,7 @@ export default {
             <div class="form-group">
               <label for="">Chu kỳ(<span style="color: red">*</span>):</label>
               <Select_Advanced
-                style="height: 40px;"
+                style="height: 40px"
                 required
                 :options="cycles.cycle"
                 :modelValue="data.modelValue"
@@ -255,12 +273,19 @@ export default {
                   )
                 "
                 @delete="(value) => deleteOne(value._id)"
-                @chose="(value, value1) => (selectedOptionCycle = value, data.modelValue = value1.name)"
+                @chose="
+                  (value, value1) => (
+                    (selectedOptionCycle = value),
+                    (data.modelValue = value1.name)
+                  )
+                "
               />
             </div>
 
             <div class="form-group">
-              <label for="">Nội dung chăm sóc(<span style="color: red">*</span>):</label>
+              <label for=""
+                >Nội dung chăm sóc(<span style="color: red">*</span>):</label
+              >
               <textarea
                 class="form-control"
                 v-model="data.itemAdd.content"
