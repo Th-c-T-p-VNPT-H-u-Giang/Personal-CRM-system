@@ -95,7 +95,7 @@ export default {
         console.log("task", task);
         alert_success(
           `Thêm phân công`,
-          `Phân công khách hàng "${task.Customer.name}" cho nhân viên "${task.Employee.name}" đã được tạo thành công.`
+          `Phân công khách hàng "${task.Customer.name}" đã được tạo thành công.`
         );
         data.itemAdd = {};
       } else if (result.error) {

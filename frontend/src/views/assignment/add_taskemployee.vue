@@ -357,18 +357,20 @@ export default {
       }
       for (let i = 0; i < data.itemEm.length; i++) {
         if (data.itemEm[i].checked == true) {
-            console.log("ss", data.itemEm[i]);
+            // console.log("ss", data.itemEm[i]);
           try {
             newData.EmployeeId = data.itemEm[i]._id;
             const result = await http_create(EmployeeTask, newData);
-            refresh();
+            console.log("ss", data.itemEm[i]);
+
           } catch (error) {
             console.error("Lỗi tạo công việc:", error);
           }
         }
-      }
+      }await refresh();
       alert_success(`Thêm công việc`,`Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`)
     };
+
 
 
     const refresh = async () => {
@@ -518,11 +520,20 @@ export default {
             <button
               type="button"
               class="btn btn-primary px-3 py-2"
-              style="font-size: 14px"
+              style="font-size: 14px; margin-right:24px"
               @click="createTaskEm"
               id="add"
             >
-              <span>Thêm</span>
+              <span>Giao việc</span>
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary px-3 py-2"
+              style="font-size: 14px"
+              @click="refresh"
+              id=""
+            >
+              <span>Tải lại</span>
             </button>
           </form>
           </div>
