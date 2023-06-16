@@ -1,5 +1,5 @@
 <script>
-import { reactive, watchEffect, ref } from "vue";
+import { reactive, watchEffect, ref, watch } from "vue";
 export default {
   props: {
     items: {
@@ -27,21 +27,22 @@ export default {
       default: false,
     },
   },
-  setup(ctx) {
+  setup(ctx,ntx) {
     const data = reactive({
       activeSelectAll: false
     })
-    const handleCheckAll = (checked)=>{
-      if(checked){
-          
-      }else{
-
-      }
-    }
+    const selectAll = ref(false);
+    watch(selectAll, (value) => {
+      // for (let i = 0; i < props.items.length; i++) {
+      //   props.items[i].checked = value;
+      // }
+      console.log("table_ selectAll", value);
+      ntx.emit("selectAll", value);
+    });
 
 
     return {
-     handleCheckAll,
+     selectAll,
     }
   }
   
@@ -56,10 +57,7 @@ export default {
   >
     <thead>
       <tr>
-        <th><input type="checkbox" name="" id="" 
-          @change="
-              handleCheckAll($event.target.checked)
-            "
+        <th><input type="checkbox" name="" id="" v-model="selectAll"
         /></th>
         <th>Stt</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>

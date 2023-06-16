@@ -343,6 +343,7 @@ export default {
     });
 
     // method
+    //giao việc cho nhân viên
     const createTaskEm = async () => {
       console.log("đây nè");
       console.log("id dang chon:", props.item._id);
@@ -350,7 +351,7 @@ export default {
       newData.TaskId = props.item._id;
       console.log("dai",data.itemEm.length);
       const count = data.itemEm.filter((element) => element.checked === true).length;
-      console.log(count);
+      console.log("so luong",count);
       if (count == 0) {
         alert_warning("Bạn chưa chọn nhân viên", "");
         return;
@@ -372,11 +373,27 @@ export default {
     };
 
 
+     //CHECKALL
+     const checkAll = (value) => {
+      console.log("index", value, data.itemEm.length);
+
+      var i;
+      for (i = 0; i < data.itemEm.length; i++) {
+        data.itemEm[i].checked = value;
+      }
+      console.log("check all:", data.itemEm[0].checked);
+    };
+
 
     const refresh = async () => {
       // data.cycleSelect = [...rs];
       data.positions = await http_getAll(Position);
       data.itemEm = await http_getAll(Employee);
+      var i;
+      for (i = 0; i < data.itemEm.length; i++) {
+        data.itemEm[i].checked = false;
+      }
+      
       centers.center = await CenterServices.getAll();
       // centers.center.push({ _id: "other", name: "khác" });
       departments.department = await departmentsServices.getAll();
@@ -407,6 +424,7 @@ export default {
       selectedOptionUnit,
       positions,
       selectedOptionPosition,
+      checkAll,
     };
   },
 };
@@ -496,6 +514,7 @@ export default {
                 </div>
               </div>
               <Table
+              @selectAll="(value) => checkAll(value)"
                 :items="setPages"
                 :fields="[
                   'Tên',

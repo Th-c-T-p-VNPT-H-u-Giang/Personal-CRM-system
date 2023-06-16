@@ -1,4 +1,4 @@
-const { Task, Appointment, Employee, Cycle, Customer, Status_Task, Employee_Task, Status_App, Position, Unit } = require('../models/index.model.js');
+const { Task, Appointment, Employee, Cycle, Customer, Status_Task, Employee_Task, Status_App, Position, Unit, Department, Center_VNPTHG} = require('../models/index.model.js');
 const createError = require('http-errors');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require("crypto");
@@ -151,19 +151,31 @@ exports.findOne = async (req, res, next) => {
                 where: { _id: employee.dataValues.postionId },
               });
             //   console.log("id position",employee.dataValues)
-              const unit = await Unit.findOne({
-                  where: { _id: employee.dataValues.unitId },
-                });
+            const unit = await Unit.findOne({
+                where: { _id: employee.dataValues.unitId },
+            });
+            const department = await Department.findOne({
+                where: { _id: unit.dataValues.departmentId },
+            });
+            const center = await Center_VNPTHG.findOne({
+                where: { _id: department.dataValues.centerVNPTHGId },
+            });
             console.log("position:", unit);
+            console.log("dep:", department);
+            console.log("center:", center);
             console.log("nhân viên:", employee.dataValues);
             employee.dataValues.name = getDecrypt(employee.dataValues.name);
             employee.dataValues.phone = getDecrypt(employee.dataValues.phone);
             employee.dataValues.email = getDecrypt(employee.dataValues.email);
             position.dataValues.name = getDecrypt(position.dataValues.name);
-            unit.dataValues.name = getDecrypt(unit.dataValues.name)
+            unit.dataValues.name = getDecrypt(unit.dataValues.name);
+            department.dataValues.name = getDecrypt(department.dataValues.name);
+            center.dataValues.name = getDecrypt(center.dataValues.name);
             documents.dataValues.Employees[i] = employee.dataValues;
             documents.dataValues.Employees[i].Position = position.dataValues;
             documents.dataValues.Employees[i].Unit = unit.dataValues;
+            documents.dataValues.Employees[i].Unit.Department = department.dataValues;
+            documents.dataValues.Employees[i].Unit.Department.Center = center.dataValues;
             //   documents.dataValues["Tasks"] = employee1.dataValues.Tasks;
           }
         return res.send(documents);

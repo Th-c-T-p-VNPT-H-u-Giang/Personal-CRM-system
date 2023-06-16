@@ -6,9 +6,10 @@ const router = express.Router();
 router.route('/')
     .post(task_employees.create)
     .get(task_employees.findAll)
-
+    .delete(task_employees.deleteOne)
 router.route('/:id')
     .get(task_employees.findOne)
+
 
 module.exports = router;
 

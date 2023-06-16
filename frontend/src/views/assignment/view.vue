@@ -87,15 +87,35 @@ export default {
             </button>
             <div v-if="isActive" id="assignment" class="collapse my-3">
              <div class="table-responsive">
-              <Table
-                :items="viewValue.Employees"
-                :fields="['Họ tên', 'Số điện thoại', 'Email', 'Chức vụ', 'Đơn vị']"
-                :labels="['name','phone', 'email' ,'postionId','unitId']" 
-                :borderTableAll="true"
-                :showActionList="[false, false, false]"
-                :activeAction="false"
-                :isActiveCheckbox="false"
-              />
+              <table
+                class="my-table mb-2 table border-table-all"
+              >
+                <thead style="max-width: 100px; overflow: auto;">
+                  <tr>
+                    <th>Stt</th>
+                    <th>Họ tên</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Chức vụ</th>
+                    <th>Tổ</th>
+                    <th>Phòng</th>
+                    <th>Trung tâm</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in viewValue.Employees" :key="index">
+                    <td>{{Math.ceil(index) + 1 }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.phone }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>{{ item.Position.name }}</td>
+                    <td>{{ item.Unit.name }}</td>
+                    <td>{{ item.Unit.Department.name }}</td>
+                    <td>{{ item.Unit.Department.Center.name }}</td>
+                  </tr>
+                </tbody>
+              </table> 
+              <p v-if="viewValue.Employees.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p>
              </div>
               
             </div>
@@ -106,45 +126,40 @@ export default {
             </button>
             <div v-if="isActive" id="event" class="collapse mx-2">
               <table
-                class="my-table mb-2"
-                :class="[borderTableAll ? 'border-table-all' : '']"
+                class="my-table mb-2 table border-table-all"
               >
-                <thead>
+                <thead style="max-width: 100px; overflow: auto;">
                   <tr>
                     <th>Stt</th>
                     <th>Khách hàng</th>
-                    <th>Lịch hẹn</th>
+                    <th>Ngày hẹn</th>
                     <th>Nội dung</th>
                     <th>Trạng thái cuộc hẹn</th>
                     <th>Lý do</th>
                   </tr>
                 </thead>
                 <tbody>
-                    <td>{{ viewValue.Appointments }}</td>
+                  <tr v-for="(item, index) in viewValue.Appointments" :key="index">
+                    <td>{{Math.ceil(index) + 1 }}</td>
                     <td>{{ viewValue.Customer.name }}</td>
-                    <td>{{ viewValue.Appointments.date_time }}</td>
-                    <td>{{ viewValue.Appointments.content }}</td>
-                    <!-- <td>{{ viewValue.Appointments.Status_App.status == 'false' ? 'Thất bại' : 'Thành công' }}</td>
-                    <td>{{ viewValue.Appointments.Status_App.reason }}</td> -->
+                    <td>{{ item.date_time }}</td>
+                    <td>{{ item.content }}</td>
+                    <td>{{ item.Status_App.status == 'false' ? 'Thất bại' : 'Thành công'}}</td>
+                    <td>{{ item.Status_App.reason }}</td>
+                  </tr>
                 </tbody>
-              </table>
+              </table> 
+              <p v-if="viewValue.Appointments.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p>
             </div>
           </div>
           <div class="">
             <button data-toggle="collapse" class="px-3 py-2 h6 border-none" data-target="#habit" @click="handleActiveCus">
               Feedback
             </button>
-            <!-- <div v-if="isActive" id="habit" class="collapse mx-2">
-              <Table
-                :items="item.Habits"
-                :fields="['Tên thói quen']"
-                :labels="['name']" 
-                :borderTableAll="true"
-                :showActionList="[false, false, false]"
-                :activeAction="false"
-                :isActiveCheckbox="false"
-              />
-            </div> -->
+            <div v-if="isActive" id="assignment" class="collapse my-3">
+              Rất tốt
+            </div>
+              
           </div>
         </div>
       </div>
@@ -157,9 +172,30 @@ export default {
     outline: none;
   }
 
+  .border-table-all {
+  border: 1px solid var(--gray);
+}
   .border-all {
     border: 1px solid #ccc;
     border-radius: 5px;
   }
+  .my-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.my-table th,
+.my-table td {
+  border: 1px solid var(--gray);
+  border-left: 0;
+  border-right: 0;
+  padding: 8px;
+}
+
+
+.my-table tbody tr:nth-child(even) {
+  font-size: 13px;
+}
+
 </style>
 

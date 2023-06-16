@@ -66,4 +66,16 @@ exports.findOne = async (req, res, next) => {
     }
 };
 
-
+exports.deleteOne = async (req, res, next) => {
+    try {
+        const documents = await Employee_Task.destroy({
+            where: {
+                TaskId: req.body.taskid,
+                EmployeeId: req.body.employeeid,
+            }
+        });
+        return res.send(`Đã xóa công việc của nhân viên`);
+    } catch (error) {
+        return next(createError(400, "Lỗi không xóa được công việc!"));
+    }
+}
