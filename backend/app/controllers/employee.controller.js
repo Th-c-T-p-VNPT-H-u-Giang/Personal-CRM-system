@@ -8,6 +8,7 @@ const {
   Task,
   Cycle,
   Customer,
+  Status_Task,
 } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
@@ -158,9 +159,22 @@ exports.findOne = async (req, res, next) => {
       });
       customer.dataValues.name = getDecrypt(customer.dataValues.name);
       customer.dataValues.avatar = getDecrypt(customer.dataValues.avatar);
+      customer.dataValues.phone = getDecrypt(customer.dataValues.phone);
+      customer.dataValues.email = getDecrypt(customer.dataValues.email);
+      customer.dataValues.address = getDecrypt(customer.dataValues.address);
+      customer.dataValues.birthday = getDecrypt(customer.dataValues.birthday);
+      const status = await Status_Task.findOne({
+        where: {
+          TaskId: employee1.dataValues.Tasks[i]._id,
+        },
+      });
+      status.dataValues.status = getDecrypt(status.dataValues.status);
+      status.dataValues.reason = getDecrypt(status.dataValues.reason);
 
       employee1.dataValues.Tasks[i].dataValues.Cycles = cycles.dataValues;
       employee1.dataValues.Tasks[i].dataValues.Customers = customer.dataValues;
+      employee1.dataValues.Tasks[i].dataValues.Status = status.dataValues;
+
       // console.log("Employee cyles:", employee1.dataValues.Tasks[i].cycle);
       // console.log("customer:", customer);
     }
