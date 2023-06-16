@@ -6,6 +6,11 @@ const {
   Customer,
   Status_Task,
   Employee_Task,
+  Status_App,
+  Position,
+  Unit,
+  Department,
+  Center_VNPTHG,
 } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
@@ -28,6 +33,7 @@ const getDecrypt = (name) => {
     return decrypted;
   }
 };
+
 exports.create = async (req, res, next) => {
   console.log(req.body);
   if (Object.keys(req.body).length === 6) {
@@ -81,28 +87,15 @@ exports.create = async (req, res, next) => {
       msg: `Vui lòng nhập đủ thông tin.`,
     });
   }
-  // try {
-  //     const document = await Task.create({
-  //         start_date: req.body.start_date,
-  //         end_date: req.body.end_date,
-  //         content: req.body.content,
-  //         cycleId: req.body.cycleId,
-  //         customerId: req.body.customerId,
-  //         leaderId: req.body.leaderId,
-  //     });
-  //     return res.send(document);
-  // } catch (error) {
-  //     console.log(error);
-  //     return next(
-  //         createError(400, 'Error creating task!')
-  //     )
-  // }
 };
 
 exports.findAll = async (req, res, next) => {
   try {
     const documents = await Task.findAll({
       include: [
+        {
+          model: Employee,
+        },
         {
           model: Status_Task,
           // attribute: ['status','reason']
@@ -111,13 +104,15 @@ exports.findAll = async (req, res, next) => {
           model: Customer,
         },
         {
-          model: Employee,
-        },
-        {
           model: Cycle,
         },
         {
           model: Appointment,
+          include: [
+            {
+              model: Status_App,
+            },
+          ],
         },
       ],
     });
@@ -142,9 +137,16 @@ exports.findOne = async (req, res, next) => {
         {
           model: Customer,
         },
-
         {
           model: Cycle,
+        },
+        {
+          model: Appointment,
+          include: [
+            {
+              model: Status_App,
+            },
+          ],
         },
       ],
     });
@@ -161,12 +163,39 @@ exports.findOne = async (req, res, next) => {
       const employee = await Employee.findOne({
         where: { _id: employee1[i].dataValues.EmployeeId },
       });
-      console.log("nhân viên:", employee.dataValues.name);
+      // console.log("id position",employee.dataValues)
+      const position = await Position.findOne({
+        where: { _id: employee.dataValues.postionId },
+      });
+      //   console.log("id position",employee.dataValues)
+      const unit = await Unit.findOne({
+        where: { _id: employee.dataValues.unitId },
+      });
+      const department = await Department.findOne({
+        where: { _id: unit.dataValues.departmentId },
+      });
+      const center = await Center_VNPTHG.findOne({
+        where: { _id: department.dataValues.centerVNPTHGId },
+      });
+      console.log("position:", unit);
+      console.log("dep:", department);
+      console.log("center:", center);
+      console.log("nhân viên:", employee.dataValues);
       employee.dataValues.name = getDecrypt(employee.dataValues.name);
+      employee.dataValues.phone = getDecrypt(employee.dataValues.phone);
+      employee.dataValues.email = getDecrypt(employee.dataValues.email);
+      position.dataValues.name = getDecrypt(position.dataValues.name);
+      unit.dataValues.name = getDecrypt(unit.dataValues.name);
+      department.dataValues.name = getDecrypt(department.dataValues.name);
+      center.dataValues.name = getDecrypt(center.dataValues.name);
       documents.dataValues.Employees[i] = employee.dataValues;
+      documents.dataValues.Employees[i].Position = position.dataValues;
+      documents.dataValues.Employees[i].Unit = unit.dataValues;
+      documents.dataValues.Employees[i].Unit.Department = department.dataValues;
+      documents.dataValues.Employees[i].Unit.Department.Center =
+        center.dataValues;
       //   documents.dataValues["Tasks"] = employee1.dataValues.Tasks;
     }
-
     return res.send(documents);
   } catch (error) {
     return next(createError(400, "Không tìm thấy phân công !"));
@@ -187,67 +216,6 @@ exports.deleteOne = async (req, res, next) => {
 };
 
 exports.deleteAll = async (req, res, next) => {};
-
-// exports.update = async (req, res, next) => {
-//     console.log('update', req.body);
-//     //const { start_date, end_date, content, cycleId, customerId, leaderId} = req.body;
-//     try {
-//         let tasks = [await Task.findOne({
-//             where: {
-//                 _id: req.params.id,
-//             },
-//             include: [{
-//                 model: Status_Task,
-//                 attribute: ['status','reason'],
-//             }]
-//         })];
-
-//         tasks = tasks.filter(
-//             (value, index) => {
-//                 return value.start_date == req.body.start_date && value.end_date == req.body.end_date && value.content == req.body.content
-//                 && value.cycleId == req.body.cycleId && value.customerId == req.body.customerId && value.leaderId == req.body.leaderId
-//                 && value.status == req.body.Status_Task.status && value.reason == req.body.Status_Task.reason;
-//             }
-//         )
-
-//         if (tasks.length == 0) {
-//             console.log(req.body)
-//             const document = await Task.update({
-//                 start_date: req.body.start_date,
-//                 end_date: req.body.end_date,
-//                 content: req.body.content,
-//                 cycleId: req.body.cycleId,
-//                 customerId: req.body.customerId,
-//                 leaderId: req.body.leaderId,
-//             },
-//             {
-//                 where: { _id: req.params.id },
-//                 // include: [{
-//                 //     model: Status_Task,
-//                 //     attribute: ['status','reason'],
-//                 // }]
-//             });
-//             const sta_tasks = await Status_Task.update({
-//                 status: req.body.Status_Task.status,
-//                 reasons: req.body.Status_Task.reason,
-//             }, {where: {TaskId: document._id},});
-//             return res.send({
-//                 error: false,
-//                 msg: 'Dữ liệu đã được thay đổi thành công.',
-//             })
-//         } else {
-//             return res.send({
-//                 error: true,
-//                 msg: 'Dữ liệu chưa được thay đổi.'
-//             })
-//         }
-
-//     } catch (error) {
-//         return next(
-//             createError(400, 'Error update')
-//         )
-//     }
-// }
 
 exports.update = async (req, res, next) => {
   console.log("update", req.body);

@@ -1,11 +1,4 @@
-const {
-  Permission,
-  Role_Permission,
-  Role,
-  Employee_Task,
-  Task,
-  Employee,
-} = require("../models/index.model.js");
+const { Employee_Task, Task, Employee } = require("../models/index.model.js");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
 const { sequelize } = require("../config/index");
@@ -69,5 +62,19 @@ exports.findOne = async (req, res, next) => {
     return res.send(documents);
   } catch (error) {
     return next(createError(400, "Error finding task !"));
+  }
+};
+
+exports.deleteOne = async (req, res, next) => {
+  try {
+    const documents = await Employee_Task.destroy({
+      where: {
+        TaskId: req.body.taskid,
+        EmployeeId: req.body.employeeid,
+      },
+    });
+    return res.send(`Đã xóa công việc của nhân viên`);
+  } catch (error) {
+    return next(createError(400, "Lỗi không xóa được công việc!"));
   }
 };
