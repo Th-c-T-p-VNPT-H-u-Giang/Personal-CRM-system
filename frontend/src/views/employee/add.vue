@@ -318,6 +318,7 @@ export default {
             }
             alert_success(`Đã thêm phòng`, `${formValues.inputValue}`);
             data.modelDep = document.document.name;
+            selectedOptionDepartment.value = document.document._id;
             await refresh("department");
             departments.department.push({ _id: "other", name: "khác" });
             ctx.emit("newDep", departments.department);

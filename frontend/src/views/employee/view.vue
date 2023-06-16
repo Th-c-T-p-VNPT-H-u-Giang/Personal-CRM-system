@@ -136,9 +136,12 @@ export default {
                 <Table
                   :items="item.Tasks"
                   :fields="[
-                    'Ngày bắt đầu',
-                    'Ngày kết thúc',
+                    'Khách hàng',
+                    'Bắt đầu',
+                    'Kết thúc',
                     'Nội dung chăm sóc',
+                    'Chu kỳ',
+                    'Trạng thái',
                   ]"
                   :labels="['start_date', 'end_date', 'content']"
                   :borderTableAll="true"

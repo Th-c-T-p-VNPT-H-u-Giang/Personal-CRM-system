@@ -93,6 +93,20 @@ export default {
               TaskId: "",
               EmployeeId: "",
             },
+            Cycles: {
+              _id: "",
+              name: "",
+            },
+            Customers: {
+              _id: "",
+              name: "",
+              avatar: "",
+            },
+            Status: {
+              _id: "",
+              status: "",
+              reason: "",
+            },
           },
         },
       ],
@@ -152,11 +166,13 @@ export default {
     });
     const view = async (value) => {
       console.log("data view:", value);
+      // FIND ONE employee
       data.viewValue = await employeeService.get(value);
 
       for (let i = 0; i <= data.viewValue.Tasks.length; i++) {
-        console.log("ID");
-        const cycleName = await cycleService.get(data.viewValue.Tasks.cycleId);
+        if (data.viewValue.Tasks[i].Status.status == true) {
+          data.viewValue.Tasks[i].Status.status = "Thành công";
+        } else data.viewValue.Tasks[i].Status.status = "Thất bại";
       }
     };
     // computed
@@ -259,7 +275,6 @@ export default {
     const refresh = async () => {
       data.positions = await http_getAll(Position);
       data.items = await http_getAll(Employee);
-      // console.log("A");
       var i;
       for (i = 0; i < data.items.length; i++) {
         data.items[i].checked = false;
