@@ -4,6 +4,7 @@ import io from "socket.io-client";
 import socket from '../../../socket';
 import employeeService from "../../services/employee.service";
 import notificationService from "../../services/notification.service";
+import { formatDateTime } from "../../assets/js/common";
 import {
   http_getAll,
   http_create,
@@ -83,16 +84,15 @@ export default {
       Notice: {}
     })
     const emit = inject("emit");
-    const hasNotification = ref(false);
-    // const upcomingBirthdayData = ref(null);
-    const showNotification = ref(false);
-    const upcomingBirthdayData = ref([]);
-    const count = ref(0);
     const updateMenuResponsive = () => {
       console.log("starting");
       ctx.emit("updateMenuResponsive", "true");
     };
 
+
+    const hasNotification = ref(false);
+    const showNotification = ref(false);
+    const count = ref(0);
 
     const deleteOne = async (_id) => {
       const notification = await http_getOne(notificationService, _id);
@@ -110,27 +110,29 @@ export default {
           `Bạn đã xoá thành công thông báo  của nhân viên `
         );
         refresh();
+        count.value -- 
       }
     };
 
-
-    // const deleteAll = async (_id) => {
-    //   const notification = await http_getOne(notificationService, _id);
-    //   console.log("deletingall", notification);
-    //   const isConfirmed = await alert_delete(
-    //     `Xoá thông báo`,
-    //     `Bạn có chắc chắn muốn xoá hết tất cả thông báo không?`
-    //   );
-    //   console.log(isConfirmed);
-    //   if (isConfirmed == true) {
-    //     const result = await http_deleteAll(notificationService, _id);
-    //     alert_success(
-    //       `Xoá thông báo`,
-    //       `Bạn đã xoá thành công tất cả thông báo`
-    //     );
-    //     refresh();
-    //   }
-    // };
+    const deleteAll = async () => {
+      const _idEmployee = sessionStorage.getItem("employeeId");
+      const notification = await http_getOne(notificationService, _idEmployee);
+      console.log("deleting", notification);
+      const isConfirmed = await alert_delete(
+        `Xoá thông báo`,
+        `Bạn có chắc chắn muốn xoá tất cả thông báo không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await notificationService.deleteAll(_idEmployee);
+        alert_success(
+          `Xoá thông báo`,
+          `Bạn đã xoá thành công tất cả thông báo`
+        );
+        refresh();
+        count.value =0 
+      }
+    };
 
     const refresh = async () => {
       const _idEmployee = sessionStorage.getItem("employeeId");
@@ -148,23 +150,16 @@ export default {
         _id: _idEmployee,
         name: _nameEmployee
       }
-        ////Danh sách
-          // console.log("data view:", value);
-          
-        ///////////////////////
-        // socket.emit('birthday', object)
-        // socket.on('upcoming_birthday', (data) => {
-        //   hasNotification.value = true;
-        //   count.value++;
-        //   upcomingBirthdayData.value.push(data);
-        //   console.log("Đếm",count.value);
-        //   if (data) {
-        //     console.log('Data received from server' , data);
-        //   } else {
-        //     console.log('Data not received from server');
-        //   }
-        // });
+      socket.on('notiTask', async ()=>{
+        const _idEmployee = sessionStorage.getItem("employeeId");
+        data.Notice = await notificationService.get(_idEmployee);
+        console.log("notice",data.Notice)
+        hasNotification.value = true
+        count.value = data.Notice.documents.length
+      })
     }
+
+
     onMounted(async () => {
       const _idEmployee = sessionStorage.getItem("employeeId");
       data.List = await employeeService.get(_idEmployee);
@@ -173,30 +168,29 @@ export default {
       console.log("Tên thông báo",data.Notice)
       count.value = data.Notice.documents.length
     });
+
     const toggleNotification = () => {
       showNotification.value = !showNotification.value;
-      count.value = 0;
       hasNotification.value = false
     };
 
     const clearNotification = () => {
-      upcomingBirthdayData.value = [];
       showNotification.value = false;
-      count.value = 0;
     };
 
     const currentDateTime = ref(new Date().toLocaleString());
     return {
       updateMenuResponsive,
       hasNotification,
-      upcomingBirthdayData,
       clearNotification,
       count,
       toggleNotification,
       showNotification,
       currentDateTime,
       data,
-      deleteOne
+      deleteOne,
+      deleteAll,
+      formatDateTime
     };
   },
 };
@@ -236,7 +230,7 @@ export default {
         <span class="material-symbols-outlined cursor-pointer">
           notifications
         </span>
-        <span v-if="hasNotification" class="notification-dot">{{ count }}</span>
+        <span class="notification-dot">{{ count }}</span>
       </a>
       <div v-if="showNotification" class="notification-dropdown">
         <h6 class="font-weight-bold mb-4">THÔNG BÁO</h6>
@@ -251,13 +245,14 @@ export default {
           :key="item"
           class="d-flex justify-content-between mb-3"
         >
-          <p class="NoticeDetails">
+          <p @click="isRead()" class="NoticeDetails">
             <strong>{{ item.title }}</strong>
             <br><strong>{{ item.sender }}</strong> {{ item.content }} 
+            <br>{{ formatDateTime(item.createdAt) }}
           </p>
           <p style="cursor: pointer" @click="deleteOne(item._id)">x</p>
         </div>
-        <button @click="deleteAll(item.idRecipient)" class="clearNotification">
+        <button @click="deleteAll()" class="clearNotification">
           Xóa Thông Báo
         </button>
       </div>

@@ -31,6 +31,10 @@ io.on('connection', (socket) => {
     io.emit('upcoming_birthday', data);
   });
 
+  socket.on('assignmentTask', ()=>{
+    io.emit('notiTask')
+  })
+
   // socket.on('birthday', (customers) => {
   //   const today = moment(); // Lấy ngày hiện tại
   //   customers.forEach(customer => {

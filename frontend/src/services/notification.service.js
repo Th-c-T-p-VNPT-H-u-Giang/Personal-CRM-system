@@ -10,14 +10,14 @@ class EventService {
     async create(data) {
         return (await this.api.post("/", data)).data;
     }
-    async deleteAll() {
-        return (await this.api.delete("/")).data;
+    async deleteAll(id) {
+        return (await this.api.delete(`/delete-notification-by-id/${id}`)).data;
     }
     async get(id) {
         return (await this.api.get(`/${id}`)).data;
     }
-    async update(id, data) {
-        return (await this.api.put(`/${id}`, data)).data;
+    async update(id) {
+        return (await this.api.put(`/${id}`)).data;
     }
     async delete(id) {
         return (await this.api.delete(`/${id}`)).data;

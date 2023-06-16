@@ -12,6 +12,7 @@ import departmentsServices from "../../services/department.service";
 import unitsServices from "../../services/unit.service";
 import EmployeeTask from "../../services/task_employee.service";
 import Notification from "../../services/notification.service";
+import socket from '../../../socket';
 import {
   http_getAll,
   http_create,
@@ -374,11 +375,12 @@ export default {
                 _id: _idEmployee,
                 name: _nameEmployee
               }                  
-              const notiAssignment = reactive ({title:"Phân công mới",content:"đã giao cho bạn 1 phân công mới",isRead: "false",recipient:"", sender:"",idRecipient:""});
+              const notiAssignment = reactive ({title:"Phân công mới",content:"đã giao cho bạn 1 phân công mới",isRead: false,recipient:"", sender:"",idRecipient:""});
               notiAssignment.recipient = data.itemEm[i].name
               notiAssignment.sender = _nameEmployee
               notiAssignment.idRecipient = data.itemEm[i]._id
               const result1 = await http_create(Notification, notiAssignment);
+              socket.emit('assignmentTask')
             }
             ////////////////////////////
             console.log("ss", data.itemEm[i]);
