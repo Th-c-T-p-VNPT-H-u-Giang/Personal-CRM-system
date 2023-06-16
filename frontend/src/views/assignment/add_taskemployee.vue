@@ -1,9 +1,9 @@
 <script>
-import { reactive,onBeforeMount,ref, watch , computed} from "vue";
+import { reactive, onBeforeMount, ref, watch, computed } from "vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
-import Table from "../../components/table/table_task_employee.vue"
+import Table from "../../components/table/table_task_employee.vue";
 import SelectCDU from "../../components/box_lananh/select_cdu.vue";
-import Pagination from "../../components/table/pagination_duy.vue"
+import Pagination from "../../components/table/pagination_duy.vue";
 //service
 import Employee from "../../services/employee.service";
 import Position from "../../services/position.service";
@@ -23,8 +23,9 @@ import {
   alert_delete,
   alert_warning,
 } from "../../assets/js/common.alert";
+import { Task } from "../common/import";
 export default {
-    components: {
+  components: {
     Select_Advanced,
     Table,
     SelectCDU,
@@ -65,7 +66,7 @@ export default {
         },
       ],
       modelValue: "",
-      modelEm:"",
+      modelEm: "",
       modelPositon: "Chức vụ",
       modelValue: "Trung tâm",
       modelDep: "Phòng",
@@ -76,56 +77,53 @@ export default {
       startRow: 0,
       endRow: 0,
       currentPage: 1,
-      arrTaskEm:{},
+      arrTaskEm: {},
     });
-      
-    const employees = reactive({ employee: [] });
 
+    const employees = reactive({ employee: [] });
 
     // computed
     const toString = computed(() => {
-    console.log("Starting search");
-    return data.itemEm.map((value, index) => {
-      return [value.name].join("").toLocaleLowerCase();
+      console.log("Starting search");
+      return data.itemEm.map((value, index) => {
+        return [value.name].join("").toLocaleLowerCase();
       });
     });
     const filter = computed(() => {
-          return data.itemEm.filter((value, index) => {
-            return toString.value[index].includes(
-              data.searchText.toLocaleLowerCase()
-            );
-          });
-        });
+      return data.itemEm.filter((value, index) => {
+        return toString.value[index].includes(
+          data.searchText.toLocaleLowerCase()
+        );
+      });
+    });
     const filtered = computed(() => {
-          if (!data.searchText) {
-            data.totalRow = data.itemEm.length;
-            return data.itemEm;
-          } else {
-            data.totalRow = filter.value.length;
-            return filter.value;
-          }
-        });
+      if (!data.searchText) {
+        data.totalRow = data.itemEm.length;
+        return data.itemEm;
+      } else {
+        data.totalRow = filter.value.length;
+        return filter.value;
+      }
+    });
     const setNumberOfPages = computed(() => {
-          return Math.ceil(filtered.value.length / data.entryValue);
-        });
+      return Math.ceil(filtered.value.length / data.entryValue);
+    });
     const setPages = computed(() => {
-          if (data.itemEm.length > 0) {
-            if (setNumberOfPages.value == 0 || data.entryValue == "All") {
-              data.entryValue = data.itemEm.length;
-              data.numberOfPages = 1;
-            } else data.numberOfPages = setNumberOfPages.value;
-            data.startRow = (data.currentPage - 1) * data.entryValue + 1;
-            data.endRow = data.currentPage * data.entryValue;
-            return filtered.value.filter((item, index) => {
-              return (
-                index + 1 > (data.currentPage - 1) * data.entryValue &&
-                index + 1 <= data.currentPage * data.entryValue
-              );
-            });
-          } else return data.itemEm.value;
+      if (data.itemEm.length > 0) {
+        if (setNumberOfPages.value == 0 || data.entryValue == "All") {
+          data.entryValue = data.itemEm.length;
+          data.numberOfPages = 1;
+        } else data.numberOfPages = setNumberOfPages.value;
+        data.startRow = (data.currentPage - 1) * data.entryValue + 1;
+        data.endRow = data.currentPage * data.entryValue;
+        return filtered.value.filter((item, index) => {
+          return (
+            index + 1 > (data.currentPage - 1) * data.entryValue &&
+            index + 1 <= data.currentPage * data.entryValue
+          );
         });
-
-
+      } else return data.itemEm.value;
+    });
 
     //watch lọc nhân viên
     // ****** trung tâm ******
@@ -333,7 +331,7 @@ export default {
           return val.Position._id == selectedOptionPosition.value;
         });
       }
-     if (newValue == "all") {
+      if (newValue == "all") {
         await refresh();
         selectedOptionCenter.value = "";
         selectedOptionDepartment.value = "";
@@ -343,57 +341,119 @@ export default {
     });
 
     // method
+
     //giao việc cho nhân viên
     const createTaskEm = async () => {
       console.log("đây nè");
-      console.log("id dang chon:", props.item._id);
-      const newData = reactive ({TaskId:" ",EmployeeId:" "});
+      console.log("id Task dang chon:", props.item._id);
+      const newData = reactive({ TaskId: " ", EmployeeId: " " });
+      const listEmployees = reactive({ listEmployee:[]});
+      listEmployees.listEmployee = await http_getOne(Task,props.item._id);
       newData.TaskId = props.item._id;
-      console.log("dai",data.itemEm.length);
-      const count = data.itemEm.filter((element) => element.checked === true).length;
-      console.log("so luong",count);
+      console.log("số lượng nhân viên:", data.itemEm.length);
+      const count = data.itemEm.filter(
+        (element) => element.checked === true
+      ).length;
       if (count == 0) {
         alert_warning("Bạn chưa chọn nhân viên", "");
         return;
       }
+     
+      var j;
+      for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
+        const dataDel = reactive({
+          data: {
+            TaskId: props.item._id,
+            EmployeeId: listEmployees.listEmployee.Employees[j]._id,
+          },
+        });
+        const result = await EmployeeTask.deleteOne(dataDel.data);
+      }
       for (let i = 0; i < data.itemEm.length; i++) {
         if (data.itemEm[i].checked == true) {
-            // console.log("ss", data.itemEm[i]);
+          // console.log("ss", data.itemEm[i]);
           try {
             newData.EmployeeId = data.itemEm[i]._id;
             const result = await http_create(EmployeeTask, newData);
             console.log("ss", data.itemEm[i]);
-
           } catch (error) {
             console.error("Lỗi tạo công việc:", error);
           }
         }
-      }await refresh();
-      alert_success(`Thêm công việc`,`Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`)
+      }
+
+      alert_success(
+        `Gia việc`,
+        `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`
+      );
+      await refresh();
     };
 
+    //tu giao viec
+    const addTaskEm = async () =>{
+      const newData = reactive({ TaskId: " ", EmployeeId: " " });
+      newData.TaskId = props.item._id;
+      newData.EmployeeId = sessionStorage.getItem("employeeId")
+      console.log('leaderId:',newData.EmployeeId  )
+      console.log('taskid:', newData.TaskId)
+      try {
+        const result = await http_create(EmployeeTask, newData);
+        console.log(result.error);
+        if(result.error == true){
+          alert_warning(
+         `Thêm công việc`,
+         `Công việc đã được giao cho bạn`);
+        }else{
+          alert_success(
+         `Thêm công việc`,
+         `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`);  
+        }  
+      } catch (error) {
+          console.error("Lỗi tạo công việc:", error);
+      }
+    }
 
-     //CHECKALL
-     const checkAll = (value) => {
+    //CHECKALL
+    const checkAll = async (value) => {
       console.log("index", value, data.itemEm.length);
 
       var i;
-      for (i = 0; i < data.itemEm.length; i++) {
-        data.itemEm[i].checked = value;
+      if (value == true) {
+        for (i = 0; i < data.itemEm.length; i++) {
+          data.itemEm[i].checked = true;
+        }
+      } else {
+        // for (i = 0; i < data.itemEm.length; i++) {
+        //   data.itemEm[i].checked = false;
+        // }
+        await refresh();
       }
-      console.log("check all:", data.itemEm[0].checked);
-    };
 
+      // console.log("check all:", data.itemEm[0].checked);
+    };
 
     const refresh = async () => {
       // data.cycleSelect = [...rs];
+      console.log("REFRESH");
       data.positions = await http_getAll(Position);
       data.itemEm = await http_getAll(Employee);
+      // ***
+      const employeeTask = reactive({ data: [] });
+      employeeTask.data = await http_getOne(Task, props.item._id);
+
       var i;
       for (i = 0; i < data.itemEm.length; i++) {
         data.itemEm[i].checked = false;
       }
-      
+      for (i = 0; i < data.itemEm.length; i++) {
+        for (var j = 0; j < employeeTask.data.Employees.length; j++) {
+          if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
+            data.itemEm[i].checked = true;
+          }
+        }
+      }
+      console.log("check:", data.itemEm);
+
       centers.center = await CenterServices.getAll();
       // centers.center.push({ _id: "other", name: "khác" });
       departments.department = await departmentsServices.getAll();
@@ -404,9 +464,13 @@ export default {
       positions.position = await http_getAll(Position);
       // positions.position.push({ _id: "other", name: "khác" });
     };
+    const closeModal = async () => {
+      console.log("close modal");
 
+      await refresh();
+      showModal.value = false;
+    };
     onBeforeMount(() => {
-
       refresh();
     });
 
@@ -425,6 +489,8 @@ export default {
       positions,
       selectedOptionPosition,
       checkAll,
+      closeModal,
+      addTaskEm,
     };
   },
 };
@@ -437,124 +503,129 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Thêm phân công cho nhân viên</h4>
-          <button type="button" class="close" data-dismiss="modal">
+          <h4 class="modal-title" style="font-size: 15px">
+            Thêm phân công cho nhân viên
+          </h4>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            @click="closeModal"
+          >
             &times;
           </button>
         </div>
 
         <!-- Modal body -->
         <div class="model-body">
-          <div style="padding:24px">
-          <form action="" class="was-validated">
-            <div class="form-group">
-              <label for="name">Khách hàng(<span style="color: red">*</span>):</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name"
-                v-model="item.Customer.name"
-                disabled
-              />
-            </div>
-            <div class="form-group">
-              <label for="">Nội dung chăm sóc(<span style="color: red">*</span>):</label>
-              <textarea
-                class="form-control"
-                v-model="item.content"
-                required
-                disabled
-              ></textarea>
-            </div>
-            <div class="border-box d-flex flex-column">
-              <div class="d-flex mx-3">
-                <div class="form-group w-100">
-                  <label for="name">Chức vụ</label>
-                  <SelectCDU
-                    class="d-flex justify-content-start"
-                    :title="`Chức vụ`"
-                    :field="positions.position"
-                    :selectedOption="selectedOptionPosition"
-                    @option="(value) => (selectedOptionPosition = value)"
-                  />
-                </div>
-                <div class="form-group w-100">
-                  <label for="name">Trung tâm</label>
-
-                  <SelectCDU
-                    class="d-flex justify-content-start"
-                    :title="`Trung tâm`"
-                    :field="centers.center"
-                    :selectedOption="selectedOptionCenter"
-                    @option="(value) => (selectedOptionCenter = value)"
-                  />
-                </div>
-                <div class="form-group w-100">
-                  <label for="name">Phòng</label>
-
-                  <SelectCDU
-                    class="d-flex justify-content-start"
-                    :title="`Phòng`"
-                    :field="departments.department"
-                    :selectedOption="selectedOptionDepartment"
-                    @option="(value) => (selectedOptionDepartment = value)"
-                  />
-                </div>
-                <div class="form-group w-100">
-                  <label for="name">Tổ</label>
-
-                  <SelectCDU
-                    class="d-flex justify-content-start"
-                    :title="`Tổ`"
-                    :selectedOption="selectedOptionUnit"
-                    :field="units.unit"
-                    @option="(value) => (selectedOptionUnit = value)"
-                  />
-                </div>
+          <div style="padding: 24px">
+            <form action="" class="was-validated">
+              <div class="form-group">
+                <label for="name"
+                  >Khách hàng(<span style="color: red">*</span>):</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="name"
+                  name="name"
+                  v-model="item.Customer.name"
+                  disabled
+                />
               </div>
-              <Table
-              @selectAll="(value) => checkAll(value)"
-                :items="setPages"
-                :fields="[
-                  'Tên',
-                  'Chức vụ',
-                  'Đơn vị',
-                  'Phòng',
-                  'Trung tâm',
-                ]"
-                :labels="['name']"
-              />
-              <Pagination
-                :numberOfPages="data.numberOfPages"
-                :totalRow="data.totalRow"
-                :startRow="data.startRow"
-                :endRow="data.endRow"
-                :currentPage="data.currentPage"
-                @update:currentPage="(value) => (data.currentPage = value)"
-                class="mx-3"
-              />
-            </div>
-            
-            <button
-              type="button"
-              class="btn btn-primary px-3 py-2"
-              style="font-size: 14px; margin-right:24px"
-              @click="createTaskEm"
-              id="add"
-            >
-              <span>Giao việc</span>
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary px-3 py-2"
-              style="font-size: 14px"
-              @click="refresh"
-              id=""
-            >
-              <span>Tải lại</span>
-            </button>
-          </form>
+              <div class="form-group">
+                <label for=""
+                  >Nội dung chăm sóc(<span style="color: red">*</span>):</label
+                >
+                <textarea
+                  class="form-control"
+                  v-model="item.content"
+                  required
+                  disabled
+                ></textarea>
+              </div>
+              <div class="border-box d-flex flex-column">
+                <div class="d-flex mx-3">
+                  <div class="form-group w-100">
+                    <label for="name">Chức vụ</label>
+                    <SelectCDU
+                      class="d-flex justify-content-start"
+                      :title="`Chức vụ`"
+                      :field="positions.position"
+                      :selectedOption="selectedOptionPosition"
+                      @option="(value) => (selectedOptionPosition = value)"
+                    />
+                  </div>
+                  <div class="form-group w-100">
+                    <label for="name">Trung tâm</label>
+
+                    <SelectCDU
+                      class="d-flex justify-content-start"
+                      :title="`Trung tâm`"
+                      :field="centers.center"
+                      :selectedOption="selectedOptionCenter"
+                      @option="(value) => (selectedOptionCenter = value)"
+                    />
+                  </div>
+                  <div class="form-group w-100">
+                    <label for="name">Phòng</label>
+
+                    <SelectCDU
+                      class="d-flex justify-content-start"
+                      :title="`Phòng`"
+                      :field="departments.department"
+                      :selectedOption="selectedOptionDepartment"
+                      @option="(value) => (selectedOptionDepartment = value)"
+                    />
+                  </div>
+                  <div class="form-group w-100">
+                    <label for="name">Tổ</label>
+
+                    <SelectCDU
+                      class="d-flex justify-content-start"
+                      :title="`Tổ`"
+                      :selectedOption="selectedOptionUnit"
+                      :field="units.unit"
+                      @option="(value) => (selectedOptionUnit = value)"
+                    />
+                  </div>
+                </div>
+                <Table
+                  @selectAll="(value) => checkAll(value)"
+                  :items="setPages"
+                  :fields="['Tên', 'Chức vụ', 'Tổ', 'Phòng', 'Trung tâm']"
+                  :labels="['name']"
+                />
+                <Pagination
+                  :numberOfPages="data.numberOfPages"
+                  :totalRow="data.totalRow"
+                  :startRow="data.startRow"
+                  :endRow="data.endRow"
+                  :currentPage="data.currentPage"
+                  @update:currentPage="(value) => (data.currentPage = value)"
+                  class="mx-3"
+                />
+              </div>
+
+              <button
+                type="button"
+                class="btn btn-primary px-3 py-2"
+                style="font-size: 14px; margin-right: 24px"
+                @click="createTaskEm"
+                id="add"
+              >
+                <span>Giao việc</span>
+              </button>
+              <button
+                type="button"
+                class="btn btn-secondary px-3 py-2"
+                style="font-size: 14px"
+                @click="addTaskEm"
+                id=""
+              >
+                <span>Tự giao</span>
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -566,7 +637,7 @@ export default {
 .border-box {
   border: 1px solid var(--gray);
   border-radius: 5px;
-  padding-top:10px;
+  padding-top: 10px;
   margin-bottom: 14px;
 }
 </style>

@@ -40,7 +40,7 @@ export default {
         <th></th>
         <th>Stt</th>
         <th>Khách hàng</th>
-        <th v-if="activeCycle == true ">Chu kỳ</th>
+        <th>Chu kỳ</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Hành động</th>
       </tr>
@@ -55,7 +55,7 @@ export default {
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}
         </td>
-        <td v-if="activeStatus_Task == true">{{ item.Status_Task.status == 'false' ? 'Thất bại' : 'Thành công' }}</td>
+        <td>{{ item.Status_Task.status == 'false' ? 'Thất bại' : 'Thành công' }}</td>
         <td v-if="activeAction == true">
           <button
             type="button"

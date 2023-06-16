@@ -549,7 +549,7 @@ export default {
       console.log(id);
       data.viewValue = await http_getOne(Task,id);
       console.log(data.viewValue);
-
+      // router.push({ name: "Assignment.view", params: { id: _id } });
     }
 
 
