@@ -249,6 +249,7 @@ export default {
             alert_success(`Đã thêm trung tâm`, `${CenterName}`);
             await refresh("center");
             data.modelValue = document.document.name;
+            selectedOptionCenter.value = document.document._id;
             centers.center.push({ _id: "other", name: "khác" });
             ctx.emit("newCenter", centers.center);
           }

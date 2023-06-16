@@ -34,7 +34,7 @@ export default {
       //   props.items[i].checked = value;
       // }
       console.log("table_ selectAll", value);
-      ntx.emit("selectAll", true);
+      ntx.emit("selectAll", value);
     });
     return {
       selectAll,

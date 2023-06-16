@@ -601,9 +601,10 @@ export default {
     //CHECKALL
     const checkAll = (value) => {
       console.log("index", value, data.items.length);
+
       var i;
       for (i = 0; i < data.items.length; i++) {
-        data.items[i].checked = true;
+        data.items[i].checked = value;
       }
       console.log("check all:", data.items[0].checked);
     };
