@@ -1,5 +1,5 @@
 const notification = require('./app/controllers/notification.controller')
-
+const { Notification }  = require('./app/models/index.model')
 
 // npm packages
 const createError = require('http-errors');
@@ -30,30 +30,44 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
 
-  socket.on('birthday', (data) => {
-    
-    io.emit('upcoming_birthday', data);
-  });
-
   socket.on('assignmentTask', ()=>{
     io.emit('notiTask')
   })
 
-  // socket.on('birthday', (customers) => {
-  //   const today = moment(); // Lấy ngày hiện tại
-  //   customers.forEach(customer => {
-  //     console.log(customer);
-  //     const birthday = moment(customer.birthday, 'YYYY-MM-DD'); 
-  //     const customerBirthday = { month: birthday.month(), date: birthday.date() };
-  //     const todayDate = { month: today.month(), date: today.date() };
-  //     if (
-  //       todayDate.month === customerBirthday.month && todayDate.date === customerBirthday.date
-  //     ) {
-  //       io.emit('upcoming_birthday', { name: customer.name, birthday: customer.birthday });
-  //       console.log("Khách hàng nào: ",{ name: customer.name, birthday: customer.birthday });
-  //     }
-  //   });
-  // });
+  socket.on('birthday', (customers,_id,nameEm) => {
+    console.log("ID nhan vien",_id)
+    const today = moment(); // Lấy ngày hiện tại
+    customers.forEach(async customer => {
+      const birthday = moment(customer.birthday, 'YYYY-MM-DD'); 
+      const customerBirthday = { month: birthday.month(), date: birthday.date() };
+      const todayDate = { month: today.month(), date: today.date() };
+      console.log("homnay",todayDate)
+      console.log("sinh nhat",customerBirthday)
+      if (
+        todayDate.month === customerBirthday.month && todayDate.date === (customerBirthday.date -1)
+      ) {
+        const documents = await Notification.findAll({where: {
+          idRecipient: _id,
+        },})
+        console.log("DSSinhNhat:",documents)
+        if (documents.length > 0) {
+          for (const value of documents) {
+            console.log("Thongbaone",value._id)
+            if (value.title == "Sinh nhật" && value.content == `Ngày mai là sinh nhật của khách hàng ${customer.name}`){
+              io.emit('notiTask')
+            } else {
+              Notification.create({title:"Sinh nhật", content:`Ngày mai là sinh nhật của khách hàng ${customer.name}`,recipient:nameEm, sender:"",isRead: false,idRecipient:_id })   
+              io.emit('notiTask')
+              // console.log("Khách hàng nào: ",customer);    
+            } 
+          }
+        } else {
+          Notification.create({title:"Sinh nhật", content:`Ngày mai là sinh nhật của khách hàng ${customer.name}`,recipient:nameEm, sender:"",isRead: false,idRecipient:_id })   
+          io.emit('notiTask')
+        }            
+     }
+    });
+  });
 });
 
 server.listen(3000, () => {

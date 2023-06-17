@@ -1,6 +1,5 @@
 <script>
 import { defineEmits, inject, ref ,reactive, onMounted} from "vue";
-import io from "socket.io-client";
 import socket from '../../../socket';
 import employeeService from "../../services/employee.service";
 import notificationService from "../../services/notification.service";
@@ -30,62 +29,8 @@ export default {
     const data = reactive({
       employeeName: sessionStorage.getItem("employeeName"),
       role: sessionStorage.getItem("role"),
-      List: {
-        _id: "",
-        name: "",
-        birthday: "",
-        // avatar: "",
-        address: "",
-        phone: "",
-        email: "",
-        Position: {
-          _id: "",
-          name: "",
-        },
-        Unit: {
-          _id: "",
-          name: "",
-          Department: {
-            _id: "",
-            name: "",
-            Center_VNPTHG: {
-              name: "",
-              _id: "",
-            },
-          },
-        },
-        Tasks: {
-          start_date: "",
-          end_date: "",
-          content: "",
-          _id: "",
-          customerId: "",
-          cycleId: "",
-          leaderId: "",
-          Employee_Task: {
-            TaskId: "",
-            EmployeeId: "",
-          },
-          Cycles: {
-            _id: "",
-            name: "",
-          },
-          Customers: {
-            _id: "",
-            name: "",
-            phone: "",
-            email: "",
-            address: "",
-            avatar: "",
-          },
-          Status: {
-            _id: "",
-            status: "",
-            reason: "",
-          },
-        },
-      },
-      Notice: {}
+      Notice: {},
+      customers: []
     })
     const emit = inject("emit");
     const updateMenuResponsive = () => {
@@ -150,9 +95,11 @@ export default {
         console.log("đém",value)
       }
     };
+    
 
     const token = sessionStorage.getItem('token')
-    if (token) {
+    const check = async (token) => {
+      if (token) {
       const _idEmployee = sessionStorage.getItem("employeeId");
       const _nameEmployee = sessionStorage.getItem("employeeName");
       const object = {
@@ -169,22 +116,32 @@ export default {
         //     count.value++
         // }
         count.value = 0
-      for (const value of data.Notice.documents) {
-        if (value.isRead == false) {
-          count.value++
-          console.log("count value",count.value)
+        for (const value of data.Notice.documents) {
+          if (value.isRead == false) {
+            count.value++
+            console.log("count value",count.value)
+          }
+          console.log("đém",value)
         }
-        console.log("đém",value)
-      }
       })
-      socket.emit('birthday',_idEmployee)
+      const employees = await http_getOne(employeeService, _idEmployee)
+      console.log('Khách hàng thuộc nhân viên', employees.Tasks);
+      const Tasks = employees.Tasks;
+
+      Tasks.map( (value, index) => {
+        
+        console.log('Task', index, ' = ' ,  value.Customers);
+        data.customers.push(value.Customers);
+      })
+      console.log('Data customers', data.customers);
+      socket.emit('birthday',data.customers,_idEmployee,_nameEmployee)
+    }
     }
 
+    
 
     onMounted(async () => {
       const _idEmployee = sessionStorage.getItem("employeeId");
-      data.List = await employeeService.get(_idEmployee);
-      console.log("Tên khách hàng",data.List.Tasks)
       data.Notice = await notificationService.get(_idEmployee);
       console.log("Tên thông báo",data.Notice)
       count.value = 0
@@ -205,6 +162,8 @@ export default {
     const clearNotification = () => {
       showNotification.value = false;
     };
+
+    check(token)
 
     return {
       updateMenuResponsive,
