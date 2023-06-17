@@ -26,23 +26,25 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectAll: {
+      type: Object,
+      default: {},
+    },
   },
-  setup(ctx, ntx) {
+  setup(props, ntx) {
     const data = reactive({
       activeSelectAll: false,
     });
-    const selectAll = ref(false);
-    watch(selectAll, (value) => {
-      // for (let i = 0; i < props.items.length; i++) {
-      //   props.items[i].checked = value;
-      // }
-      console.log("table_ selectAll", value);
-      ntx.emit("selectAll", value);
-    });
-
-    return {
-      selectAll,
-    };
+    // const selectAll = ref(false);
+    // watch(props.selectAll, (value) => {
+    //   console.log("table_ selectAll", value);
+    //   ntx.emit("selectAll", value);
+    // });
+    // watchEffect(() => {
+    //   console.log("table_ selectAll", value);
+    //   ntx.emit("selectAll", value);
+    // });
+    return {};
   },
 };
 </script>
@@ -54,7 +56,16 @@ export default {
   >
     <thead>
       <tr>
-        <th><input type="checkbox" name="" id="" v-model="selectAll" /></th>
+        <th>
+          <input
+            type="checkbox"
+            name=""
+            id=""
+            v-model="selectAll.selectAll"
+            :checked="selectAll.selectAll"
+            @click="$emit('selectAll')"
+          />
+        </th>
         <th>Stt</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
       </tr>

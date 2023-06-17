@@ -181,7 +181,7 @@ export default {
           units.unit.push(value);
         }
       }
-      await filters();
+      await filter();
     });
 
     //DEP
@@ -266,7 +266,7 @@ export default {
           );
         });
       }
-      await filters();
+      await filter();
     });
 
     //POSITION
@@ -361,6 +361,10 @@ export default {
       // units.unit.push({ _id: "other", name: "khác" });
       positions.position = await http_getAll(Position);
       // positions.position.push({ _id: "other", name: "khác" });
+      selectedOptionCenter.value = "";
+      selectedOptionDepartment.value = "";
+      selectedOptionUnit.value = "";
+      selectedOptionPosition.value = "";
     };
     //giao việc cho nhân viên
     const createTaskEm = async () => {
@@ -404,26 +408,23 @@ export default {
         `Thêm công việc`,
         `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`
       );
+      selectAll.selectAll = false;
       await refresh();
     };
 
     //CHECKALL
-    const checkAll = async (value) => {
-      console.log("index", value, data.itemEm.length);
-
+    const checkAll = async () => {
       var i;
-      if (value == true) {
+      if (selectAll.selectAll == false) {
         for (i = 0; i < data.itemEm.length; i++) {
           data.itemEm[i].checked = true;
         }
       } else {
-        // for (i = 0; i < data.itemEm.length; i++) {
-        //   data.itemEm[i].checked = false;
-        // }
+        for (i = 0; i < data.itemEm.length; i++) {
+          data.itemEm[i].checked = false;
+        }
         await refresh();
       }
-
-      // console.log("check all:", data.itemEm[0].checked);
     };
 
     const closeModal = async () => {
@@ -432,6 +433,8 @@ export default {
       await refresh();
       showModal.value = false;
     };
+    const selectAll = reactive({ selectAll: false });
+
     onBeforeMount(() => {
       refresh();
     });
@@ -452,6 +455,7 @@ export default {
       selectedOptionPosition,
       checkAll,
       closeModal,
+      selectAll,
     };
   },
 };
@@ -545,7 +549,8 @@ export default {
                   </div>
                 </div>
                 <Table
-                  @selectAll="(value) => checkAll(value)"
+                  @selectAll="checkAll()"
+                  :selectAll="selectAll"
                   :items="setPages"
                   :fields="['Tên', 'Chức vụ', 'Đơn vị', 'Phòng', 'Trung tâm']"
                   :labels="['name']"
