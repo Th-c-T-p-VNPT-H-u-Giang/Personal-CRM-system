@@ -1,5 +1,9 @@
 <template>
-  <div>
+  <div class="select-container">
+    <label for="name" :class="[index == true ? 'span' : 'span-modal']">{{
+      title
+    }}</label>
+
     <select
       class="form-control d-flex justify-content-start pl-2 mr-2"
       @change="changed"
@@ -17,9 +21,9 @@
       </option>
       <!-- <option value="all" :selected="selectedOption == 'all'">tất cả</option> -->
       <!-- <option v-if="add.name == 'position'" value="other">Khác</option>
-      <option v-if="add.nameCDU == 'center'" value="other">Khác</option>
-      <option v-if="add.nameCDU == 'dep'" value="other">Khác dep</option>
-      <option v-if="add.nameCDU == 'unit'" value="other">Khác unit</option> -->
+        <option v-if="add.nameCDU == 'center'" value="other">Khác</option>
+        <option v-if="add.nameCDU == 'dep'" value="other">Khác dep</option>
+        <option v-if="add.nameCDU == 'unit'" value="other">Khác unit</option> -->
     </select>
   </div>
 </template>
@@ -33,6 +37,7 @@ export default {
     title: { type: String },
     selectedOption: { type: String },
     add: { type: Object, default: "" },
+    index: { type: Boolean, default: false },
   },
   setup(props, { emit }) {
     const changed = (e) => {
@@ -50,5 +55,19 @@ export default {
 <style>
 .form-control {
   background-color: var(--light);
+}
+
+.select-container {
+  position: relative;
+}
+.select-container label {
+  position: absolute;
+  top: -10px;
+}
+.span {
+  background-color: var(--light);
+}
+.span-modal {
+  background-color: #fbfbfb;
 }
 </style>

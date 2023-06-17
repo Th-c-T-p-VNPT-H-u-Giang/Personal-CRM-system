@@ -128,6 +128,21 @@ export default {
 
     //watch lọc nhân viên
     // ****** trung tâm ******
+    const filters = async () => {
+      employeeTask.data = await http_getOne(Task, props.item._id);
+      var i;
+      for (i = 0; i < data.itemEm.length; i++) {
+        data.itemEm[i].checked = false;
+      }
+      for (i = 0; i < data.itemEm.length; i++) {
+        for (var j = 0; j < employeeTask.data.Employees.length; j++) {
+          if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
+            data.itemEm[i].checked = true;
+          }
+        }
+      }
+    };
+
     const centers = reactive({ center: [] });
     const selectedOptionCenter = ref("");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
@@ -166,13 +181,7 @@ export default {
           units.unit.push(value);
         }
       }
-      if (newValue == "all") {
-        await refresh();
-        selectedOptionCenter.value = "";
-        selectedOptionDepartment.value = "";
-        selectedOptionUnit.value = "";
-        selectedOptionPosition.value = "";
-      }
+      await filters();
     });
 
     //DEP
@@ -211,15 +220,7 @@ export default {
       }
 
       units.unit = await unitsServices.findAllUnitsOfADep(newValue);
-      // units.unit.push({ _id: "other", name: "khác" });
-
-      if (newValue == "all") {
-        await refresh();
-        selectedOptionCenter.value = "";
-        selectedOptionDepartment.value = "";
-        selectedOptionUnit.value = "";
-        selectedOptionPosition.value = "";
-      }
+      await filters();
     });
 
     //UNIT
@@ -265,13 +266,7 @@ export default {
           );
         });
       }
-      if (newValue == "all") {
-        await refresh();
-        selectedOptionCenter.value = "";
-        selectedOptionDepartment.value = "";
-        selectedOptionUnit.value = "";
-        selectedOptionPosition.value = "";
-      }
+      await filters();
     });
 
     //POSITION
@@ -296,7 +291,6 @@ export default {
         selectedOptionUnit.value != ""
       ) {
         data.itemEm = data.itemEm.filter((val, index) => {
-          console.log("đủ 3");
           return (
             val.Position._id == selectedOptionPosition.value &&
             val.Unit.Department.Center_VNPTHG._id ==
@@ -327,18 +321,11 @@ export default {
           );
         });
       } else {
-        console.log("đủ 1");
         data.itemEm = data.itemEm.filter((val, index) => {
           return val.Position._id == selectedOptionPosition.value;
         });
       }
-      if (newValue == "all") {
-        await refresh();
-        selectedOptionCenter.value = "";
-        selectedOptionDepartment.value = "";
-        selectedOptionUnit.value = "";
-        selectedOptionPosition.value = "";
-      }
+      await filters();
     });
 
     // method
@@ -521,7 +508,6 @@ export default {
               <div class="border-box d-flex flex-column">
                 <div class="d-flex mx-3">
                   <div class="form-group w-100">
-                    <label for="name">Chức vụ</label>
                     <SelectCDU
                       class="d-flex justify-content-start"
                       :title="`Chức vụ`"
@@ -531,8 +517,6 @@ export default {
                     />
                   </div>
                   <div class="form-group w-100">
-                    <label for="name">Trung tâm</label>
-
                     <SelectCDU
                       class="d-flex justify-content-start"
                       :title="`Trung tâm`"
@@ -542,8 +526,6 @@ export default {
                     />
                   </div>
                   <div class="form-group w-100">
-                    <label for="name">Phòng</label>
-
                     <SelectCDU
                       class="d-flex justify-content-start"
                       :title="`Phòng`"
@@ -553,8 +535,6 @@ export default {
                     />
                   </div>
                   <div class="form-group w-100">
-                    <label for="name">Tổ</label>
-
                     <SelectCDU
                       class="d-flex justify-content-start"
                       :title="`Tổ`"

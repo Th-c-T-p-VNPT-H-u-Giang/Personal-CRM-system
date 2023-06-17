@@ -684,9 +684,10 @@ export default {
       <span class="mx-3 mb-3 h6">Lọc nhân viên</span>
       <div class="d-flex mx-3">
         <div class="form-group w-100">
-          <label for="name">Chức vụ</label>
+          <!-- <label for="name">Chức vụ</label> -->
           <SelectCDU
             class="d-flex justify-content-start"
+            :index="true"
             :title="`Chức vụ`"
             :field="positions.position"
             :selectedOption="selectedOptionPosition"
@@ -694,10 +695,11 @@ export default {
           />
         </div>
         <div class="form-group w-100">
-          <label for="name">Trung tâm</label>
+          <!-- <label for="name">Trung tâm</label> -->
 
           <SelectCDU
             class="d-flex justify-content-start"
+            :index="true"
             :title="`Trung tâm`"
             :field="centers.center"
             :selectedOption="selectedOptionCenter"
@@ -705,10 +707,11 @@ export default {
           />
         </div>
         <div class="form-group w-100">
-          <label for="name">Phòng</label>
+          <!-- <label for="name">Phòng</label> -->
 
           <SelectCDU
             class="d-flex justify-content-start"
+            :index="true"
             :title="`Phòng`"
             :field="departments.department"
             :selectedOption="selectedOptionDepartment"
@@ -716,10 +719,11 @@ export default {
           />
         </div>
         <div class="form-group w-100">
-          <label for="name">Tổ</label>
+          <!-- <label for="name">Tổ</label> -->
 
           <SelectCDU
             class="d-flex justify-content-start"
+            :index="true"
             :title="`Tổ`"
             :selectedOption="selectedOptionUnit"
             :field="units.unit"
