@@ -64,6 +64,7 @@ export default {
         {
           _id: "",
           name: "",
+          postionId: "",
           Position: {
             _id: "",
             name: "",
@@ -175,6 +176,11 @@ export default {
           },
         },
       },
+      center: {},
+      department: {},
+      unit: {},
+      position: {},
+
       modelPositon: "Chức vụ",
       modelValue: "Trung tâm",
       modelDep: "Phòng",
@@ -197,23 +203,19 @@ export default {
       console.log("Starting search");
       if (data.choseSearch == "name") {
         return data.items.map((value, index) => {
-          return [value.Customer.name].join("").toLocaleLowerCase();
+          return [value.name].join("").toLocaleLowerCase();
         });
       } else if (data.choseSearch == "email") {
         return data.items.map((value, index) => {
-          return [value.Customer.email].join("").toLocaleLowerCase();
+          return [value.email].join("").toLocaleLowerCase();
         });
       } else if (data.choseSearch == "phone") {
         return data.items.map((value, index) => {
-          return [value.Customer.phone].join("").toLocaleLowerCase();
+          return [value.phone].join("").toLocaleLowerCase();
         });
       } else {
         return data.items.map((value, index) => {
-          return [
-            value.Customer.name,
-            value.Customer.email,
-            value.Customer.phone,
-          ]
+          return [value.name, value.email, value.phone]
             .join("")
             .toLocaleLowerCase();
         });
@@ -255,6 +257,60 @@ export default {
       } else return data.items.value;
     });
 
+    const entryValuePosition = ref(""); //id
+    const entryNamePosition = ref("Chức vụ"); //name
+    const entryValueCenter = ref("");
+    const entryNameCenter = ref("Trung tâm");
+    const entryValueDepartment = ref(""); //id
+    const entryNameDepartment = ref("Phòng"); //name
+    const entryValueUnit = ref("");
+    const entryNameUnit = ref("Tổ");
+
+    //FRESH
+    const refresh = async () => {
+      data.items = await http_getAll(Employee);
+      for (let value of data.items) {
+        value.checked = false;
+      }
+      data.position = await http_getAll(Position);
+
+      data.center = await CenterServices.getAll();
+      data.department = await departmentsServices.getAll();
+      data.unit = await unitsServices.getAll();
+      // console.log("refresh:", data.items);
+      console.log("department:", data.department);
+
+      data.position = data.position.map((value, index) => {
+        return {
+          ...value,
+          value: value._id,
+        };
+      });
+      data.center = data.center.map((value, index) => {
+        return {
+          ...value,
+          value: value._id,
+        };
+      });
+      data.department = data.department.map((value, index) => {
+        return {
+          ...value,
+          value: value._id,
+        };
+      });
+      data.unit = data.unit.map((value, index) => {
+        return {
+          ...value,
+          value: value._id,
+        };
+      });
+      console.log("position:", data.position);
+      if (entryValuePosition.value.length > 0) {
+        data.items = data.items.filter((pos) => {
+          return pos.postionId == entryValuePosition.value;
+        });
+      }
+    };
     const router = useRouter();
 
     // watch
@@ -299,282 +355,203 @@ export default {
       }
     };
 
-    const refresh = async () => {
-      data.positions = await http_getAll(Position);
-      data.items = await http_getAll(Employee);
-      var i;
-      for (i = 0; i < data.items.length; i++) {
-        data.items[i].checked = false;
-      }
-      centers.center = await CenterServices.getAll();
-      departments.department = await departmentsServices.getAll();
-
-      units.unit = await unitsServices.getAll();
-      positions.position = await http_getAll(Position);
-      console.log("refresh:", data.items);
-    };
-
     // ****** trung tâm ******
-    const centers = reactive({ center: [] });
-    const selectedOptionCenter = ref("");
-    watch(selectedOptionCenter, async (newValue, oldValue) => {
-      if (newValue == "") {
-        return;
-      }
 
-      const doc = ref("");
-      doc.value = await CenterServices.get(selectedOptionCenter.value);
-      data.modelValue = doc.value.name;
-      data.items = await http_getAll(Employee);
-      if (selectedOptionPosition.value != "") {
-        data.items = data.items.filter((val, index) => {
-          return (
-            val.Unit.Department.Center_VNPTHG._id ==
-              selectedOptionCenter.value &&
-            val.Position._id == selectedOptionPosition.value
-          );
-        });
+    //POSITION
+    const positions = reactive({ position: [] });
+    watch(entryValuePosition, async (newValue, oldValue) => {
+      if (newValue == "Chức vụ") {
+        await refresh();
       } else {
-        data.items = data.items.filter((val, index) => {
-          return (
-            val.Unit.Department.Center_VNPTHG._id == selectedOptionCenter.value
-          );
-        });
-      }
-      departments.department = await departmentsServices.findAllDepOfACenter(
-        newValue
-      );
-      units.unit = [];
-      for (let val of departments.department) {
-        var newData = await unitsServices.findAllUnitsOfADep(val._id);
-        for (let value of newData) {
-          units.unit.push(value);
+        const docPosition = ref("");
+        docPosition.value = await http_getOne(
+          Position,
+          entryValuePosition.value
+        );
+        data.modelPositon = docPosition.value.name;
+
+        data.items = await http_getAll(Employee);
+
+        if (
+          entryValueCenter.value != "" &&
+          entryValueDepartment.value != "" &&
+          entryValueUnit.value != ""
+        ) {
+          data.items = data.items.filter((val, index) => {
+            return (
+              val.Position._id == entryValuePosition.value &&
+              val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
+              val.Unit.Department._id == entryValueDepartment.value &&
+              val.unitId == entryValueUnit.value
+            );
+          });
+        } else if (
+          entryValueCenter.value != "" &&
+          entryValueDepartment.value != ""
+        ) {
+          console.log(data.items);
+          data.items = data.items.filter((val, index) => {
+            return (
+              val.Position._id == entryValuePosition.value &&
+              val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
+              val.Unit.Department._id == entryValueDepartment.value
+            );
+          });
+        } else if (entryValueCenter.value != "") {
+          console.log("3:", data.items);
+          data.items = data.items.filter((val, index) => {
+            return (
+              val.postionId == entryValuePosition.value &&
+              val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value
+            );
+          });
+        } else {
+          data.items = data.items.filter((val, index) => {
+            return val.postionId == entryValuePosition.value;
+          });
         }
       }
-      if (newValue == "all") {
+    });
+
+    const updateEntryValuePosition = (value) => {
+      entryValuePosition.value = value;
+    };
+
+    //  CENTER
+    const centers = reactive({ center: [] });
+    const updateEntryValueCenter = (value) => {
+      console.log("center:", entryValueCenter.value, "**");
+      entryValueCenter.value = value;
+    };
+    watch(entryValueCenter, async (newValue, oldValue) => {
+      if (newValue == "Trung tâm") {
         await refresh();
-        selectedOptionCenter.value = "";
-        selectedOptionDepartment.value = "";
-        selectedOptionUnit.value = "";
-        selectedOptionPosition.value = "";
+      } else {
+        console.log("Trung tâm", newValue);
+        const doc = ref("");
+        doc.value = await CenterServices.get(entryValueCenter.value);
+        data.modelValue = doc.value.name;
+        data.items = await http_getAll(Employee);
+        if (entryValuePosition.value != "") {
+          data.items = data.items.filter((val, index) => {
+            return (
+              val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
+              val.Position._id == entryValuePosition.value
+            );
+          });
+        } else {
+          data.items = data.items.filter((val, index) => {
+            return (
+              val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value
+            );
+          });
+          console.log("center new data.items", data.items);
+        }
+        data.department = await departmentsServices.findAllDepOfACenter(
+          newValue
+        );
+        units.unit = [];
+        for (let val of data.department) {
+          var newData = await unitsServices.findAllUnitsOfADep(val._id);
+          for (let value of newData) {
+            data.unit.push(value);
+          }
+        }
       }
     });
 
     //DEP
     const departments = reactive({ department: [] });
-    const selectedOptionDepartment = ref("");
-    watch(selectedOptionDepartment, async (newValue, oldValue) => {
+    watch(entryValueDepartment, async (newValue, oldValue) => {
       if (newValue == "") {
         return;
-      }
-      const doc = ref("");
-      doc.value = await CenterServices.get(selectedOptionCenter.value);
-      data.modelValue = doc.value.name;
-      const docDep = ref("");
-      docDep.value = await departmentsServices.getOne(
-        selectedOptionDepartment.value
-      );
-      data.modelDep = docDep.value.name;
-      data.items = await http_getAll(Employee);
-      if (selectedOptionPosition.value != "") {
-        data.items = data.items.filter((val, index) => {
-          return (
-            val.Unit.Department.Center_VNPTHG._id ==
-              selectedOptionCenter.value &&
-            val.Unit.Department._id == selectedOptionDepartment.value &&
-            val.Position._id == selectedOptionPosition.value
-          );
-        });
       } else {
-        data.items = data.items.filter((val, index) => {
-          return (
-            val.Unit.Department.Center_VNPTHG._id ==
-              selectedOptionCenter.value &&
-            val.Unit.Department._id == selectedOptionDepartment.value
-          );
-        });
+        const doc = ref("");
+        doc.value = await CenterServices.get(entryValueCenter.value);
+        data.modelValue = doc.value.name;
+        const docDep = ref("");
+        docDep.value = await departmentsServices.getOne(
+          entryValueDepartment.value
+        );
+        data.modelDep = docDep.value.name;
+        data.items = await http_getAll(Employee);
+        if (entryValuePosition.value != "") {
+          data.items = data.items.filter((val, index) => {
+            return (
+              val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
+              val.Unit.Department._id == entryValueDepartment.value &&
+              val.Position._id == entryValuePosition.value
+            );
+          });
+        } else {
+          data.items = data.items.filter((val, index) => {
+            return (
+              val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
+              val.Unit.Department._id == entryValueDepartment.value
+            );
+          });
+        }
+        units.unit = await unitsServices.findAllUnitsOfADep(newValue);
       }
-
-      units.unit = await unitsServices.findAllUnitsOfADep(newValue);
-
-      // if (newValue == "all") {
-      //   await refresh();
-      //   selectedOptionCenter.value = "";
-      //   selectedOptionDepartment.value = "";
-      //   selectedOptionUnit.value = "";
-      //   selectedOptionPosition.value = "";
-      // }
     });
+    const updateEntryValueDepartment = (value) => {
+      console.log("dep:", entryValueDepartment.value, "**");
+      entryValueDepartment.value = value;
+    };
+    const updateEntryValueUnit = (value) => {
+      console.log("dep:", entryValueUnit.value, "**");
+      entryValueUnit.value = value;
+    };
 
     //UNIT
-    const units = reactive({
-      unit: [],
-    });
-    const selectedOptionUnit = ref("");
-    watch(selectedOptionUnit, async (newValue, oldValue) => {
+
+    watch(entryValueUnit, async (newValue, oldValue) => {
       if (newValue == "") {
         return;
       }
       const doc = ref("");
-      doc.value = await CenterServices.get(selectedOptionCenter.value);
+      doc.value = await CenterServices.get(entryValueCenter.value);
       data.modelValue = doc.value.name;
       // DEP
       const docDep = ref("");
       docDep.value = await departmentsServices.getOne(
-        selectedOptionDepartment.value
+        entryValueDepartment.value
       );
       //UNIT
       const docUnit = ref("");
-      docUnit.value = await unitsServices.getOne(selectedOptionUnit.value);
+      docUnit.value = await unitsServices.getOne(entryValueUnit.value);
       data.modelUnit = docUnit.value.name;
 
       data.items = await http_getAll(Employee);
-      if (selectedOptionPosition.value != "") {
+      if (entryValuePosition.value != "") {
         data.items = data.items.filter((val, index) => {
           return (
-            val.Unit.Department.Center_VNPTHG._id ==
-              selectedOptionCenter.value &&
-            val.Unit.Department._id == selectedOptionDepartment.value &&
-            val.unitId == selectedOptionUnit.value &&
-            val.Position._id == selectedOptionPosition.value
+            val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
+            val.Unit.Department._id == entryValueDepartment.value &&
+            val.unitId == entryValueUnit.value &&
+            val.Position._id == entryValuePosition.value
           );
         });
       } else {
         data.items = data.items.filter((val, index) => {
           return (
-            val.Unit.Department.Center_VNPTHG._id ==
-              selectedOptionCenter.value &&
-            val.Unit.Department._id == selectedOptionDepartment.value &&
-            val.unitId == selectedOptionUnit.value
+            val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
+            val.Unit.Department._id == entryValueDepartment.value &&
+            val.unitId == entryValueUnit.value
           );
         });
       }
-      if (newValue == "all") {
-        await refresh();
-        selectedOptionCenter.value = "";
-        selectedOptionDepartment.value = "";
-        selectedOptionUnit.value = "";
-        selectedOptionPosition.value = "";
-      }
     });
+
     const search = async (value) => {
       centers.center = await CenterServices.getAll();
       centers.center = centers.center.filter((value1, index) => {
         return value1.name.includes(value) || value.length == 0;
       });
-      console.log("searchSlect", value.length);
+      console.log("searchSelect", value.length);
     };
-
-    //POSITION
-    const positions = reactive({ position: [] });
-    const selectedOptionPosition = ref("");
-    watch(selectedOptionPosition, async (newValue, oldValue) => {
-      if (newValue == "") {
-        return;
-      }
-      const docPosition = ref("");
-      docPosition.value = await http_getOne(
-        Position,
-        selectedOptionPosition.value
-      );
-      data.modelPositon = docPosition.value.name;
-
-      data.items = await http_getAll(Employee);
-      if (newValue != "all") {
-        if (
-          selectedOptionCenter.value != "" &&
-          selectedOptionDepartment.value != "" &&
-          selectedOptionUnit.value != ""
-        ) {
-          data.items = data.items.filter((val, index) => {
-            console.log("đủ 3");
-            return (
-              val.Position._id == selectedOptionPosition.value &&
-              val.Unit.Department.Center_VNPTHG._id ==
-                selectedOptionCenter.value &&
-              val.Unit.Department._id == selectedOptionDepartment.value &&
-              val.unitId == selectedOptionUnit.value
-            );
-          });
-        } else if (
-          selectedOptionCenter.value != "" &&
-          selectedOptionDepartment.value != ""
-        ) {
-          console.log(data.items);
-          data.items = data.items.filter((val, index) => {
-            return (
-              val.Position._id == selectedOptionPosition.value &&
-              val.Unit.Department.Center_VNPTHG._id ==
-                selectedOptionCenter.value &&
-              val.Unit.Department._id == selectedOptionDepartment.value
-            );
-          });
-        } else if (selectedOptionCenter.value != "") {
-          console.log(data.items);
-          data.items = data.items.filter((val, index) => {
-            return (
-              val.Position._id == selectedOptionPosition.value &&
-              val.Unit.Department.Center_VNPTHG._id ==
-                selectedOptionCenter.value
-            );
-          });
-        } else {
-          console.log("đủ 1");
-          data.items = data.items.filter((val, index) => {
-            return val.Position._id == selectedOptionPosition.value;
-          });
-        }
-      }
-      // else if (newValue == "all") {
-      //   await refresh();
-      //   selectedOptionCenter.value = "";
-      //   selectedOptionDepartment.value = "";
-      //   selectedOptionUnit.value = "";
-      //   // selectedOptionPosition.value = "";
-      // }
-    });
 
     const updateAdd = ref(false);
-    const onDeletePosition = async (value) => {
-      console.log("Value delete:", value);
-      const result = await alert_delete("Bạn muốn xóa", value.name);
-      if (result) {
-        await Position.delete(value._id);
-        alert_success("Bạn đã xóa chức vụ", value.name);
-        await refresh();
-      }
-      updateAdd.value = true;
-    };
-    const onDeleteCenter = async (value) => {
-      console.log("Value delete:", value);
-      const result = await alert_delete("Bạn muốn xóa", value.name);
-      if (result) {
-        await CenterServices.delete(value._id);
-        alert_success("Bạn đã xóa trung tâm", value.name);
-        await refresh();
-      }
-      updateAdd.value = true;
-    };
-    const onDeleteDep = async (value) => {
-      console.log("Value delete:", value);
-      const result = await alert_delete("Bạn muốn xóa", value.name);
-      if (result) {
-        await departmentsServices.deleteOne(value._id);
-        alert_success("Bạn đã xóa", value.name);
-        await refresh();
-      }
-      updateAdd.value = true;
-    };
-    const onDeleteUnit = async (value) => {
-      console.log("Value delete:", value);
-      const result = await alert_delete("Bạn muốn xóa", value.name);
-      if (result) {
-        await unitsServices.deleteOne(value._id);
-        alert_success("Bạn đã xóa ", value.name);
-        await refresh();
-      }
-      updateAdd.value = true;
-    };
 
     const sendEmail = async (value) => {
       const dataMail = reactive({ title: "", content: "", mail: "" });
@@ -604,20 +581,20 @@ export default {
       alert_success("Mail đã được gửi", "");
     };
     const updateDep = async (value) => {
-      console.log("center:", selectedOptionCenter.value);
-      if (selectedOptionCenter.value != "") {
+      console.log("center:", entryValueCenter.value);
+      if (entryValueCenter.value != "") {
         departments.department = await departmentsServices.findAllDepOfACenter(
-          selectedOptionCenter.value
+          entryValueCenter.value
         );
         return;
       }
       departments.department = value;
     };
     const updateUnit = async (value) => {
-      console.log("center:", selectedOptionDepartment.value);
-      if (selectedOptionDepartment.value != "") {
+      console.log("center:", entryValueDepartment.value);
+      if (entryValueDepartment.value != "") {
         units.unit = await unitsServices.findAllUnitsOfADep(
-          selectedOptionDepartment.value
+          entryValueDepartment.value
         );
         return;
       }
@@ -660,22 +637,15 @@ export default {
       update,
       deleteOne,
       edit,
-
-      centers,
-      selectedOptionCenter,
-      departments,
-      selectedOptionDepartment,
-      units,
-      selectedOptionUnit,
+      entryValueCenter,
+      entryValueDepartment,
+      entryValueUnit,
       search,
       refresh,
-      onDeletePosition,
-      onDeleteCenter,
-      onDeleteDep,
-      onDeleteUnit,
+
       updateAdd,
       positions,
-      selectedOptionPosition,
+      entryValuePosition,
       // mail,
       sendEmail,
       updateDep,
@@ -684,6 +654,20 @@ export default {
       showMail,
       view,
       checkAll,
+      //DUY
+      entryValuePosition,
+      entryNamePosition,
+      entryValueCenter,
+      entryNameCenter,
+      entryValueDepartment,
+      entryNameDepartment,
+      entryValueUnit,
+      entryNameUnit,
+
+      updateEntryValuePosition,
+      updateEntryValueCenter,
+      updateEntryValueDepartment,
+      updateEntryValueUnit,
     };
   },
 };
@@ -695,50 +679,68 @@ export default {
       <span class="mx-3 mb-3 h6">Lọc nhân viên</span>
       <div class="d-flex mx-3">
         <div class="form-group w-100">
-          <!-- <label for="name">Chức vụ</label> -->
-          <SelectCDU
-            class="d-flex justify-content-start"
-            :index="true"
+          <Select
             :title="`Chức vụ`"
-            :field="positions.position"
-            :selectedOption="selectedOptionPosition"
-            @option="(value) => (selectedOptionPosition = value)"
+            :entryValue="entryNamePosition"
+            :options="data.position"
+            @update:entryValue="
+              (value, value1) => (
+                updateEntryValuePosition(value),
+                (entryNamePosition = value1.name)
+              )
+            "
+            @refresh="
+              (entryNamePosition = 'Chọn chức vụ'), updateEntryValuePosition('')
+            "
+            style="height: 35px"
           />
         </div>
         <div class="form-group w-100">
-          <!-- <label for="name">Trung tâm</label> -->
-
-          <SelectCDU
-            class="d-flex justify-content-start"
-            :index="true"
+          <Select
             :title="`Trung tâm`"
-            :field="centers.center"
-            :selectedOption="selectedOptionCenter"
-            @option="(value) => (selectedOptionCenter = value)"
+            :entryValue="entryNameCenter"
+            :options="data.center"
+            @update:entryValue="
+              (value, value1) => (
+                updateEntryValueCenter(value), (entryNameCenter = value1.name)
+              )
+            "
+            @refresh="
+              (entryNameCenter = 'Chọn trung tâm'), updateEntryValueCenter('')
+            "
+            style="height: 35px"
           />
         </div>
         <div class="form-group w-100">
-          <!-- <label for="name">Phòng</label> -->
-
-          <SelectCDU
-            class="d-flex justify-content-start"
-            :index="true"
+          <Select
             :title="`Phòng`"
-            :field="departments.department"
-            :selectedOption="selectedOptionDepartment"
-            @option="(value) => (selectedOptionDepartment = value)"
+            :entryValue="entryNameDepartment"
+            :options="data.department"
+            @update:entryValue="
+              (value, value1) => (
+                updateEntryValueDepartment(value),
+                (entryNameDepartment = value1.name)
+              )
+            "
+            @refresh="
+              (entryNameDepartment = 'Chọn chức vụ'),
+                updateEntryValueDepartment('')
+            "
+            style="height: 35px"
           />
         </div>
         <div class="form-group w-100">
-          <!-- <label for="name">Tổ</label> -->
-
-          <SelectCDU
-            class="d-flex justify-content-start"
-            :index="true"
+          <Select
             :title="`Tổ`"
-            :selectedOption="selectedOptionUnit"
-            :field="units.unit"
-            @option="(value) => (selectedOptionUnit = value)"
+            :entryValue="entryNameUnit"
+            :options="data.unit"
+            @update:entryValue="
+              (value, value1) => (
+                updateEntryValueUnit(value), (entryNameUnit = value1.name)
+              )
+            "
+            @refresh="(entryNameUnit = 'Chọn tổ'), updateEntryValueUnit('')"
+            style="height: 35px"
           />
         </div>
       </div>
@@ -765,18 +767,40 @@ export default {
               name: 30,
               value: 30,
             },
-            {
-              name: 'All',
-              value: 'All',
-            },
           ]"
+          style="width: 125px"
+          :title="`Số bản ghi`"
           @update:entryValue="(value) => (data.entryValue = value)"
           :entryValue="data.entryValue"
+          @refresh="data.entryValue = 'All'"
         />
         <Search
           class="ml-3"
           style="width: 300px"
           @update:searchText="(value) => (data.searchText = value)"
+          :entryValue="data.searchText"
+          @choseSearch="
+            async (value) => (
+              console.log('search ........'),
+              (data.choseSearch = value),
+              (data.currentPage = 1)
+            )
+          "
+          @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
+          :options="[
+            {
+              _id: 'name',
+              name: 'Tìm kiếm theo tên',
+            },
+            {
+              _id: 'email',
+              name: 'Tìm kiếm theo email',
+            },
+            {
+              _id: 'phone',
+              name: 'Tìm kiếm theo số điện thoại',
+            },
+          ]"
         />
       </div>
       <div class="d-flex align-items-start">
