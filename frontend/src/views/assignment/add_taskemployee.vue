@@ -383,7 +383,7 @@ export default {
       }
 
       alert_success(
-        `Gia việc`,
+        `Giao việc`,
         `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`
       );
       await refresh();
@@ -406,8 +406,9 @@ export default {
         }else{
           alert_success(
          `Thêm công việc`,
-         `Phân công khách hàng ${props.item.Customer.name} đã được tạo thành công`);  
+         `Nhận khách hàng ${props.item.Customer.name} thành công`);  
         }  
+        await refresh();
       } catch (error) {
           console.error("Lỗi tạo công việc:", error);
       }
@@ -623,7 +624,7 @@ export default {
                 @click="addTaskEm"
                 id=""
               >
-                <span>Tự giao</span>
+                <span>Nhận việc</span>
               </button>
             </form>
           </div>

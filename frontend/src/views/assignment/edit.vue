@@ -211,8 +211,9 @@ export default {
                   /> -->
 
                   <select id="" class="form-control w-100" required v-model="item.Status_Task.status">
-                    <option value="true" >Thành công</option>
-                    <option value="false" >Thất bại</option>
+                    <option value="Chưa chăm sóc" >Chưa chăm sóc</option>
+                    <option value="Đang chăm sóc" >Đang chăm sóc</option>
+                    <option value="Đã chăm sóc" >Đã chăm sóc</option>
                   </select>
                 </div>
                 

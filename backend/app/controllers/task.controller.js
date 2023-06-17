@@ -45,7 +45,7 @@ exports.create = async (req, res, next) => {
             });
 
             const sta_task = await Status_Task.create({
-                status: "false",
+                status: "Chưa chăm sóc",
                 reason: "Cập nhật",
                 TaskId: document._id,
             });

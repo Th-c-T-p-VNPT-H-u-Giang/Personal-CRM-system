@@ -56,7 +56,7 @@ export default {
                 <div>
                   <p><span class="font-weight-bold">Chu kỳ chăm sóc: </span> {{ viewValue.Cycle.name }}</p>
                   <p><span class="font-weight-bold">Nội dung chăm sóc: </span> {{ viewValue.content }}</p>
-                  <p><span class="font-weight-bold">Trạng thái: </span> {{ viewValue.Status_Task.status == 'false' ? 'Thất bại' : 'Thành công' }}</p>
+                  <p><span class="font-weight-bold">Trạng thái: </span> {{ viewValue.Status_Task.status }}</p>
                   <p><span class="font-weight-bold">Nội dung trạng thái: </span> {{ viewValue.Status_Task.reason }}</p>
                 </div>
               </div>
