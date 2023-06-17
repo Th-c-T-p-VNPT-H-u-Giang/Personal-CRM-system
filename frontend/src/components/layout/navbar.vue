@@ -5,6 +5,7 @@ import socket from '../../../socket';
 import employeeService from "../../services/employee.service";
 import notificationService from "../../services/notification.service";
 import { formatDateTime } from "../../assets/js/common";
+import Add1 from "./modal.vue";
 import {
   http_getAll,
   http_create,
@@ -20,6 +21,9 @@ import {
 } from "../../assets/js/common.alert";
 
 export default {
+  components: {
+    Add1,
+  },
   props: {},
 
   setup(props, ctx) {
@@ -94,6 +98,13 @@ export default {
     const showNotification = ref(false);
     const count = ref(0);
 
+    const isRead = async (item)=>{
+      console.log("item ne he",item)
+      item.isRead = true;
+      const item1 = await http_update(notificationService, item._id);
+      count.value --
+    }
+
     const deleteOne = async (_id) => {
       const notification = await http_getOne(notificationService, _id);
       console.log("ID ne", _id);
@@ -153,8 +164,12 @@ export default {
       socket.on('notiTask', async ()=>{
         const _idEmployee = sessionStorage.getItem("employeeId");
         data.Notice = await notificationService.get(_idEmployee);
-        console.log("notice",data.Notice)
+        console.log("notice",data.Notice.documents)
         hasNotification.value = true
+        // for (let i = 0; i <= data.Notice.documents.length; i++) {
+        //   if (data.Notice.documents[i].isRead == false)
+        //     count.value++
+        // }
         count.value = data.Notice.documents.length
       })
     }
@@ -190,6 +205,7 @@ export default {
       data,
       deleteOne,
       deleteAll,
+      isRead,
       formatDateTime
     };
   },
@@ -245,11 +261,13 @@ export default {
           :key="item"
           class="d-flex justify-content-between mb-3"
         >
-          <p @click="isRead()" class="NoticeDetails">
+          <p @click="isRead(item)" id="add" data-toggle="modal"
+          data-target="#model-noti" class="NoticeDetails">
             <strong>{{ item.title }}</strong>
             <br><strong>{{ item.sender }}</strong> {{ item.content }} 
             <br>{{ formatDateTime(item.createdAt) }}
           </p>
+        <Add1 :item="item"/>
           <p style="cursor: pointer" @click="deleteOne(item._id)">x</p>
         </div>
         <button @click="deleteAll()" class="clearNotification">
@@ -305,7 +323,6 @@ h6 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 10px;
   margin-right: 14px;
-  z-index: 3;
   /* display: grid;
   grid-template-columns: 250px 100px;
   grid-gap: 10px; */
