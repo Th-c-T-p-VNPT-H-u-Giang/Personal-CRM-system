@@ -628,10 +628,10 @@ export default {
     // Hàm callback được gọi trước khi component được mount (load)
     onBeforeMount(async () => {
       await refresh();
-      console.log("task", data.items);
-      console.log("cycle", cycles.cycle);
-      console.log("employee", data.employee);
-      console.log("customer", data.cus);
+      // console.log("task", data.items);
+      // console.log("cycle", cycles.cycle);
+      // console.log("employee", data.employee);
+      // console.log("customer", data.cus);
     });
 
     return {

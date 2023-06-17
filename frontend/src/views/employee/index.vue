@@ -192,21 +192,32 @@ export default {
       }
     };
     // computed
+    // computed
     const toString = computed(() => {
       console.log("Starting search");
-      return data.items.map((value, index) => {
-        return [
-          value.name,
-          value.phone,
-          value.email,
-          value.Position.name,
-          value.Unit.name,
-          value.Unit.Department.name,
-          value.Unit.Department.Center_VNPTHG.name,
-        ]
-          .join("")
-          .toLocaleLowerCase();
-      });
+      if (data.choseSearch == "name") {
+        return data.items.map((value, index) => {
+          return [value.Customer.name].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "email") {
+        return data.items.map((value, index) => {
+          return [value.Customer.email].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "phone") {
+        return data.items.map((value, index) => {
+          return [value.Customer.phone].join("").toLocaleLowerCase();
+        });
+      } else {
+        return data.items.map((value, index) => {
+          return [
+            value.Customer.name,
+            value.Customer.email,
+            value.Customer.phone,
+          ]
+            .join("")
+            .toLocaleLowerCase();
+        });
+      }
     });
     const filter = computed(() => {
       return data.items.filter((value, index) => {

@@ -64,7 +64,7 @@ export default {
             v-model="selectAll.selectAll"
             :checked="selectAll.selectAll"
             @click="$emit('selectAll')"
-          />
+          />{{ selectAll.selectAll }}
         </th>
         <th>Stt</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
@@ -73,7 +73,11 @@ export default {
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
         <td>
-          <input type="checkbox" v-model="item.checked" />
+          <input
+            type="checkbox"
+            v-model="item.checked"
+            @click="$emit('selectOne', item._id, item.checked)"
+          />
         </td>
         <td>{{ index + 1 }}</td>
         <td v-for="(label, index1) in labels" :key="index1">
