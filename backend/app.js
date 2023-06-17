@@ -1,3 +1,6 @@
+const notification = require('./app/controllers/notification.controller')
+
+
 // npm packages
 const createError = require('http-errors');
 const express = require("express");
@@ -28,6 +31,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('birthday', (data) => {
+    
     io.emit('upcoming_birthday', data);
   });
 

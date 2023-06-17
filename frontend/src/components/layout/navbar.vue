@@ -102,28 +102,18 @@ export default {
       console.log("item ne he",item)
       item.isRead = true;
       const item1 = await http_update(notificationService, item._id);
-      count.value --
+      if (count.value > 0) count.value --
     }
 
     const deleteOne = async (_id) => {
       const notification = await http_getOne(notificationService, _id);
       console.log("ID ne", _id);
       console.log("deleting", notification);
-      const isConfirmed = await alert_delete(
-        `Xoá thông báo`,
-        `Bạn có chắc chắn muốn xoá thông báo  của nhân viên  không ?`
-      );
-      console.log(isConfirmed);
-      if (isConfirmed == true) {
-        const result = await http_deleteOne(notificationService, _id);
-        alert_success(
-          `Xoá thông báo`,
-          `Bạn đã xoá thành công thông báo  của nhân viên `
-        );
-        refresh();
-        count.value -- 
-      }
-    };
+      const result = await http_deleteOne(notificationService, _id);
+      refresh();
+      if (count.value >0) count.value -- 
+    }
+
 
     const deleteAll = async () => {
       const _idEmployee = sessionStorage.getItem("employeeId");
@@ -151,6 +141,14 @@ export default {
       console.log("Tên khách hàng",data.List.Tasks)
       data.Notice = await notificationService.get(_idEmployee);
       console.log("Tên thông báo",data.Notice)
+      count.value = 0
+      for (const value of data.Notice.documents) {
+        if (value.isRead == false) {
+          count.value++
+          console.log("count value",count.value)
+        }
+        console.log("đém",value)
+      }
     };
 
     const token = sessionStorage.getItem('token')
@@ -170,8 +168,16 @@ export default {
         //   if (data.Notice.documents[i].isRead == false)
         //     count.value++
         // }
-        count.value = data.Notice.documents.length
+        count.value = 0
+      for (const value of data.Notice.documents) {
+        if (value.isRead == false) {
+          count.value++
+          console.log("count value",count.value)
+        }
+        console.log("đém",value)
+      }
       })
+      socket.emit('birthday',_idEmployee)
     }
 
 
@@ -181,7 +187,14 @@ export default {
       console.log("Tên khách hàng",data.List.Tasks)
       data.Notice = await notificationService.get(_idEmployee);
       console.log("Tên thông báo",data.Notice)
-      count.value = data.Notice.documents.length
+      count.value = 0
+      for (const value of data.Notice.documents) {
+        if (value.isRead == false) {
+          count.value++
+          console.log("count value",count.value)
+        }
+        console.log("đém",value)
+      }
     });
 
     const toggleNotification = () => {
@@ -193,7 +206,6 @@ export default {
       showNotification.value = false;
     };
 
-    const currentDateTime = ref(new Date().toLocaleString());
     return {
       updateMenuResponsive,
       hasNotification,
@@ -201,12 +213,11 @@ export default {
       count,
       toggleNotification,
       showNotification,
-      currentDateTime,
       data,
       deleteOne,
       deleteAll,
       isRead,
-      formatDateTime
+      formatDateTime,
     };
   },
 };
@@ -250,16 +261,11 @@ export default {
       </a>
       <div v-if="showNotification" class="notification-dropdown">
         <h6 class="font-weight-bold mb-4">THÔNG BÁO</h6>
-        <div class="pb-3 mb-3 border-bottom" style="margin-left: 2px">
-          <button @click="markAllAsRead" class="btn btn-primary mr-2">
-            Tất Cả
-          </button>
-          <button @click="markUnread" class="btn btn-primary">Chưa Đọc</button>
-        </div>
         <div
           v-for="item in data.Notice.documents"
           :key="item"
-          class="d-flex justify-content-between mb-3"
+          style="align-items: center;"
+          class="d-flex justify-content-between mb-3 line"
         >
           <p @click="isRead(item)" id="add" data-toggle="modal"
           data-target="#model-noti" class="NoticeDetails">
@@ -267,8 +273,15 @@ export default {
             <br><strong>{{ item.sender }}</strong> {{ item.content }} 
             <br>{{ formatDateTime(item.createdAt) }}
           </p>
-        <Add1 :item="item"/>
-          <p style="cursor: pointer" @click="deleteOne(item._id)">x</p>
+          <Add1 :item="item"/>          
+          <p class="notify-icon">
+            <span :style="{ 'color': item.isRead ? 'gray' : 'blue' }" style="font-size: 20px;" class="material-symbols-outlined">
+              fiber_manual_record
+              </span>
+            <span style="font-size: 20px; cursor: pointer" @click="deleteOne(item._id)" class="material-symbols-outlined none">
+            close
+            </span>
+          </p>
         </div>
         <button @click="deleteAll()" class="clearNotification">
           Xóa Thông Báo
@@ -294,21 +307,41 @@ export default {
 </template>
 
 <style scoped>
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 1,
+  'wght' 300,
+  'GRAD' 0,
+  'opsz' 48
+}
+
 h6 {
   border-bottom: 1px solid #ccc;
   height: 50px;
   padding-top: 10px;
 }
 .NoticeDetails {
-  height: 65px;
+  height: auto;
   padding: 5px;
   margin: 0;
-  border-bottom: 1px dashed rgb(216, 217, 218);
   cursor: pointer;
   flex-basis: 350px;
 }
-.NoticeDetails:hover {
+.line{
+  border-bottom: 1px solid rgb(216, 217, 218);
+}
+.none{
+  display: none;
+}
+.line:hover .none {  
+  display: block;
+}
+.line:hover {
   background-color: aliceblue;
+}
+.notify-icon{
+  position: relative;
 }
 .notification-dropdown {
   position: absolute;
