@@ -73,25 +73,31 @@ io.on('connection', (socket) => {
     });
   });
 
-  socket.on('cycleCus', async (Tasks)=>{
-    console.log("Tasks ne",Tasks);
-    for (const value of Tasks) {
+  socket.on('cycleCus', async (Task)=>{
+    console.log("Tasks ne",Task);
+    for (const value of Task) {
       const today = moment();
       const todayDate = { year: today.year(), month: today.month(), date: today.date() };
       const end_day = moment(value.end_date, 'YYYY-MM-DD');
       let coming_day;
-        if (value.Cycles.name == 'tuần'){
+        if (value.Cycle.name == 'ngày'){
+          coming_day = end_day.add(1, 'days');
+        } else
+        if (value.Cycle.name == 'tuần'){
           coming_day = end_day.add(7, 'days');
         } else
-        if (value.Cycles.name == 'tháng'){
+        if (value.Cycle.name == 'tháng'){
           coming_day = end_day.add(1, 'months');
-        } else{
-          coming_day = end_day.add(4, 'months');
+        } else
+        if (value.Cycle.name == 'quý'){
+          coming_day = end_day.add(3, 'months');
+        } else {
+          coming_day = end_day.add(1, 'year');
         }
         coming_day = coming_day.subtract(1, 'days');
         today.startOf('day');
         coming_day.startOf('day');
-        console.log("coming_day",coming_day,"cua khach hang",value.Customers.name)  
+        console.log("coming_day",coming_day,"cua khach hang",value.Customer.name)  
         console.log("today",today)
         if (coming_day.isSame(today)){    
           const documents = await Notification.findAll({where: {
@@ -101,7 +107,7 @@ io.on('connection', (socket) => {
           if (documents.length > 0) {
             for (const item of documents) {
               console.log("Thongbaone",item._id)
-              if (item.title == "Tới chu kỳ" && item.content == `Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycles.name}" của khách hàng "${value.Customers.name}"`){
+              if (item.title == "Tới chu kỳ" && item.content == `Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycle.name}" của khách hàng "${value.Customer.name}"`){
                 count ++
               }          
             }
@@ -109,13 +115,13 @@ io.on('connection', (socket) => {
             if (count > 0){
               io.emit('notiTask')
             } else {
-              Notification.create({title:"Tới chu kỳ", content:`Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycles.name}" của khách hàng "${value.Customers.name}"`,recipient:"Lãnh đạo", sender:"",isRead: false,idRecipient: value.leaderId })   
+              Notification.create({title:"Tới chu kỳ", content:`Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycle.name}" của khách hàng "${value.Customer.name}"`,recipient:"Lãnh đạo", sender:"",isRead: false,idRecipient: value.leaderId })   
               console.log("value.Customers.name",value.leaderId)
               io.emit('notiTask')
               // console.log("Khách hàng nào: ",customer);    
             } 
           } else {
-            Notification.create({title:"Tới chu kỳ", content:`Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycles.name}" của khách hàng "${value.Customers.name}"`,recipient:"Lãnh đạo", sender:"",isRead: false,idRecipient: value.leaderId })   
+            Notification.create({title:"Tới chu kỳ", content:`Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycle.name}" của khách hàng "${value.Customer.name}"`,recipient:"Lãnh đạo", sender:"",isRead: false,idRecipient: value.leaderId })   
             console.log("value.Customers.name",value.leaderId)
             io.emit('notiTask')
           } 

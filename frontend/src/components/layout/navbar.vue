@@ -1,7 +1,8 @@
 <script>
-import { defineEmits, inject, ref ,reactive, onMounted} from "vue";
+import { defineEmits, inject, ref ,reactive, onMounted, computed, watch} from "vue";
 import socket from '../../../socket';
 import employeeService from "../../services/employee.service";
+import taskService from "../../services/task.service";
 import notificationService from "../../services/notification.service";
 import { formatDateTime } from "../../assets/js/common";
 // import Add1 from "./modal.vue";
@@ -32,6 +33,7 @@ export default {
       Notice: {},
       customers: [],
       selectedItem: {},
+      TaskLD : []
     })
     
     const emit = inject("emit");
@@ -102,44 +104,54 @@ export default {
     const token = sessionStorage.getItem('token')
     const check = async (token) => {
       if (token) {
-      const _idEmployee = sessionStorage.getItem("employeeId");
-      const _nameEmployee = sessionStorage.getItem("employeeName");
-      const object = {
-        _id: _idEmployee,
-        name: _nameEmployee
-      }
-      socket.on('notiTask', async ()=>{
         const _idEmployee = sessionStorage.getItem("employeeId");
-        data.Notice = await notificationService.get(_idEmployee);
-        console.log("notice",data.Notice.documents)
-        hasNotification.value = true
-        // for (let i = 0; i <= data.Notice.documents.length; i++) {
-        //   if (data.Notice.documents[i].isRead == false)
-        //     count.value++
-        // }
-        count.value = 0
-        for (const value of data.Notice.documents) {
-          if (value.isRead == false) {
-            count.value++
-            console.log("count value",count.value)
-          }
-          console.log("đém",value)
+        const _nameEmployee = sessionStorage.getItem("employeeName");
+        const object = {
+          _id: _idEmployee,
+          name: _nameEmployee
         }
-      })
-      const employees = await http_getOne(employeeService, _idEmployee)
-      console.log('Khách hàng thuộc nhân viên', employees.Tasks);
-      const Tasks = employees.Tasks;
+        socket.on('notiTask', async ()=>{
+          const _idEmployee = sessionStorage.getItem("employeeId");
+          data.Notice = await notificationService.get(_idEmployee);
+          console.log("notice",data.Notice.documents)
+          hasNotification.value = true
+          // for (let i = 0; i <= data.Notice.documents.length; i++) {
+          //   if (data.Notice.documents[i].isRead == false)
+          //     count.value++
+          // }
+          count.value = 0
+          for (const value of data.Notice.documents) {
+            if (value.isRead == false) {
+              count.value++
+              console.log("count value",count.value)
+            }
+            console.log("đém",value)
+          }
+        })
+        const employees = await http_getOne(employeeService, _idEmployee)
+        console.log('nhân viên nào', employees);
+        const Tasks = employees.Tasks;
 
-      Tasks.map( (value, index) => {
-        
-        console.log('Task', index, ' = ' ,  value.Customers);
-        data.customers.push(value.Customers);
-      })
-      console.log('Data customers', data.customers);
-      socket.emit('birthday',data.customers,_idEmployee,_nameEmployee)
-      socket.emit('cycleCus',Tasks)
-      console.log("Taskne:",Tasks)
-    }
+        Tasks.map( (value, index) => {
+          
+          console.log('Task', index, ' = ' ,  value.Customers);
+          data.customers.push(value.Customers);
+        })
+
+        const TasksLD = await http_getAll(taskService)
+        TasksLD.map( (value, index) => {          
+          console.log('Task', index, ' = ' ,  TasksLD);
+          console.log('Id login', _idEmployee);
+          console.log('Id leader', value.leaderId);
+          if (_idEmployee == value.leaderId){
+            data.TaskLD.push(value);
+          }          
+        })
+        console.log('Data task leader', data.TaskLD);
+        console.log('Data customers', data.customers);
+        socket.emit('birthday',data.customers,_idEmployee,_nameEmployee)
+        socket.emit('cycleCus',data.TaskLD)
+      }
     }
 
     
@@ -154,7 +166,6 @@ export default {
           count.value++
           console.log("count value",count.value)
         }
-        console.log("đém",value)
       }
     });
 
