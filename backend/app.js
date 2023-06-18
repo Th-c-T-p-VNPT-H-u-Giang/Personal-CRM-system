@@ -54,19 +54,19 @@ io.on('connection', (socket) => {
         if (documents.length > 0) {
           for (const value of documents) {
             console.log("Thongbaone",value._id)
-            if (value.title == "Sinh nhật" && value.content == `Ngày mai ${customerBirthday.date}/${customerBirthday.month+1} là sinh nhật thứ ${age} của khách hàng ${customer.name}`){
+            if (value.title == "Sinh nhật" && value.content == `Ngày mai ${customerBirthday.date}/${customerBirthday.month+1} là sinh nhật thứ ${age} của khách hàng "${customer.name}"`){
               count ++
             }          
           }
           if (count > 0){
             io.emit('notiTask')
           } else {
-            Notification.create({title:"Sinh nhật", content:`Ngày mai ${customerBirthday.date}/${customerBirthday.month+1} là sinh nhật thứ ${age} của khách hàng ${customer.name}`,recipient:nameEm, sender:"",isRead: false,idRecipient:_id })   
+            Notification.create({title:"Sinh nhật", content:`Ngày mai ${customerBirthday.date}/${customerBirthday.month+1} là sinh nhật thứ ${age} của khách hàng "${customer.name}"`,recipient:nameEm, sender:"",isRead: false,idRecipient:_id })   
             io.emit('notiTask')
             // console.log("Khách hàng nào: ",customer);    
           } 
         } else {
-          Notification.create({title:"Sinh nhật", content:`Ngày mai ${customerBirthday.date}/${customerBirthday.month+1} là sinh nhật thứ ${age} của khách hàng ${customer.name}`,recipient:nameEm, sender:"",isRead: false,idRecipient:_id })   
+          Notification.create({title:"Sinh nhật", content:`Ngày mai ${customerBirthday.date}/${customerBirthday.month+1} là sinh nhật thứ ${age} của khách hàng "${customer.name}"`,recipient:nameEm, sender:"",isRead: false,idRecipient:_id })   
           io.emit('notiTask')
         }            
       }
@@ -77,6 +77,7 @@ io.on('connection', (socket) => {
     console.log("Tasks ne",Tasks);
     for (const value of Tasks) {
       const today = moment();
+      const todayDate = { year: today.year(), month: today.month(), date: today.date() };
       const end_day = moment(value.end_date, 'YYYY-MM-DD');
       let coming_day;
         if (value.Cycles.name == 'tuần'){
@@ -100,7 +101,7 @@ io.on('connection', (socket) => {
           if (documents.length > 0) {
             for (const item of documents) {
               console.log("Thongbaone",item._id)
-              if (item.title == "Tới chu kỳ" && item.content == `Ngày mai là đến chu kỳ chăm sóc của khách hàng ${value.Customers.name}`){
+              if (item.title == "Tới chu kỳ" && item.content == `Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycles.name}" của khách hàng "${value.Customers.name}"`){
                 count ++
               }          
             }
@@ -108,13 +109,13 @@ io.on('connection', (socket) => {
             if (count > 0){
               io.emit('notiTask')
             } else {
-              Notification.create({title:"Tới chu kỳ", content:`Ngày mai là đến chu kỳ chăm sóc của khách hàng ${value.Customers.name}`,recipient:"Lãnh đạo", sender:"",isRead: false,idRecipient: value.leaderId })   
+              Notification.create({title:"Tới chu kỳ", content:`Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycles.name}" của khách hàng "${value.Customers.name}"`,recipient:"Lãnh đạo", sender:"",isRead: false,idRecipient: value.leaderId })   
               console.log("value.Customers.name",value.leaderId)
               io.emit('notiTask')
               // console.log("Khách hàng nào: ",customer);    
             } 
           } else {
-            Notification.create({title:"Tới chu kỳ", content:`Ngày mai là đến chu kỳ chăm sóc của khách hàng ${value.Customers.name}`,recipient:"Lãnh đạo", sender:"",isRead: false,idRecipient: value.leaderId })   
+            Notification.create({title:"Tới chu kỳ", content:`Ngày mai ${todayDate.date+1}/${todayDate.month+1} là chu kỳ chăm sóc "${value.Cycles.name}" của khách hàng "${value.Customers.name}"`,recipient:"Lãnh đạo", sender:"",isRead: false,idRecipient: value.leaderId })   
             console.log("value.Customers.name",value.leaderId)
             io.emit('notiTask')
           } 
