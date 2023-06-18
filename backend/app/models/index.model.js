@@ -705,7 +705,7 @@ const Comment = sequelize.define('Comment', {
     _id: setPrimary,
     content: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
         get() {
             return getDecrypt('content', this);
         },
@@ -1049,7 +1049,7 @@ Appointment.sync();
 Task.sync();
 Log.sync();
 Evaluate.sync();
-Comment.sync();
+Comment.sync({force: true});
 Status_App.sync();
 Status_Task.sync();
 Customer_Event.sync();
