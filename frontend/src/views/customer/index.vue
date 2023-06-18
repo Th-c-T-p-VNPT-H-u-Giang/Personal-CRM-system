@@ -235,7 +235,6 @@ export default {
         } else {
           alert_success("Thành công", "Xóa khách hàng thành công");
           reFresh();
-
         }
       }
     };

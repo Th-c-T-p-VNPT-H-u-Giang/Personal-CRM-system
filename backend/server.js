@@ -69,6 +69,14 @@ io.on("connection", (socket) => {
     // });
   });
 
+  socket.on("add assignment for staff", () => {
+    io.emit("add assignment for staff from server");
+  });
+
+  socket.on("birthday customer by staff", (customers) => {
+    console.log("Birthday customer by staff below server", customers);
+  });
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });

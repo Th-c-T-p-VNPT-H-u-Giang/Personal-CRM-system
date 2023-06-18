@@ -17,5 +17,4 @@ router.get("/readed/:id", notification.findAllReaded);
 
 // lấy tất cả thông báo người dùng chưa đọc và đã đọc
 
-router;
 module.exports = router;

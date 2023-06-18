@@ -153,5 +153,6 @@ export default {
 }
 #delete:hover {
   color: var(--red);
+  /* background: rgba(255, 0, 0, 0.1); */
 }
 </style>

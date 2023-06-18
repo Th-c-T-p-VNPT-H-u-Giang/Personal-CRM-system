@@ -1,5 +1,5 @@
 <script>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 export default {
   props: {
     items: {
@@ -27,7 +27,6 @@ export default {
       default: false,
     },
   },
-  setup(props, ntx) {},
 };
 </script>
 
@@ -41,19 +40,18 @@ export default {
         <th></th>
         <th>Stt</th>
         <th>Khách hàng</th>
-        <th>Nhân viên</th>
-        <th>Chu kỳ</th>
+        <th >Chu kỳ</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
         <th v-if="activeAction == true">Hành động</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
-        <td><input type="checkbox" name="" id="" /></td>
+        <td><input type="checkbox" v-model="item.checked" name="" id="" /></td>
+
         <td>{{ index + 1 }}</td>
         <td>{{ item.Customer.name }}</td>
-        <td>{{ item.Employee.name }}</td>
-        <td>{{ item.Cycle.name }}</td>
+        <td >{{ item.Cycle.name }}</td>
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}
         </td>
@@ -68,7 +66,7 @@ export default {
             <span
               id="view"
               class="material-symbols-outlined d-flex align-items-center"
-              @click="$emit('view', item)"
+              @click="$emit('view', item._id)"
             >
               visibility
             </span>
