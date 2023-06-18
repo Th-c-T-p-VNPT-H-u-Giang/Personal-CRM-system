@@ -4,7 +4,7 @@ import socket from '../../../socket';
 import employeeService from "../../services/employee.service";
 import notificationService from "../../services/notification.service";
 import { formatDateTime } from "../../assets/js/common";
-import Add1 from "./modal.vue";
+// import Add1 from "./modal.vue";
 import {
   http_getAll,
   http_create,
@@ -21,7 +21,7 @@ import {
 
 export default {
   components: {
-    Add1,
+    // Add1,
   },
   props: {},
 
@@ -30,8 +30,10 @@ export default {
       employeeName: sessionStorage.getItem("employeeName"),
       role: sessionStorage.getItem("role"),
       Notice: {},
-      customers: []
+      customers: [],
+      selectedItem: {},
     })
+    
     const emit = inject("emit");
     const updateMenuResponsive = () => {
       console.log("starting");
@@ -44,8 +46,8 @@ export default {
     const count = ref(0);
 
     const isRead = async (item)=>{
-      console.log("item ne he",item)
-      item.isRead = true;
+      data.selectedItem = item;
+      item.isRead = true
       const item1 = await http_update(notificationService, item._id);
       if (count.value > 0) count.value --
     }
@@ -135,6 +137,8 @@ export default {
       })
       console.log('Data customers', data.customers);
       socket.emit('birthday',data.customers,_idEmployee,_nameEmployee)
+      socket.emit('cycleCus',Tasks)
+      console.log("Taskne:",Tasks)
     }
     }
 
@@ -232,15 +236,64 @@ export default {
             <br><strong>{{ item.sender }}</strong> {{ item.content }} 
             <br>{{ formatDateTime(item.createdAt) }}
           </p>
-          <Add1 :item="item"/>          
-          <p class="notify-icon">
-            <span :style="{ 'color': item.isRead ? 'gray' : 'blue' }" style="font-size: 20px;" class="material-symbols-outlined">
-              fiber_manual_record
+            <div class="modal" id="model-noti">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <!-- Modal Header -->
+                  <div class="modal-header">
+                    <h4 class="modal-title" style="font-size: 15px">
+                      Chi tiết thông báo
+                    </h4>
+                    <button
+                      type="button"
+                      class="close"
+                      data-dismiss="modal"
+                      @click="activeStep = 1"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                  <!-- Modal body -->
+                  <div class="model-body">
+                    <div class="d-flex">
+                      <div
+                        class="d-flex flex-grow-1 step-content px-3 my-3"
+                        style="width: 10000px"
+                      >
+                        <div class="d-flex justify-content-around">
+                          <div class="mt-3">
+                            <p>
+                              <span class="font-weight-bold">Từ: </span>
+                              {{ data.selectedItem.sender }}
+                            </p>
+                            <p>
+                              <span class="font-weight-bold">Tiêu đề: </span>
+                              {{ data.selectedItem.title }}
+                            </p>
+                            <p>
+                              <span class="font-weight-bold">Nội dung: </span>
+                              {{ data.selectedItem.content }}
+                            </p>
+                            <p>
+                              <span class="font-weight-bold">Được tạo lúc: </span>
+                              {{ formatDateTime(data.selectedItem.createdAt) }}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>         
+            <p class="notify-icon">
+              <span :style="{ 'color': item.isRead ? 'gray' : 'blue' }" style="font-size: 20px;" class="material-symbols-outlined">
+                fiber_manual_record
+                </span>
+              <span style="font-size: 20px; cursor: pointer" @click="deleteOne(item._id)" class="material-symbols-outlined none">
+              close
               </span>
-            <span style="font-size: 20px; cursor: pointer" @click="deleteOne(item._id)" class="material-symbols-outlined none">
-            close
-            </span>
-          </p>
+            </p>
         </div>
         <button @click="deleteAll()" class="clearNotification">
           Xóa Thông Báo
