@@ -441,9 +441,25 @@ export default {
     const createTaskEm = async (value) => {
       const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
       dataTaskEm.TaskId = props.item._id;
+      const listEmployees = reactive({ listEmployee: [] });
+      listEmployees.listEmployee = await http_getOne(Task, props.item._id);
+      for (let i = 0; i < listEmployees.listEmployee.Employees.length; i++) {
+        arrayCheck.data.push(listEmployees.listEmployee.Employees[i]);
+      }
       if (arrayCheck.data.length == 0) {
         alert_warning("Chưa chọn nhân viên để giao việc", "");
         return;
+      }
+      //xóa nhân viên
+      var j;
+      for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
+        const dataDel = reactive({
+          data: {
+            TaskId: props.item._id,
+            EmployeeId: listEmployees.listEmployee.Employees[j]._id,
+          },
+        });
+        const result = await EmployeeTask.deleteOne(dataDel.data);
       }
       for (let i = 0; i < arrayCheck.data.length; i++) {
         if (arrayCheck.data[i].checked == true) {
@@ -457,7 +473,6 @@ export default {
       }
       alert_success("Đã giao việc cho nhân viên thành công", "");
     };
-
     //tu giao viec
     const addTaskEm = async () => {
       const newData = reactive({ TaskId: " ", EmployeeId: " " });
