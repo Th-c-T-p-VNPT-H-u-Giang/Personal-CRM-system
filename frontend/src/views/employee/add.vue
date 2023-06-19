@@ -19,7 +19,12 @@ import {
   alert_delete,
   alert_warning,
 } from "../../assets/js/common.alert";
-import { http_getAll, http_create } from "../../assets/js/common.http";
+import {
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+} from "../../assets/js/common.http";
 import mailService from "../../services/mail.service";
 
 export default {
@@ -674,6 +679,19 @@ export default {
                 class="was-validated"
                 style="width: 100%"
               >
+                <!-- <div class="form-group flex-grow-1">
+                <label for="name"
+                  >Tên sự kiện(<span style="color: red">*</span>):</label
+                >
+                <input
+                  type="text"
+                  class="form-control w-100"
+                  id="name"
+                  name="name"
+                  v-model="item.name"
+                  required
+                />
+              </div> -->
                 <div class="form-group flex-grow-1">
                   <label for=""
                     >Chức vụ(<span style="color: red">*</span>):</label
@@ -881,6 +899,20 @@ export default {
               <div class="d-flex justify-content-end mt-3">
                 <span
                   v-if="
+                    data.activeStep > 1 &&
+                    data.activeStep <= data.stepList.length
+                  "
+                  class="btn-prev d-flex align-items-center px-3 py-1 mr-3"
+                  @click="data.activeStep = data.activeStep - 1"
+                  ><span
+                    class="material-symbols-outlined d-flex align-items-center"
+                  >
+                    navigate_before </span
+                  >Previous</span
+                >
+
+                <span
+                  v-if="
                     data.activeStep >= 1 &&
                     data.activeStep < data.stepList.length
                   "
@@ -893,19 +925,6 @@ export default {
                     navigate_next
                   </span>
                 </span>
-                <span
-                  v-if="
-                    data.activeStep > 1 &&
-                    data.activeStep <= data.stepList.length
-                  "
-                  class="btn-prev d-flex align-items-center px-3 py-1"
-                  @click="data.activeStep = data.activeStep - 1"
-                  ><span
-                    class="material-symbols-outlined d-flex align-items-center"
-                  >
-                    navigate_before </span
-                  >Previous</span
-                >
               </div>
             </div>
           </div>
