@@ -61,7 +61,7 @@ export default {
       </li>
       <li
         @click="updateCurrentPage(value)"
-        v-for="(value, index) in numberOfPages"
+        v-for="(value, index) in numberOfPages" :key="index"
         class="page-item"
       >
         <a

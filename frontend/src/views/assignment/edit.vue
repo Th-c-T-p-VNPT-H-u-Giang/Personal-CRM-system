@@ -84,7 +84,8 @@ export default {
                   @click="data.activeStep = index + 1"
                   class="step-id px-3 py-2"
                   :class="[data.activeStep == index + 1 ? 'active-step' : '']"
-                  >{{ value._id }}</span
+                  >{{ value._id }}
+                  </span
                 >
                 <span
                   class="d-flex align-items-center pl-3"

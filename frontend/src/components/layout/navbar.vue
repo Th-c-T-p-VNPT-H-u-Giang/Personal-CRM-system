@@ -1,5 +1,5 @@
 <script>
-import { defineEmits, inject, reactive } from "vue";
+import {  reactive } from "vue";
 
 export default {
   props: {
@@ -10,7 +10,6 @@ export default {
       employeeName: sessionStorage.getItem("employeeName"),
       role: sessionStorage.getItem("role")
     })
-    const emit = inject('emit');
     const updateMenuResponsive = () => {
       console.log('starting')
       ctx.emit("updateMenuResponsive", "true");

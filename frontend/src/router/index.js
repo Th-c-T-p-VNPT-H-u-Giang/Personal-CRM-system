@@ -144,6 +144,33 @@ const routes = [
         name: "Report",
         component: () => import("../views/report/index.vue"),
       },
+      {
+        path: "report_assignment_staff",
+        name: "ReportAssignment",
+        component: () =>
+          import("../views/report/report_assignment_staff/index.vue"),
+      },
+      // Report customer cycle
+      {
+        path: "report_customer_cycle",
+        name: "ReportCustomerCycle",
+        component: () =>
+          import("../views/report/report_customer_cycle/index.vue"),
+      },
+      // Reporting customer is managed by the leader
+      {
+        path: "report_leader_customer",
+        name: "ReportLeaderCustomer",
+        component: () =>
+          import("../views/report/leader/leader_customer/index.vue"),
+      },
+      // Reporting staff is managed by the leader
+      {
+        path: "report_leader_staff",
+        name: "ReportLeaderStaff",
+        component: () =>
+          import("../views/report/leader/leader_staff/index.vue"),
+      },
       // Setting
       {
         path: "setting",
@@ -152,7 +179,7 @@ const routes = [
       },
     ],
   },
-]
+];
 
 // const routes = [
 
@@ -464,15 +491,18 @@ const router = createRouter({
   routes,
 });
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = sessionStorage.getItem('token'); // Kiểm tra xem người dùng đã đăng nhập hay chưa
+  const isAuthenticated = sessionStorage.getItem("token"); // Kiểm tra xem người dùng đã đăng nhập hay chưa
   console.log(`isAuthenticated `, isAuthenticated);
   const customerId = sessionStorage.getItem("customerId");
   const customerName = sessionStorage.getItem("customerName");
   const role = sessionStorage.getItem("role");
   console.log(customerId, customerName, role);
-  if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
+  if (
+    to.matched.some((record) => record.meta.requiresAuth) &&
+    !isAuthenticated
+  ) {
     // Nếu trang yêu cầu xác thực và người dùng chưa đăng nhập, chuyển hướng đến trang đăng nhập
-    next({ name: 'Login' });
+    next({ name: "Login" });
   } else {
     next();
   }
