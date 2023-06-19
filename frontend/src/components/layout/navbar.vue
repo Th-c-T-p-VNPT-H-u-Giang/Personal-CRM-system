@@ -33,7 +33,8 @@ export default {
       Notice: {},
       customers: [],
       selectedItem: {},
-      TaskLD : []
+      TaskLD : [],
+      TaskLDE: []
     })
     
     const emit = inject("emit");
@@ -132,29 +133,27 @@ export default {
         console.log('nhân viên nào', employees);
         const Tasks = employees.Tasks;
 
-        Tasks.map( (value, index) => {
-          
+        Tasks.map( (value, index) => {          
           console.log('Task', index, ' = ' ,  value.Customers);
           data.customers.push(value.Customers);
         })
 
         const TasksLD = await http_getAll(taskService)
-        TasksLD.map( (value, index) => {          
-          console.log('Task', index, ' = ' ,  TasksLD);
-          console.log('Id login', _idEmployee);
-          console.log('Id leader', value.leaderId);
+        data.TaskLD = TasksLD.filter(async value => {
+          const TasksLDE = await http_getOne(taskService,value._id)          
+          console.log('LDE neeeee', TasksLDE);
           if (_idEmployee == value.leaderId){
-            data.TaskLD.push(value);
-          }          
+            socket.emit('cycleCus',TasksLDE)
+          }
         })
         console.log('Data task leader', data.TaskLD);
-        console.log('Data customers', data.customers);
+        for (const value of data.TaskLD) {
+          console.log('Data ', value);
+        }
+        console.log('hihi',TasksLD);
         socket.emit('birthday',data.customers,_idEmployee,_nameEmployee)
-        socket.emit('cycleCus',data.TaskLD)
-      }
-    }
-
-    
+       }
+    }    
 
     onMounted(async () => {
       const _idEmployee = sessionStorage.getItem("employeeId");
