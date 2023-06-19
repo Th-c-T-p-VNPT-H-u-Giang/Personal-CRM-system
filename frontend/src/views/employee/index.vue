@@ -317,6 +317,7 @@ export default {
       entryNameUnit.value = "Tổ";
       entryValueUnit.value = "";
 
+      //***thay đổi
       for (let value of data.items) {
         for (let array of arrayCheck.data) {
           console.log("arrayid==value_id", array._id == value._id);
@@ -395,6 +396,7 @@ export default {
           );
         });
       }
+      //Thay đổi
       data.selectAll[0].checked = false;
       for (let value of data.items) {
         value.checked = false;
@@ -519,6 +521,7 @@ export default {
           );
         });
       }
+      //Thay đổi
       for (let value of data.items) {
         value.checked = false;
       }
@@ -569,6 +572,7 @@ export default {
           );
         });
       }
+      //Thay đổi
       data.selectAll[0].checked = false;
       for (let value of data.items) {
         value.checked = false;
@@ -594,7 +598,7 @@ export default {
     const arrayCheck = reactive({ data: [] });
 
     const handleSelectAll = (value) => {
-      arrayCheck.data = [];
+      // arrayCheck.data = [];
       if (value == false) {
         for (let value1 of data.items) {
           value1.checked = true;
