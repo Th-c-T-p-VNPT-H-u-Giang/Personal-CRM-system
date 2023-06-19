@@ -59,6 +59,7 @@ export default {
                   <p><span class="font-weight-bold">Trạng thái: </span> {{ viewValue.Status_Task.name }}</p>
                   <p><span class="font-weight-bold">Lưu ý: </span> {{ viewValue.note }}</p>
                   <p><span class="font-weight-bold">Đánh giá: </span> {{ viewValue.Evaluate.star }}</p>
+                  <p><span class="font-weight-bold">Lưu ý: </span> {{ viewValue.Comment.content}}</p>
                 </div>
               </div>
             </div>
@@ -151,15 +152,6 @@ export default {
               </table> 
               <p v-if="viewValue.Appointments.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p>
             </div>
-          </div>
-          <div class="">
-            <button data-toggle="collapse" class="px-3 py-2 h6 border-none" data-target="#habit" @click="handleActiveCus">
-              Feedback
-            </button>
-            <div v-if="isActive" id="assignment" class="collapse my-3">
-              Rất tốt
-            </div>
-              
           </div>
         </div>
       </div>

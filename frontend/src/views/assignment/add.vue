@@ -149,10 +149,13 @@ export default {
       console.log('leaderId:', sessionStorage.getItem("employeeId"))
       const evals = await http_getAll(Evaluate);
       console.log("evals",evals);
+      // data.itemAdd.EvaluateId = evals[0]._id;
       for(let i=0; i< evals.length; i++){
-        data.itemAdd.EvaluateId = evals[i]._id;
-        // data.itemAdd.Evaluate.star = evals[i].star;
-        break;
+        if(evals[i].star == "một"){
+          data.itemAdd.EvaluateId = evals[i]._id;
+          // data.itemAdd.Evaluate.star = evals[i].star;
+          break;
+        }
       }
       console.log("star",data.itemAdd.EvaluateId)
       console.log('data itemadd', data.itemAdd);
@@ -174,7 +177,7 @@ export default {
 
 
     //xoa phan cong
-    const deleteOne = async (_id) => {
+    const deleteCycle = async (_id) => {
       const cycle = await http_getOne(Cycle, _id);
       console.log("deleting", cycle);
       const isConfirmed = await alert_delete(
@@ -187,6 +190,23 @@ export default {
         alert_success(
           `Xoá chu kỳ`,
           `Bạn đã xoá thành công chu kỳ ${cycle.name} .`
+        );
+        refresh();
+      }
+    };
+    const deleteStatusTask = async (_id) => {
+      const status_task = await http_getOne(StatusTask, _id);
+      console.log("deleting", status_task);
+      const isConfirmed = await alert_delete(
+        `Xoá trạng thái`,
+        `Bạn có chắc chắn muốn xoá trạng thái ${status_task.name} không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await http_deleteOne(StatusTask, _id);
+        alert_success(
+          `Xoá trạng thái`,
+          `Bạn đã xoá thành công trạng thái ${status_task.name} .`
         );
         refresh();
       }
@@ -222,7 +242,8 @@ export default {
       employees,
       selectedOptionCycle,
       selectedOptionStatus,
-      deleteOne,
+      deleteCycle,
+      deleteStatusTask,
       evaluates,
       statustasks,
     };
@@ -350,7 +371,7 @@ export default {
                           console.log('searchSlect', value.length)
                         )
                       "
-                      @delete="(value) => deleteOne(value._id)"
+                      @delete="(value) => deleteCycle(value._id)"
                       @chose="(value, value1) => (selectedOptionCycle = value, data.modelValue = value1.name)"
                   />
                 </div>
@@ -409,7 +430,7 @@ export default {
                           console.log('searchSlect', value.length)
                         )
                       "
-                      @delete="(value) => deleteOne(value._id)"
+                      @delete="(value) => deleteStatusTask(value._id)"
                       @chose="(value, value1) => (selectedOptionStatus = value, data.modelStatus = value1.name)"
                     />
                   </div>

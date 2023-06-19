@@ -47,6 +47,7 @@ exports.create = async (req, res, next) => {
                 StatusTaskId: StatusTaskId,
                 EvaluateId : EvaluateId,
             });
+            console.log("id", document._id);
 
             const comment = await Comment.create({
                 content: "Chưa có đánh giá nào",
@@ -236,15 +237,18 @@ exports.update = async (req, res, next) => {
             },
             include: [{
                 model: Status_Task,
-            }]
+            },
+            {
+                model: Cycle,
+            },
+            ]
         })];
 
         tasks = tasks.filter(
             (value, index) => {
                 return value.start_date == start_date && value.end_date == end_date && value.content == content
                     && value.cycleId == cycleId && value.customerId == customerId && value.leaderId == leaderId
-                    && value.note== note && value.StatusTaskId == StatusTaskId && value.EvaluateId == EvaluateId
-                    && value.Comment.content == req.body.Comment.content;
+                    && value.note== note && value.StatusTaskId == StatusTaskId && value.EvaluateId == EvaluateId;
             }
         )
 
@@ -258,7 +262,7 @@ exports.update = async (req, res, next) => {
                 leaderId: req.body.leaderId,
                 note: req.body.note,
                 StatusTaskId: req.body.StatusTaskId,
-                EvaluateId: req.body.EvaluateId,
+                EvaluateId : req.body.EvaluateId,
             }, { where: { _id: req.params.id }, returning: true, });
 
             console.log(document);

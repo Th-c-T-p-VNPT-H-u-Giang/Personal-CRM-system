@@ -395,7 +395,7 @@ export default {
 
     // method
 
-    //giao việc cho nhân viên
+    // giao việc cho nhân viên
     // const createTaskEm = async () => {
     //   console.log("đây nè");
     //   console.log("id Task dang chon:", props.item._id);
@@ -444,12 +444,62 @@ export default {
     //   await refresh();
     // };
 
+    // const createTaskEm = async (value) => {
+    //   const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
+    //   dataTaskEm.TaskId = props.item._id;
+    //   if(arrayCheck.data.length == 0){
+    //     alert_warning("Chưa chọn nhân viên để giao việc","");
+    //     return
+    //   }
+    //   const listEmployees = reactive({ listEmployee:[]});
+    //   listEmployees.listEmployee = await http_getOne(Task,props.item._id);
+    //   var j;
+    //   for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
+    //     const dataDel = reactive({
+    //       data: {
+    //         TaskId: props.item._id,
+    //         EmployeeId: listEmployees.listEmployee.Employees[j]._id,
+    //       },
+    //     });
+    //     const result = await EmployeeTask.deleteOne(dataDel.data);
+    //   }
+    //   for (let i = 0; i < arrayCheck.data.length; i++) {
+    //     if (arrayCheck.data[i].checked == true) {
+    //       try {
+    //         dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
+    //         await http_create(EmployeeTask, dataTaskEm);
+    //       } catch (error) {
+    //         console.error("Error sending email:", error);
+    //       }
+    //     }
+    //   }
+    //   alert_success("Đã giao việc cho nhân viên thành công", "");
+    //   await refresh();
+    // };
+
     const createTaskEm = async (value) => {
       const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
       dataTaskEm.TaskId = props.item._id;
-      if(arrayCheck.data.length == 0){
-        alert_warning("Chưa chọn nhân viên để giao việc","");
-        return
+      const listEmployees = reactive({ listEmployee: [] });
+      listEmployees.listEmployee = await http_getOne(Task, props.item._id);
+      for (let i =0 ; i< listEmployees.listEmployee; i++) {
+        arrayCheck.data.push(listEmployees.listEmployee[i]);
+      }
+
+      if (arrayCheck.data.length == 0) {
+        alert_warning("Chưa chọn nhân viên để giao việc", "");
+        return;
+      }
+      //xóa nhân viên
+      var j;
+      for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
+        const dataDel = reactive({
+          data: {
+            TaskId: props.item._id,
+            EmployeeId: listEmployees.listEmployee.Employees[j]._id,
+          },
+        });
+        const result = await EmployeeTask.deleteOne(dataDel.data);
       }
       for (let i = 0; i < arrayCheck.data.length; i++) {
         if (arrayCheck.data[i].checked == true) {

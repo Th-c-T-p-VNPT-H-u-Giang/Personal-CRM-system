@@ -11,6 +11,7 @@ import Add from "./add.vue";
 import Add_TaskEmployee from "./add_taskemployee.vue";
 import Edit from "./edit.vue";
 import View from "./view.vue";
+import FeedBack from "./feedback.vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import { reactive, computed, watch, ref, onBeforeMount } from "vue";
 import { useRouter } from "vue-router";
@@ -56,6 +57,7 @@ export default {
     AddAppointment,
     Add_TaskEmployee,
     Search,
+    FeedBack,
   },
   setup(ctx) {
     const data = reactive({
@@ -92,6 +94,7 @@ export default {
             }
           },
           Evaluate: {
+            _id:"",
             star: "",
           },
           Comment: {
@@ -203,6 +206,7 @@ export default {
             }
           },
           Evaluate: {
+            _id:"",
             star: "",
           },
           Comment: {
@@ -218,9 +222,8 @@ export default {
           checked: false,
         },
       ],
-
+      showFeedback : false,
     });
-
 
     const cycleValue = ref('');
     const startdateValue = ref('');
@@ -228,7 +231,10 @@ export default {
     const enddateValue = ref('');
     const cycles = reactive({ cycle: [] });
     const status_tasks = reactive({ status_task: [] });
+    const evaluates = reactive({ evaluate: [] });
 
+    const entryValueEval = ref(""); //id
+    const entryNameEval = ref("Đánh giá");
     const entryValueStatusTask = ref(""); //id
     const entryNameStatusTask = ref("Trạng thái");
     const entryValueCycle = ref(""); //id
@@ -239,6 +245,9 @@ export default {
     const updateEntryValueCycle= (value) => {
       entryValueCycle.value = value;
     };
+    const updateEntryValueEval= (value) => {
+      entryValueEval.value = value;
+    };
     //watch lọc
     watch(entryValueCycle,async (newValue, oldValue) =>{
       console.log("hhhh",newValue)
@@ -246,12 +255,55 @@ export default {
       if(newValue == 0 ){
         return await refresh();
       }
-          if(entryValueStatusTask.value !='' && startdateValue.value !='' && enddateValue.value !=''){
+          if(entryValueStatusTask.value !='' && startdateValue.value !='' && enddateValue.value !='' && entryValueEval.value != ''){
             console.log("trúc")
             data.items= data.items.filter((value, index)=> {
                 return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
                 && value.start_date == startdateValue.value
-                && value.end_date == enddateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+            })
+          }
+          else if(entryValueStatusTask.value !='' && startdateValue.value !='' && enddateValue.value !=''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value })
+          }
+          else if(startdateValue.value !='' && enddateValue.value !='' && entryValueEval.value != ''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+            })
+          }
+          else if(entryValueStatusTask.value !='' && enddateValue.value !='' && entryValueEval.value != '' ){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+            })
+          }
+          else if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueEval.value != ''){
+            console.log("trúc")
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
+            })
+          }
+          else if(entryValueEval.value != '' && entryValueStatusTask.value !=''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.Evaluate._id == entryValueEval.value
+            })
+          }
+          else if(entryValueEval.value != '' && startdateValue.value !=''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value 
+                && value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
+            })
+          }
+          else if(entryValueEval.value != '' && enddateValue.value !=''){
+            data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
             })
           }
           else if(entryValueStatusTask.value!= '' && startdateValue.value !=''){
@@ -272,6 +324,12 @@ export default {
                 return value.cycleId == entryValueCycle.value
                 && value.Status_Task.status == entryValueStatusTask.value
                 && value.end_date == enddateValue.value
+            })
+          }
+          else if(entryValueEval.value != ''){
+            data.items= data.items.filter((value, index)=> {
+              return value.cycleId == entryValueCycle.value
+                && value.Evaluate._id == entryValueEval.value
             })
           }
           else if(entryValueStatusTask.value!= ''){
@@ -307,7 +365,15 @@ export default {
         await refresh();
         return;
       }
-      if(entryValueCycle.value != '' && startdateValue.value !='' && enddateValue.value !=''){
+      if(entryValueCycle.value != '' && startdateValue.value !='' && enddateValue.value !='' && entryValueEval.value!= ''){
+        console.log("hello");
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+              && value.start_date == startdateValue.value
+              && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+          })
+      }
+      else if(entryValueCycle.value != '' && startdateValue.value !='' && enddateValue.value !=''){
         console.log("hello");
         data.items= data.items.filter((value, index)=> {
               return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
@@ -315,11 +381,52 @@ export default {
               && value.end_date == enddateValue.value
           })
       }
+      else if(entryValueCycle.value != '' && startdateValue.value !='' && entryValueEval.value!= ''){
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+              && value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
+          })
+      }
+      else if(entryValueCycle.value != '' && enddateValue.value !='' && entryValueEval.value!= ''){
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+              && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+          })
+      }
+      else if(startdateValue.value !='' && enddateValue.value !='' && entryValueEval.value!= ''){
+        console.log("hello");
+        data.items= data.items.filter((value, index)=> {
+              return value.Status_Task._id == entryValueStatusTask.value 
+              && value.start_date == startdateValue.value
+              && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+          })
+      }
       else if(startdateValue.value !='' && enddateValue.value !=''){
         data.items= data.items.filter((value, index)=> {
               return value.Status_Task._id == entryValueStatusTask.value
               && value.start_date == startdateValue.value
               && value.end_date == enddateValue.value
+          })
+      }
+      else if(entryValueCycle.value != '' && entryValueEval.value!= ''){
+        console.log("hello");
+        data.items= data.items.filter((value, index)=> {
+              return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+              && value.Evaluate._id == entryValueEval.value
+          })
+      }
+      else if(startdateValue.value !='' && entryValueEval.value!= ''){
+        console.log("hello");
+        data.items= data.items.filter((value, index)=> {
+              return value.Status_Task._id == entryValueStatusTask.value 
+              && value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
+          })
+      }
+      else if(enddateValue.value !='' && entryValueEval.value!= ''){
+        console.log("hello");
+        data.items= data.items.filter((value, index)=> {
+              return value.Status_Task._id == entryValueStatusTask.value 
+              && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
           })
       }
       else if(startdateValue.value !='' && entryValueCycle.value != ''){
@@ -353,6 +460,12 @@ export default {
               && value.Status_Task._id == entryValueStatusTask.value
           })
       } 
+      else if(entryValueEval.value!= ''){
+        console.log("hello");
+        data.items= data.items.filter((value, index)=> {
+              returnvalue.Status_Task._id == entryValueStatusTask.value && value.Evaluate._id == entryValueEval.value
+          })
+      }
       else{
         data.items = data.items.filter((value, index) => {
           // console.log('name', value.Status_Task.status)
@@ -364,7 +477,15 @@ export default {
     watch(startdateValue, async (newValue, oldValue)=>{
       console.log("start date",newValue)
       await refresh();
-      if(entryValueStatusTask.value !='' && enddateValue.value !='' && entryValueCycle.value != '')
+      if(entryValueStatusTask.value !='' && enddateValue.value !='' && entryValueCycle.value != '' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && enddateValue.value !='' && entryValueCycle.value != '' )
       {
         data.items= data.items.filter((value, index)=> {
                 return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
@@ -372,10 +493,54 @@ export default {
                 && value.end_date == enddateValue.value
         })
       }
+      else if(entryValueStatusTask.value !='' && enddateValue.value !='' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && entryValueCycle.value != '' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(enddateValue.value !='' && entryValueCycle.value != '' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
       else if(entryValueCycle.value != '' && entryValueStatusTask.value !=''){
         data.items= data.items.filter((value, index)=> {
                 return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
                 && value.start_date == startdateValue.value
+        })
+      }
+      else if(entryValueCycle.value != '' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value 
+                && value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(enddateValue.value !='' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
         })
       }
       else if(entryValueStatusTask.value !='' && enddateValue.value !=''){
@@ -410,7 +575,14 @@ export default {
                 return value.start_date == startdateValue.value
                 && value.end_date == enddateValue.value
         })
-      } else{
+      } 
+      else if(entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else{
         data.items= data.items.filter((value, index)=> {
                 return value.start_date == startdateValue.value
         })
@@ -420,13 +592,43 @@ export default {
     watch(enddateValue, async (newValue, oldValue)=>{
       console.log("end date",newValue)
       await refresh();
-      
-      if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueCycle.value != '')
+      if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueCycle.value != '' && entryValueEval.value != '')
       {
         data.items= data.items.filter((value, index)=> {
                 return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
                 && value.start_date == startdateValue.value
-                && value.end_date == enddateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueCycle.value != '' )
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value 
+        })
+      }
+      else if(startdateValue.value !='' && entryValueCycle.value != '' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && entryValueCycle.value != '' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
         })
       }
       else if(entryValueCycle.value != '' && entryValueStatusTask.value !=''){
@@ -449,6 +651,27 @@ export default {
                 && value.end_date == enddateValue.value
         })
       }
+      else if(entryValueCycle.value != '' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(startdateValue.value !='' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task._id == entryValueStatusTask.value 
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
       else if(entryValueCycle.value != '')
       {
         data.items= data.items.filter((value, index)=> {
@@ -467,12 +690,133 @@ export default {
                 return value.start_date == startdateValue.value
                 && value.end_date == enddateValue.value
         })
-      } else{
+      } 
+      else if(entryValueEval.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else{
         data.items= data.items.filter((value, index)=> {
                 return value.end_date == enddateValue.value
         })
       }
+    });
 
+    watch(entryValueEval, async (newValue, oldValue)=>{
+      console.log("end date",newValue)
+      await refresh();
+      if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueCycle.value != '' && enddateValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && startdateValue.value !='' && enddateValue.value != '' )
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Evaluate._id == entryValueEval.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value 
+        })
+      }
+      else if(startdateValue.value !='' && entryValueCycle.value != '' && entryValueStatusTask.value !='')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value 
+                && value.start_date == startdateValue.value
+                && value.Status_Task._id == entryValueStatusTask.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueCycle.value != '' && startdateValue.value !='' && enddateValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && entryValueCycle.value != '' && enddateValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueCycle.value != '' && entryValueStatusTask.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
+                && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task._id == entryValueStatusTask.value 
+                && value.start_date == startdateValue.value
+                && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueCycle.value != '' && startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value
+                && value.start_date == startdateValue.value
+                && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueCycle.value != '' && enddateValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(startdateValue.value !='' && enddateValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='' && enddateValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task._id == entryValueStatusTask.value 
+                && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueCycle.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.cycleId == entryValueCycle.value
+                && value.Evaluate._id == entryValueEval.value
+        })
+      }
+      else if(entryValueStatusTask.value !='')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Status_Task._id == entryValueStatusTask.value 
+                && value.Evaluate._id == entryValueEval.value
+        })
+      } else if(startdateValue.value !=''){
+        data.items= data.items.filter((value, index)=> {
+                return value.start_date == startdateValue.value
+                && value.Evaluate._id == entryValueEval.value
+        })
+      } 
+      else if(enddateValue.value != '')
+      {
+        data.items= data.items.filter((value, index)=> {
+                return value.Evaluate._id == entryValueEval.value 
+        })
+      }
+      else{
+        data.items= data.items.filter((value, index)=> {
+                return value.Evaluate._id == entryValueEval.value
+        })
+      }
     });
 
 
@@ -539,6 +883,21 @@ export default {
       } else return data.items.value;
     });
     // methods
+    const showFeedback = () =>{
+      console.log("day ne")
+      data.showFeedback = false;
+      for (let value of data.items) {
+        if (value.checked == true) {
+          console.log('item', value );
+          data.taskEmployee = value;
+          data.showFeedback = true;
+          break;
+        }
+      }
+      if (data.showFeedback == false) {
+        alert_warning(`Thêm đánh giá`, `Vui lòng chọn phân công để thêm đánh giá.`);
+      } 
+    }
     const showTask_Employee = () =>{
       console.log("day ne")
       data.showTask_Employee = false;
@@ -728,8 +1087,9 @@ export default {
     };
 
     const refresh = async () => {
-      data.evaluate = await http_getAll(Evaluate);
+      // data.evaluate = await http_getAll(Evaluate);
       status_tasks.status_task = await http_getAll(StatusTask);
+      evaluates.evaluate = await http_getAll(Evaluate);
       cycles.cycle = await http_getAll(Cycle);
       data.cus = await http_getAll(Customer);
       data.cus = data.cus.documents;
@@ -754,7 +1114,15 @@ export default {
           ...value,
           value: value._id,
         };
+      }); 
+      evaluates.evaluate = evaluates.evaluate.map((value, index) => {
+        return {
+          ...value,
+          value: value._id,
+          name: value.star,
+        };
       });
+      console.log("evaluate", evaluates.evaluate);
       data.selectAll[0].checked = false;
     };
 
@@ -785,17 +1153,22 @@ export default {
       startdateValue,
       enddateValue,
       showTask_Employee,
+      showFeedback,
       status_tasks,
       updateEntryValueStatusTask,
       updateEntryValueCycle,
+      updateEntryValueEval,
       entryValueStatusTask,
       entryNameStatusTask,
       entryNameCycle,
       entryValueCycle,
+      entryNameEval,
+      entryValueEval,
       handleDelete,
       deleteMany,
       handlSelectOne,
       handleSelectAll,
+      evaluates,
     };
   },
 };
@@ -822,6 +1195,22 @@ export default {
             "
             @refresh="
               (entryNameCycle= 'Chọn trạng thái chăm sóc'), updateEntryValueCycle('')
+            "
+            style="height: 35px"/>
+        </div>
+        <div class="form-group w-50 ml-3">
+          <Select
+            :title="`Đánh giá`"
+            :entryValue="entryNameEval"
+            :options="evaluates.evaluate"
+            @update:entryValue="
+              (value, value1) => (
+                updateEntryValueEval(value),
+                (entryNameEval = value1.name)
+              )
+            "
+            @refresh="
+              (entryNameEval= 'Chọn đánh giá'), updateEntryValueEval('')
             "
             style="height: 35px"/>
         </div>
@@ -920,6 +1309,18 @@ export default {
         <Add_TaskEmployee v-if="data.showTask_Employee"
         :item="data.taskEmployee"
         />
+        <FeedBack v-if="data.showFeedback"
+        :item="data.taskEmployee"
+        />
+        <button
+          type="button"
+          class="btn btn-secondary mr-3"
+          data-toggle="modal"
+          data-target="#model-feedback"
+          @click="showFeedback()"
+        >
+          <span class="mx-2">Đánh giá</span>
+        </button>
         <button
           type="button"
           class="btn btn-warning mr-3"

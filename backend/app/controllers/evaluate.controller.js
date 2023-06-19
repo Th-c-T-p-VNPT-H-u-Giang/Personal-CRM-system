@@ -89,5 +89,38 @@ exports.deleteAll = async (req, res, next) => {
 }
 
 exports.update = async (req, res, next) => {
+  console.log('update', req.body);
+  try {
+      let evaluates = [await Evaluate.findOne({
+          where: {
+              _id: req.params.id,
+          }
+      })];
 
+      evaluates = evaluates.filter(
+          (value, index) => {
+              return value.start = req.body.star;
+          }
+      )
+
+      if (evaluates.length == 0) {
+          const document = await Event.update({
+              star : req.body.star
+          }, { where: { _id: req.params.id }, returning: true, });
+          return res.send({
+              error: false,
+              msg: 'Dữ liệu đã được thay đổi thành công.',
+          })
+      } else {
+          return res.send({
+              error: true,
+              msg: 'Dữ liệu chưa được thay đổi.'
+          })
+      }
+
+  } catch (error) {
+      return next(
+          createError(400, 'Error update')
+      )
+  }
 }

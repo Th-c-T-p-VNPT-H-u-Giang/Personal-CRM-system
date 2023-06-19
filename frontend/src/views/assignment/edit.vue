@@ -229,7 +229,7 @@ export default {
                     </select>
                   </div>
                 </div>
-                <div class="form-group flex-grow-1">
+                <!-- <div class="form-group flex-grow-1">
                   <div class="form-group flex-grow-1">
                     <label for="content"
                       >Đánh giá phân công(<span style="color: red">*</span>):</label
@@ -252,7 +252,7 @@ export default {
                       </option>
                     </select>
                   </div>
-                </div>
+                </div> -->
                 
                 <div class="form-group flex-grow-1">
                   <label for="content"
@@ -267,7 +267,7 @@ export default {
                     rows="5"
                   ></textarea>
                 </div>
-                <div class="form-group flex-grow-1">
+                <!-- <div class="form-group flex-grow-1">
                   <label for="content"
                     >Nhận xét của khách hàng(<span style="color: red">*</span
                     >):</label
@@ -279,7 +279,7 @@ export default {
                     class="form-control w-100"
                     rows="5"
                   ></textarea>
-                </div>
+                </div> -->
                 <button
                   type="button"
                   class="btn btn-warning px-3 py-2"
