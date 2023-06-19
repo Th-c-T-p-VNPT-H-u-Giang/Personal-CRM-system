@@ -30,6 +30,14 @@ export default {
       type: Array,
       default: [true, true, true],
     },
+    startRow: {
+      type: Number,
+      default: 1,
+    },
+    selectAll: {
+      type: Array,
+      default: [],
+    },
   },
   setup(props, ntx) {},
 };
@@ -43,22 +51,34 @@ export default {
     >
       <thead>
         <tr>
-          <th></th>
-          <th>Stt</th>
-          <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-          <th v-if="activeAction == true">Hành động</th>
+          <th>
+            <input
+              type="checkbox"
+              name=""
+              id=""
+              :checked="selectAll[0].checked == true"
+              v-model="selectAll[0].checked"
+              @click="$emit('selectAll', selectAll[0].checked)"
+              class="d-flex align-items-center size-16"
+            />
+          </th>
+          <th><span class="size-16">Stt</span></th>
+          <th v-for="(value, index) in fields" :key="index">
+            <span class="size-16">{{ value }}</span>
+          </th>
+          <th><span class="size-16">Hành động</span></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(item, index) in items" :key="index">
+        <tr class="size-16" v-for="(item, index) in items" :key="index">
           <td>
             <input type="checkbox" v-model="item.checked" name="" id="" />
           </td>
-          <td>{{ index + 1 }}</td>
-          <td v-for="(label, index1) in labels" :key="index1">
+          <td class="size-16">{{ startRow + index }}</td>
+          <td class="size-16" v-for="(label, index1) in labels" :key="index1">
             {{ item[label] }}
           </td>
-          <td>
+          <td class="size-16">
             <button data-toggle="collapse" data-target="#demo">
               xem quyền
             </button>
