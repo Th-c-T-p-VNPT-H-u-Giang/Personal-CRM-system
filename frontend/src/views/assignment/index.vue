@@ -946,24 +946,6 @@ export default {
       }
     };
 
-    // const deleteOne = async (_id) => {
-    //   const task = await http_getOne(Task, _id);
-    //   console.log("deleting", task);
-    //   const isConfirmed = await alert_delete(
-    //     `Xoá sự phân công`,
-    //     `Bạn có chắc chắn muốn xoá phân công của khách hàng ${task.Customer.name} không ?`
-    //   );
-    //   console.log(isConfirmed);
-    //   if (isConfirmed == true) {
-    //     const result = await http_deleteOne(Task, _id);
-    //     alert_success(
-    //       `Xoá phân công`,
-    //       `Bạn đã xoá thành công phân công của khách hàng ${task.Customer.name} .`
-    //     );
-    //     refresh();
-    //   }
-    // };
-
     const router = useRouter();
 
 
@@ -1348,7 +1330,7 @@ export default {
           type="button"
           class="btn btn-primary"
           data-toggle="modal"
-          data-target="#model-add-wizard"
+          data-target="#model-add"
         >
           <span id="add" class="mx-2">Thêm</span>
         </button>

@@ -59,7 +59,7 @@ export default {
                   <p><span class="font-weight-bold">Trạng thái: </span> {{ viewValue.Status_Task.name }}</p>
                   <p><span class="font-weight-bold">Lưu ý: </span> {{ viewValue.note }}</p>
                   <p><span class="font-weight-bold">Đánh giá: </span> {{ viewValue.Evaluate.star }}</p>
-                  <p><span class="font-weight-bold">Lưu ý: </span> {{ viewValue.Comment.content}}</p>
+                  <p><span class="font-weight-bold">Nhận xét: </span> {{ viewValue.Comment.content}}</p>
                 </div>
               </div>
             </div>
@@ -79,7 +79,7 @@ export default {
                 <div>
                   <p><span class="font-weight-bold">Địa chỉ: </span> {{ viewValue.Customer.address }}</p>
                   <p><span class="font-weight-bold">Số điện thoại: </span> {{ viewValue.Customer.phone }}</p>
-                  <p><span class="font-weight-bold">Email</span> {{ viewValue.Customer.email }}</p>
+                  <p><span class="font-weight-bold">Email:</span> {{ viewValue.Customer.email }}</p>
                 </div>
               </div>
             </div>

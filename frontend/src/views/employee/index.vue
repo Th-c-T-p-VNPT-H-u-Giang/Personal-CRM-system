@@ -742,9 +742,9 @@ export default {
       const dataMail = reactive({ title: "", content: "", mail: "" });
       dataMail.title = value.title;
       dataMail.content = value.content;
+      alert_success("Mail đã được gửi", "");
       for (let i = 0; i < arrayCheck.data.length; i++) {
         if (arrayCheck.data[i].checked == true) {
-          alert_success("Mail đã được gửi", "");
           try {
             dataMail.mail = arrayCheck.data[i].email;
             await mailService.sendmail(dataMail);

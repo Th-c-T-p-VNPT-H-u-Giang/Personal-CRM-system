@@ -8,6 +8,7 @@ exports.create = async (req, res, next) => {
     const evaluates = await Evaluate.findAll();
     for (let value of evaluates) {
       if (value.star == star) {
+        console.log("sao neeeeee", value.star);
         return res.send({
           error: true,
           msg: `Đã tồn tại '${star}'`,
@@ -16,7 +17,7 @@ exports.create = async (req, res, next) => {
     }
     try {
       const document = await Evaluate.create({
-        star: req.body.star,
+        star: star,
       });
       return res.send({
         error: false,

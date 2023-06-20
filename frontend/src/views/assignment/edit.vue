@@ -1,6 +1,24 @@
 <script>
-import { reactive } from "vue";
+import { reactive, onBeforeMount,watch , ref, computed} from "vue";
+import StatusTask from "../../services/status_task.service";
+import Select_Advanced from "../../components/form/select_advanced.vue";
+import Swal from "sweetalert2";
+import {
+  http_getAll,
+  http_create,
+  http_getOne,
+  http_deleteOne,
+} from "../../assets/js/common.http";
+import {
+  alert_success,
+  alert_error,
+  alert_delete,
+  alert_warning,
+} from "../../assets/js/common.alert";
 export default {
+  components:{
+    Select_Advanced
+  },
   props: {
     item: {
       type: Object,
@@ -40,6 +58,87 @@ export default {
         },
       ],
       activeStep: 1,
+      modelStatus_Task:"1",
+    });
+
+    const statustasks = reactive({ statustask: [] });
+    let selectedOptionStatus = ref("0");
+    watch(selectedOptionStatus, async (newValue, oldValue) => {
+      if (newValue == "other") {
+        const showSweetAlert = async () => {
+          const { value: statusTask } = await Swal.fire({
+            title: "Thêm trạng thái mới",
+            input: "text",
+            inputLabel: "Tên trạng thái",
+            inputValue: "",
+            showCancelButton: true,
+            inputValidator: (value) => {
+              if (!value) {
+                return "Tên trạng thái không được bỏ trống";
+              }
+            },
+          });
+
+          if (statusTask) {
+            const res = await http_create(StatusTask, { name: statusTask });
+            if (res.error) {
+              alert_warning(`Đã tồn tại trạng thái `, `${statusTask}`);
+              return false;
+            }
+            alert_success(`Đã thêm trạng thái`, `${statusTask}`);
+            data.modelStatus_Task = res.document.name;
+            await refresh();
+            ctx.emit("newStatus", statustasks.statustask);
+            console.log("ne", res.document.name);
+            selectedOptionStatus.value = res.document._id;
+
+          }
+          return true;
+        };
+        showSweetAlert();
+        selectedOptionStatus.value = 0;
+      }
+      props.item.StatusTaskId = selectedOptionStatus;
+    });
+
+    const deleteStatusTask = async (_id) => {
+      const status_task = await http_getOne(StatusTask, _id);
+      console.log("deleting", status_task);
+      const isConfirmed = await alert_delete(
+        `Xoá trạng thái`,
+        `Bạn có chắc chắn muốn xoá trạng thái ${status_task.name} không ?`
+      );
+      console.log(isConfirmed);
+      if (isConfirmed == true) {
+        const result = await http_deleteOne(StatusTask, _id);
+        alert_success(
+          `Xoá trạng thái`,
+          `Bạn đã xoá thành công trạng thái ${status_task.name} .`
+        );
+        refresh();
+      }
+    };
+    const search= async(value)=>{
+      console.log("a",value,statustasks.statustask);
+      await refresh();
+      statustasks.statustask = statustasks.statustask.filter((value1, index) => {
+        console.log(value1, value);
+        return value1.name.includes(value) || value.length == 0;
+      });
+    console.log('searchSlect', value.length)}                  
+    
+  
+    const refresh = async () => {
+      statustasks.statustask = await http_getAll(StatusTask);
+      statustasks.statustask.push({
+        _id: "other",
+        name: "khác",
+      });
+      // data.cycleSelect = [...rs];
+    };
+
+    onBeforeMount(() => {
+      refresh();
     });
     const update = () => {
       ctx.emit("update");
@@ -47,6 +146,10 @@ export default {
     return {
       update,
       data,
+      selectedOptionStatus,
+      statustasks,
+      deleteStatusTask,
+      search
     };
   },
 };
@@ -192,67 +295,22 @@ export default {
                 class="was-validated"
                 style="width: 100%"
               >
-                <!-- <div class="form-group flex-grow-1">
-                <label for="name"
-                  >Tên sự kiện(<span style="color: red">*</span>):</label
-                >
-                <input
-                  type="text"
-                  class="form-control w-100"
-                  id="name"
-                  name="name"
-                  v-model="item.name"
-                  required
-                />
-              </div> -->
                 <div class="form-group flex-grow-1">
                   <div class="form-group flex-grow-1">
                     <label for="content"
                       >Trạng thái phân công(<span style="color: red">*</span>):</label
                     >
-                    <select
-                      id=""
-                      class="form-control"
-                      required
-                      v-model="item.StatusTaskId"
-                    >
-                      <option value="" disabled selected hidden>
-                        Chọn trạng thái
-                      </option>
-                      <option
-                        v-for=" statustask in statustask"
-                        :key="statustask"
-                        :value="statustask._id"
-                      >
-                        {{ statustask.name }}
-                      </option>
-                    </select>
+                    <Select_Advanced style="height: 40px;" required
+                      :options="statustasks.statustask"
+                      :modelValue="item.Status_Task.name"
+                      @searchSelect="
+                     (value)=>search(value)"
+                      
+                      @delete="(value) => deleteStatusTask(value._id)"
+                      @chose="(value,value1) => ( selectedOptionStatus = value, item.Status_Task.name=value1.name)"
+                      />
                   </div>
                 </div>
-                <!-- <div class="form-group flex-grow-1">
-                  <div class="form-group flex-grow-1">
-                    <label for="content"
-                      >Đánh giá phân công(<span style="color: red">*</span>):</label
-                    >
-                    <select
-                      id=""
-                      class="form-control"
-                      required
-                      v-model="item.EvaluateId"
-                    >
-                      <option value="" disabled selected hidden>
-                        Chọn sao
-                      </option>
-                      <option
-                        v-for=" evaluate in evaluate"
-                        :key="evaluate"
-                        :value="evaluate._id"
-                      >
-                        {{ evaluate.star }}
-                      </option>
-                    </select>
-                  </div>
-                </div> -->
                 
                 <div class="form-group flex-grow-1">
                   <label for="content"
@@ -267,24 +325,11 @@ export default {
                     rows="5"
                   ></textarea>
                 </div>
-                <!-- <div class="form-group flex-grow-1">
-                  <label for="content"
-                    >Nhận xét của khách hàng(<span style="color: red">*</span
-                    >):</label
-                  >
-                  <textarea
-                    v-model="item.Comment.content"
-                    id="content"
-                    required
-                    class="form-control w-100"
-                    rows="5"
-                  ></textarea>
-                </div> -->
                 <button
                   type="button"
                   class="btn btn-warning px-3 py-2"
                   style="font-size: 14px"
-                  @click="$emit('edit')"
+                  @click="$emit('edit',)"
                   id="edit"
                   data-dismiss="modal"
                 >

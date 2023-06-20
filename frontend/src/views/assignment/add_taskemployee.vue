@@ -564,7 +564,7 @@ export default {
       entryValueDepartment.value = "";
       entryNameUnit.value = "Tổ";
       entryValueUnit.value = "";
-      for (let value of data.items) {
+      for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
           console.log("arrayid==value_id", array._id == value._id);
           if (array._id == value._id) {
