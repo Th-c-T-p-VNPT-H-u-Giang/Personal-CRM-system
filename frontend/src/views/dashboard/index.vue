@@ -13,6 +13,7 @@ import {
   http_getAll,
   Task,
   Evaluate,
+  Status_Task,
 } from "../common/import";
 
 export default {
@@ -43,6 +44,7 @@ export default {
       customer: {},
       task: {},
       evaluate: {},
+      statusTask: {},
     });
     const toString = computed(() => {
       console.log("Starting search");
@@ -93,6 +95,7 @@ export default {
       data.customer = await http_getAll(Customer);
       data.task = await http_getAll(Task);
       data.evaluate = await http_getAll(Evaluate);
+      data.statusTask = await http_getAll(Status_Task);
     };
 
     // table customer
@@ -154,29 +157,24 @@ export default {
         type: "bar",
       },
       xaxis: {
-        categories: ["Loại khách hàng"],
+        categories: [""],
       },
       colors: ["rgb(255, 99, 132)", "#3300cc"],
     });
-    const dataChartCustomerType1 = reactive({
+    // const dataChartCustomerType1 = reactive({
+    //   data: [[1, 4, 5, 5]],
+    // });
+    const chartSeriesCustomerType1 = reactive({
       data: [
-        [1, 4, 5, 5],
-        [2, 7, 5, 5],
+        {
+          name: "",
+          data: [],
+        },
       ],
     });
-    const chartSeriesCustomerType1 = ref([
-      {
-        name: "thường",
-        data: [1],
-      },
-      {
-        name: "vip",
-        data: [2],
-      },
-    ]);
-
+    //STAR
     //chart số lượng khách hàng đã phân công
-    const chartOptions2 = reactive({
+    const chartOptionsStar = reactive({
       chart: {
         type: "pie", // Thay đổi loại biểu đồ thành "line"
       },
@@ -184,28 +182,26 @@ export default {
       series: [],
       colors: ["#FFDD94", "#FD8F52", "#FFd700", "#FFC125", "#EEAD0F"],
     });
-    const chartSeries2 = ref([]);
-    //Line chart
-    const chartOptionsStar = reactive({
+    const chartSeriesStar = ref([]);
+    //bar chart
+    const chartOptionsStar1 = reactive({
       chart: {
-        id: "basic-line",
-        type: "line",
+        id: "basic-bar",
+        type: "bar",
       },
       xaxis: {
-        categories: ["Loại khách hàng"],
+        categories: ["Trạng thái"],
       },
-      colors: ["rgb(255, 99, 132)", "#3300cc"],
+      colors: ["rgb(255, 99, 132)", "#3300cc", "rgb(250, 90, 80)"],
     });
-    const chartSeriesStar = ref([
-      {
-        name: "thường",
-        data: [1, 4, 5, 5],
-      },
-      {
-        name: "vip",
-        data: [2, 7, 5, 5],
-      },
-    ]);
+    const chartSeriesStar1 = reactive({
+      data: [
+        {
+          name: "",
+          data: [],
+        },
+      ],
+    });
 
     // 16/6
     const show = async (nameChart, cycle) => {
@@ -215,6 +211,7 @@ export default {
           chartOptionsCustomerType.labels[i] =
             data.customerType.documents[i].name;
           chartSeriesCustomerType.value[i] = 0;
+
           for (let j = 0; j < data.customer.documents.length; j++) {
             if (
               data.customerType.documents[i]._id ==
@@ -226,13 +223,30 @@ export default {
         }
 
         for (let i = 0; i < data.evaluate.length; i++) {
-          chartOptions2.labels[i] = data.evaluate[i].star;
-          chartSeries2.value[i] = 0;
+          chartOptionsStar.labels[i] = data.evaluate[i].star;
+          chartSeriesStar.value[i] = 0;
           for (let task of data.task) {
             if (task.EvaluateId == data.evaluate[i]._id) {
-              chartSeries2.value[i]++;
+              chartSeriesStar.value[i]++;
             }
           }
+        }
+        //
+        const now = new Date();
+        for (let i = 0; i < data.statusTask.length; i++) {
+          var count = 0;
+          for (let task of data.task) {
+            console.log(task.StatusTaskId == data.statusTask[i]._id);
+            if (task.StatusTaskId == data.statusTask[i]._id) {
+              count++;
+            }
+          }
+          console.log("count:", count);
+          chartSeriesStar1.data[i] = {
+            name: data.statusTask[i].name,
+            data: [count],
+          };
+          console.log("đánh giá:", chartSeriesStar1);
         }
       } else if (nameChart == "appointment") {
         switch (cycle) {
@@ -256,7 +270,6 @@ export default {
       console.log("Dropdown value changed cycles:", newValue);
       show(showchart.value, newValue);
     });
-
     // **watch datachart
     watch(dataChart, (newValue, oldValue) => {
       // Gọi phương thức cập nhật biểu đồ khi dữ liệu thay đổi
@@ -318,7 +331,6 @@ export default {
 
     onMounted(async () => {
       await refresh();
-
       data.items = [
         {
           cus_id: 1,
@@ -375,14 +387,14 @@ export default {
       isassign,
       chartOptionsCustomerType,
       chartSeriesCustomerType,
-      dataChartCustomerType1,
+      // dataChartCustomerType1,
       chartSeriesCustomerType1,
       chartOptionsCustomerType1,
-      chartOptions2,
-      chartSeries2,
-
       chartOptionsStar,
       chartSeriesStar,
+
+      chartOptionsStar1,
+      chartSeriesStar1,
     };
   },
 };
@@ -556,42 +568,28 @@ export default {
       </div>
     </div>
 
-    <div class="mb-5">
+    <div class="mb-5 mx-3 p-0">
       <!--Chart -->
       <!--Chart Appointment -->
+      <!-- Cột -->
       <apexchart
-        :options="chartOptions"
-        :series="chartSeries"
+        :options="chartOptionsStar1"
+        :series="chartSeriesStar1.data"
         v-if="overview && showchart == 'appointment'"
         height="400"
       />
       <!--Chart Customer -->
-
       <div class="row mx-3 justify-content-around p-0 m-0">
+        <!-- Tròn -->
         <apexchart
-          class="col-md-5 col-12 border mb-3"
+          class="col-md-6 col-12 border mb-3"
           style="border-radius: 5px"
           :options="chartOptionsCustomerType"
           :series="chartSeriesCustomerType"
           v-if="overview && showchart == 'customer'"
           height="400"
         />
-        <apexchart
-          class="col-md-5 col-12 border p-0 m-0 mb-3"
-          style="border-radius: 5px"
-          :options="chartOptionsCustomerType1"
-          :series="chartSeriesCustomerType1"
-          v-if="overview && showchart == 'customer'"
-          height="400"
-        />
-        <apexchart
-          class="col-md-6 col-12 border"
-          style="border-radius: 5px"
-          :options="chartOptions2"
-          :series="chartSeries2"
-          v-if="overview && showchart == 'customer'"
-          height="400"
-        />
+
         <apexchart
           class="col-md-6 col-12 border"
           style="border-radius: 5px"
