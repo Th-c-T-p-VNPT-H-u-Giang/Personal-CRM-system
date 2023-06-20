@@ -89,10 +89,6 @@ export default {
       ],
     });
 
-
-
-
-    
     const employees = reactive({ employee: [] });
 
     // computed
@@ -153,7 +149,7 @@ export default {
         });
       } else return data.itemEm.value;
     });
-      //SelectAll
+    //SelectAll
     const arrayCheck = reactive({ data: [] });
     const entryValuePosition = ref(""); //id
     const entryNamePosition = ref("Chức vụ"); //name
@@ -163,11 +159,10 @@ export default {
     const entryNameDepartment = ref("Phòng"); //name
     const entryValueUnit = ref("");
     const entryNameUnit = ref("Tổ");
-    
 
     //watch lọc nhân viên
-     // ******LỌC ******
-     const positions = reactive({ position: [] });
+    // ******LỌC ******
+    const positions = reactive({ position: [] });
     watch(entryValuePosition, async (newValue, oldValue) => {
       if (newValue == "") {
         await refresh();
@@ -408,13 +403,12 @@ export default {
       entryValueUnit.value = value;
     };
 
-
     const createTaskEm = async (value) => {
       const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
       dataTaskEm.TaskId = props.item._id;
       const listEmployees = reactive({ listEmployee: [] });
       listEmployees.listEmployee = await http_getOne(Task, props.item._id);
-      for (let i =0 ; i< listEmployees.listEmployee; i++) {
+      for (let i = 0; i < listEmployees.listEmployee; i++) {
         arrayCheck.data.push(listEmployees.listEmployee[i]);
       }
 
@@ -447,29 +441,28 @@ export default {
     };
 
     //tu giao viec
-    const addTaskEm = async () =>{
+    const addTaskEm = async () => {
       const newData = reactive({ TaskId: " ", EmployeeId: " " });
       newData.TaskId = props.item._id;
-      newData.EmployeeId = sessionStorage.getItem("employeeId")
-      console.log('leaderId:',newData.EmployeeId  )
-      console.log('taskid:', newData.TaskId)
+      newData.EmployeeId = sessionStorage.getItem("employeeId");
+      console.log("leaderId:", newData.EmployeeId);
+      console.log("taskid:", newData.TaskId);
       try {
         const result = await http_create(EmployeeTask, newData);
         console.log(result.error);
-        if(result.error == true){
-          alert_warning(
-         `Thêm công việc`,
-         `Công việc đã được giao cho bạn`);
-        }else{
+        if (result.error == true) {
+          alert_warning(`Thêm công việc`, `Công việc đã được giao cho bạn`);
+        } else {
           alert_success(
-         `Thêm công việc`,
-         `Nhận khách hàng ${props.item.Customer.name} thành công`);  
-        }  
+            `Thêm công việc`,
+            `Nhận khách hàng ${props.item.Customer.name} thành công`
+          );
+        }
         await refresh();
       } catch (error) {
-          console.error("Lỗi tạo công việc:", error);
+        console.error("Lỗi tạo công việc:", error);
       }
-    }
+    };
 
     //CHECKALL
     const handleSelectAll = (value) => {
@@ -503,16 +496,15 @@ export default {
       console.log("arrayCheckOne:", arrayCheck.data);
     };
 
-
     const refresh = async () => {
       // data.cycleSelect = [...rs];
       console.log("REFRESH");
       data.itemEm = await http_getAll(Employee);
-      console.log("ds nv",data.itemEm);
+      console.log("ds nv", data.itemEm);
       // ***
       const employeeTask = reactive({ data: [] });
       employeeTask.data = await http_getOne(Task, props.item._id);
-      console.log("list",employeeTask.data);
+      console.log("list", employeeTask.data);
       var i;
       for (i = 0; i < data.itemEm.length; i++) {
         data.itemEm[i].checked = false;
@@ -531,7 +523,7 @@ export default {
       data.center = await CenterServices.getAll();
       data.department = await departmentsServices.getAll();
       data.unit = await unitsServices.getAll();
-      
+
       data.position = data.position.map((value, index) => {
         return {
           ...value,
@@ -564,7 +556,8 @@ export default {
       entryValueDepartment.value = "";
       entryNameUnit.value = "Tổ";
       entryValueUnit.value = "";
-      for (let value of data.items) {
+      //****
+      for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
           console.log("arrayid==value_id", array._id == value._id);
           if (array._id == value._id) {
@@ -675,7 +668,8 @@ export default {
                         )
                       "
                       @refresh="
-                        (entryNamePosition = 'Chọn chức vụ'), updateEntryValuePosition('')
+                        (entryNamePosition = 'Chọn chức vụ'),
+                          updateEntryValuePosition('')
                       "
                       style="height: 35px"
                     />
@@ -687,11 +681,13 @@ export default {
                       :options="data.center"
                       @update:entryValue="
                         (value, value1) => (
-                          updateEntryValueCenter(value), (entryNameCenter = value1.name)
+                          updateEntryValueCenter(value),
+                          (entryNameCenter = value1.name)
                         )
                       "
                       @refresh="
-                        (entryNameCenter = 'Chọn trung tâm'), updateEntryValueCenter('')
+                        (entryNameCenter = 'Chọn trung tâm'),
+                          updateEntryValueCenter('')
                       "
                       style="height: 35px"
                     />
@@ -724,10 +720,13 @@ export default {
                       :options="data.unit"
                       @update:entryValue="
                         (value, value1) => (
-                          updateEntryValueUnit(value), (entryNameUnit = value1.name)
+                          updateEntryValueUnit(value),
+                          (entryNameUnit = value1.name)
                         )
                       "
-                      @refresh="(entryNameUnit = 'Chọn tổ'), updateEntryValueUnit('')"
+                      @refresh="
+                        (entryNameUnit = 'Chọn tổ'), updateEntryValueUnit('')
+                      "
                       style="height: 35px"
                     />
                   </div>
@@ -754,13 +753,7 @@ export default {
                 /> -->
                 <Table
                   :items="setPages"
-                  :fields="[
-                    'Tên',
-                    'Chức vụ',
-                    'Đơn vị',
-                    'Phòng',
-                    'Trung tâm',
-                  ]"
+                  :fields="['Tên', 'Chức vụ', 'Đơn vị', 'Phòng', 'Trung tâm']"
                   :selectAll="data.selectAll"
                   :startRow="data.startRow"
                   @selectAll="(value) => handleSelectAll(value)"
