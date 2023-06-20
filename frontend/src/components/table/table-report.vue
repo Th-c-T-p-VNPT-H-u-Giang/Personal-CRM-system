@@ -67,20 +67,20 @@ export default {
         <td class="size-16" v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
         <td v-if="activeAction == true">
           <button
-            v-if="showActionList[0] == true"
-            type="button"
-            class="format-btn size-16"
-            data-toggle="modal"
-            data-target="#model-view"
-          >
-            <span
-              id="view"
-              class="material-symbols-outlined d-flex align-items-center"
-              @click="$emit('view', item)"
+              type="button"
+              class="format-btn"
+              data-toggle="modal"
+              data-target="#model-view"
             >
-              visibility
-            </span>
-          </button>
+              <span
+                id="view"
+                class="material-symbols-outlined d-flex align-content-center"
+                @click="$emit('view', item)"
+              >
+                visibility
+              </span>
+            </button>
+          
           <button
             v-if="showActionList[1] == true"
             type="button"

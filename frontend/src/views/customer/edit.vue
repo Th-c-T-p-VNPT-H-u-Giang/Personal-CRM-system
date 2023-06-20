@@ -366,6 +366,7 @@ export default {
                       >Sdt (<span style="color: red">*</span>)</label
                     >
                     <input
+                      disabled
                       type="text"
                       class="form-control"
                       id="phone"
@@ -384,6 +385,7 @@ export default {
                         id="email"
                         v-model="item.Customer.email"
                         required
+                        disabled
                       />
                     </div>
                     <div class="form-group col-md-6">

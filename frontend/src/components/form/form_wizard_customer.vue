@@ -211,7 +211,6 @@ export default {
       refresh();
       for (const value of data.customer) {
         if (
-          value.name == viewData.customerInfo.name &&
           value.phone == viewData.customerInfo.phone &&
           value.email == viewData.customerInfo.email
         ) {
