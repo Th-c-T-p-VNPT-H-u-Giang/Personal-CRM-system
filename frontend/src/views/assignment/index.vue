@@ -933,19 +933,29 @@ export default {
       } 
     }
     const showTask_Employee = () =>{
-      console.log("day ne")
-      data.showTask_Employee = false;
-      for (let value of data.items) {
-        if (value.checked == true) {
-          console.log('item', value );
-          data.taskEmployee = value;
-          data.showTask_Employee = true;
-          break;
-        }
+      // console.log("day ne")
+      // data.showTask_Employee = false;
+      // for (let value of data.items) {
+      //   if (value.checked == true) {
+      //     console.log('item', value );
+      //     data.taskEmployee = value;
+      //     data.showTask_Employee = true;
+      //     break;
+      //   }
+      // }
+      // if (data.showTask_Employee == false) {
+      //   alert_warning(`Thêm phân công cho nhân viên`, `Vui lòng chọn phân công để giao việc cho nhân viên.`);
+      // } 
+      console.log("11ArrayCheck Index:", arrayCheck.data[0]);
+      if (arrayCheck.data.length > 0) {
+        data.taskEmployee = arrayCheck.data[0];
+        data.showTask_Employee = true;
+      } else {
+        alert_warning(
+          `Thêm phân công cho nhân viên`,
+          `Vui lòng chọn phân công để giao việc cho nhân viên.`
+        );
       }
-      if (data.showTask_Employee == false) {
-        alert_warning(`Thêm phân công cho nhân viên`, `Vui lòng chọn phân công để giao việc cho nhân viên.`);
-      } 
     }
 
     const create = async () => {

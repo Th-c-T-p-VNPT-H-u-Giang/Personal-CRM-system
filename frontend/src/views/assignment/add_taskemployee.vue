@@ -1,5 +1,5 @@
 <script>
-import { reactive, onBeforeMount, ref, watch, computed } from "vue";
+import { reactive, onBeforeMount, ref, watch, computed, watchEffect } from "vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import Table from "../../components/table/table_task_employee.vue";
 import Select from "../../components/form/select.vue";
@@ -407,44 +407,84 @@ export default {
     const updateEntryValueUnit = (value) => {
       entryValueUnit.value = value;
     };
+  
 
 
     const createTaskEm = async (value) => {
       const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
       dataTaskEm.TaskId = props.item._id;
-      const listEmployees = reactive({ listEmployee: [] });
-      listEmployees.listEmployee = await http_getOne(Task, props.item._id);
-      for (let i =0 ; i< listEmployees.listEmployee.Employees.length; i++) {
-        arrayCheck.data.push(listEmployees.listEmployee.Employees[i]);
-      }
-
       if (arrayCheck.data.length == 0) {
         alert_warning("Chưa chọn nhân viên để giao việc", "");
         return;
       }
-      //xóa nhân viên
-      var j;
-      for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
-        const dataDel = reactive({
-          data: {
-            TaskId: props.item._id,
-            EmployeeId: listEmployees.listEmployee.Employees[j]._id,
-          },
-        });
-        const result = await EmployeeTask.deleteOne(dataDel.data);
-      }
-      for (let i = 0; i < arrayCheck.data.length; i++) {
-        if (arrayCheck.data[i].checked == true) {
-          try {
-            dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
-            await http_create(EmployeeTask, dataTaskEm);
-          } catch (error) {
-            console.error("Error sending email:", error);
-          }
+      //xóa nhân viên 1**
+      const A = ["A", "B"]; //array
+      const B = ["B", "C", "D"]; //arrayCheck
+      const C = reactive({ data: [] });
+      C.data = array.data.filter((value) => !arrayCheck.data.includes(value));
+      console.log("C:", C.data, C.data.length);
+      console.log("đã giao trước:", array.data, array.data.length);
+      if (C.data.length != 0) {
+        for (let j = 0; j < C.data.length; j++) {
+          const dataDel = reactive({
+            data: {
+              TaskId: props.item._id,
+              EmployeeId: C.data[j]._id,
+            },
+          });
+          const result = await EmployeeTask.deleteOne(dataDel.data);
         }
+      }
+      console.log("0", arrayCheck.data.length);
+      for (let i = 1; i < arrayCheck.data.length; i++) {
+        console.log(arrayCheck.data[i]._id);
+        // if (arrayCheck.data[i].checked == true) {
+        try {
+          dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
+          await http_create(EmployeeTask, dataTaskEm);
+        } catch (error) {
+          console.error("Error sending email:", error);
+        }
+        // }
       }
       alert_success("Đã giao việc cho nhân viên thành công", "");
       await refresh();
+      // const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
+      // dataTaskEm.TaskId = props.item._id;
+      // const listEmployees = reactive({ listEmployee: [] });
+      // listEmployees.listEmployee = await http_getOne(Task, props.item._id);
+      // for (let i =0 ; i< listEmployees.listEmployee.Employees.length; i++) {
+      //   arrayCheck.data.push(listEmployees.listEmployee.Employees[i]);
+      // }
+
+      // console.log("do dai", arrayCheck.data.length);
+      // if (arrayCheck.data.length == 0) {
+      //   alert_warning("Chưa chọn nhân viên để giao việc", "");
+      //   return;
+      // }
+      //xóa nhân viên
+      // var j;
+      // for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
+      //   const dataDel = reactive({
+      //     data: {
+      //       TaskId: props.item._id,
+      //       EmployeeId: listEmployees.listEmployee.Employees[j]._id,
+      //     },
+      //   });
+      //   const result = await EmployeeTask.deleteOne(dataDel.data);
+      // }
+      // for (let i = 0; i < arrayCheck.data.length; i++) {
+      //   if (arrayCheck.data[i].checked == true) {
+      //     try {
+      //       dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
+      //       await http_create(EmployeeTask, dataTaskEm);
+      //     } catch (error) {
+      //       console.error("Error sending email:", error);
+      //     }
+      //   }
+      // }
+      // alert_success("Đã giao việc cho nhân viên thành công", "");
+      // await refresh();
     };
 
     //tu giao viec
@@ -504,7 +544,7 @@ export default {
       console.log("arrayCheckOne:", arrayCheck.data);
     };
 
-
+    const array = reactive({ data: []});
     const refresh = async () => {
       // data.cycleSelect = [...rs];
       console.log("REFRESH");
@@ -514,14 +554,15 @@ export default {
       const employeeTask = reactive({ data: [] });
       employeeTask.data = await http_getOne(Task, props.item._id);
       console.log("list",employeeTask.data);
-      var i;
-      for (i = 0; i < data.itemEm.length; i++) {
+      for (let i = 0; i < data.itemEm.length; i++) {
         data.itemEm[i].checked = false;
       }
-      for (i = 0; i < data.itemEm.length; i++) {
-        for (var j = 0; j < employeeTask.data.Employees.length; j++) {
+      for (let i = 0; i < data.itemEm.length; i++) {
+        for (let j = 0; j < employeeTask.data.Employees.length; j++) {
           if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
             data.itemEm[i].checked = true;
+            arrayCheck.data[i] = data.itemEm[i];
+            array.data[i] = data.itemEm[i];
           }
         }
       }
@@ -565,16 +606,16 @@ export default {
       entryValueDepartment.value = "";
       entryNameUnit.value = "Tổ";
       entryValueUnit.value = "";
-      for (let value of data.itemEm) {
-        for (let array of arrayCheck.data) {
-          console.log("arrayid==value_id", array._id == value._id);
-          if (array._id == value._id) {
-            value.checked = true;
-            break;
-          }
-          value.checked = false;
-        }
-      }
+      // for (let value of data.itemEm) {
+      //   for (let array of arrayCheck.data) {
+      //     console.log("arrayid==value_id", array._id == value._id);
+      //     if (array._id == value._id) {
+      //       value.checked = true;
+      //       break;
+      //     }
+      //     value.checked = false;
+      //   }
+      // }
       data.selectAll[0].checked = false;
     };
     const closeModal = async () => {
@@ -583,8 +624,12 @@ export default {
       await refresh();
       showModal.value = false;
     };
-    onBeforeMount(() => {
-      refresh();
+    onBeforeMount(async() => {
+      await refresh();
+    });
+    watchEffect(async () => {
+      console.log("111TĐ:", props.item._id);
+      await refresh();
     });
 
     return {
