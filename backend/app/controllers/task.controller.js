@@ -48,9 +48,9 @@ exports.create = async (req, res, next) => {
       customerId,
       leaderId,
       note,
-      StatusTaskId,
-      EvaluateId,
     } = req.body;
+    var StatusTaskId;
+    var EvaluateId;
     const tasks = await Task.findAll();
     for (let value of tasks) {
       if (
@@ -66,6 +66,85 @@ exports.create = async (req, res, next) => {
       }
     }
     try {
+      const status_tasks = await Status_Task.findAll();
+      var count = 0;
+      console.log("chieu dai", status_tasks.length);
+      if (status_tasks.length > 0) {
+        console.log("vaooooooooooo");
+        for (let value of status_tasks) {
+          // console.log("status task hahaha ", value.dataValues.name);
+          value.dataValues.name = getDecrypt(value.dataValues.name);
+          console.log("name", value.dataValues.name);
+          console.log(
+            "name ahhahahaha",
+            value.dataValues.name,
+            value.dataValues.name == "chưa chăm sóc"
+          );
+          if (value.dataValues.name == "chưa chăm sóc") {
+            console.log("kiem tra", value.dataValues.name);
+            StatusTaskId = value.dataValues._id;
+            console.log("id status_task hahaahha", StatusTaskId);
+            count = 0;
+            break;
+          } else {
+            count = 1;
+          }
+        }
+        console.log("count kkkkkkk", count);
+        if (count != 0) {
+          const status_task = await Status_Task.create({
+            name: "chưa chăm sóc",
+          });
+          StatusTaskId = status_task._id;
+          console.log("status_task", status_task);
+        }
+        console.log("id status_task hahaahha", StatusTaskId);
+        // console.log("status task", statusId);
+      } else {
+        const status_task = await Status_Task.create({
+          name: "chưa chăm sóc",
+        });
+        StatusTaskId = status_task._id;
+        console.log("status_task", status_task);
+      }
+
+      const evaluates = await Evaluate.findAll();
+      console.log("chieu dai", evaluates.length);
+      if (evaluates.length > 0) {
+        console.log("dooooooooo");
+        var a = 0;
+        for (let value of evaluates) {
+          value.dataValues.star = getDecrypt(value.dataValues.star);
+          console.log("star rrrrr", value.dataValues.star);
+          console.log(
+            "star ahhahahaha",
+            value.dataValues.star,
+            value.dataValues.stare == "1 sao"
+          );
+          if (value.dataValues.star == "1 sao") {
+            EvaluateId = value.dataValues._id;
+            a = 0;
+            break;
+          } else {
+            a = 1;
+          }
+        }
+        console.log("a", a);
+        if (a != 0) {
+          const evaluate = await Evaluate.create({
+            star: "1 sao",
+          });
+          EvaluateId = evaluate._id;
+        }
+        console.log("id evaluate hahaahha", EvaluateId);
+        console.log("evaluate", EvaluateId);
+      } else {
+        const evaluate = await Evaluate.create({
+          star: "1 sao",
+        });
+        EvaluateId = evaluate._id;
+      }
+
       const document = await Task.create({
         start_date: start_date,
         end_date: end_date,
