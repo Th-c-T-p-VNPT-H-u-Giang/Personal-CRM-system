@@ -14,7 +14,9 @@
               >
                 Khách hàng
               </div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">1000</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ customer }}
+              </div>
             </div>
             <div class="col-auto">
               <span class="material-symbols-outlined">groups</span>
@@ -60,12 +62,12 @@
               <div
                 class="text-xs font-weight-bold text-info text-uppercase mb-1"
               >
-                Lịch hẹn
+                Trạng thái chăm sóc
               </div>
               <div class="row no-gutters align-items-center">
                 <div class="col-auto">
                   <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">
-                    50%
+                    {{ progress }}%
                   </div>
                 </div>
                 <div class="col">
@@ -74,7 +76,7 @@
                     <div
                       class="progress-bar bg-info"
                       role="progressbar"
-                      style="width: 50%"
+                      :style="`width: ${progress}%`"
                       aria-valuenow="50"
                       aria-valuemin="0"
                       aria-valuemax="100"
@@ -117,9 +119,13 @@
 import { onMounted, ref } from "vue";
 export default {
   name: "Box",
-  props: ["showchart"],
+  props: ["showchart", "customer", "progress"],
   setup(props, ctx) {
     const name = ref();
+    const customer = ref(0);
+    const prog = ref(0);
+
+    prog.value = props.progress;
     const chartName = (data) => {
       name.value = data;
       ctx.emit("Chart", data);
@@ -127,12 +133,15 @@ export default {
     onMounted(() => {
       name.value = props.showchart;
     });
-    return { chartName, name };
+    return { chartName, name, prog };
   },
 };
 </script>
 <style>
 .box-active {
-  background: #fdf3f4;
+  border: 2px solid #17a2b8;
+}
+.card {
+  background-color: var(--light);
 }
 </style>

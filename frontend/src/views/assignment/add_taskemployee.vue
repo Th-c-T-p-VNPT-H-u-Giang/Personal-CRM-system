@@ -408,22 +408,15 @@ export default {
       dataTaskEm.TaskId = props.item._id;
       const listEmployees = reactive({ listEmployee: [] });
       listEmployees.listEmployee = await http_getOne(Task, props.item._id);
-      console.log(
-        "danh sách phân công trước đó ",
-        listEmployees.listEmployee.Employees.length,
-        listEmployees.listEmployee.Employees
-      );
-
-      for (let i = 0; i < listEmployees.listEmployee.Employees.length; i++) {
-        arrayCheck.data.push(listEmployees.listEmployee.Employees[i]);
+      for (let i = 0; i < listEmployees.listEmployee; i++) {
+        arrayCheck.data.push(listEmployees.listEmployee[i]);
       }
-      console.log("Array check:", arrayCheck.data);
+
       if (arrayCheck.data.length == 0) {
         alert_warning("Chưa chọn nhân viên để giao việc", "");
         return;
       }
       //xóa nhân viên
-
       var j;
       for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
         const dataDel = reactive({
@@ -434,7 +427,6 @@ export default {
         });
         const result = await EmployeeTask.deleteOne(dataDel.data);
       }
-
       for (let i = 0; i < arrayCheck.data.length; i++) {
         if (arrayCheck.data[i].checked == true) {
           try {
@@ -491,8 +483,8 @@ export default {
       }
       console.log("arrayCheck:", arrayCheck.data);
     };
-    const array = reactive({ data: [] });
-    const handlSelectOne = async (id, item) => {
+    const handlSelectOne = (id, item) => {
+      console.log(id, item);
       if (item.checked == false) {
         arrayCheck.data.push(item);
       } else {
@@ -564,7 +556,6 @@ export default {
       entryValueDepartment.value = "";
       entryNameUnit.value = "Tổ";
       entryValueUnit.value = "";
-      //****
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
           console.log("arrayid==value_id", array._id == value._id);

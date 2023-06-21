@@ -2,6 +2,7 @@
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import Table from "../../components/table/table_dash_lananh.vue";
+
 import Pagination from "../../components/table/pagination_duy.vue";
 import Search from "../../components/form/search.vue";
 import Select from "../../components/form/select.vue";
@@ -14,7 +15,10 @@ import {
   Task,
   Evaluate,
   Status_Task,
+  Cycle,
+  http_getOne,
 } from "../common/import";
+import { Select_Advanced } from "../common/import";
 
 export default {
   components: {
@@ -25,6 +29,7 @@ export default {
     Select,
     Box,
     SelectOption,
+    Select_Advanced,
   },
   setup() {
     // Data customer
@@ -42,9 +47,13 @@ export default {
       entryType: "",
       customerType: {},
       customer: {},
+      lengthCustomer: 0,
       task: {},
       evaluate: {},
       statusTask: {},
+      cycle: {},
+      modelCycle: "tuần",
+      progress: 0,
     });
     const toString = computed(() => {
       console.log("Starting search");
@@ -93,9 +102,17 @@ export default {
     const refresh = async () => {
       data.customerType = await http_getAll(Customer_Types);
       data.customer = await http_getAll(Customer);
+      data.lengthCustomer = data.customer.documents.length;
       data.task = await http_getAll(Task);
       data.evaluate = await http_getAll(Evaluate);
       data.statusTask = await http_getAll(Status_Task);
+
+      data.cycle = [
+        { _id: "tuần", name: "tuần" },
+        { _id: "tháng", name: "tháng" },
+        { _id: "quý", name: "quý" },
+        { _id: "năm", name: "năm" },
+      ];
     };
 
     // table customer
@@ -107,37 +124,10 @@ export default {
     const assign = ref(false);
     const isassign = ref(true);
     // Chart
-    const selectedOption = ref("week"); //cycle
+    const selectedOptionCycle = ref(""); //cycle
     const customerChart = ref(false);
     const appointmentChart = ref(true);
     const showchart = ref("appointment");
-    //
-    const chartOptions = reactive({
-      chart: {
-        id: "basic-bar",
-        type: "bar",
-      },
-      xaxis: {
-        categories: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
-      },
-      colors: ["rgb(255, 99, 132)", "#3300cc"],
-    });
-    const dataChart = reactive({
-      data: [
-        [1, 4, 5, 5],
-        [2, 7, 5, 5],
-      ],
-    });
-    const chartSeries = ref([
-      {
-        name: "Chưa chăm sóc",
-        data: dataChart.data[0],
-      },
-      {
-        name: "Đã chăm sóc",
-        data: dataChart.data[1],
-      },
-    ]);
 
     //biểu đồ tròn của loại khách hàng
     const chartOptionsCustomerType = reactive({
@@ -150,28 +140,6 @@ export default {
     });
     const chartSeriesCustomerType = ref([]);
 
-    //Biểu đổ cột của loại khách hàng
-    const chartOptionsCustomerType1 = reactive({
-      chart: {
-        id: "basic-bar",
-        type: "bar",
-      },
-      xaxis: {
-        categories: [""],
-      },
-      colors: ["rgb(255, 99, 132)", "#3300cc"],
-    });
-    // const dataChartCustomerType1 = reactive({
-    //   data: [[1, 4, 5, 5]],
-    // });
-    const chartSeriesCustomerType1 = reactive({
-      data: [
-        {
-          name: "",
-          data: [],
-        },
-      ],
-    });
     //STAR
     //chart số lượng khách hàng đã phân công
     const chartOptionsStar = reactive({
@@ -183,8 +151,9 @@ export default {
       colors: ["#FFDD94", "#FD8F52", "#FFd700", "#FFC125", "#EEAD0F"],
     });
     const chartSeriesStar = ref([]);
-    //bar chart
-    const chartOptionsStar1 = reactive({
+
+    //bar chart , 3 trạng thái
+    const chartOptionsAppointment = reactive({
       chart: {
         id: "basic-bar",
         type: "bar",
@@ -194,7 +163,7 @@ export default {
       },
       colors: ["rgb(255, 99, 132)", "#3300cc", "rgb(250, 90, 80)"],
     });
-    const chartSeriesStar1 = reactive({
+    const chartSeriesAppointment = reactive({
       data: [
         {
           name: "",
@@ -202,8 +171,64 @@ export default {
         },
       ],
     });
+    //
+    const chartOptionsAppointment1 = reactive({
+      chart: {
+        type: "pie", // Thay đổi loại biểu đồ thành "line"
+      },
+      labels: [],
+      series: [],
+      colors: ["#FFDD94", "#FD8F52", "#FFd700", "#FFC125", "#EEAD0F"],
+    });
+    const chartSeriesAppointment1 = ref([]);
+    // khởi tạo biểu đồ khi thay đổi lựa chọn tuần, ...
+    const initChart = async (start, end) => {
+      await refresh();
+      data.progress = 0;
+      data.task = data.task.filter((value, index) => {
+        return value.start_date >= start && value.start_date <= end;
+      });
+      data.task = data.task.filter((item) => {
+        return item.start_date >= start && item.start_date <= end;
+      });
+      console.log(data.task);
+      for (let i = 0; i < data.statusTask.length; i++) {
+        var count = 0;
+        chartOptionsAppointment1.labels[i] = data.statusTask[i].name;
+        chartSeriesAppointment1.value[i] = 0;
 
-    // 16/6
+        for (let task of data.task) {
+          if (task.StatusTaskId == data.statusTask[i]._id) {
+            count++;
+            chartSeriesAppointment1.value[i]++;
+          }
+        }
+        if (data.statusTask[i].name == "đã chăm sóc") {
+          data.progress = count;
+        }
+
+        chartSeriesAppointment.data[i] = {
+          name: data.statusTask[i].name,
+          data: [count],
+        };
+      }
+      for (let i = 0; i < data.customerType.documents.length; i++) {
+        chartOptionsCustomerType.labels[i] =
+          data.customerType.documents[i].name;
+        chartSeriesCustomerType.value[i] = 0;
+
+        for (let j = 0; j < data.customer.documents.length; j++) {
+          if (
+            data.customerType.documents[i]._id ==
+            data.customer.documents[j].customerTypesId
+          ) {
+            chartSeriesCustomerType.value[i]++;
+          }
+        }
+      }
+      data.progress = (data.progress / data.task.length) * 100;
+      data.progress = data.progress.toFixed(2);
+    };
     const show = async (nameChart, cycle) => {
       if (nameChart == "customer") {
         console.log("show chart customer");
@@ -221,7 +246,6 @@ export default {
             }
           }
         }
-
         for (let i = 0; i < data.evaluate.length; i++) {
           chartOptionsStar.labels[i] = data.evaluate[i].star;
           chartSeriesStar.value[i] = 0;
@@ -231,155 +255,181 @@ export default {
             }
           }
         }
-        //
-        const now = new Date();
-        for (let i = 0; i < data.statusTask.length; i++) {
-          var count = 0;
-          for (let task of data.task) {
-            console.log(task.StatusTaskId == data.statusTask[i]._id);
-            if (task.StatusTaskId == data.statusTask[i]._id) {
-              count++;
-            }
-          }
-          console.log("count:", count);
-          chartSeriesStar1.data[i] = {
-            name: data.statusTask[i].name,
-            data: [count],
-          };
-          console.log("đánh giá:", chartSeriesStar1);
-        }
       } else if (nameChart == "appointment") {
+        // var dataCycle = await http_getOne(Cycle, cycle);
         switch (cycle) {
-          case "week": {
+          case "tuần": {
             console.log("weak+appointment");
-            dataChart.data[0] = [10, 40, 45, 50, 49];
-            dataChart.data[1] = [10, 70, 65, 50, 49];
+            const week = getCurrentWeekDays();
+            const firstDayOfWeek = week[0];
+            const lastDayOfWeek = week[week.length - 1];
+            initChart(firstDayOfWeek, lastDayOfWeek);
             break;
           }
-          case "month": {
+          case "tháng": {
             console.log("month+appointment");
-            dataChart.data[0] = [10, 40, 45, 50];
-            dataChart.data[1] = [30, 40, 45, 50];
+            const currentMonthDates = getCurrentMonthDates();
+            console.log("Ngày bắt đầu của tháng:", currentMonthDates.start);
+            console.log("Ngày kết thúc của tháng:", currentMonthDates.end);
+            initChart(currentMonthDates.start, currentMonthDates.end);
             break;
+          }
+          case "quý": {
+            console.log("aquarter+appointment");
+            const currentQuarterDates = reactive({ data: {} });
+            currentQuarterDates.data = getCurrentQuarterDates();
+            initChart(
+              currentQuarterDates.data.start,
+              currentQuarterDates.data.end
+            );
+          }
+          case "năm": {
+            const getCurrentYearDates = getCurrentYear();
+            initChart(getCurrentYearDates.start, getCurrentYearDates.end);
           }
         }
+        console.log("chart appointment:", chartSeriesAppointment.data);
       }
     };
-    // watch select_option
-    watch([selectedOption], ([newValue, oldValue]) => {
+
+    //Lấy tuần
+    const getCurrentWeekDays = () => {
+      const currentDate = new Date();
+      const currentDay = currentDate.getDay(); // Lấy số thứ tự của ngày hiện tại (0 - Chủ nhật, 1 - Thứ 2, ..., 6 - Thứ 7)
+      const firstDayOfWeek = new Date(currentDate);
+      firstDayOfWeek.setDate(currentDate.getDate() - currentDay + 1); // Đặt ngày đầu tiên của tuần là ngày hiện tại trừ đi số ngày từ ngày đầu tuần đến ngày hiện tại và cộng thêm 1 ngày để đảm bảo nó là ngày thứ 2
+      const weekDays = [];
+      for (let i = 0; i < 7; i++) {
+        const date = new Date(firstDayOfWeek);
+        date.setDate(firstDayOfWeek.getDate() + i); // Đặt ngày tiếp theo của tuần bằng cách thêm i ngày từ ngày đầu tuần
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Thêm '0' vào đầu nếu tháng chỉ có 1 chữ số
+        const day = date.getDate().toString().padStart(2, "0"); // Thêm '0' vào đầu nếu ngày chỉ có 1 chữ số
+        const formattedDate = `${year}-${month}-${day}`;
+        weekDays.push(formattedDate);
+      }
+      return weekDays;
+    };
+    //Tháng hiện tại
+    const getCurrentMonthDates = () => {
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentMonth = currentDate.getMonth();
+
+      const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+      const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+      const formattedFirstDay = formatDate(firstDayOfMonth);
+      const formattedLastDay = formatDate(lastDayOfMonth);
+
+      return {
+        start: formattedFirstDay,
+        end: formattedLastDay,
+      };
+    };
+    //Quý hiện tại
+    const getCurrentQuarterDates = () => {
+      const currentDate = new Date();
+      const currentYear = currentDate.getFullYear();
+      const currentQuarter = Math.floor(currentDate.getMonth() / 3) + 1;
+
+      const firstDayOfQuarter = new Date(
+        currentYear,
+        (currentQuarter - 1) * 3,
+        1
+      );
+      const lastDayOfQuarter = new Date(currentYear, currentQuarter * 3, 0);
+
+      const formattedFirstDay = formatDate(firstDayOfQuarter);
+      const formattedLastDay = formatDate(lastDayOfQuarter);
+
+      return {
+        start: formattedFirstDay,
+        end: formattedLastDay,
+      };
+    };
+    const getCurrentYear = () => {
+      const currentDate = new Date();
+      const year = currentDate.getFullYear(); // Lấy năm hiện tại
+
+      // Lấy ngày bắt đầu của năm hiện tại
+      const startDate = new Date(year, 0, 1); // Tháng được đánh số từ 0 (0 - Tháng 1, 1 - Tháng 2, ..., 11 - Tháng 12)
+      const formattedStartDate = startDate.toISOString().slice(0, 10);
+
+      // Lấy ngày kết thúc của năm hiện tại
+      const endDate = new Date(year, 11, 31);
+      const formattedEndDate = endDate.toISOString().slice(0, 10);
+
+      return { start: formattedStartDate, end: formattedEndDate };
+    };
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    };
+    // watch selectOptionCycle
+    watch(selectedOptionCycle, (newValue, oldValue) => {
       console.log("Dropdown value changed cycles:", newValue);
       show(showchart.value, newValue);
     });
-    // **watch datachart
-    watch(dataChart, (newValue, oldValue) => {
-      // Gọi phương thức cập nhật biểu đồ khi dữ liệu thay đổi
-      console.log("Data chart", newValue, ":", dataChart.data);
-      if (showchart.value == "customer") {
-        chartOptions.value = {
-          chart: {
-            id: "basic-bar",
-            type: "bar",
-          },
-          xaxis: {
-            categories: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
-          },
-          colors: ["rgb(255, 99, 132)", "#3300cc"],
-        };
-        chartSeries.value = [
-          {
-            name: "vip",
-            data: dataChart.data[0],
-          },
-          {
-            name: "thường",
-            data: dataChart.data[1],
-          },
-        ];
-      } else if (showchart.value == "appointment") {
-        console.log("APP");
-        chartOptions.value = {
-          chart: {
-            id: "basic-bar",
-            type: "bar",
-          },
-          xaxis: {
-            categories: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6"],
-          },
-          colors: ["rgb(255, 99, 132)", "#3300cc"],
-        };
-
-        chartSeries.value = [
-          {
-            name: "Chưa chăm sóc",
-            data: dataChart.data[0],
-          },
-          {
-            name: "Đã chăm sóc",
-            data: dataChart.data[1],
-          },
-        ];
-      }
-    });
+    //Watch chart
     watch(showchart, (newValue, oldValue) => {
-      console.log(showchart.value);
-      show(showchart.value, selectedOption.value);
+      console.log("namechart:", showchart.value);
+      show(showchart.value, selectedOptionCycle.value);
+    });
+    onMounted(async () => {
+      // const A = ["A", "B"];
+      // const B = ["B", "C", "D"];
+      // const C = reactive({ data: [] });
+      // C.data = A.filter((value) => !B.includes(value));
+      // console.log("C:", C.data);
+      await refresh();
+      const week = getCurrentWeekDays();
+      const firstDayOfWeek = week[0];
+      const lastDayOfWeek = week[week.length - 1];
+      data.task = data.task.filter((value, index) => {
+        return (
+          value.start_date >= firstDayOfWeek &&
+          value.start_date <= lastDayOfWeek
+        );
+      });
+
+      for (let i = 0; i < data.statusTask.length; i++) {
+        var count = 0;
+        chartOptionsAppointment1.labels[i] = data.statusTask[i].name;
+        chartSeriesAppointment1.value[i] = 0;
+        for (let task of data.task) {
+          if (task.StatusTaskId == data.statusTask[i]._id) {
+            count++;
+            chartSeriesAppointment1.value[i]++;
+          }
+          if (data.statusTask[i].name == "đã chăm sóc") {
+            data.progress = count;
+          }
+        }
+        chartSeriesAppointment.data[i] = {
+          name: data.statusTask[i].name,
+          data: [count],
+        };
+      }
+
+      data.progress = (data.progress / data.task.length) * 100;
+      data.progress = data.progress.toFixed(2);
     });
 
+    //****
     watch(takeCare, (newValue, oldValue) => {
       console.log("takecare", newValue);
     });
-
-    onMounted(async () => {
-      await refresh();
-      data.items = [
-        {
-          cus_id: 1,
-          cus_name: "Lan Anh",
-          typ_name: "VIP",
-          tas_service_start: "2023-1-1",
-          tas_service_end: "2023-1-1",
-          app_day: "2023-5-10",
-          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
-        },
-        {
-          cus_id: 2,
-          cus_name: "Hồng Diễm",
-          typ_name: "VIP",
-          tas_service_start: "2023-1-1",
-          tas_service_end: "2023-1-1",
-          app_day: "2023-6-10",
-          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
-        },
-        {
-          cus_id: 3,
-          cus_name: "Lan Anh",
-          typ_name: "Normal",
-          tas_service_start: "2023-1-1",
-          tas_service_end: "2023-1-1",
-          app_day: "2023-4-10",
-          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
-        },
-        {
-          cus_id: 4,
-          cus_name: "Hồng Diễm",
-          typ_name: "Normal",
-          tas_service_start: "2023-1-1",
-          tas_service_end: "2023-1-1",
-          app_day: "2023-7-1",
-          tas_service_content: "Giới thiệu dịch vụ mới abcdefgh,...",
-        },
-      ];
-    });
     return {
-      dataChart,
-      chartOptions,
-      chartSeries,
       data,
       overview,
       detail,
       takeCare,
       setPages,
-      selectedOption,
+      selectedOptionCycle,
       showchart,
       customerChart,
       appointmentChart,
@@ -387,36 +437,22 @@ export default {
       isassign,
       chartOptionsCustomerType,
       chartSeriesCustomerType,
-      // dataChartCustomerType1,
-      chartSeriesCustomerType1,
-      chartOptionsCustomerType1,
       chartOptionsStar,
       chartSeriesStar,
 
-      chartOptionsStar1,
-      chartSeriesStar1,
+      chartOptionsAppointment,
+      chartSeriesAppointment,
+      chartOptionsAppointment1,
+      chartSeriesAppointment1,
     };
   },
 };
 </script>
 <template>
-  <div class="border-box" style="margin-left: 8px">
+  <div class="border-box">
     <!-- select_option - overview+detail -->
-    <div class="m-3 d-flex menu justify-content-end">
+    <div class="d-flex my-2 menu justify-content-end" style="border: none">
       <!-- select cycles -->
-      <SelectOption
-        v-if="showchart == 'appointment'"
-        :field="[
-          { name: 'Tuần', value: 'week' },
-          { name: 'Tháng', value: 'month' },
-        ]"
-        :selectedOption="selectedOption"
-        @option="
-          (value) => {
-            selectedOption = value;
-          }
-        "
-      ></SelectOption>
       <div class="">
         <button
           class="btn m-0"
@@ -431,7 +467,7 @@ export default {
           Tổng quan
         </button>
         <button
-          class="btn m-0"
+          class="btn mr-4"
           @click="
             () => {
               detail = true;
@@ -453,10 +489,12 @@ export default {
           showchart = value;
         }
       "
+      :customer="data.lengthCustomer"
+      :progress="data.progress"
     ></Box>
 
     <!-- search, select, take care -->
-    <div class="row ml-2 justify-content-between" v-if="detail">
+    <div class="row justify-content-between" v-if="detail">
       <div class="col-6 row">
         <div class="d-flex justify-content-start">
           <Select
@@ -531,7 +569,7 @@ export default {
           />
         </div>
       </div>
-      <!-- @click="showAssignment" -->
+      <!--  -->
       <div class="col-6 row justify-content-end mr-2">
         <button
           class="btn col-md-3 col-6 pad"
@@ -568,36 +606,103 @@ export default {
       </div>
     </div>
 
-    <div class="mb-5 mx-3 p-0">
-      <!--Chart -->
-      <!--Chart Appointment -->
-      <!-- Cột -->
-      <apexchart
-        :options="chartOptionsStar1"
-        :series="chartSeriesStar1.data"
-        v-if="overview && showchart == 'appointment'"
-        height="400"
-      />
-      <!--Chart Customer -->
-      <div class="row mx-3 justify-content-around p-0 m-0">
-        <!-- Tròn -->
-        <apexchart
-          class="col-md-6 col-12 border mb-3"
-          style="border-radius: 5px"
-          :options="chartOptionsCustomerType"
-          :series="chartSeriesCustomerType"
-          v-if="overview && showchart == 'customer'"
-          height="400"
-        />
+    <!--CHART -->
+    <div class="mb-5 p-0 mx-4">
+      <div
+        class="border mt-2"
+        style="border-radius: 5px"
+        v-if="showchart == 'appointment'"
+      >
+        <!-- CYCLE -->
+        <div class="float-right m-2" style="width: 100px">
+          <Select_Advanced
+            required
+            :options="data.cycle"
+            :modelValue="data.modelCycle"
+            style="height: 40px"
+            @searchSelect="
+              async (value) => (
+                await refresh(),
+                (data.cycle = data.cycle.filter((value1, index) => {
+                  console.log(value1, value);
+                  return value1.name.includes(value) || value.length == 0;
+                })),
+                console.log('searchSlect', value.length)
+              )
+            "
+            @chose="
+              (value, value1) => (
+                (selectedOptionCycle = value), (data.modelCycle = value1.name)
+              )
+            "
+          />
+        </div>
+        <!--Chart Appointment -->
+        <div class="mt-5" v-if="overview && showchart == 'appointment'">
+          <h5 class="text-center">Biểu đồ thể hiện trạng thái chăm sóc</h5>
 
-        <apexchart
-          class="col-md-6 col-12 border"
-          style="border-radius: 5px"
-          :options="chartOptionsStar"
-          :series="chartSeriesStar"
-          v-if="overview && showchart == 'customer'"
-          height="400"
-        />
+          <apexchart
+            :options="chartOptionsAppointment"
+            :series="chartSeriesAppointment.data"
+            v-if="overview && showchart == 'appointment'"
+            height="400"
+          />
+          <apexchart
+            class="mt-5"
+            :options="chartOptionsAppointment1"
+            :series="chartSeriesAppointment1"
+            v-if="overview && showchart == 'appointment'"
+            height="400"
+          />
+        </div>
+      </div>
+
+      <!--Chart Customer -->
+      <div
+        class="row justify-content-around"
+        v-if="overview && showchart == 'customer'"
+      >
+        <div class="col-6 mb-4">
+          <div
+            class="card border-left-primary shadow h-100 py-2"
+            :class="{ 'box-active': name == 'customer' }"
+          >
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <h5 class="mb-1">Biểu đồ phân loại khách hàng</h5>
+                  <!-- Tròn -->
+                  <apexchart
+                    class=""
+                    :options="chartOptionsCustomerType"
+                    :series="chartSeriesCustomerType"
+                    v-if="overview && showchart == 'customer'"
+                    height="400"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <!-- tròn sao -->
+                  <h5 class="mb-1">Biểu đồ đánh giá của khách hàng</h5>
+                  <apexchart
+                    class=""
+                    :options="chartOptionsStar"
+                    :series="chartSeriesStar"
+                    v-if="overview && showchart == 'customer'"
+                    height="400"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- End Chart -->
