@@ -1,5 +1,12 @@
 <script>
-import { reactive, onBeforeMount, ref, watch, computed } from "vue";
+import {
+  reactive,
+  onBeforeMount,
+  ref,
+  watch,
+  computed,
+  watchEffect,
+} from "vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import Table from "../../components/table/table_task_employee.vue";
 import Select from "../../components/form/select.vue";
@@ -213,7 +220,7 @@ export default {
       }
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
-          console.log("arrayid==value_id", array._id == value._id);
+          // console.log("arrayid==value_id", array._id == value._id);
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -221,7 +228,7 @@ export default {
           value.checked = false;
         }
       }
-      console.log("itemEm:", data.itemEm);
+      // console.log("itemEm:", data.itemEm);
     });
     const updateEntryValuePosition = (value) => {
       entryValuePosition.value = value;
@@ -279,7 +286,7 @@ export default {
       }
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
-          console.log("arrayid==value_id", array._id == value._id);
+          // console.log("arrayid==value_id", array._id == value._id);
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -287,8 +294,8 @@ export default {
           value.checked = false;
         }
       }
-      console.log("itemEm:", data.itemEm);
-      console.log("Array:", arrayCheck.data);
+      // console.log("itemEm:", data.itemEm);
+      // console.log("Array:", arrayCheck.data);
     });
     //UpdateEntryValueCenter
     const updateEntryValueCenter = (value) => {
@@ -337,7 +344,7 @@ export default {
       }
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
-          console.log("arrayid==value_id", array._id == value._id);
+          // console.log("arrayid==value_id", array._id == value._id);
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -345,7 +352,7 @@ export default {
           value.checked = false;
         }
       }
-      console.log("itemEm:", data.itemEm);
+      // console.log("itemEm:", data.itemEm);
     });
     const updateEntryValueDepartment = (value) => {
       entryValueDepartment.value = value;
@@ -373,7 +380,7 @@ export default {
       }
       //2. có trung tâm, phòng, tổ
       else {
-        console.log("2");
+        // console.log("2");
         data.itemEm = data.itemEm.filter((value, index) => {
           return (
             value.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
@@ -389,7 +396,7 @@ export default {
       }
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
-          console.log("arrayid==value_id", array._id == value._id);
+          // console.log("arrayid==value_id", array._id == value._id);
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -397,7 +404,7 @@ export default {
           value.checked = false;
         }
       }
-      console.log("itemEm:", data.itemEm);
+      // console.log("itemEm:", data.itemEm);
     });
     const updateEntryValueUnit = (value) => {
       entryValueUnit.value = value;
@@ -406,38 +413,48 @@ export default {
     const createTaskEm = async (value) => {
       const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
       dataTaskEm.TaskId = props.item._id;
-      const listEmployees = reactive({ listEmployee: [] });
-      listEmployees.listEmployee = await http_getOne(Task, props.item._id);
-      for (let i = 0; i < listEmployees.listEmployee; i++) {
-        arrayCheck.data.push(listEmployees.listEmployee[i]);
-      }
+      // const listEmployees = reactive({ listEmployee: [] });
+      // listEmployees.listEmployee = await http_getOne(Task, props.item._id);
+      // for (let i = 0; i < listEmployees.listEmployee.Employees.length; i++) {
+      //   arrayCheck.data.push(listEmployees.listEmployee.Employees[i]);
+      // }
 
       if (arrayCheck.data.length == 0) {
         alert_warning("Chưa chọn nhân viên để giao việc", "");
         return;
       }
-      //xóa nhân viên
-      var j;
-      for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
-        const dataDel = reactive({
-          data: {
-            TaskId: props.item._id,
-            EmployeeId: listEmployees.listEmployee.Employees[j]._id,
-          },
-        });
-        const result = await EmployeeTask.deleteOne(dataDel.data);
-      }
-      for (let i = 0; i < arrayCheck.data.length; i++) {
-        if (arrayCheck.data[i].checked == true) {
-          try {
-            dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
-            await http_create(EmployeeTask, dataTaskEm);
-          } catch (error) {
-            console.error("Error sending email:", error);
-          }
+      //xóa nhân viên 1**
+      const A = ["A", "B"]; //array
+      const B = ["B", "C", "D"]; //arrayCheck
+      const C = reactive({ data: [] });
+      C.data = array.data.filter((value) => !arrayCheck.data.includes(value));
+      console.log("C:", C.data, C.data.length);
+      console.log("đã giao trước:", array.data, array.data.length);
+      if (C.data.length != 0) {
+        for (let j = 0; j < C.data.length; j++) {
+          const dataDel = reactive({
+            data: {
+              TaskId: props.item._id,
+              EmployeeId: C.data[j]._id,
+            },
+          });
+          const result = await EmployeeTask.deleteOne(dataDel.data);
         }
       }
+      console.log("0", arrayCheck.data.length);
+      for (let i = 1; i < arrayCheck.data.length; i++) {
+        console.log(arrayCheck.data[i]._id);
+        // if (arrayCheck.data[i].checked == true) {
+        try {
+          dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
+          await http_create(EmployeeTask, dataTaskEm);
+        } catch (error) {
+          console.error("Error sending email:", error);
+        }
+        // }
+      }
       alert_success("Đã giao việc cho nhân viên thành công", "");
+      await refresh();
     };
 
     //tu giao viec
@@ -445,11 +462,11 @@ export default {
       const newData = reactive({ TaskId: " ", EmployeeId: " " });
       newData.TaskId = props.item._id;
       newData.EmployeeId = sessionStorage.getItem("employeeId");
-      console.log("leaderId:", newData.EmployeeId);
-      console.log("taskid:", newData.TaskId);
+      // console.log("leaderId:", newData.EmployeeId);
+      // console.log("taskid:", newData.TaskId);
       try {
         const result = await http_create(EmployeeTask, newData);
-        console.log(result.error);
+        // console.log(result.error);
         if (result.error == true) {
           alert_warning(`Thêm công việc`, `Công việc đã được giao cho bạn`);
         } else {
@@ -481,49 +498,31 @@ export default {
           }
         }
       }
-      console.log("arrayCheck:", arrayCheck.data);
+      // console.log("arrayCheck:", arrayCheck.data);
     };
     const handlSelectOne = (id, item) => {
-      console.log(id, item);
+      // console.log(id, item);
       if (item.checked == false) {
         arrayCheck.data.push(item);
       } else {
         arrayCheck.data = arrayCheck.data.filter((value, index) => {
           return value._id != id;
-        });
+        }); //xóa bỏ những nhân viên nào bỏ check khỏi mảnh arrayCheck
       }
       data.selectAll[0].checked = false;
       console.log("arrayCheckOne:", arrayCheck.data);
     };
-
+    const array = reactive({ data: [] });
     const refresh = async () => {
       // data.cycleSelect = [...rs];
       console.log("REFRESH");
       data.itemEm = await http_getAll(Employee);
-      console.log("ds nv", data.itemEm);
-      // ***
-      const employeeTask = reactive({ data: [] });
-      employeeTask.data = await http_getOne(Task, props.item._id);
-      console.log("list", employeeTask.data);
-      var i;
-      for (i = 0; i < data.itemEm.length; i++) {
-        data.itemEm[i].checked = false;
-      }
-      for (i = 0; i < data.itemEm.length; i++) {
-        for (var j = 0; j < employeeTask.data.Employees.length; j++) {
-          if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
-            data.itemEm[i].checked = true;
-          }
-        }
-      }
-      console.log("check:", data.itemEm);
-
+      // console.log("ds nv", data.itemEm);
+      // **
       data.position = await http_getAll(Position);
-
       data.center = await CenterServices.getAll();
       data.department = await departmentsServices.getAll();
       data.unit = await unitsServices.getAll();
-
       data.position = data.position.map((value, index) => {
         return {
           ...value,
@@ -556,28 +555,56 @@ export default {
       entryValueDepartment.value = "";
       entryNameUnit.value = "Tổ";
       entryValueUnit.value = "";
-      for (let value of data.itemEm) {
-        for (let array of arrayCheck.data) {
-          console.log("arrayid==value_id", array._id == value._id);
-          if (array._id == value._id) {
-            value.checked = true;
-            break;
+
+      //1***
+      // arrayCheck.data = [];
+      // array.data = [];
+      const employeeTask = reactive({ data: [] });
+      //danh sách nhân viên của 1 nhiệm vụ
+      employeeTask.data = await http_getOne(Task, props.item._id);
+      // console.log("DSNV:", employeeTask.data.Employees);
+
+      for (let i = 0; i < data.itemEm.length; i++) {
+        data.itemEm[i].checked = false;
+      }
+      //so sánh nhân viên có tồn tại trong 1 nhiệm vụ
+      //1. checked cho nhân viên , 2 là thêm vào array check
+      for (let i = 0; i < data.itemEm.length; i++) {
+        for (let j = 0; j < employeeTask.data.Employees.length; j++) {
+          if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
+            data.itemEm[i].checked = true;
+            arrayCheck.data[i] = data.itemEm[i];
+            array.data[i] = data.itemEm[i];
           }
-          value.checked = false;
         }
       }
+      // console.log("check:", data.itemEm);
+      // for (let value of data.itemEm) {
+      //   for (let array of arrayCheck.data) {
+      //     // console.log("arrayid==value_id", array._id == value._id);
+      //     if (array._id == value._id) {
+      //       value.checked = true;
+      //       break;
+      //     }
+      //     value.checked = false;
+      //   }
+      // }
+      console.log("Arrray check:", arrayCheck.data[0]);
       data.selectAll[0].checked = false;
     };
     const closeModal = async () => {
-      console.log("close modal");
-
       await refresh();
       showModal.value = false;
     };
-    onBeforeMount(() => {
-      refresh();
-    });
 
+    onBeforeMount(async () => {
+      await refresh();
+    });
+    //* 1**
+    watchEffect(async () => {
+      console.log("111TĐ:", props.item._id);
+      await refresh();
+    });
     return {
       setPages,
       createTaskEm,
@@ -607,6 +634,7 @@ export default {
 
 <template>
   <!-- The Modal -->
+
   <div class="modal" id="model-form-task_em">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">

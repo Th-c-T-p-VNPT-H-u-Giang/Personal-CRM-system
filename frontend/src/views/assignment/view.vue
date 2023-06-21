@@ -212,7 +212,7 @@ export default {
             >
               Danh sách lịch hẹn
             </button>
-            <div v-if="isActive" id="event" class="collapse mx-2">
+            <div v-if="isActive" id="event" class="collapse mt-2">
               <table class="my-table mb-2 table border-table-all">
                 <thead style="max-width: 100px; overflow: auto">
                   <tr>

@@ -243,16 +243,24 @@ export default {
       entryValueStatusTask.value = value;
     };
     const updateEntryValueCycle = (value) => {
+      // console.log("lên đây");
       entryValueCycle.value = value;
+      // console.log("giá trị cycle", entryValueCycle.value);
     };
     const updateEntryValueEval = (value) => {
       entryValueEval.value = value;
     };
-    //watch lọc
+    // //watch lọc
     watch(entryValueCycle, async (newValue, oldValue) => {
-      console.log("hhhh", newValue);
-      if (newValue == 0) {
-        return await refresh();
+      // console.log("hhhh", newValue);
+      if (newValue == "") {
+        await refresh();
+        return;
+      }
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if (
         entryValueStatusTask.value != "" &&
@@ -260,7 +268,7 @@ export default {
         enddateValue.value != "" &&
         entryValueEval.value != ""
       ) {
-        console.log("trúc");
+        // console.log("trúc");
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -314,7 +322,6 @@ export default {
         startdateValue.value != "" &&
         entryValueEval.value != ""
       ) {
-        console.log("trúc");
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -373,7 +380,7 @@ export default {
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
-            value.Status_Task.status == entryValueStatusTask.value &&
+            value.Status_Task._id == entryValueStatusTask.value &&
             value.end_date == enddateValue.value
           );
         });
@@ -406,18 +413,22 @@ export default {
           );
         });
       } else {
-        console.log("hhhttttt:", newValue);
+        // console.log("hhhttttt:", newValue);
         data.items = data.items.filter((value, index) => {
-          return value.cycleId == entryValueCycle.value;
+          // console.log("giá trị đang lọc", value.cycleId);
+          return value.Cycle._id == entryValueCycle.value;
         });
       }
     });
     watch(entryValueStatusTask, async (newValue, oldValue) => {
-      console.log("status", newValue);
-      console.log("status", entryValueCycle.value);
       if (newValue == "") {
         await refresh();
         return;
+      }
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if (
         entryValueCycle.value != "" &&
@@ -425,7 +436,7 @@ export default {
         enddateValue.value != "" &&
         entryValueEval.value != ""
       ) {
-        console.log("hello");
+        // console.log("hello");
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -440,7 +451,7 @@ export default {
         startdateValue.value != "" &&
         enddateValue.value != ""
       ) {
-        console.log("hello");
+        // console.log("hello");
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -480,7 +491,7 @@ export default {
         enddateValue.value != "" &&
         entryValueEval.value != ""
       ) {
-        console.log("hello");
+        // console.log("hello");
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -498,7 +509,7 @@ export default {
           );
         });
       } else if (entryValueCycle.value != "" && entryValueEval.value != "") {
-        console.log("hello");
+        // console.log("hello");
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -507,7 +518,7 @@ export default {
           );
         });
       } else if (startdateValue.value != "" && entryValueEval.value != "") {
-        console.log("hello");
+        // console.log("hello");
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -516,7 +527,7 @@ export default {
           );
         });
       } else if (enddateValue.value != "" && entryValueEval.value != "") {
-        console.log("hello");
+        // console.log("hello");
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -562,10 +573,12 @@ export default {
           );
         });
       } else if (entryValueEval.value != "") {
-        console.log("hello");
+        // console.log("hello");
         data.items = data.items.filter((value, index) => {
-          returnvalue.Status_Task._id == entryValueStatusTask.value &&
-            value.Evaluate._id == entryValueEval.value;
+          return (
+            value.Status_Task._id == entryValueStatusTask.value &&
+            value.Evaluate._id == entryValueEval.value
+          );
         });
       } else {
         data.items = data.items.filter((value, index) => {
@@ -576,9 +589,15 @@ export default {
     });
 
     watch(startdateValue, async (newValue, oldValue) => {
-      console.log("start date", newValue);
-      if (newValue == 0) {
-        return await refresh();
+      // console.log("start date", newValue);
+      if (newValue == "") {
+        await refresh();
+        return;
+      }
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if (
         entryValueStatusTask.value != "" &&
@@ -734,9 +753,19 @@ export default {
     });
 
     watch(enddateValue, async (newValue, oldValue) => {
-      console.log("end date", newValue);
-      if (newValue == 0) {
-        return await refresh();
+      // console.log("end date", newValue);
+      if (newValue == "") {
+        await refresh();
+        return;
+      }
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
+      }
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if (
         entryValueStatusTask.value != "" &&
@@ -885,7 +914,10 @@ export default {
         });
       } else if (entryValueEval.value != "") {
         data.items = data.items.filter((value, index) => {
-          return value.Evaluate._id == entryValueEval.value;
+          return (
+            value.Evaluate._id == entryValueEval.value &&
+            value.end_date == enddateValue.value
+          );
         });
       } else {
         data.items = data.items.filter((value, index) => {
@@ -895,9 +927,15 @@ export default {
     });
 
     watch(entryValueEval, async (newValue, oldValue) => {
-      console.log("end date", newValue);
-      if (newValue == 0) {
-        return await refresh();
+      // console.log("end date", newValue);
+      if (newValue == "") {
+        await refresh();
+        return;
+      }
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if (
         entryValueStatusTask.value != "" &&
@@ -948,6 +986,7 @@ export default {
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
+            value.start_date == startdateValue.value &&
             value.end_date == enddateValue.value &&
             value.Evaluate._id == entryValueEval.value
           );
@@ -960,7 +999,7 @@ export default {
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
-            value.start_date == startdateValue.value &&
+            value.cycleId == entryValueCycle.value &&
             value.end_date == enddateValue.value &&
             value.Evaluate._id == entryValueEval.value
           );
@@ -1042,9 +1081,13 @@ export default {
         });
       } else if (enddateValue.value != "") {
         data.items = data.items.filter((value, index) => {
-          return value.Evaluate._id == entryValueEval.value;
+          return (
+            value.Evaluate._id == entryValueEval.value &&
+            value.end_date == enddateValue.value
+          );
         });
       } else {
+        // console.log("day ne", entryValueEval.value);
         data.items = data.items.filter((value, index) => {
           return value.Evaluate._id == entryValueEval.value;
         });
@@ -1111,11 +1154,11 @@ export default {
     });
     // methods
     const showFeedback = () => {
-      console.log("day ne");
+      // console.log("day ne");
       data.showFeedback = false;
       for (let value of data.items) {
         if (value.checked == true) {
-          console.log("item", value);
+          // console.log("item", value);
           data.taskEmployee = value;
           data.showFeedback = true;
           break;
@@ -1129,17 +1172,30 @@ export default {
       }
     };
     const showTask_Employee = () => {
-      console.log("day ne");
-      data.showTask_Employee = false;
-      for (let value of data.items) {
-        if (value.checked == true) {
-          console.log("item", value);
-          data.taskEmployee = value;
-          data.showTask_Employee = true;
-          break;
-        }
-      }
-      if (data.showTask_Employee == false) {
+      // console.log("day ne");
+      // console.log("Task Employee:", data.items);
+      // data.showTask_Employee = false;
+      // for (let value of data.items) {
+      //   if (value.checked == true) {
+      //     // console.log("item", value);
+      //     data.taskEmployee = value;
+      //     data.showTask_Employee = true;
+      //     break;
+      //   }
+      // }
+      // if (data.showTask_Employee == false) {
+      //   alert_warning(
+      //     `Thêm phân công cho nhân viên`,
+      //     `Vui lòng chọn phân công để giao việc cho nhân viên.`
+      //   );
+      // }
+
+      //1****
+      console.log("11ArrayCheck Index:", arrayCheck.data[0]);
+      if (arrayCheck.data.length > 0) {
+        data.taskEmployee = arrayCheck.data[0];
+        data.showTask_Employee = true;
+      } else {
         alert_warning(
           `Thêm phân công cho nhân viên`,
           `Vui lòng chọn phân công để giao việc cho nhân viên.`
@@ -1149,7 +1205,7 @@ export default {
 
     const create = async () => {
       //await refresh();
-      console.log("new task");
+      // console.log("new task");
       data.items = await http_getAll(Task);
       await refresh();
     };
@@ -1164,9 +1220,9 @@ export default {
       }
     };
     const edit = async (editValue) => {
-      console.log("edit", editValue);
+      // console.log("edit", editValue);
       const result = await http_update(Task, editValue._id, editValue);
-      console.log("ne", result);
+      // console.log("ne", result);
       if (!result.error) {
         alert_success(`Sửa phân công`, `${result.msg}`);
         refresh();
@@ -1178,9 +1234,9 @@ export default {
     const router = useRouter();
 
     const view = async (id) => {
-      console.log(id);
+      // console.log(id);
       data.viewValue = await http_getOne(Task, id);
-      console.log(data.viewValue);
+      // console.log(data.viewValue);
       // router.push({ name: "Assignment.view", params: { id: _id } });
     };
 
@@ -1203,10 +1259,10 @@ export default {
           }
         }
       }
-      console.log("arrayCheck:", arrayCheck.data);
+      // console.log("arrayCheck:", arrayCheck.data);
     };
     const handlSelectOne = (id, item) => {
-      console.log(id, item);
+      // console.log(id, item);
       if (item.checked == false) {
         arrayCheck.data.push(item);
       } else {
@@ -1215,29 +1271,29 @@ export default {
         });
       }
       data.selectAll[0].checked = false;
-      console.log("arrayCheckOne:", arrayCheck.data);
+      // console.log("arrayCheckOne:", arrayCheck.data);
     };
 
     // HANDLE DELETE
     const handleDelete = async (id, item) => {
-      console.log("h", id, item);
+      // console.log("h", id, item);
       const isConfirmed = await alert_delete(
         "Xóa",
         `Bạn có chắc là xóa phân công<span style="color: blue;"> </span> không!!`
       );
       if (isConfirmed) {
         const rsTask = await http_deleteOne(Task, id);
-        console.log(rsTask);
+        // console.log(rsTask);
         if (rsTask.error) {
           alert_error("Lỗi ", rsTask.msg);
         } else {
-          refresh();
+          await refresh();
           alert_success("Thành công", "Xóa khách hàng thành công");
         }
       }
     };
     const deleteMany = async () => {
-      console.log("delete many");
+      // console.log("delete many");
       try {
         //Mảng nhân viên sẽ xóa
         // const deleteArray = data.items.filter((value, index) => {
@@ -1256,15 +1312,23 @@ export default {
             <th>Khách hàng</th>
             <th>Ngày bắt đầu</th>
             <th>Ngày kết thúc</th>
+            <th>Nội dung chăm sóc</th>
           </tr>
         </thead> <tbody>`;
         for (let value of arrayCheck.data) {
-          console.log(value);
+          for (const value of data.items) {
+            value.end_date_format = formatDate(value.end_date);
+            value.start_date_format = formatDate(value.start_date);
+          }
+          // console.log(value);
           contentAlert += `<tr>
             <td>${value.Customer.name}</td>
-            <td>${value.start_date}</td>
+            <td>${value.start_date_format}</td>
             <td>
-              ${value.end_date}
+              ${value.end_date_format}
+            </td>
+            <td>
+              ${value.content}
             </td>
           </tr>`;
         }
@@ -1291,7 +1355,7 @@ export default {
           }
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -1306,7 +1370,7 @@ export default {
       cycles.cycle = await http_getAll(Cycle);
       data.cus = await http_getAll(Customer);
       data.cus = data.cus.documents;
-      console.log("aaa", data.cus);
+      // console.log("aaa", data.cus);
       data.employee = await http_getAll(Employee);
       data.items = await http_getAll(Task);
       for (let value of data.items) {
@@ -1337,7 +1401,7 @@ export default {
           name: value.star,
         };
       });
-      console.log("evaluate", evaluates.evaluate);
+      // console.log("evaluate", evaluates.evaluate);
       data.selectAll[0].checked = false;
     };
 
@@ -1346,11 +1410,11 @@ export default {
     // Hàm callback được gọi trước khi component được mount (load)
     onBeforeMount(async () => {
       await refresh();
-      console.log("status task", status_tasks.status_task);
+      // console.log("status task", status_tasks.status_task);
       console.log("task", data.items);
-      console.log("cycle", cycles.cycle);
-      console.log("employee", data.employee);
-      console.log("customer", data.cus);
+      // console.log("cycle", cycles.cycle);
+      // console.log("employee", data.employee);
+      // console.log("customer", data.cus);
     });
 
     return {
@@ -1586,6 +1650,7 @@ export default {
         'Ngày bắt đầu',
         'Ngày kết thúc',
         'Nội dung chăm sóc',
+        'Đánh giá',
         'Trạng thái',
       ]"
       :selectAll="data.selectAll"
