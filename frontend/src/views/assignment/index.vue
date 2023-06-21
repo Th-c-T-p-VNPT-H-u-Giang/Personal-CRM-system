@@ -243,18 +243,26 @@ export default {
       entryValueStatusTask.value = value;
     };
     const updateEntryValueCycle= (value) => {
+      console.log("lên đây");
       entryValueCycle.value = value;
+      console.log("giá trị cycle", entryValueCycle.value)
     };
     const updateEntryValueEval= (value) => {
       entryValueEval.value = value;
     };
-    //watch lọc
+    // //watch lọc
     watch(entryValueCycle,async (newValue, oldValue) =>{
       console.log("hhhh",newValue)
-      if(newValue == 0 ){
-        return await refresh();
+      if(newValue == "" ){
+        await refresh();
+        return;
       }
-          if(entryValueStatusTask.value !='' && startdateValue.value !='' && enddateValue.value !='' && entryValueEval.value != ''){
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
+      }
+      if(entryValueStatusTask.value !='' && startdateValue.value !='' && enddateValue.value !='' && entryValueEval.value != ''){
             console.log("trúc")
             data.items= data.items.filter((value, index)=> {
                 return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
@@ -281,7 +289,6 @@ export default {
             })
           }
           else if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueEval.value != ''){
-            console.log("trúc")
             data.items= data.items.filter((value, index)=> {
                 return value.cycleId == entryValueCycle.value && value.Status_Task._id == entryValueStatusTask.value 
                 && value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
@@ -321,7 +328,7 @@ export default {
           else if(entryValueStatusTask.value!= '' && enddateValue.value !=''){
               data.items= data.items.filter((value, index)=> {
                 return value.cycleId == entryValueCycle.value
-                && value.Status_Task.status == entryValueStatusTask.value
+                && value.Status_Task._id == entryValueStatusTask.value
                 && value.end_date == enddateValue.value
             })
           }
@@ -352,16 +359,20 @@ export default {
           else{
             console.log("hhhttttt:",newValue)
             data.items = data.items.filter((value, index) => {
-            return value.cycleId== entryValueCycle.value
+              console.log("giá trị đang lọc", value.cycleId)
+            return value.Cycle._id == entryValueCycle.value
             })
           }
       });
     watch(entryValueStatusTask, async (newValue, oldValue)=>{
-      console.log("status",newValue)
-      console.log("status",entryValueCycle.value)
       if (newValue == "") {
         await refresh();
         return;
+      }  
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if(entryValueCycle.value != '' && startdateValue.value !='' && enddateValue.value !='' && entryValueEval.value!= ''){
         console.log("hello");
@@ -461,7 +472,7 @@ export default {
       else if(entryValueEval.value!= ''){
         console.log("hello");
         data.items= data.items.filter((value, index)=> {
-              returnvalue.Status_Task._id == entryValueStatusTask.value && value.Evaluate._id == entryValueEval.value
+              return value.Status_Task._id == entryValueStatusTask.value && value.Evaluate._id == entryValueEval.value
           })
       }
       else{
@@ -474,8 +485,14 @@ export default {
 
     watch(startdateValue, async (newValue, oldValue)=>{
       console.log("start date",newValue)
-      if(newValue == 0 ){
-        return await refresh();
+      if(newValue == "" ){
+        await refresh();
+        return;
+      }
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if(entryValueStatusTask.value !='' && enddateValue.value !='' && entryValueCycle.value != '' && entryValueEval.value != '')
       {
@@ -591,8 +608,18 @@ export default {
 
     watch(enddateValue, async (newValue, oldValue)=>{
       console.log("end date",newValue)
-      if(newValue == 0 ){
-        return await refresh();
+      if(newValue == "" ){
+        await refresh();
+        return;
+      }
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
+      }
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueCycle.value != '' && entryValueEval.value != '')
       {
@@ -696,7 +723,7 @@ export default {
       else if(entryValueEval.value != '')
       {
         data.items= data.items.filter((value, index)=> {
-                return value.Evaluate._id == entryValueEval.value
+                return value.Evaluate._id == entryValueEval.value && value.end_date == enddateValue.value
         })
       }
       else{
@@ -708,8 +735,14 @@ export default {
 
     watch(entryValueEval, async (newValue, oldValue)=>{
       console.log("end date",newValue)
-      if(newValue == 0 ){
-        return await refresh();
+      if(newValue == "" ){
+        await refresh();
+        return;
+      }
+      data.items = await http_getAll(Task);
+      for (const value of data.items) {
+        value.end_date_format = formatDate(value.end_date);
+        value.start_date_format = formatDate(value.start_date);
       }
       if(entryValueStatusTask.value !='' && startdateValue.value !='' && entryValueCycle.value != '' && enddateValue.value != '')
       {
@@ -738,15 +771,14 @@ export default {
       else if(entryValueCycle.value != '' && startdateValue.value !='' && enddateValue.value != '')
       {
         data.items= data.items.filter((value, index)=> {
-                return value.cycleId == entryValueCycle.value
+                return value.cycleId == entryValueCycle.value && value.start_date == startdateValue.value
                 && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
         })
       }
       else if(entryValueStatusTask.value !='' && entryValueCycle.value != '' && enddateValue.value != '')
       {
         data.items= data.items.filter((value, index)=> {
-                return value.Status_Task._id == entryValueStatusTask.value 
-                && value.start_date == startdateValue.value
+                return value.Status_Task._id == entryValueStatusTask.value && value.cycleId == entryValueCycle.value
                 && value.end_date == enddateValue.value && value.Evaluate._id == entryValueEval.value
         })
       }
@@ -758,8 +790,7 @@ export default {
       }
       else if(entryValueStatusTask.value !='' && startdateValue.value !=''){
         data.items= data.items.filter((value, index)=> {
-                return value.Status_Task._id == entryValueStatusTask.value 
-                && value.start_date == startdateValue.value
+                return value.Status_Task._id == entryValueStatusTask.value && value.start_date == startdateValue.value
                 && value.Evaluate._id == entryValueEval.value
         })
       }
@@ -801,22 +832,21 @@ export default {
       else if(entryValueStatusTask.value !='')
       {
         data.items= data.items.filter((value, index)=> {
-                return value.Status_Task._id == entryValueStatusTask.value 
-                && value.Evaluate._id == entryValueEval.value
+                return value.Status_Task._id == entryValueStatusTask.value && value.Evaluate._id == entryValueEval.value
         })
       } else if(startdateValue.value !=''){
         data.items= data.items.filter((value, index)=> {
-                return value.start_date == startdateValue.value
-                && value.Evaluate._id == entryValueEval.value
+                return value.start_date == startdateValue.value && value.Evaluate._id == entryValueEval.value
         })
       } 
       else if(enddateValue.value != '')
       {
         data.items= data.items.filter((value, index)=> {
-                return value.Evaluate._id == entryValueEval.value 
+                return value.Evaluate._id == entryValueEval.value && value.end_date == enddateValue.value
         })
       }
       else{
+        console.log("day ne",entryValueEval.value);
         data.items= data.items.filter((value, index)=> {
                 return value.Evaluate._id == entryValueEval.value
         })
@@ -1003,7 +1033,7 @@ export default {
         if (rsTask.error) {
           alert_error("Lỗi ", rsTask.msg);
         } else {
-          refresh();
+        await  refresh();
           alert_success("Thành công", "Xóa khách hàng thành công");
         }
       }
@@ -1028,15 +1058,23 @@ export default {
             <th>Khách hàng</th>
             <th>Ngày bắt đầu</th>
             <th>Ngày kết thúc</th>
+            <th>Nội dung chăm sóc</th>
           </tr>
         </thead> <tbody>`;
         for (let value of arrayCheck.data) {
+          for (const value of data.items) {
+            value.end_date_format = formatDate(value.end_date);
+            value.start_date_format = formatDate(value.start_date);
+          }
           console.log(value);
           contentAlert += `<tr>
             <td>${value.Customer.name}</td>
-            <td>${value.start_date}</td>
+            <td>${value.start_date_format}</td>
             <td>
-              ${value.end_date}
+              ${value.end_date_format}
+            </td>
+            <td>
+              ${value.content}
             </td>
           </tr>`;
         }
@@ -1079,7 +1117,7 @@ export default {
       cycles.cycle = await http_getAll(Cycle);
       data.cus = await http_getAll(Customer);
       data.cus = data.cus.documents;
-      console.log("aaa", data.cus);
+      // console.log("aaa", data.cus);
       data.employee = await http_getAll(Employee);
       data.items = await http_getAll(Task);
       for (let value of data.items) {
@@ -1108,7 +1146,7 @@ export default {
           name: value.star,
         };
       });
-      console.log("evaluate", evaluates.evaluate);
+      // console.log("evaluate", evaluates.evaluate);
       data.selectAll[0].checked = false;
     };
 
@@ -1117,11 +1155,11 @@ export default {
     // Hàm callback được gọi trước khi component được mount (load)
     onBeforeMount(async () => {
       await refresh();
-      console.log("status task", status_tasks.status_task);
-      console.log("task", data.items);
-      console.log("cycle", cycles.cycle);
-      console.log("employee", data.employee);
-      console.log("customer", data.cus);
+      // console.log("status task", status_tasks.status_task);
+      // console.log("task", data.items);
+      // console.log("cycle", cycles.cycle);
+      // console.log("employee", data.employee);
+      // console.log("customer", data.cus);
 
     });
 
@@ -1359,6 +1397,7 @@ export default {
         'Ngày bắt đầu',
         'Ngày kết thúc',
         'Nội dung chăm sóc',
+        'Đánh giá',
         'Trạng thái',
       ]"
       :selectAll="data.selectAll"

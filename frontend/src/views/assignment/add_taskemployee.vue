@@ -414,8 +414,8 @@ export default {
       dataTaskEm.TaskId = props.item._id;
       const listEmployees = reactive({ listEmployee: [] });
       listEmployees.listEmployee = await http_getOne(Task, props.item._id);
-      for (let i =0 ; i< listEmployees.listEmployee; i++) {
-        arrayCheck.data.push(listEmployees.listEmployee[i]);
+      for (let i =0 ; i< listEmployees.listEmployee.Employees.length; i++) {
+        arrayCheck.data.push(listEmployees.listEmployee.Employees[i]);
       }
 
       if (arrayCheck.data.length == 0) {
@@ -444,6 +444,7 @@ export default {
         }
       }
       alert_success("Đã giao việc cho nhân viên thành công", "");
+      await refresh();
     };
 
     //tu giao viec

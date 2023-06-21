@@ -1,5 +1,5 @@
 <script>
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
 export default {
   props: {
     items: {
@@ -31,7 +31,8 @@ export default {
       default: [],
     },
   },
-  setup(props, ntx) {},
+  setup(props, ntx) {
+  },
 };
 </script>
 
@@ -72,6 +73,7 @@ export default {
         <td v-for="(label, index1) in labels" :key="index1">
           {{ item[label] }}
         </td>
+        <td>{{ item.Evaluate.star }}</td>
         <td>{{ item.Status_Task.name }}</td>
         <td class="" v-if="activeAction == true">
           <div class="d-flex align-items-center">
@@ -229,5 +231,12 @@ export default {
 }
 #delete:hover {
   color: var(--red);
+}
+
+.takingCare{
+  color:green;
+}
+.takeCare{
+  color: red;
 }
 </style>

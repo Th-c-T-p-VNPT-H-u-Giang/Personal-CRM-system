@@ -86,7 +86,7 @@ export default {
               return false;
             }
             alert_success(`Đã thêm trạng thái`, `${statusTask}`);
-            data.modelStatus_Task = res.document.name;
+            props.item.Status_Task.name = res.document.name;
             await refresh();
             ctx.emit("newStatus", statustasks.statustask);
             console.log("ne", res.document.name);

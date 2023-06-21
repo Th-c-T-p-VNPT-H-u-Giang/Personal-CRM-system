@@ -12,7 +12,6 @@ export default {
     }
   },
   setup(props, context) {
-
     const isActive = ref(false)
 
     const handleActiveCus = () => {
@@ -127,7 +126,7 @@ export default {
             <button data-toggle="collapse" class="px-3 py-2 h6 border-none" data-target="#event" @click="handleActiveCus">
               Danh sách lịch hẹn
             </button>
-            <div v-if="isActive" id="event" class="collapse mx-2">
+            <div v-if="isActive" id="event" class="collapse mt-2">
               <table
                 class="my-table mb-2 table border-table-all"
               >
