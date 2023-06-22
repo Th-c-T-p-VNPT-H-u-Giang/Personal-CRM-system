@@ -1,6 +1,5 @@
 <template>
   <div>
-    abc
     {{ params }}
   </div>
 </template>
@@ -41,15 +40,16 @@ export default {
     });
     const arrayCheck = reactive({ data: [] });
     const refresh = async () => {
-      for (let value of data.items) {
-        value.checked = false;
-      }
+      //1*** data.items=await  hàm lấy ds appoinmet của 1 task
       data.items = data.items.map((value, index) => {
         return {
           ...value,
           value: value._id,
         };
       });
+      for (let value of data.items) {
+        value.checked = false;
+      }
       arrayCheck.data = [];
       data.selectAll[0].checked = false;
     };
