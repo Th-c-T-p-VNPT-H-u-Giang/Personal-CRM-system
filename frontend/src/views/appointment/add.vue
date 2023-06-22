@@ -68,27 +68,35 @@ export default {
       item: {
         date_time: "",
         content: "",
+        place: "",
+        note:"",
+        Status_App:{
+          _id:"",
+          name:"",
+        }
       },
     });
     const create = async () => {
       console.log(data.item.date_time);
       console.log(data.item.content);
-      console.log(props.taskId);
-      const result = await http_create(Appointment, {
-        date_time: data.item.date_time,
-        content: data.item.content,
-        taskId: props.taskId,
-      });
-      if (!result.error) {
-        alert_success(
-          `Thêm lịch hẹn`,
-          `Lịch hẹn ${result.document.content} lúc ${formatDateTime(
-            result.document.date_time
-          )} đã được tạo thành công.`
-        );
-      } else if (result.error) {
-        alert_error(`Thêm lịch hẹn`, `${result.msg}`);
-      }
+      console.log(data.item.place);
+      console.log(data.item.note);
+      console.log(data.item);
+      // const result = await http_create(Appointment, {
+      //   date_time: data.item.date_time,
+      //   content: data.item.content,
+      //   taskId: props.taskId,
+      // });
+      // if (!result.error) {
+      //   alert_success(
+      //     `Thêm lịch hẹn`,
+      //     `Lịch hẹn ${result.document.content} lúc ${formatDateTime(
+      //       result.document.date_time
+      //     )} đã được tạo thành công.`
+      //   );
+      // } else if (result.error) {
+      //   alert_error(`Thêm lịch hẹn`, `${result.msg}`);
+      // }
     };
     return {
       create,
@@ -153,6 +161,18 @@ export default {
               />
             </div>
             <div class="form-group">
+              <label for="name"
+                >Địa điểm(<span style="color: red">*</span>):</label
+              >
+              <input
+                id="content"
+                required
+                class="form-control"
+                rows="5"
+                v-model="data.item.place"
+              />
+            </div>
+            <div class="form-group">
               <label for="content"
                 >Nội dung lịch hẹn(<span style="color: red">*</span>):</label
               >
@@ -162,6 +182,20 @@ export default {
                 class="form-control"
                 rows="5"
                 v-model="data.item.content"
+                style="height:80px"
+              ></textarea>
+            </div>
+            <div class="form-group">
+              <label for="content"
+                >Chú thích:</label
+              >
+              <textarea
+                id="content"
+                required
+                class="form-control"
+                rows="5"
+                v-model="data.item.note"
+                style="height:80px"
               ></textarea>
             </div>
             <button

@@ -6,7 +6,8 @@ const { v4: uuidv4 } = require('uuid');
 // checked
 exports.create = async (req, res, next) => {
     if (Object.keys(req.body).length === 3) {
-        const { date_time, content, taskId } = req.body;
+        const { date_time, content, note, place, taskId} = req.body;
+        var StatusAppId;
         const appointments = await Appointment.findAll();
         for (let value of appointments) {
             if (value.date_time == date_time && value.taskId == taskId) {
@@ -17,16 +18,51 @@ exports.create = async (req, res, next) => {
             }
         }
         try {
+            const status_apps = await Status_App.findAll()     
+            var a = 0;
+            console.log("chieu dai",status_apps.length)
+            if(status_apps.length > 0){
+                console.log("vaooooooooooo")
+                for(let value of status_apps){
+                    // console.log("status task hahaha ", value.dataValues.name);
+                    value.dataValues.name = getDecrypt(value.dataValues.name);
+                    console.log("name",value.dataValues.name )
+                    console.log("name ahhahahaha", value.dataValues.name,value.dataValues.name == "chưa xác nhận");
+                    if(value.dataValues.name == "chưa xác nhận"){
+                        console.log("kiem tra", value.dataValues.name);
+                        StatusAppId= value.dataValues._id;
+                        console.log("id status_task hahaahha",StatusAppId )
+                        a = 0;
+                        break;
+                    }
+                    else {
+                        a = 1;
+                    }
+                }
+                console.log("a kkkkkkk", a);
+                if(a != 0){
+                    const status_app = await Status_App.create({
+                        name: "chưa xác nhận",
+                    })
+                    StatusAppId = status_app._id;
+                    console.log("status_app",status_app )
+                }
+                console.log("id status_task hahaahha",StatusAppId )
+                // console.log("status task", statusId);
+            }
+            else{
+                const status_app = await Status_App.create({
+                    name: "chưa xác nhận",
+                })
+                StatusAppId = status_app._id;
+                console.log("status_task",status_app )
+            }        
             const document = await Appointment.create({
                 date_time: date_time,
                 content: content,
                 taskId: taskId,
+                StatusAppId: StatusAppId,
             });
-            const status_task = await Status_App.create({
-                AppointmentId: document._id,
-                status: 'false',
-                reason: 'no',
-            })
             return res.send({
                 error: false,
                 msg: `Bạn đã tạo thành công cuộc hẹn ${document.content} lúc ${document.date_time}.`,

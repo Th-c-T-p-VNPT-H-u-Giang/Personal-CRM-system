@@ -947,6 +947,7 @@ export default {
       //   alert_warning(`Thêm phân công cho nhân viên`, `Vui lòng chọn phân công để giao việc cho nhân viên.`);
       // } 
       console.log("11ArrayCheck Index:", arrayCheck.data[0]);
+      data.showTask_Employee = false;
       if (arrayCheck.data.length > 0) {
         data.taskEmployee = arrayCheck.data[0];
         data.showTask_Employee = true;

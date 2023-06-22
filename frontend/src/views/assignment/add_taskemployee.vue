@@ -436,8 +436,8 @@ export default {
         }
       }
       console.log("0", arrayCheck.data.length);
-      for (let i = 1; i < arrayCheck.data.length; i++) {
-        console.log(arrayCheck.data[i]._id);
+      for (let i = 0; i < arrayCheck.data.length; i++) {
+        // console.log(arrayCheck.data[i]._id);
         // if (arrayCheck.data[i].checked == true) {
         try {
           dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
@@ -449,42 +449,6 @@ export default {
       }
       alert_success("Đã giao việc cho nhân viên thành công", "");
       await refresh();
-      // const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
-      // dataTaskEm.TaskId = props.item._id;
-      // const listEmployees = reactive({ listEmployee: [] });
-      // listEmployees.listEmployee = await http_getOne(Task, props.item._id);
-      // for (let i =0 ; i< listEmployees.listEmployee.Employees.length; i++) {
-      //   arrayCheck.data.push(listEmployees.listEmployee.Employees[i]);
-      // }
-
-      // console.log("do dai", arrayCheck.data.length);
-      // if (arrayCheck.data.length == 0) {
-      //   alert_warning("Chưa chọn nhân viên để giao việc", "");
-      //   return;
-      // }
-      //xóa nhân viên
-      // var j;
-      // for (j = 0; j < listEmployees.listEmployee.Employees.length; j++) {
-      //   const dataDel = reactive({
-      //     data: {
-      //       TaskId: props.item._id,
-      //       EmployeeId: listEmployees.listEmployee.Employees[j]._id,
-      //     },
-      //   });
-      //   const result = await EmployeeTask.deleteOne(dataDel.data);
-      // }
-      // for (let i = 0; i < arrayCheck.data.length; i++) {
-      //   if (arrayCheck.data[i].checked == true) {
-      //     try {
-      //       dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
-      //       await http_create(EmployeeTask, dataTaskEm);
-      //     } catch (error) {
-      //       console.error("Error sending email:", error);
-      //     }
-      //   }
-      // }
-      // alert_success("Đã giao việc cho nhân viên thành công", "");
-      // await refresh();
     };
 
     //tu giao viec
@@ -551,6 +515,8 @@ export default {
       data.itemEm = await http_getAll(Employee);
       console.log("ds nv",data.itemEm);
       // ***
+      arrayCheck.data = [];
+      array.data = [];
       const employeeTask = reactive({ data: [] });
       employeeTask.data = await http_getOne(Task, props.item._id);
       console.log("list",employeeTask.data);
@@ -561,8 +527,8 @@ export default {
         for (let j = 0; j < employeeTask.data.Employees.length; j++) {
           if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
             data.itemEm[i].checked = true;
-            arrayCheck.data[i] = data.itemEm[i];
-            array.data[i] = data.itemEm[i];
+            arrayCheck.data.push(data.itemEm[i]);
+            array.data.push(data.itemEm[i]);
           }
         }
       }
