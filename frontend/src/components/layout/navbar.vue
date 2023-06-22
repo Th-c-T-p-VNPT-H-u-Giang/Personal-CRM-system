@@ -232,6 +232,17 @@ export default {
       return colors[index];
     };
 
+    // In hoa ký tự đầu
+    const capitalizeFirstLetter = (string) => {
+      const words = string.split(" ");
+      const capitalizedWords = words.map((word) => {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      });
+      return capitalizedWords.join(" ");
+    };
+    const employeeName = capitalizeFirstLetter(data.employeeName);
+    const roleName = capitalizeFirstLetter(data.role);
+
     // logout
     const showDropdown = ref(false);
     const toggleDropdown = () => {
@@ -258,6 +269,8 @@ export default {
     check(token);
 
     return {
+      employeeName,
+      roleName,
       logout,
       toggleDropdown,
       showDropdown,
@@ -367,8 +380,8 @@ export default {
         <div
           class="d-xl-flex color-dark d-none flex-column align-items-center justify-content-center ml-2"
         >
-          <span class="size-14">{{ data.employeeName }}</span>
-          <span class="size-14">{{ data.role }}</span>
+          <span class="size-14">{{ employeeName }}</span>
+          <span class="size-14">{{ roleName }}</span>
         </div>
       </div>
     </div>
