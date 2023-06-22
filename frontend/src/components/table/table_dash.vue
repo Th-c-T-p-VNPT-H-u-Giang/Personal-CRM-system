@@ -1,8 +1,5 @@
 <template>
   <table class="my-table mb-2">
-    {{
-      item
-    }}
     <thead>
       <tr class="">
         <th>
@@ -20,7 +17,7 @@
         <th v-for="(value, index) in fields" :key="index">
           <span class="size-16">{{ value }}</span>
         </th>
-        <th><span class="size-16">Hành động</span></th>
+        <!-- <th><span class="size-16">Hành động</span></th> -->
       </tr>
     </thead>
     <tbody>
@@ -35,13 +32,19 @@
           />
         </td>
         <td class="size-16">{{ startRow + index }}</td>
-        <td class="size-16">{{ item.name }}</td>
-        <td class="size-16">{{ item.phone }}</td>
-        <td class="size-16">{{ item.email }}</td>
+        <td class="size-16">{{ item.customer.name }}</td>
+        <td class="size-16">{{ item.customer.phone }}</td>
+        <td class="size-16">{{ item.customer.email }}</td>
+        <td class="size-16">{{ item.cycle }}</td>
+        <td class="size-16">{{ item.content }}</td>
+        <td class="size-16">{{ item.start_date }}</td>
+        <td class="size-16">{{ item.end_date }}</td>
+
+        <!-- 
         <td class="">
-          <div class="d-flex align-items-center">
-            <!-- view -->
-            <!-- <button
+          <div class="d-flex align-items-center"> -->
+        <!-- view -->
+        <!-- <button
               type="button"
               class="format-btn"
               data-toggle="modal"
@@ -55,8 +58,8 @@
                 visibility
               </span>
             </button> -->
-            <!-- edit -->
-            <!-- <button
+        <!-- edit -->
+        <!-- <button
               type="button"
               class="mx-2 format-btn"
               data-toggle="modal"
@@ -70,7 +73,7 @@
                 edit
               </span>
             </button> -->
-            <button
+        <!-- <button
               type="button"
               class="mx-2 format-btn"
               data-toggle="modal"
@@ -83,9 +86,9 @@
               >
                 Assignment
               </span>
-            </button>
-          </div>
-        </td>
+            </button> -->
+        <!-- </div>
+        </td> -->
       </tr>
     </tbody>
   </table>

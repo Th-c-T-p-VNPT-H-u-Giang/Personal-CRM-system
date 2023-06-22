@@ -69,6 +69,7 @@ export default {
           checked: false,
         },
       ],
+      customerCare: 0,
     });
     const toString = computed(() => {
       console.log("Starting search");
@@ -136,43 +137,22 @@ export default {
         { _id: "năm", name: "năm" },
       ];
 
-      const week = getCurrentWeekDays();
-      const firstDayOfWeek = week[0];
-      const lastDayOfWeek = week[week.length - 1];
-      data.task = data.task.filter((value, index) => {
-        return (
-          value.start_date >= firstDayOfWeek &&
-          value.start_date <= lastDayOfWeek
-        );
-      });
-
-      for (let i = 0; i < data.statusTask.length; i++) {
-        var count = 0;
-        chartOptionsAppointment1.labels[i] = data.statusTask[i].name;
-        chartSeriesAppointment1.value[i] = 0;
-        for (let task of data.task) {
-          if (task.StatusTaskId == data.statusTask[i]._id) {
-            count++;
-            chartSeriesAppointment1.value[i]++;
-          }
-          if (data.statusTask[i].name == "đã chăm sóc") {
-            data.progress = count;
-          }
-        }
-        chartSeriesAppointment.data[i] = {
-          name: data.statusTask[i].name,
-          data: [count],
-        };
-      }
-
-      data.progress = (data.progress / data.task.length) * 100;
-      data.progress = data.progress.toFixed(2);
-      data.items = [];
       for (let value of data.customerCycle) {
         let customer = await http_getOne(Customer, value.customerId);
         console.log("customer:", customer);
-        data.items.push(customer.documents);
+        console.log("start");
+        let cus = {
+          content: value.content,
+          cycleId: value.cycleId,
+          cycle: value.Cycle.name,
+          start_date: value.start_date,
+          end_date: value.end_date,
+          customer: customer.documents,
+        };
+        data.items.push(cus);
       }
+
+      // console.log("Cus:", data.customerCare, data.items);
     };
 
     // table customer
@@ -306,11 +286,18 @@ export default {
       });
       for (let value of data.customerCycle) {
         let customer = await http_getOne(Customer, value.customerId);
-        if (!data.items.includes(customer.documents)) {
-          // Nếu không tồn tại, thêm phần tử vào mảng
-          data.items.push(customer.documents);
-        }
+        console.log("customer:", customer);
+        let cus = {
+          content: value.content,
+          cycleId: value.cycleId,
+          cycle: value.Cycle.name,
+          start_date: value.start_date,
+          end_date: value.end_date,
+          customer: customer.documents,
+        };
+        data.items.push(cus);
       }
+      data.customerCare = data.items.length;
     };
     // khởi tạo biểu đồ khi thay đổi lựa chọn tuần, ...
     const initChart = async (start, end) => {
@@ -362,6 +349,7 @@ export default {
     };
     const show = async (nameChart, cycle) => {
       if (nameChart == "customer") {
+        await refresh();
         console.log("show chart customer");
         for (let i = 0; i < data.customerType.documents.length; i++) {
           chartOptionsCustomerType.labels[i] =
@@ -448,7 +436,7 @@ export default {
               currentQuarterDates.data.start,
               currentQuarterDates.data.end
             );
-            console.log("Customer cycle:", data.customerCycle);
+            console.log("Customer cycle quý:", data.customerCycle);
           }
           case "năm": {
             const getCurrentYearDates = getCurrentYear();
@@ -551,7 +539,39 @@ export default {
     });
     onMounted(async () => {
       await refresh();
-      console.log("Data customer cycle:", data.customerCycle);
+      data.customerCare = data.items.length;
+      const week = getCurrentWeekDays();
+      const firstDayOfWeek = week[0];
+      const lastDayOfWeek = week[week.length - 1];
+      data.task = data.task.filter((value, index) => {
+        return (
+          value.start_date >= firstDayOfWeek &&
+          value.start_date <= lastDayOfWeek
+        );
+      });
+
+      for (let i = 0; i < data.statusTask.length; i++) {
+        var count = 0;
+        chartOptionsAppointment1.labels[i] = data.statusTask[i].name;
+        chartSeriesAppointment1.value[i] = 0;
+        for (let task of data.task) {
+          if (task.StatusTaskId == data.statusTask[i]._id) {
+            count++;
+            chartSeriesAppointment1.value[i]++;
+          }
+          if (data.statusTask[i].name == "đã chăm sóc") {
+            data.progress = count;
+          }
+        }
+        chartSeriesAppointment.data[i] = {
+          name: data.statusTask[i].name,
+          data: [count],
+        };
+      }
+
+      data.progress = (data.progress / data.task.length) * 100;
+      data.progress = data.progress.toFixed(2);
+      data.items = [];
     });
 
     //****
@@ -586,7 +606,7 @@ export default {
 };
 </script>
 <template>
-  <div class="border-box">
+  <div class="border-box ml-2">
     <!-- select_option - overview+detail -->
     <div class="d-flex my-2 menu justify-content-end" style="border: none">
       <!-- select cycles -->
@@ -628,6 +648,7 @@ export default {
       "
       :customer="data.lengthCustomer"
       :progress="data.progress"
+      :customerCare="data.customerCare"
     ></Box>
 
     <!-- search, select, take care -->
@@ -849,63 +870,70 @@ export default {
       </div>
 
       <!-- End Chart -->
-
-      <!--Detail -->
-      <div v-if="showchart == 'customerCycle'">
-        <h4 class="text-center my-2">Danh sách khách hàng gần tới chu kỳ</h4>
-        <!--Table Cus -->
-        <Table
-          :items="setPages"
-          :fields="['Tên', 'Sđt', 'Email']"
-          :selectAll="data.selectAll"
-          :startRow="data.startRow"
-          @selectAll="(value) => handleSelectAll(value)"
-          @selectOne="(id, item) => handleSelectOne(id, item)"
-          @delete="handleDelete"
-          @edit="
-            (value, value1) => (
-              (data.addValue = value), (data.activeEdit = value1)
-            )
-          "
-          @view="
-            (value) => {
-              view(value);
-            }
-          "
-          @appointment="
-            (value, value1) => {
-              console.log('v', value, 'v1:', value1)((data.addValue = value));
-              data.activeEdit = value1;
-            }
-          "
-        />
-
-        <Add
-          :item="data.addValue"
-          :class="[data.activeEdit ? 'show-modal' : 'd-none']"
-          @cancel="data.activeEdit = false"
-          @edit="add(data.addValue)"
-          @refresh="
-            async () => {
-              await refresh();
-            }
-          "
-        />
-        <!--End Table Cus -->
-
-        <!-- Pagination -->
-        <Pagination
-          :numberOfPages="data.numberOfPages"
-          :totalRow="data.totalRow"
-          :startRow="data.startRow"
-          :endRow="data.endRow"
-          :currentPage="data.currentPage"
-          @updateCurrentPage="(value) => (data.currentPage = value)"
-          class="mx-3"
-        />
-      </div>
-      <!--End Detail -->
     </div>
+    <!--Detail -->
+    <div v-if="showchart == 'customerCycle'">
+      <h4 class="text-center my-2">Danh sách khách hàng gần tới chu kỳ</h4>
+      <!--Table Cus -->
+      <Table
+        :items="setPages"
+        :fields="[
+          'Tên',
+          'Sđt',
+          'Email',
+          'Chu kỳ',
+          'Nội dung chăm sóc',
+          'Bắt đầu',
+          'Kết thúc',
+        ]"
+        :selectAll="data.selectAll"
+        :startRow="data.startRow"
+        @selectAll="(value) => handleSelectAll(value)"
+        @selectOne="(id, item) => handleSelectOne(id, item)"
+        @delete="handleDelete"
+        @edit="
+          (value, value1) => (
+            (data.addValue = value), (data.activeEdit = value1)
+          )
+        "
+        @view="
+          (value) => {
+            view(value);
+          }
+        "
+        @appointment="
+          (value, value1) => {
+            console.log('v', value, 'v1:', value1)((data.addValue = value));
+            data.activeEdit = value1;
+          }
+        "
+      />
+
+      <Add
+        :item="data.addValue"
+        :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+        @cancel="data.activeEdit = false"
+        @edit="add(data.addValue)"
+        @refresh="
+          async () => {
+            await refresh();
+          }
+        "
+      />
+      <!--End Table Cus -->
+
+      <!-- Pagination -->
+      <Pagination
+        :numberOfPages="data.numberOfPages"
+        :totalRow="data.totalRow"
+        :startRow="data.startRow"
+        :endRow="data.endRow"
+        :currentPage="data.currentPage"
+        @updateCurrentPage="(value) => (data.currentPage = value)"
+        class="mx-3"
+      />
+    </div>
+    <!--End Detail -->
   </div>
 </template>
 
@@ -913,6 +941,7 @@ export default {
 * {
   box-sizing: border-box;
 }
+
 .border-box {
   border: 1px solid var(--gray);
   border-radius: 5px;

@@ -82,7 +82,9 @@
               >
                 Khách hàng gần tới chu kỳ chăm sóc
               </div>
-              <div class="h5 mb-0 font-weight-bold text-gray-800">20</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">
+                {{ customerCare }}
+              </div>
             </div>
             <div class="col-auto">
               <span class="material-symbols-outlined">support_agent</span>
@@ -121,7 +123,7 @@
 import { onMounted, ref } from "vue";
 export default {
   name: "Box",
-  props: ["showchart", "customer", "progress"],
+  props: ["showchart", "customer", "progress", "customerCare"],
   setup(props, ctx) {
     const name = ref();
     const customer = ref(0);
