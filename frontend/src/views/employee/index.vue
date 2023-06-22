@@ -642,7 +642,7 @@ export default {
           alert_error("Lỗi ", rsEmployee.msg);
         } else {
           refresh();
-          alert_success("Thành công", "Xóa khách hàng thành công");
+          alert_success("Thành công", "Xóa nhân viên thành công");
         }
       }
     };
@@ -696,7 +696,7 @@ export default {
             }
           }
           if (checkDeleteAll) {
-            refresh();
+            await refresh();
             alert_success("Thành công", "Xóa khách hàng thành công");
           }
         }
