@@ -1404,9 +1404,15 @@ export default {
       // console.log("evaluate", evaluates.evaluate);
       data.selectAll[0].checked = false;
     };
+    // 1*****appoiment
+    const appoimentView = (value, value1) => {
+      // data.taskId = value;
+      // data.taskObject = value1;
+      console.log("Id:", value, "Object:", value1);
+      router.push({ name: "Task.appointment", params: { id: `${value}` } });
+    };
 
     // handle http methods
-
     // Hàm callback được gọi trước khi component được mount (load)
     onBeforeMount(async () => {
       await refresh();
@@ -1447,6 +1453,8 @@ export default {
       handlSelectOne,
       handleSelectAll,
       evaluates,
+      //1****
+      appoimentView,
     };
   },
 };
@@ -1664,10 +1672,13 @@ export default {
         )
       "
       @view="(value) => view(value)"
-      @appointment="
-        (value, value1) => ((data.taskId = value), (data.taskObject = value1))
+      @appointmentView="
+        (value, value1) => {
+          appoimentView(value, value1);
+        }
       "
     />
+    <!-- 1********* -->
     <!-- Pagination -->
     <Pagination
       :numberOfPages="data.numberOfPages"

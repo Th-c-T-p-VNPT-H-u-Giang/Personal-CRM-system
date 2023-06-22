@@ -150,6 +150,12 @@ const routes = [
         name: "Setting",
         component: () => import("../views/setting/index.vue"),
       },
+      //1****
+      {
+        path: "task/:id/appointment",
+        name: "Task.appointment",
+        component: () => import("../views/appointment/abc.vue"),
+      },
     ],
   },
 ];

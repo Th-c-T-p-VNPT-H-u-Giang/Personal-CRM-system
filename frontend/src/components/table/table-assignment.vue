@@ -125,7 +125,7 @@ export default {
               <span
                 id="appointment"
                 class="material-symbols-outlined d-flex align-items-center justify-content-center"
-                @click="$emit('appointment', item._id, item)"
+                @click="$emit('appointmentView', item._id, item)"
               >
                 schedule
               </span>
