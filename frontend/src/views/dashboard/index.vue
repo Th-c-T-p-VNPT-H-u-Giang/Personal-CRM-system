@@ -1,13 +1,13 @@
 <script>
 import { ref, reactive, computed, watch, onMounted } from "vue";
 import VueApexCharts from "vue3-apexcharts";
-import Table from "../../components/table/table_dash_lananh.vue";
-
+import Table from "../../components/table/table_dash.vue";
 import Pagination from "../../components/table/pagination_duy.vue";
 import Search from "../../components/form/search.vue";
 import Select from "../../components/form/select.vue";
 import Box from "../../components/box_lananh/box.vue";
 import SelectOption from "../../components/box_lananh/select.vue";
+import Add from "../dashboard/add_taskemployeedash.vue";
 import {
   Customer,
   Customer_Types,
@@ -31,11 +31,15 @@ export default {
     Box,
     SelectOption,
     Select_Advanced,
+    Add,
   },
   setup() {
     // Data customer
     const data = reactive({
       items: [],
+
+      activeEdit: false,
+
       entryValue: 4,
       numberOfPages: 1,
       totalRow: 0,
@@ -45,6 +49,9 @@ export default {
       searchText: "",
       activeMenu: 1,
       activeSelectAll: false,
+      activeEdit: false,
+      addValue: {},
+
       entryType: "",
       customerType: {},
       customer: {},
@@ -55,8 +62,13 @@ export default {
       cycle: {},
       modelCycle: "tuần",
       progress: 0,
-      task: [],
       days: 0,
+      customerCycle: [],
+      selectAll: [
+        {
+          checked: false,
+        },
+      ],
     });
     const toString = computed(() => {
       console.log("Starting search");
@@ -109,15 +121,58 @@ export default {
       data.task = await http_getAll(Task);
       data.evaluate = await http_getAll(Evaluate);
       data.statusTask = await http_getAll(Status_Task);
-      data.task = await http_getAll(Task);
-      abc("1 tháng", "2023-12-31");
-      // abc("1 năm");
+      data.customerCycle = await http_getAll(Task);
+      data.customerCycle = data.customerCycle.map((value, index) => {
+        return {
+          ...value,
+          start_date: handleCycle(value.Cycle.name, value.start_date),
+        };
+      });
+
       data.cycle = [
         { _id: "tuần", name: "tuần" },
         { _id: "tháng", name: "tháng" },
         { _id: "quý", name: "quý" },
         { _id: "năm", name: "năm" },
       ];
+
+      const week = getCurrentWeekDays();
+      const firstDayOfWeek = week[0];
+      const lastDayOfWeek = week[week.length - 1];
+      data.task = data.task.filter((value, index) => {
+        return (
+          value.start_date >= firstDayOfWeek &&
+          value.start_date <= lastDayOfWeek
+        );
+      });
+
+      for (let i = 0; i < data.statusTask.length; i++) {
+        var count = 0;
+        chartOptionsAppointment1.labels[i] = data.statusTask[i].name;
+        chartSeriesAppointment1.value[i] = 0;
+        for (let task of data.task) {
+          if (task.StatusTaskId == data.statusTask[i]._id) {
+            count++;
+            chartSeriesAppointment1.value[i]++;
+          }
+          if (data.statusTask[i].name == "đã chăm sóc") {
+            data.progress = count;
+          }
+        }
+        chartSeriesAppointment.data[i] = {
+          name: data.statusTask[i].name,
+          data: [count],
+        };
+      }
+
+      data.progress = (data.progress / data.task.length) * 100;
+      data.progress = data.progress.toFixed(2);
+      data.items = [];
+      for (let value of data.customerCycle) {
+        let customer = await http_getOne(Customer, value.customerId);
+        console.log("customer:", customer);
+        data.items.push(customer.documents);
+      }
     };
 
     // table customer
@@ -187,40 +242,46 @@ export default {
     });
     const chartSeriesAppointment1 = ref([]);
     //Map tính lại chu kỳ tiếp theo cho tất cả trường hợp chu kỳ
-    const abc = (nameCycle, date) => {
+    const handleCycle = (nameCycle, date) => {
       let coming_day = moment(date, "YYYY-MM-DD");
       console.log("Ngày bắt đầu:", coming_day.format("YYYY-MM-DD"));
       var parts = nameCycle.split(" ");
       var number = parseInt(parts[0]);
       var string = parts[1];
-      console.log("N:", number, string);
       switch (string) {
         case "ngày":
+          console.log(`${number} ngày`);
           coming_day = coming_day.add(number, "days");
+          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         case "tuần":
+          console.log(`${number} tuần`);
           coming_day = coming_day.add(number * 7, "days");
+          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         case "tháng":
-          console.log("Tháng:", number);
+          console.log(`${number} tháng`);
           coming_day = coming_day.add(number, "months");
-
-          console.log("Ngày sau chu kỳ:", coming_day.format("YYYY-MM-DD"));
+          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         case "quý":
+          console.log(`${number} quý`);
           coming_day = coming_day.add(number * 3, "months");
+          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         case "năm":
+          console.log(`${number} năm`);
           coming_day = coming_day.add(number, "years");
+          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         default:
           console.log("Chu kỳ không hợp lệ");
           break;
       }
 
-      console.log("Tháng", coming_day.format("YYYY-MM-DD"));
+      return coming_day.format("YYYY-MM-DD");
     };
-
+    //kiểm tra năm nhuận
     const isLeapYear = (year) => {
       return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
     };
@@ -230,15 +291,36 @@ export default {
       var date = new Date(year, month + 1, 0);
       return date.getDate();
     };
+    const initCustomer = async (start, end) => {
+      // await refresh();
+      data.items = [];
+      data.customerCycle = await http_getAll(Task);
+      data.customerCycle = data.customerCycle.map((value, index) => {
+        return {
+          ...value,
+          start_date: handleCycle(value.Cycle.name, value.start_date),
+        };
+      });
+      data.customerCycle = data.customerCycle.filter((item) => {
+        return item.start_date >= start && item.start_date <= end;
+      });
+      for (let value of data.customerCycle) {
+        let customer = await http_getOne(Customer, value.customerId);
+        if (!data.items.includes(customer.documents)) {
+          // Nếu không tồn tại, thêm phần tử vào mảng
+          data.items.push(customer.documents);
+        }
+      }
+    };
     // khởi tạo biểu đồ khi thay đổi lựa chọn tuần, ...
     const initChart = async (start, end) => {
       await refresh();
       data.progress = 0;
-      data.task = data.task.filter((value, index) => {
-        return value.start_date >= start && value.start_date <= end;
-      });
       data.task = data.task.filter((item) => {
-        return item.start_date >= start && item.start_date <= end;
+        return (
+          (item.start_date >= start && item.start_date <= end) ||
+          (item.end_date >= start && item.end_date <= end)
+        );
       });
       console.log(data.task);
       for (let i = 0; i < data.statusTask.length; i++) {
@@ -339,7 +421,44 @@ export default {
         }
         console.log("chart appointment:", chartSeriesAppointment.data);
       } else if (nameChart == "customerCycle") {
-        // alert_success("khách hàng gần tới chu kỳ", "");
+        switch (cycle) {
+          case "tuần": {
+            console.log("weak+customerCycle");
+            const week = getCurrentWeekDays();
+            const firstDayOfWeek = week[0];
+            const lastDayOfWeek = week[week.length - 1];
+            await initCustomer(firstDayOfWeek, lastDayOfWeek);
+            console.log("Customer cycle:", data.customerCycle);
+            break;
+          }
+          case "tháng": {
+            console.log("month+appointment");
+            const currentMonthDates = getCurrentMonthDates();
+            console.log("Ngày bắt đầu của tháng:", currentMonthDates.start);
+            console.log("Ngày kết thúc của tháng:", currentMonthDates.end);
+            await initCustomer(currentMonthDates.start, currentMonthDates.end);
+            console.log("Customer cycle:", data.customerCycle);
+            break;
+          }
+          case "quý": {
+            console.log("aquarter+appointment");
+            const currentQuarterDates = reactive({ data: {} });
+            currentQuarterDates.data = getCurrentQuarterDates();
+            await initCustomer(
+              currentQuarterDates.data.start,
+              currentQuarterDates.data.end
+            );
+            console.log("Customer cycle:", data.customerCycle);
+          }
+          case "năm": {
+            const getCurrentYearDates = getCurrentYear();
+            await initCustomer(
+              getCurrentYearDates.start,
+              getCurrentYearDates.end
+            );
+            console.log("Customer cycle:", data.customerCycle);
+          }
+        }
       }
     };
 
@@ -432,43 +551,15 @@ export default {
     });
     onMounted(async () => {
       await refresh();
-      const week = getCurrentWeekDays();
-      const firstDayOfWeek = week[0];
-      const lastDayOfWeek = week[week.length - 1];
-      data.task = data.task.filter((value, index) => {
-        return (
-          value.start_date >= firstDayOfWeek &&
-          value.start_date <= lastDayOfWeek
-        );
-      });
-
-      for (let i = 0; i < data.statusTask.length; i++) {
-        var count = 0;
-        chartOptionsAppointment1.labels[i] = data.statusTask[i].name;
-        chartSeriesAppointment1.value[i] = 0;
-        for (let task of data.task) {
-          if (task.StatusTaskId == data.statusTask[i]._id) {
-            count++;
-            chartSeriesAppointment1.value[i]++;
-          }
-          if (data.statusTask[i].name == "đã chăm sóc") {
-            data.progress = count;
-          }
-        }
-        chartSeriesAppointment.data[i] = {
-          name: data.statusTask[i].name,
-          data: [count],
-        };
-      }
-
-      data.progress = (data.progress / data.task.length) * 100;
-      data.progress = data.progress.toFixed(2);
+      console.log("Data customer cycle:", data.customerCycle);
     });
 
     //****
     watch(takeCare, (newValue, oldValue) => {
       console.log("takecare", newValue);
     });
+    // const handleSelectAll = (value) => {};
+    // const handleSelectOne = (value) => {};
     return {
       data,
       overview,
@@ -653,7 +744,11 @@ export default {
     </div>
 
     <!--CHART -->
-    <div class="float-right mx-4" style="width: 100px">
+    <div
+      class="float-right mx-4"
+      style="width: 100px"
+      v-if="showchart == 'appointment' || showchart == 'customerCycle'"
+    >
       <Select_Advanced
         required
         :options="data.cycle"
@@ -756,51 +851,45 @@ export default {
       <!-- End Chart -->
 
       <!--Detail -->
-      <div v-if="detail">
-        <h4 class="text-center my-2">Danh sách khách hàng</h4>
-        <!--Table Task -->
-        <Table
-          v-if="showchart == 'appointment'"
-          :items="setPages"
-          :fields="[
-            'Mã KH',
-            'Họ tên ',
-            'Loại KH',
-            'Ngày bắt đầu',
-            'Ngày kết thúc',
-            'Lịch hẹn',
-            'Nội dung',
-          ]"
-          :labels="[
-            'cus_id',
-            'cus_name',
-            'typ_name',
-            'tas_service_start',
-            'tas_service_end',
-            'app_day',
-            'tas_service_content',
-          ]"
-          :take_care="takeCare"
-          @update="getUnit"
-          @onDelete="onDelete"
-          @detail="detail"
-          :name_id="'cus_id'"
-        />
-        <!--End Table Task -->
-
+      <div v-if="showchart == 'customerCycle'">
+        <h4 class="text-center my-2">Danh sách khách hàng gần tới chu kỳ</h4>
         <!--Table Cus -->
         <Table
-          v-if="showchart == 'customer'"
           :items="setPages"
-          :fields="['Mã KH', 'Họ tên ', 'Loại KH']"
-          :labels="['cus_id', 'cus_name', 'typ_name']"
-          :isassign="isassign"
-          :assign="assign"
-          :showchart="showchart == 'customer'"
-          @update="getUnit"
-          @onDelete="onDelete"
-          @detail="detail"
-          :name_id="'cus_id'"
+          :fields="['Tên', 'Sđt', 'Email']"
+          :selectAll="data.selectAll"
+          :startRow="data.startRow"
+          @selectAll="(value) => handleSelectAll(value)"
+          @selectOne="(id, item) => handleSelectOne(id, item)"
+          @delete="handleDelete"
+          @edit="
+            (value, value1) => (
+              (data.addValue = value), (data.activeEdit = value1)
+            )
+          "
+          @view="
+            (value) => {
+              view(value);
+            }
+          "
+          @appointment="
+            (value, value1) => {
+              console.log('v', value, 'v1:', value1)((data.addValue = value));
+              data.activeEdit = value1;
+            }
+          "
+        />
+
+        <Add
+          :item="data.addValue"
+          :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+          @cancel="data.activeEdit = false"
+          @edit="add(data.addValue)"
+          @refresh="
+            async () => {
+              await refresh();
+            }
+          "
         />
         <!--End Table Cus -->
 
