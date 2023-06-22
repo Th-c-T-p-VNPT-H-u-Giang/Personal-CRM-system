@@ -1,4 +1,4 @@
-const { Task, Appointment, Employee, Cycle, Customer, Status_Task, Employee_Task, Status_App, Position, Unit, Department, Center_VNPTHG, Evaluate, Comment, Customer_Types } = require('../models/index.model.js');
+const { Task, Appointment, Employee, Cycle, Customer, Status_Task, Employee_Task, Status_App, Position, Unit, Department, Center_VNPTHG, Evaluate, Comment, Customer_Types, Customer_Work, Company_KH, } = require('../models/index.model.js');
 const createError = require('http-errors');
 const { v4: uuidv4 } = require('uuid');
 const crypto = require("crypto");
@@ -167,7 +167,14 @@ exports.findAll = async (req, res, next) => {
                 model: Customer,
                 include: [{
                     model: Customer_Types,
-                }]
+                },
+                {
+                    model: Customer_Work,
+                    include: [{
+                        model: Company_KH,
+                    }]
+                }
+                ]
             },
             {
                 model: Cycle,
@@ -213,7 +220,14 @@ exports.findOne = async (req, res, next) => {
                 model: Customer,
                 include: [{
                     model: Customer_Types,
-                }]
+                },
+                {
+                    model: Customer_Work,
+                    include: [{
+                        model: Company_KH,
+                    }]
+                }
+                ]
             },
             {
                 model: Cycle,

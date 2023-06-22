@@ -70,10 +70,8 @@ export default {
         content: "",
         place: "",
         note:"",
-        Status_App:{
-          _id:"",
-          name:"",
-        }
+        taskId:"",
+        StatusAppId: "",
       },
     });
     const create = async () => {
@@ -82,21 +80,19 @@ export default {
       console.log(data.item.place);
       console.log(data.item.note);
       console.log(data.item);
-      // const result = await http_create(Appointment, {
-      //   date_time: data.item.date_time,
-      //   content: data.item.content,
-      //   taskId: props.taskId,
-      // });
-      // if (!result.error) {
-      //   alert_success(
-      //     `Thêm lịch hẹn`,
-      //     `Lịch hẹn ${result.document.content} lúc ${formatDateTime(
-      //       result.document.date_time
-      //     )} đã được tạo thành công.`
-      //   );
-      // } else if (result.error) {
-      //   alert_error(`Thêm lịch hẹn`, `${result.msg}`);
-      // }
+      data.item.taskId = props.taskId;
+      console.log("task id",data.item.taskId);
+      const result = await http_create(Appointment,data.item);
+      if (!result.error) {
+        alert_success(
+          `Thêm lịch hẹn`,
+          `Lịch hẹn ${result.document.content} lúc ${formatDateTime(
+            result.document.date_time
+          )} đã được tạo thành công.`
+        );
+      } else if (result.error) {
+        alert_error(`Thêm lịch hẹn`, `${result.msg}`);
+      }
     };
     return {
       create,

@@ -1,6 +1,6 @@
 <script>
 import { ref } from 'vue'
-import Table from "../../components/table/table_duy.vue";
+import Table from "../../components/table/table-appointment.vue";
 export default {
   components: {
     Table,
@@ -127,7 +127,7 @@ export default {
               Danh sách lịch hẹn
             </button>
             <div v-if="isActive" id="event" class="collapse mt-2">
-              <table
+              <!-- <table
                 class="my-table mb-2 table border-table-all"
               >
                 <thead style="max-width: 100px; overflow: auto;">
@@ -136,7 +136,9 @@ export default {
                     <th>Khách hàng</th>
                     <th>Ngày hẹn</th>
                     <th>Nội dung</th>
-                    <!-- <th>Trạng thái cuộc hẹn</th> -->
+                    <th>Địa điểm</th>
+                    <th>Lưu ý</th>
+                    <th>Trạng thái cuộc hẹn</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -145,11 +147,25 @@ export default {
                     <td>{{ viewValue.Customer.name }}</td>
                     <td>{{ item.date_time }}</td>
                     <td>{{ item.content }}</td>
-                    <!-- <td>{{ item.Status_App.name}}</td> -->
+                    <td>{{ item.place }}</td>
+                    <td>{{ item.note }}</td>
+                    <td>{{ item.Status_App.name}}</td>
                   </tr>
                 </tbody>
-              </table> 
-              <p v-if="viewValue.Appointments.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p>
+              </table>  -->
+              <Table
+                :items="viewValue.Appointments"
+                :cus="viewValue"
+                :borderTableAll="true"
+                :fields="[
+                  'Ngày hẹn',
+                  'Địa điểm',
+                  'Nội dung',
+                  'Lưu ý',
+                ]"
+                :labels="['date_time', 'place', 'content','note']"
+              />
+              <!-- <p v-if="viewValue.Appointments.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p> -->
             </div>
           </div>
         </div>

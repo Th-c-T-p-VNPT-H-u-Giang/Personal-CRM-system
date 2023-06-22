@@ -5,7 +5,8 @@ const { v4: uuidv4 } = require('uuid');
 
 // checked
 exports.create = async (req, res, next) => {
-    if (Object.keys(req.body).length === 3) {
+    console.log("thong tinnnnnn", req.body);
+    if (Object.keys(req.body).length === 6) {
         const { date_time, content, note, place, taskId} = req.body;
         var StatusAppId;
         const appointments = await Appointment.findAll();
@@ -20,9 +21,11 @@ exports.create = async (req, res, next) => {
         try {
             const status_apps = await Status_App.findAll()     
             var a = 0;
-            console.log("chieu dai",status_apps.length)
+            console.log("chieu dai",status_apps.length)      
             if(status_apps.length > 0){
                 console.log("vaooooooooooo")
+                console.log("status app", status_apps)
+                console.log("name  dsf",  status_apps.Status_App[0].dataValues);
                 for(let value of status_apps){
                     // console.log("status task hahaha ", value.dataValues.name);
                     value.dataValues.name = getDecrypt(value.dataValues.name);
@@ -30,7 +33,7 @@ exports.create = async (req, res, next) => {
                     console.log("name ahhahahaha", value.dataValues.name,value.dataValues.name == "chưa xác nhận");
                     if(value.dataValues.name == "chưa xác nhận"){
                         console.log("kiem tra", value.dataValues.name);
-                        StatusAppId= value.dataValues._id;
+                        StatusAppId = value.dataValues._id;
                         console.log("id status_task hahaahha",StatusAppId )
                         a = 0;
                         break;
@@ -60,6 +63,8 @@ exports.create = async (req, res, next) => {
             const document = await Appointment.create({
                 date_time: date_time,
                 content: content,
+                place: place,
+                note: note,
                 taskId: taskId,
                 StatusAppId: StatusAppId,
             });

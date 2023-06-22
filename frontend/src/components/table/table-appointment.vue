@@ -26,6 +26,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    cus:{
+      type: Array,
+      default: [],
+    },
   },
   setup(props, ntx) {},
 };
@@ -33,44 +37,80 @@ export default {
 
 <template>
   <table
-    class="my-table mb-2"
+    class="my-table mb-2 "
     :class="[borderTableAll ? 'border-table-all' : '']"
   >
     <thead>
       <tr>
         <th></th>
         <th>Stt</th>
-        <th v-for="(value, index) in fields">{{ value }}</th>
+        <th>Khách hàng</th>
+        <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
+        <th>Trạng thái</th>
         <th v-if="activeAction == true">Hành động</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="(item, index) in items">
+      <tr v-for="(item, index) in items" :key="index">
         <td><input type="checkbox" name="" id="" /></td>
         <td>{{ index + 1 }}</td>
-        <td v-for="(label, index1) in labels">{{ item[label] }}</td>
-        <td v-if="activeAction == true">
-          <button
+        <td>{{ cus.Customer.name }}</td>
+        <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
+        <td> {{ item.Status_App.name }}</td>
+        <td class="" v-if="activeAction == true">
+          <div class="d-flex align-items-center">
+            <!-- <button
+              type="button"
+              class="format-btn"
+              data-toggle="modal"
+              data-target="#model-view"
+            >
+              <span
+                id="view"
+                class="material-symbols-outlined d-flex align-content-center"
+                @click="$emit('view', item._id)"
+              >
+                visibility
+              </span>
+            </button> -->
+            <button
+              type="button"
+              class="mx-2 format-btn"
+              data-toggle="modal"
+              data-target="#model-form-wizard"
+            >
+              <span
+                id="edit"
+                class="material-symbols-outlined d-flex align-content-center"
+                @click="$emit('edit', item, true)"
+              >
+                edit
+              </span>
+            </button>
+            <span
+              id="delete"
+              class="material-symbols-outlined"
+              @click="
+                $emit('delete', item._id, item)
+              "
+            >
+              delete
+            </span>
+            <button
             type="button"
-            class="mr-2"
+            class="mx-2 format-btn"
             data-toggle="modal"
-            data-target="#model-edit"
+            data-target="#modal-addAppointment"
           >
             <span
-              id="edit"
+              id="appointment"
               class="material-symbols-outlined d-flex align-items-center justify-content-center"
-              @click="$emit('edit', item, true)"
+              @click="$emit('appointment', item._id, item)"
             >
-              edit
+              schedule
             </span>
           </button>
-          <span
-            id="delete"
-            class="material-symbols-outlined"
-            @click="$emit('delete', item._id)"
-          >
-            delete
-          </span>
+          </div>
         </td>
       </tr>
     </tbody>
@@ -106,7 +146,8 @@ export default {
 
 #view,
 #edit,
-#delete {
+#delete,
+#appointment {
   font-size: 18px;
   cursor: pointer;
   border: 1px solid var(--gray);
@@ -121,5 +162,12 @@ export default {
 }
 #delete:hover {
   color: var(--red);
+}
+
+.takingCare{
+  color:green;
+}
+.takeCare{
+  color: red;
 }
 </style>
