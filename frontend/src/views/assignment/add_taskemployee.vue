@@ -1,4 +1,6 @@
 <script>
+import Notification from "../../services/notification.service";
+import socket from '../../../socket';
 import { reactive, onBeforeMount, ref, watch, computed, watchEffect } from "vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import Table from "../../components/table/table_task_employee.vue";
@@ -433,6 +435,26 @@ export default {
             },
           });
           const result = await EmployeeTask.deleteOne(dataDel.data);
+          ////huỷ
+          ////////////////////////////
+          const token = sessionStorage.getItem('token')
+          if (token) {
+            const _idEmployee = sessionStorage.getItem("employeeId");
+            const _nameEmployee = sessionStorage.getItem("employeeName");
+            const object = {
+              _id: _idEmployee,
+              name: _nameEmployee
+            }     
+            const TaskCus = await http_getOne(Task,dataDel.data.TaskId)  
+            const notiAssignment = reactive ({title:"Huỷ giao việc",content:`đã huỷ phân công khách hàng "${TaskCus.Customer.name}" cho bạn`,isRead: false,recipient:"", sender:"",idRecipient:""});
+            notiAssignment.recipient = C.data[j].name
+            notiAssignment.sender = _nameEmployee
+            notiAssignment.idRecipient = C.data[j]._id
+            const result1 = await http_create(Notification, notiAssignment);
+            console.log("giao viec",notiAssignment)
+            socket.emit('assignmentTask')
+          }
+          ////////////////////////////
         }
       }
       console.log("0", arrayCheck.data.length);
@@ -442,6 +464,27 @@ export default {
         try {
           dataTaskEm.EmployeeId = arrayCheck.data[i]._id;
           await http_create(EmployeeTask, dataTaskEm);
+          ////////////////////////////
+          const token = sessionStorage.getItem('token')
+          if (token) {
+            const _idEmployee = sessionStorage.getItem("employeeId");
+            const _nameEmployee = sessionStorage.getItem("employeeName");
+            const object = {
+              _id: _idEmployee,
+              name: _nameEmployee
+            }         
+            const TaskCus = await http_getOne(Task,dataTaskEm.TaskId) 
+            console.log("Khach hang dươc phan cong", TaskCus.Customer.name)
+            const notiAssignment = reactive ({title:"Phân công mới",content:`đã phân công khách hàng "${TaskCus.Customer.name}" cho bạn`,isRead: false,recipient:"", sender:"",idRecipient:""});
+            notiAssignment.recipient = arrayCheck.data[i].name
+            notiAssignment.sender = _nameEmployee
+            notiAssignment.idRecipient = arrayCheck.data[i]._id
+            const result1 = await http_create(Notification, notiAssignment);
+            console.log("giao viec",notiAssignment)
+            socket.emit('assignmentTask')
+          }
+          /////////////////////////////////////
+
         } catch (error) {
           console.error("Error sending email:", error);
         }
@@ -460,6 +503,24 @@ export default {
       console.log('taskid:', newData.TaskId)
       try {
         const result = await http_create(EmployeeTask, newData);
+        ////////////////////////////
+        const token = sessionStorage.getItem('token')
+        if (token) {
+          const _idEmployee = sessionStorage.getItem("employeeId");
+          const _nameEmployee = sessionStorage.getItem("employeeName");
+          const object = {
+            _id: _idEmployee,
+            name: _nameEmployee
+          }         
+          const TaskCus = await http_getOne(Task,newData.TaskId) 
+          console.log("Khach hang dươc phan cong", TaskCus.Customer.name)
+          const notiAssignment = reactive ({title:"Nhận việc thành công",content:`Khách hàng "${TaskCus.Customer.name}" đã được phân công cho bạn`,isRead: false,recipient:"", sender:"",idRecipient:""});
+          notiAssignment.recipient = _nameEmployee
+          notiAssignment.idRecipient = _idEmployee
+          const result1 = await http_create(Notification, notiAssignment);
+          socket.emit('assignmentTask')
+        }
+        /////////////////////////////////////
         console.log(result.error);
         if(result.error == true){
           alert_warning(
