@@ -20,7 +20,7 @@ import {
   alert_success,
 } from "../common/import";
 import { Select_Advanced } from "../common/import";
-
+import moment from "moment";
 export default {
   components: {
     apexchart: VueApexCharts,
@@ -110,8 +110,8 @@ export default {
       data.evaluate = await http_getAll(Evaluate);
       data.statusTask = await http_getAll(Status_Task);
       data.task = await http_getAll(Task);
-      abc("6 tháng");
-      abc("1 năm");
+      abc("1 tháng", "2023-12-31");
+      // abc("1 năm");
       data.cycle = [
         { _id: "tuần", name: "tuần" },
         { _id: "tháng", name: "tháng" },
@@ -187,71 +187,40 @@ export default {
     });
     const chartSeriesAppointment1 = ref([]);
     //Map tính lại chu kỳ tiếp theo cho tất cả trường hợp chu kỳ
-    const abc = (nameCycle) => {
-      var tach = nameCycle.split(" ");
-      var so = tach[0];
-      var chu = tach[1];
-      var endDate = new Date();
-      switch (chu) {
-        case "tuần": {
-          var daysToAdd = so * 7;
-          var startDate = new Date("2023-12-31");
-          endDate = new Date(
-            startDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
-          );
-          console.log(
-            "chu kỳ:",
-            daysToAdd,
-            "ngày tới chu kỳ:",
-            endDate.toDateString()
-          );
+    const abc = (nameCycle, date) => {
+      let coming_day = moment(date, "YYYY-MM-DD");
+      console.log("Ngày bắt đầu:", coming_day.format("YYYY-MM-DD"));
+      var parts = nameCycle.split(" ");
+      var number = parseInt(parts[0]);
+      var string = parts[1];
+      console.log("N:", number, string);
+      switch (string) {
+        case "ngày":
+          coming_day = coming_day.add(number, "days");
           break;
-        }
-        case "tháng": {
-          var monthsToAdd = so;
-          var startDate = new Date("2023-12-29");
-          endDate = new Date(
-            startDate.getFullYear(),
-            startDate.getMonth() + so,
-            startDate.getDate()
-          );
-          //tháng 12
-          if (startDate.getMonth() === 11) {
-            var endDate = new Date(
-              startDate.getFullYear() + 1,
-              so - 1,
-              startDate.getDate()
-            );
-          }
-          console.log(
-            "chu kỳ:",
-            monthsToAdd + " tháng",
-            "ngày tới chu kỳ:",
-            endDate
-          );
+        case "tuần":
+          coming_day = coming_day.add(number * 7, "days");
           break;
-        }
-        case "năm": {
-          var yearsToAdd = so;
-          var startDate = new Date("2023-01-29");
+        case "tháng":
+          console.log("Tháng:", number);
+          coming_day = coming_day.add(number, "months");
 
-          endDate = new Date(
-            startDate.getFullYear() + 1,
-            startDate.getMonth(),
-            startDate.getDate()
-          );
-
-          console.log(
-            "chu kỳ:",
-            yearsToAdd + " năm",
-            "ngày tới chu kỳ:",
-            endDate.toDateString()
-          );
+          console.log("Ngày sau chu kỳ:", coming_day.format("YYYY-MM-DD"));
           break;
-        }
+        case "quý":
+          coming_day = coming_day.add(number * 3, "months");
+          break;
+        case "năm":
+          coming_day = coming_day.add(number, "years");
+          break;
+        default:
+          console.log("Chu kỳ không hợp lệ");
+          break;
       }
-      console.log("KQ:", endDate);
+
+      console.log("Tháng", coming_day.format("YYYY-MM-DD"));
     };
+
     const isLeapYear = (year) => {
       return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
     };
