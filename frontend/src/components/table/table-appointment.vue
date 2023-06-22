@@ -26,7 +26,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    cus:{
+    cus: {
       type: Array,
       default: [],
     },
@@ -36,13 +36,9 @@ export default {
 </script>
 
 <template>
-  <table
-    class="my-table mb-2 "
-    :class="[borderTableAll ? 'border-table-all' : '']"
-  >
+  <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
     <thead>
       <tr>
-        <th></th>
         <th>Stt</th>
         <th>Khách hàng</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
@@ -52,11 +48,10 @@ export default {
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
-        <td><input type="checkbox" name="" id="" /></td>
         <td>{{ index + 1 }}</td>
         <td>{{ cus.Customer.name }}</td>
         <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
-        <td> {{ item.Status_App.name }}</td>
+        <td>{{ item.Status_App.name }}</td>
         <td class="" v-if="activeAction == true">
           <div class="d-flex align-items-center">
             <!-- <button
@@ -77,7 +72,7 @@ export default {
               type="button"
               class="mx-2 format-btn"
               data-toggle="modal"
-              data-target="#model-form-wizard"
+              data-target="#model-form-wizard-appointment"
             >
               <span
                 id="edit"
@@ -90,26 +85,24 @@ export default {
             <span
               id="delete"
               class="material-symbols-outlined"
-              @click="
-                $emit('delete', item._id, item)
-              "
+              @click="$emit('delete', item._id, item)"
             >
               delete
             </span>
             <button
-            type="button"
-            class="mx-2 format-btn"
-            data-toggle="modal"
-            data-target="#modal-addAppointment"
-          >
-            <span
-              id="appointment"
-              class="material-symbols-outlined d-flex align-items-center justify-content-center"
-              @click="$emit('appointment', item._id, item)"
+              type="button"
+              class="mx-2 format-btn"
+              data-toggle="modal"
+              data-target="#modal-addAppointment"
             >
-              schedule
-            </span>
-          </button>
+              <span
+                id="appointment"
+                class="material-symbols-outlined d-flex align-items-center justify-content-center"
+                @click="$emit('appointment', item._id, item)"
+              >
+                schedule
+              </span>
+            </button>
           </div>
         </td>
       </tr>
@@ -164,10 +157,10 @@ export default {
   color: var(--red);
 }
 
-.takingCare{
-  color:green;
+.takingCare {
+  color: green;
 }
-.takeCare{
+.takeCare {
   color: red;
 }
 </style>

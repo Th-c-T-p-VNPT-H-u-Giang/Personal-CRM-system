@@ -2,7 +2,25 @@ const { Appointment, Status_App } = require('../models/index.model.js');
 const { DataTypes, Op } = require('sequelize');
 const createError = require('http-errors');
 const { v4: uuidv4 } = require('uuid');
+const crypto = require("crypto");
 
+const encryptionKey = "12345678912345678901234567890121";
+const iv = "0123456789abcdef";
+
+const setEncrypt = (value) => {
+  const cipher = crypto.createCipheriv("aes-256-cbc", encryptionKey, iv);
+  let encrypted = cipher.update(value, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return encrypted;
+};
+const getDecrypt = (name) => {
+  if (name) {
+    const decipher = crypto.createDecipheriv("aes-256-cbc", encryptionKey, iv);
+    let decrypted = decipher.update(name, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
+  }
+};
 // checked
 exports.create = async (req, res, next) => {
     console.log("thong tinnnnnn", req.body);
@@ -25,7 +43,7 @@ exports.create = async (req, res, next) => {
             if(status_apps.length > 0){
                 console.log("vaooooooooooo")
                 console.log("status app", status_apps)
-                console.log("name  dsf",  status_apps.Status_App[0].dataValues);
+                console.log("name  dsf",  status_apps.Status_App);
                 for(let value of status_apps){
                     // console.log("status task hahaha ", value.dataValues.name);
                     value.dataValues.name = getDecrypt(value.dataValues.name);

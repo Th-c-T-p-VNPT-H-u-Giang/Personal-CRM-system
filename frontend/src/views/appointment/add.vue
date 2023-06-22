@@ -93,6 +93,7 @@ export default {
       } else if (result.error) {
         alert_error(`Thêm lịch hẹn`, `${result.msg}`);
       }
+      data.item = {};
     };
     return {
       create,

@@ -40,7 +40,7 @@ import {
   alert_warning,
   alert_delete_wide,
 } from "../../assets/js/common.alert";
-import { formatDate } from "../../assets/js/common"
+import { formatDate, formatDateTime } from "../../assets/js/common"
 export default {
   components: {
     SelectFilter,
