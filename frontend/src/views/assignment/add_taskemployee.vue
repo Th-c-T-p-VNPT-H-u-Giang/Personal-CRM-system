@@ -442,7 +442,7 @@ export default {
         }
       }
       console.log("0", arrayCheck.data.length);
-      for (let i = 1; i < arrayCheck.data.length; i++) {
+      for (let i = 0; i < arrayCheck.data.length; i++) {
         console.log(arrayCheck.data[i]._id);
         // if (arrayCheck.data[i].checked == true) {
         try {
@@ -557,8 +557,8 @@ export default {
       entryValueUnit.value = "";
 
       //1***
-      // arrayCheck.data = [];
-      // array.data = [];
+      arrayCheck.data = [];
+      array.data = [];
       const employeeTask = reactive({ data: [] });
       //danh sách nhân viên của 1 nhiệm vụ
       employeeTask.data = await http_getOne(Task, props.item._id);
@@ -573,8 +573,8 @@ export default {
         for (let j = 0; j < employeeTask.data.Employees.length; j++) {
           if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
             data.itemEm[i].checked = true;
-            arrayCheck.data[i] = data.itemEm[i];
-            array.data[i] = data.itemEm[i];
+            arrayCheck.data.push(data.itemEm[i]);
+            array.data.push(data.itemEm[i]);
           }
         }
       }

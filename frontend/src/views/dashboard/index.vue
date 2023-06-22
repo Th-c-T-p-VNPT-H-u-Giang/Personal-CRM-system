@@ -17,6 +17,7 @@ import {
   Status_Task,
   Cycle,
   http_getOne,
+  alert_success,
 } from "../common/import";
 import { Select_Advanced } from "../common/import";
 
@@ -54,6 +55,8 @@ export default {
       cycle: {},
       modelCycle: "tuần",
       progress: 0,
+      task: [],
+      days: 0,
     });
     const toString = computed(() => {
       console.log("Starting search");
@@ -106,7 +109,9 @@ export default {
       data.task = await http_getAll(Task);
       data.evaluate = await http_getAll(Evaluate);
       data.statusTask = await http_getAll(Status_Task);
-
+      data.task = await http_getAll(Task);
+      abc("6 tháng");
+      abc("1 năm");
       data.cycle = [
         { _id: "tuần", name: "tuần" },
         { _id: "tháng", name: "tháng" },
@@ -181,6 +186,81 @@ export default {
       colors: ["#FFDD94", "#FD8F52", "#FFd700", "#FFC125", "#EEAD0F"],
     });
     const chartSeriesAppointment1 = ref([]);
+    //Map tính lại chu kỳ tiếp theo cho tất cả trường hợp chu kỳ
+    const abc = (nameCycle) => {
+      var tach = nameCycle.split(" ");
+      var so = tach[0];
+      var chu = tach[1];
+      var endDate = new Date();
+      switch (chu) {
+        case "tuần": {
+          var daysToAdd = so * 7;
+          var startDate = new Date("2023-12-31");
+          endDate = new Date(
+            startDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000
+          );
+          console.log(
+            "chu kỳ:",
+            daysToAdd,
+            "ngày tới chu kỳ:",
+            endDate.toDateString()
+          );
+          break;
+        }
+        case "tháng": {
+          var monthsToAdd = so;
+          var startDate = new Date("2023-12-29");
+          endDate = new Date(
+            startDate.getFullYear(),
+            startDate.getMonth() + so,
+            startDate.getDate()
+          );
+          //tháng 12
+          if (startDate.getMonth() === 11) {
+            var endDate = new Date(
+              startDate.getFullYear() + 1,
+              so - 1,
+              startDate.getDate()
+            );
+          }
+          console.log(
+            "chu kỳ:",
+            monthsToAdd + " tháng",
+            "ngày tới chu kỳ:",
+            endDate
+          );
+          break;
+        }
+        case "năm": {
+          var yearsToAdd = so;
+          var startDate = new Date("2023-01-29");
+
+          endDate = new Date(
+            startDate.getFullYear() + 1,
+            startDate.getMonth(),
+            startDate.getDate()
+          );
+
+          console.log(
+            "chu kỳ:",
+            yearsToAdd + " năm",
+            "ngày tới chu kỳ:",
+            endDate.toDateString()
+          );
+          break;
+        }
+      }
+      console.log("KQ:", endDate);
+    };
+    const isLeapYear = (year) => {
+      return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+    };
+
+    // Lấy ngày cuối cùng của tháng
+    const getLastDayOfMonth = (month, year) => {
+      var date = new Date(year, month + 1, 0);
+      return date.getDate();
+    };
     // khởi tạo biểu đồ khi thay đổi lựa chọn tuần, ...
     const initChart = async (start, end) => {
       await refresh();
@@ -289,6 +369,8 @@ export default {
           }
         }
         console.log("chart appointment:", chartSeriesAppointment.data);
+      } else if (nameChart == "customerCycle") {
+        // alert_success("khách hàng gần tới chu kỳ", "");
       }
     };
 
@@ -380,11 +462,6 @@ export default {
       show(showchart.value, selectedOptionCycle.value);
     });
     onMounted(async () => {
-      // const A = ["A", "B"];
-      // const B = ["B", "C", "D"];
-      // const C = reactive({ data: [] });
-      // C.data = A.filter((value) => !B.includes(value));
-      // console.log("C:", C.data);
       await refresh();
       const week = getCurrentWeekDays();
       const firstDayOfWeek = week[0];
@@ -607,53 +684,55 @@ export default {
     </div>
 
     <!--CHART -->
+    <div class="float-right mx-4" style="width: 100px">
+      <Select_Advanced
+        required
+        :options="data.cycle"
+        :modelValue="data.modelCycle"
+        style="height: 40px"
+        @searchSelect="
+          async (value) => (
+            await refresh(),
+            (data.cycle = data.cycle.filter((value1, index) => {
+              console.log(value1, value);
+              return value1.name.includes(value) || value.length == 0;
+            })),
+            console.log('searchSlect', value.length)
+          )
+        "
+        @chose="
+          (value, value1) => (
+            (selectedOptionCycle = value), (data.modelCycle = value1.name)
+          )
+        "
+      />
+    </div>
     <div class="mb-5 p-0 mx-4">
-      <div
-        class="border mt-2"
-        style="border-radius: 5px"
-        v-if="showchart == 'appointment'"
-      >
+      <div class="mt-2" v-if="showchart == 'appointment'">
         <!-- CYCLE -->
-        <div class="float-right m-2" style="width: 100px">
-          <Select_Advanced
-            required
-            :options="data.cycle"
-            :modelValue="data.modelCycle"
-            style="height: 40px"
-            @searchSelect="
-              async (value) => (
-                await refresh(),
-                (data.cycle = data.cycle.filter((value1, index) => {
-                  console.log(value1, value);
-                  return value1.name.includes(value) || value.length == 0;
-                })),
-                console.log('searchSlect', value.length)
-              )
-            "
-            @chose="
-              (value, value1) => (
-                (selectedOptionCycle = value), (data.modelCycle = value1.name)
-              )
-            "
-          />
-        </div>
+
         <!--Chart Appointment -->
         <div class="mt-5" v-if="overview && showchart == 'appointment'">
-          <h5 class="text-center">Biểu đồ thể hiện trạng thái chăm sóc</h5>
-
-          <apexchart
-            :options="chartOptionsAppointment"
-            :series="chartSeriesAppointment.data"
-            v-if="overview && showchart == 'appointment'"
-            height="400"
-          />
-          <apexchart
-            class="mt-5"
-            :options="chartOptionsAppointment1"
-            :series="chartSeriesAppointment1"
-            v-if="overview && showchart == 'appointment'"
-            height="400"
-          />
+          <div class="border-box">
+            <h5 class="text-center mt-2">
+              Biểu đồ thể hiện trạng thái chăm sóc
+            </h5>
+            <apexchart
+              :options="chartOptionsAppointment"
+              :series="chartSeriesAppointment.data"
+              v-if="overview && showchart == 'appointment'"
+              height="400"
+            />
+          </div>
+          <div class="mt-3 border-box">
+            <apexchart
+              class="mt-5"
+              :options="chartOptionsAppointment1"
+              :series="chartSeriesAppointment1"
+              v-if="overview && showchart == 'appointment'"
+              height="400"
+            />
+          </div>
         </div>
       </div>
 
