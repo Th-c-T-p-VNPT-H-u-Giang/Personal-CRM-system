@@ -97,7 +97,7 @@ export default {
         showSweetAlert();
         selectedOptionStatus.value = 0;
       }
-      props.item.StatusTaskId = selectedOptionStatus;
+      props.item.StatusTaskId = selectedOptionStatus.value;
     });
 
     const deleteStatusTask = async (_id) => {
