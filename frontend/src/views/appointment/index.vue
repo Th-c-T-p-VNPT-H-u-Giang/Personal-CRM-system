@@ -442,7 +442,7 @@ export default {
       <router-link :to="{ name: 'Assignment' }">
         <span class="size-17">Phân công</span>
       </router-link>
-      <router-link :to="{ name: 'Assignment' }" class="active-menu">
+      <router-link :to="{ name: '' }" class="active-menu">
         <span class="size-17">Lịch hẹn</span>
       </router-link>
     </div>
