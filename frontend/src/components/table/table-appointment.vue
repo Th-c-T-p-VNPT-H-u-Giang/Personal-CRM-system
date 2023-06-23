@@ -34,6 +34,10 @@ export default {
       type: Array,
       default: [],
     },
+    activeCheck: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup(props, ntx) {},
 };
@@ -52,12 +56,13 @@ export default {
             v-model="selectAll[0].checked"
             @click="$emit('selectAll', selectAll[0].checked)"
             class="d-flex align-items-center size-16"
+            v-if="activeCheck == true"
           />
         </th>
         <th>Stt</th>
         <th>Khách hàng</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-        <!-- <th>Trạng thái</th> -->
+        <th>Trạng thái</th>
         <th v-if="activeAction == true">Hành động</th>
       </tr>
     </thead>
@@ -70,12 +75,13 @@ export default {
             v-model="item.checked"
             @click="$emit('selectOne', item._id, item)"
             class="d-flex align-items-center size-16"
+            v-if="activeCheck == true"
           />
         </td>
         <td>{{ index + 1 }}</td>
         <td>{{ cus }}</td>
         <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
-        <!-- <td>{{ item.Status_App.name }}</td> -->
+        <td>{{ item.Status_App.name }}</td>
         <td class="" v-if="activeAction == true">
           <div class="d-flex align-items-center">
             <!-- <button

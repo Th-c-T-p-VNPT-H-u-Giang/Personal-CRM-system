@@ -156,51 +156,73 @@ exports.findAll = async (req, res, next) => {
     try {
         const documents = await Task.findAll({
             include: [
-            {
+              {
                 model: Employee,
-            },
-            {
+                include: [
+                  {
+                    model: Position,
+                  },
+                  {
+                    model: Unit,
+                    include: [
+                      {
+                        model: Department,
+                        include: [
+                          {
+                            model: Center_VNPTHG,
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  // Unit,
+                ],
+              },
+              {
                 model: Status_Task,
                 // attribute: ['status','reason']
-            },
-            {
+              },
+              {
                 model: Customer,
-                include: [{
-                    model: Customer_Types,
-                },
-                {
-                    model: Customer_Work,
-                    include: [{
-                        model: Company_KH,
-                    }]
-                },
-                {
-                    model: Habit,
-                },
-                {
-                    model: Event,
-                }
-                ]
-            },
-            {
-                model: Cycle,
-            },
-            {
-                model:Appointment,
                 include: [
-                    {
-                        model: Status_App
-                    }
-                ]
-            },
-            {
+                  {
+                    model: Customer_Types,
+                  },
+                  {
+                    model: Customer_Work,
+                    include: [
+                      {
+                        model: Company_KH,
+                      },
+                    ],
+                  },
+                  {
+                    model: Habit,
+                  },
+                  {
+                    model: Event,
+                  },
+                ],
+              },
+              {
+                model: Cycle,
+              },
+              {
+                model: Appointment,
+                include: [
+                  {
+                    model: Status_App,
+                  },
+                ],
+              },
+              {
                 model: Evaluate,
-            },
-            {
+              },
+              {
                 model: Comment,
-            },
-            ]
-        });
+              },
+            ],
+          });
         // console.log("chieu dai", documents.length);
         // for(let i =0; i< documents.length; i++){
         //     console.log("dl neeee",documents[i]);

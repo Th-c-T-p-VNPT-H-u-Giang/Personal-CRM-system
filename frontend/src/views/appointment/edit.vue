@@ -54,9 +54,6 @@ import {
   alert_info,
 } from "../common/import.js";
 export default {
-  components: {
-    Select_Advanced,
-  },
   props: {
     item: {
       type: Object,
@@ -67,7 +64,7 @@ export default {
     Table,
     Pagination,
     Dropdown,
-    Select,
+    Select_Advanced,
     Search,
   },
   setup(props, ctx) {
@@ -108,7 +105,7 @@ export default {
         showSweetAlert();
         selectedOptionStatus.value = 0;
       }
-      props.item.StatusAppId = selectedOptionStatus;
+      props.item.StatusAppId = selectedOptionStatus.value;
     });
     const search = async (value) => {
       console.log("a", value, status_apps.status_app);
@@ -118,6 +115,11 @@ export default {
         return value1.name.includes(value) || value.length == 0;
       });
       console.log("searchSlect", value.length);
+    };
+    const edit = () => {
+      props.item.StatusAppId = selectedOptionStatus.value;
+      console.log(props.item.StatusAppId, "đq", selectedOptionStatus.value);
+      ctx.emit("edit", props.item);
     };
 
     const refresh = async () => {
@@ -141,6 +143,7 @@ export default {
       search,
       selectedOptionStatus,
       status_apps,
+      edit,
     };
   },
 };
@@ -223,12 +226,12 @@ export default {
             </div>
             <button
               type="button"
-              class="btn btn-primary px-3 py-2"
+              class="btn btn-warning px-3 py-2"
               style="font-size: 14px"
-              @click="create"
+              @click="edit()"
               id="add"
             >
-              <span>Thêm</span>
+              <span>Chỉnh sửa</span>
             </button>
           </form>
         </div>

@@ -21,6 +21,7 @@ import Employee from "../../services/employee.service";
 import Customer from "../../services/customer.service";
 import Employees_Task from "../../services/task_employee.service";
 import Appointment from "../../services/appointment.service";
+import Status_App from "../../services/status_app.service";
 import StatusTask from "../../services/status_task.service";
 import Evaluate from "../../services/evaluate.service";
 import AddAppointment from "../appointment/add.vue";
@@ -98,29 +99,64 @@ export default {
       customer: {
         name: "",
       },
+      task: [
+        {
+          _id: "",
+          start_date: "",
+          end_date: "",
+          content: "",
+          Customer: {
+            _id: "",
+            name: "",
+          },
+          cycleId: "",
+          Cycle: {
+            _id: "",
+            name: "",
+          },
+          Employee: {
+            _id: "",
+            name: "",
+          },
+          Status_Task: {
+            _id: "",
+            name: "",
+          },
+          Appointments: {
+            _id: "",
+            date_time: "",
+            content: "",
+            Status_App: {
+              _id: "",
+              name: "",
+            },
+          },
+          Evaluate: {
+            _id: "",
+            star: "",
+          },
+          Comment: {
+            _id: "",
+            content: "",
+          },
+        },
+      ],
+      employee: {},
     });
     const route = useRoute();
     const router = useRouter();
     const params = route.params.id;
-
+    const arrayCheck = reactive({ data: [] });
     // computed
     const toString = computed(() => {
       console.log("Starting search");
-      if (data.choseSearch == "name") {
+      if (data.choseSearch == "status") {
         return data.items.map((value, index) => {
-          return [value.name].join("").toLocaleLowerCase();
+          return [value.Status_App.name].join("").toLocaleLowerCase();
         });
-      } else if (data.choseSearch == "email") {
+      } else if (data.choseSearch == "date_time") {
         return data.items.map((value, index) => {
-          return [value.email].join("").toLocaleLowerCase();
-        });
-      } else if (data.choseSearch == "phone") {
-        return data.items.map((value, index) => {
-          return [value.phone].join("").toLocaleLowerCase();
-        });
-      } else {
-        return data.items.map((value, index) => {
-          return [value.name, value.email, value.phone].join("").toLocaleLowerCase();
+          return [value.date_time].join("").toLocaleLowerCase();
         });
       }
     });
@@ -158,6 +194,11 @@ export default {
       } else return data.items.value;
     });
 
+    const status_apps = reactive({ status_app: [] });
+
+    const entryValueStatus = ref(""); //id
+    const entryNameStatus = ref("Lịch hẹn");
+
     // // methods
     const create = async () => {
       //await refresh();
@@ -166,7 +207,7 @@ export default {
     };
 
     const update = async (item) => {
-      const result = await http_update(Task, editValue._id, editValue);
+      const result = await http_update(Appointment, editValue._id, editValue);
       if (!result.error) {
         alert_success(`Sửa phân công`, `${result.msg}`);
         refresh();
@@ -176,22 +217,30 @@ export default {
     };
     const edit = async (editValue) => {
       console.log("edit", editValue);
+      // const status_appId = reactive({ status_appID: "" });
+      // status_appId.status_appID = editValue;
+      const newData = reactive({ data: {} });
+      newData.data = editValue;
+      newData.data.StatusAppId = newData.data.StatusAppId.value;
+      console.log("newData:", newData.data);
       const result = await http_update(Appointment, editValue._id, editValue);
       console.log("ne", result);
       if (!result.error) {
-        alert_success(`Sửa phân công`, `${result.msg}`);
+        alert_success(`Sửa lịch hẹn`, `${result.msg}`);
         refresh();
       } else if (result.error) {
-        alert_error(`Sửa phân công`, `${result.msg}`);
+        alert_error(`Sửa lịch hẹn`, `${result.msg}`);
       }
     };
 
     const refresh = async () => {
       // data.evaluate = await http_getAll(Evaluate);
       data.customer = await http_getOne(Task, params);
+      data.task = await http_getOne(Task, params);
       data.customer = data.customer.Customer.name;
       data.items = await Appointment.findAllAppointment(params);
-      console.log("Dl", data.customer);
+      console.log("Dl", data.task);
+      status_apps.status_app = await http_getAll(Status_App);
 
       // data.items = await data.items.Appointments;
       // console.log("lich hen", data.items.Status_App._id);
@@ -201,10 +250,124 @@ export default {
       for (const value of data.items) {
         value.date_time_format = formatDateTime(value.date_time);
       }
+      data.items = data.items.map((value, index) => {
+        return {
+          ...value,
+          value: value._id,
+        };
+      });
+      for (let value of data.items) {
+        value.checked = false;
+      }
+      arrayCheck.data = [];
+      data.selectAll[0].checked = false;
     };
-
+    const handleSelectAll = (value) => {
+      arrayCheck.data = [];
+      if (value == false) {
+        for (let value1 of data.items) {
+          value1.checked = true;
+          arrayCheck.data.push(value1);
+        }
+      } else {
+        for (let value1 of data.items) {
+          value1.checked = false;
+          const index = arrayCheck.data.indexOf(value1._id);
+          if (index !== -1) {
+            arrayCheck.data.splice(index, 1);
+          }
+        }
+      }
+      console.log("arrayCheck:", arrayCheck.data);
+    };
+    const handleSelectOne = (id, item) => {
+      if (item.checked == false) {
+        arrayCheck.data.push(item);
+      } else {
+        arrayCheck.data = arrayCheck.data.filter((value, index) => {
+          console.log(value._id != id);
+          return value._id != id;
+        });
+      }
+      console.log("ArrayCheckOne:", arrayCheck.data, item.checked);
+      data.selectAll[0].checked = false;
+    };
     // handle http methods
-
+    //XÓA 1
+    const handleDelete = async (id, item) => {
+      console.log("D id & item:", id, item);
+      const isConfirmed = await alert_delete(
+        "Xóa",
+        `Bạn có chắc là xóa lịch hẹn này không!!`
+      );
+      if (isConfirmed) {
+        // 1***** xem thay đổi Appoiment cho phù hợp
+        const rsAppointment = await http_deleteOne(Appointment, id);
+        console.log(rsAppointment);
+        if (rsAppointment.error) {
+          alert_error("Lỗi ", rsAppointment.msg);
+        } else {
+          await refresh();
+          alert_success("Thành công", "Xóa lịch hẹn thành công");
+        }
+      }
+    };
+    //XÓA NHIỀU
+    const deleteMany = async () => {
+      console.log("delete many");
+      try {
+        //Mảng lịch hẹn sẽ xóa
+        if (arrayCheck.data.length == 0) {
+          alert_warning("Bạn chưa chọn lịch hẹn", "");
+          return;
+        }
+        let contentAlert = `<p>Bạn có muốn xoá tất cả lịch hẹn này không?
+          </p><p>Tổng số lịch hẹn sẽ xoá là:
+           <span style="color: blue;">${arrayCheck.data.length}</span></p>
+            <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Ngày hẹn</th>
+            <th>Nội dung</th>
+            <th>Địa điểm</th>
+            <th>Chú thích</th>
+            <th>Trạng thái</th>
+          </tr>
+        </thead> <tbody>`;
+        for (let value of arrayCheck.data) {
+          console.log(value);
+          contentAlert += `<tr>
+            <td>${value.date_time}</td>
+            <td>${value.content}</td>
+            <td>  ${value.place} </td>
+            <td>  ${value.note}</td>
+            <td>  ${value.Status.name}</td>
+          </tr>`;
+        }
+        contentAlert += `</tbody>
+      </table>`;
+        const isConfirmed = await alert_delete_wide(`Xoá nhiều lịch hẹn`, contentAlert);
+        if (isConfirmed) {
+          let checkDeleteAll = false;
+          for (let valueDelete of arrayCheck.data) {
+            // 1***** xem thay đổi Appoiment cho phù hợp
+            const rsAppointment = await http_deleteOne(Appointment, valueDelete._id);
+            if (rsAppointment.error) {
+              alert_error("Lỗi ", rsAppointment.msg);
+              checkDeleteAll = false;
+            } else {
+              checkDeleteAll = true;
+            }
+          }
+          if (checkDeleteAll) {
+            await refresh();
+            alert_success("Thành công", "Xóa lịch hẹn thành công");
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
     // Hàm callback được gọi trước khi component được mount (load)
     onMounted(async () => {
       await refresh();
@@ -217,6 +380,12 @@ export default {
       edit,
       setPages,
       data,
+      handleSelectOne,
+      handleSelectAll,
+      deleteMany,
+      handleDelete,
+      entryValueStatus,
+      entryNameStatus,
     };
   },
 };
@@ -226,8 +395,14 @@ export default {
     <!-- Filter -->
     <!-- Search -->
     <!-- <div class="border-hr mb-3"></div> -->
+    <div class="d-flex menu my-3 mx-3 justify-content-end">
+      <router-link :to="{ name: 'Assignment' }">
+        <span class="size-17">Phân công</span>
+      </router-link>
+    </div>
+    <div class="border-hr mb-3"></div>
+
     <div class="d-flex flex-column mt-3">
-      <span class="mx-3 mb-3 h6">Lọc lịch hẹn</span>
       <div class="d-flex mx-3">
         <div class="form-group w-100"></div>
         <div class="form-group w-100 ml-3">
@@ -249,8 +424,8 @@ export default {
         <div class="form-group w-100 ml-3">
           <InputFilter
             @update:entryValue="(value) => (startdateValue = value)"
-            :title="`Ngày bắt đầu`"
-            :entryValue="`Ngày bắt đầu`"
+            :title="`Ngày hẹn`"
+            :entryValue="`Ngày hẹn`"
             style="height: 35px"
           />
         </div>
@@ -301,16 +476,12 @@ export default {
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
           :options="[
             {
-              _id: 'nameCus',
-              name: 'Tìm kiếm theo tên khách hàng',
+              _id: 'date_time',
+              name: 'Tìm kiếm theo ngày hẹn',
             },
             {
-              _id: 'statustask',
+              _id: 'status',
               name: 'Tìm kiếm theo trạng thái',
-            },
-            {
-              _id: 'cycle',
-              name: 'Tìm kiếm theo chu kỳ',
             },
           ]"
         />
@@ -334,7 +505,12 @@ export default {
         >
           <span id="add" class="mx-2">Thêm</span>
         </button>
-        <Add @create="create" :taskId="params" :task="data.customer" />
+        <Add
+          @create="create"
+          :taskId="params"
+          :task="data.task"
+          :customer="data.customer"
+        />
       </div>
     </div>
     <!-- Table -->
@@ -345,7 +521,7 @@ export default {
       :labels="['date_time_format', 'place', 'content', 'note']"
       :selectAll="data.selectAll"
       @selectAll="(value) => handleSelectAll(value)"
-      @selectOne="(id, item) => handlSelectOne(id, item)"
+      @selectOne="(id, item) => handleSelectOne(id, item)"
       @delete="handleDelete"
       @edit="(value, value1) => ((data.editValue = value), (data.activeEdit = value1))"
     />

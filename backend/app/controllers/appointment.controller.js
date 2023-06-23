@@ -24,7 +24,7 @@ const getDecrypt = (name) => {
 // checked
 exports.create = async (req, res, next) => {
     console.log("thong tinnnnnn", req.body);
-    if (Object.keys(req.body).length === 6) {
+    if (Object.keys(req.body).length >= 5) {
         const { date_time, content, note, place, taskId} = req.body;
         var StatusAppId;
         const appointments = await Appointment.findAll();
@@ -170,7 +170,8 @@ exports.deleteAll = async (req, res, next) => {
 }
 
 exports.update = async (req, res, next) => {
-    const { date_time, content, taskId, place, note, StatusAppId } = req.body;
+    console.log("hahaha",req.body)
+    const { date_time, content, place, note, StatusAppId } = req.body;
     try {
         let appointments = [await Appointment.findOne({
             where: {
@@ -180,7 +181,7 @@ exports.update = async (req, res, next) => {
 
         appointments = appointments.filter(
             (value, index) => {
-                return value.date_time == date_time && value.taskId == taskId
+                return value.date_time == date_time
                 && value.place == place && value.note == note && value.StatusAppId == StatusAppId;
             }
         )
@@ -191,6 +192,7 @@ exports.update = async (req, res, next) => {
                 content: content,
                 place: place,
                 note:  note,
+                StatusAppId: StatusAppId,
             }, { where: { _id: req.params.id }, returning: true, });
             return res.send({
                 error: false,
@@ -211,22 +213,29 @@ exports.update = async (req, res, next) => {
     }
 }
 
+
+
 exports.finAllAppointment = async (req, res, next) => {
     try {
-        const document = await Appointment.findAll({
-            where: {
-                taskId: req.params.id,
-            }
+      const document = await Appointment.findAll({
+        where: {
+          taskId: req.params.id,
+        },
+      });
+      for (let i = 0; i < document.length; i++) {
+        var status = await Status_App.findOne({
+            where: {_id: document[i].dataValues.StatusAppId}
         });
-        return res.send(document);
+        status.dataValues.name = getDecrypt(status.dataValues.name);
+        console.log("Status:", status.dataValues.name);
+        document[i].dataValues.Status_App = status.dataValues;
+      }
+      console.log(document);
+      return res.send(document);
     } catch (error) {
-        return next(
-            createError(400, 'Error findOne')
-        )
+      return next(createError(400, "Error findOne"));
     }
-}
-
-
+  };
 
 
 

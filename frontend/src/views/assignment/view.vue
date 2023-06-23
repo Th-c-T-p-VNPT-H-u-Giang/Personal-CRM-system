@@ -22,8 +22,11 @@ export default {
 
     const showSweetAlert = async () => {
       const { value: formValues } = await Swal.fire({
-        title: "Thêm phòng mới",
+        title: "Chỉnh sửa ",
         html: `
+        <input id="my-input1" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
+        <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
+        <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
         <select id="my-select-center" class="swal2-input form-control  ml-3 mb-3 mx-2" style="width:92%">
         <option value="">Trung tâm</option>
         ${centers.center
@@ -330,10 +333,12 @@ export default {
               </table>  -->
               <Table
                 :items="viewValue.Appointments"
-                :cus="viewValue"
-                :borderTableAll="true"
-                :fields="['Ngày hẹn', 'Địa điểm', 'Nội dung', 'Lưu ý']"
+                :cus="viewValue.Customer.name"
+                :fields="['Ngày hẹn', 'Địa điểm', 'Nội dung lịch hẹn', 'Chú thích']"
                 :labels="['date_time', 'place', 'content', 'note']"
+                :activeAction="false"
+                :activeCheck="false"
+                :borderTableAll="true"
               />
 
               <!-- <p v-if="viewValue.Appointments.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p> -->

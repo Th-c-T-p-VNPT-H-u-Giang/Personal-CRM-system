@@ -62,6 +62,10 @@ export default {
       type: Object,
       default: {},
     },
+    customer: {
+      type: String,
+      default: "",
+    },
   },
   setup(props, ctx) {
     const data = reactive({
@@ -105,6 +109,7 @@ export default {
 </script>
 
 <template>
+  {{ task.Employee }}
   <!-- The Modal -->
   <div class="modal" id="modal-add">
     <div class="modal-dialog">
@@ -119,12 +124,19 @@ export default {
           <form action="/action_page.php" class="was-validated">
             <div class="form-group">
               <label for="name">Khách hàng(<span style="color: red">*</span>):</label>
-              <input type="text" class="form-control" id="name" name="name" disabled />
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                :value="customer"
+                disabled
+              />
             </div>
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label for="name">Nhân viên(<span style="color: red">*</span>):</label>
-              <input type="text" class="form-control" id="name" name="name" disabled />
-            </div>
+              <input type="text" class="form-control" name="name" disabled />
+            </div> -->
             <div class="form-group">
               <label for="name">Ngày hẹn(<span style="color: red">*</span>):</label>
               <input
