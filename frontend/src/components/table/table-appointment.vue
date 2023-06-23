@@ -26,6 +26,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    selectAll: {
+      type: Array,
+      default: [],
+    },
     cus: {
       type: Array,
       default: [],
@@ -39,19 +43,39 @@ export default {
   <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
     <thead>
       <tr>
+        <th>
+          <input
+            type="checkbox"
+            name=""
+            id=""
+            :checked="selectAll[0].checked == true"
+            v-model="selectAll[0].checked"
+            @click="$emit('selectAll', selectAll[0].checked)"
+            class="d-flex align-items-center size-16"
+          />
+        </th>
         <th>Stt</th>
         <th>Khách hàng</th>
         <th v-for="(value, index) in fields" :key="index">{{ value }}</th>
-        <th>Trạng thái</th>
+        <!-- <th>Trạng thái</th> -->
         <th v-if="activeAction == true">Hành động</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="(item, index) in items" :key="index">
+        <td>
+          <input
+            type="checkbox"
+            :checked="item.checked == true"
+            v-model="item.checked"
+            @click="$emit('selectOne', item._id, item)"
+            class="d-flex align-items-center size-16"
+          />
+        </td>
         <td>{{ index + 1 }}</td>
-        <td>{{ cus.Customer.name }}</td>
+        <td>{{ cus }}</td>
         <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
-        <td>{{ item.Status_App.name }}</td>
+        <!-- <td>{{ item.Status_App.name }}</td> -->
         <td class="" v-if="activeAction == true">
           <div class="d-flex align-items-center">
             <!-- <button
@@ -72,7 +96,7 @@ export default {
               type="button"
               class="mx-2 format-btn"
               data-toggle="modal"
-              data-target="#model-form-wizard-appointment"
+              data-target="#modal-edit"
             >
               <span
                 id="edit"
@@ -89,20 +113,6 @@ export default {
             >
               delete
             </span>
-            <button
-              type="button"
-              class="mx-2 format-btn"
-              data-toggle="modal"
-              data-target="#modal-addAppointment"
-            >
-              <span
-                id="appointment"
-                class="material-symbols-outlined d-flex align-items-center justify-content-center"
-                @click="$emit('appointment', item._id, item)"
-              >
-                schedule
-              </span>
-            </button>
           </div>
         </td>
       </tr>

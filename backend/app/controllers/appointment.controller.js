@@ -170,7 +170,7 @@ exports.deleteAll = async (req, res, next) => {
 }
 
 exports.update = async (req, res, next) => {
-    const { date_time, content, taskId } = req.body;
+    const { date_time, content, taskId, place, note, StatusAppId } = req.body;
     try {
         let appointments = [await Appointment.findOne({
             where: {
@@ -180,7 +180,8 @@ exports.update = async (req, res, next) => {
 
         appointments = appointments.filter(
             (value, index) => {
-                return value.date_time == date_time && value.taskId == taskId;
+                return value.date_time == date_time && value.taskId == taskId
+                && value.place == place && value.note == note && value.StatusAppId == StatusAppId;
             }
         )
 
@@ -188,6 +189,8 @@ exports.update = async (req, res, next) => {
             const document = await Appointment.update({
                 date_time: date_time,
                 content: content,
+                place: place,
+                note:  note,
             }, { where: { _id: req.params.id }, returning: true, });
             return res.send({
                 error: false,
@@ -204,6 +207,21 @@ exports.update = async (req, res, next) => {
         console.log(error);
         return next(
             createError(400, 'Error update')
+        )
+    }
+}
+
+exports.finAllAppointment = async (req, res, next) => {
+    try {
+        const document = await Appointment.findAll({
+            where: {
+                taskId: req.params.id,
+            }
+        });
+        return res.send(document);
+    } catch (error) {
+        return next(
+            createError(400, 'Error findOne')
         )
     }
 }

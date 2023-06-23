@@ -335,7 +335,7 @@ export default {
                 :fields="['Ngày hẹn', 'Địa điểm', 'Nội dung', 'Lưu ý']"
                 :labels="['date_time', 'place', 'content', 'note']"
               />
-              <!-- <EditAppointment /> -->
+
               <!-- <p v-if="viewValue.Appointments.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p> -->
             </div>
           </div>
@@ -373,5 +373,8 @@ export default {
 
 .my-table tbody tr:nth-child(even) {
   font-size: 13px;
+}
+.modal-parent {
+  position: relative;
 }
 </style>

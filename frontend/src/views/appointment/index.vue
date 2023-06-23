@@ -1,58 +1,44 @@
 <script>
-import Add from "./add.vue";
+import { useRouter, useRoute } from "vue-router";
+import Table from "../../components/table/table-appointment.vue";
+import Pagination from "../../components/table/pagination_duy.vue";
+import Dropdown from "../../components/form/dropdown.vue";
+import Select from "../../components/form/select.vue";
+import Search from "../../components/form/search.vue";
+import SelectFilter from "../../components/form/select_task_truc.vue";
+import InputFilter from "../../components/form/form_filter_truc.vue";
+import Add from "../appointment/add.vue";
 import Edit from "./edit.vue";
+import View from "./view.vue";
+import Select_Advanced from "../../components/form/select_advanced.vue";
+import Swal from "sweetalert2";
+import { reactive, computed, watch, ref, onBeforeMount, onMounted } from "vue";
+// services
+
+import Task from "../../services/task.service";
+import Cycle from "../../services/cycle.service";
+import Employee from "../../services/employee.service";
+import Customer from "../../services/customer.service";
+import Employees_Task from "../../services/task_employee.service";
+import Appointment from "../../services/appointment.service";
+import StatusTask from "../../services/status_task.service";
+import Evaluate from "../../services/evaluate.service";
+import AddAppointment from "../appointment/add.vue";
 import {
-  // components
-  Table,
-  Pagination,
-  Dropdown,
-  Select,
-  Search,
-  DeleteAll,
-  Select_Advanced,
-  // compositions
-  reactive,
-  computed,
-  watch,
-  ref,
-  onBeforeMount,
-  // router
-  useRouter,
-  // format date or datetime
-  formatDateTime,
-  formatDate,
-  // service
-  Event,
-  Habit,
-  Account,
-  Appointment,
-  Center_VNPT,
-  Company_KH,
-  Customer_Types,
-  Customer_Work,
-  Customer,
-  Cycle,
-  Department,
-  Employee,
-  Log,
-  Permission,
-  Position,
-  Role,
-  Task,
-  Unit,
-  // http service
   http_getAll,
   http_create,
   http_getOne,
   http_deleteOne,
   http_update,
-  // alert
+} from "../../assets/js/common.http";
+import {
   alert_success,
   alert_error,
   alert_delete,
   alert_warning,
-  alert_info,
-} from "../common/import.js";
+  alert_delete_wide,
+} from "../../assets/js/common.alert";
+import { formatDate, formatDateTime } from "../../assets/js/common";
 export default {
   components: {
     Table,
@@ -60,22 +46,29 @@ export default {
     Dropdown,
     Select,
     Search,
+    SelectFilter,
+    InputFilter,
+    Select_Advanced,
     Add,
-    DeleteAll,
     Edit,
+    View,
   },
-  props: {
-    taskObject: {
-      type: Object,
-      default: {
-        customer: "",
-        employee: "",
-      },
-    },
-  },
-  setup(ctx, props) {
+  setup(ctx) {
     const data = reactive({
-      items: [],
+      items: [
+        {
+          _id: "",
+          date_time: "",
+          content: "",
+          note: "",
+          place: "",
+          StatusAppId: "",
+          Status_App: {
+            _id: "",
+            name: "",
+          },
+        },
+      ],
       entryValue: 5,
       numberOfPages: 1,
       totalRow: 0,
@@ -83,30 +76,57 @@ export default {
       endRow: 0,
       currentPage: 1,
       searchText: "",
-      itemAdd: {
-        date_time: "",
-        content: "",
-        taskId: "",
-        statusId: "",
-        reason: "",
-        ...props.taskObject,
-      },
       activeEdit: false,
-      editValue: {},
+      selectAll: [
+        {
+          checked: false,
+        },
+      ],
+      costomerName: "",
+      editValue: {
+        _id: "",
+        date_time: "",
+        place: "",
+        content: "",
+        note: "",
+        StatusAppId: "",
+        Status_App: {
+          _id: "",
+          name: "",
+        },
+      },
+      customer: {
+        name: "",
+      },
     });
+    const route = useRoute();
+    const router = useRouter();
+    const params = route.params.id;
 
     // computed
     const toString = computed(() => {
       console.log("Starting search");
-      return data.items.map((value, index) => {
-        return [value.name].join("").toLocaleLowerCase();
-      });
+      if (data.choseSearch == "name") {
+        return data.items.map((value, index) => {
+          return [value.name].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "email") {
+        return data.items.map((value, index) => {
+          return [value.email].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "phone") {
+        return data.items.map((value, index) => {
+          return [value.phone].join("").toLocaleLowerCase();
+        });
+      } else {
+        return data.items.map((value, index) => {
+          return [value.name, value.email, value.phone].join("").toLocaleLowerCase();
+        });
+      }
     });
     const filter = computed(() => {
       return data.items.filter((value, index) => {
-        return toString.value[index].includes(
-          data.searchText.toLocaleLowerCase()
-        );
+        return toString.value[index].includes(data.searchText.toLocaleLowerCase());
       });
     });
     const filtered = computed(() => {
@@ -138,102 +158,107 @@ export default {
       } else return data.items.value;
     });
 
-    // methods
+    // // methods
     const create = async () => {
-      const result = await http_create(Appointment, data.itemAdd);
-      if (!result.error) {
-        alert_success(
-          `Thêm lịch hẹn`,
-          `Lịch hẹn ${result.document.name} lúc ${formatDateTime(
-            result.document.date_time
-          )} đã được tạo thành công.`
-        );
-        refresh();
-      } else if (result.error) {
-        alert_error(`Thêm lịch hẹn`, `${result.msg}`);
-      }
-    };
-    const update = (item) => {
-      console.log("updating", item);
-    };
-    const deleteOne = async (_id) => {
-      const appointment = await http_getOne(Appointment, _id);
-      const isConfirmed = await alert_delete(
-        `Xoá lịch hẹn`,
-        `Bạn có chắc chắn muốn xoá lịch ${
-          appointment.name
-        } lúc ${formatDateTime(appointment.date_time)} không ?`
-      );
-      if (isConfirmed == true) {
-        const result = await http_deleteOne(Appointment, _id);
-        alert_success(
-          `Xoá lịch hẹn`,
-          `Bạn đã xoá thành công lịch hẹn ${
-            result.document.name
-          } lúc ${formatDateTime(result.document.date_time)}.`
-        );
-        refresh();
-      }
+      //await refresh();
+      console.log("new task");
+      await refresh();
     };
 
+    const update = async (item) => {
+      const result = await http_update(Task, editValue._id, editValue);
+      if (!result.error) {
+        alert_success(`Sửa phân công`, `${result.msg}`);
+        refresh();
+      } else if (result.error) {
+        alert_error(`Sửa phân công`, `${result.msg}`);
+      }
+    };
     const edit = async (editValue) => {
+      console.log("edit", editValue);
       const result = await http_update(Appointment, editValue._id, editValue);
+      console.log("ne", result);
       if (!result.error) {
-        alert_success(`Sửa lịch hẹn`, `${result.msg}`);
+        alert_success(`Sửa phân công`, `${result.msg}`);
         refresh();
       } else if (result.error) {
-        alert_error(`Sửa lịch hẹn`, `${result.msg}`);
+        alert_error(`Sửa phân công`, `${result.msg}`);
       }
-    };
-
-    const router = useRouter();
-
-    const view = (_id) => {
-      console.log("view", _id);
-      router.push({ name: "Event.view", params: { id: _id } });
     };
 
     const refresh = async () => {
-      data.items = await http_getAll(Appointment);
+      // data.evaluate = await http_getAll(Evaluate);
+      data.customer = await http_getOne(Task, params);
+      data.customer = data.customer.Customer.name;
+      data.items = await Appointment.findAllAppointment(params);
+      console.log("Dl", data.customer);
+
+      // data.items = await data.items.Appointments;
+      // console.log("lich hen", data.items.Status_App._id);
+      // for (let value of data.items) {
+      //   value.checked = false;
+      // }
+      for (const value of data.items) {
+        value.date_time_format = formatDateTime(value.date_time);
+      }
     };
 
-    const getOne = async (_id) => {
-      try {
-        const result = await http_getOne(Appointment, _id);
-        return result;
-      } catch (error) {
-        
-      }
-    }
+    // handle http methods
 
     // Hàm callback được gọi trước khi component được mount (load)
-    onBeforeMount(async () => {
-      refresh();
-      console.log(data.items);
+    onMounted(async () => {
+      await refresh();
     });
 
-    // watch
     return {
-      data,
-      setPages,
+      params,
       create,
       update,
-      deleteOne,
       edit,
-      view,
-      getOne
+      setPages,
+      data,
     };
   },
 };
 </script>
-
 <template>
   <div class="border-box d-flex flex-column ml-2">
     <!-- Filter -->
     <!-- Search -->
-    <div class="my-3 mx-3 h6"><span>Danh sách lịch hẹn</span></div>
+    <!-- <div class="border-hr mb-3"></div> -->
+    <div class="d-flex flex-column mt-3">
+      <span class="mx-3 mb-3 h6">Lọc lịch hẹn</span>
+      <div class="d-flex mx-3">
+        <div class="form-group w-100"></div>
+        <div class="form-group w-100 ml-3">
+          <!-- <Select
+            :title="`Trạng thái`"
+            :entryValue="entryNameStatusTask"
+            :options="status_tasks.status_task"
+            @update:entryValue="
+              (value, value1) => (
+                updateEntryValueStatusTask(value), (entryNameStatusTask = value1.name)
+              )
+            "
+            @refresh="
+              (entryNameStatusTask = 'Trạng thái'), updateEntryValueStatusTask('')
+            "
+            style="height: 35px"
+          /> -->
+        </div>
+        <div class="form-group w-100 ml-3">
+          <InputFilter
+            @update:entryValue="(value) => (startdateValue = value)"
+            :title="`Ngày bắt đầu`"
+            :entryValue="`Ngày bắt đầu`"
+            style="height: 35px"
+          />
+        </div>
+        <div class="form-group"></div>
+      </div>
+    </div>
     <div class="border-hr mb-3"></div>
-    <div class="d-flex justify-content-between mx-3 my-3">
+    <div class="d-flex justify-content-between mx-3 mb-3">
       <div class="d-flex justify-content-start">
         <Select
           class="d-flex justify-content-start"
@@ -254,18 +279,40 @@ export default {
               name: 30,
               value: 30,
             },
-            {
-              name: 'All',
-              value: 'All',
-            },
           ]"
+          style="width: 125px"
+          :title="`Số bản ghi`"
           @update:entryValue="(value) => (data.entryValue = value)"
           :entryValue="data.entryValue"
+          @refresh="data.entryValue = 'All'"
         />
         <Search
           class="ml-3"
           style="width: 300px"
           @update:searchText="(value) => (data.searchText = value)"
+          :entryValue="data.searchText"
+          @choseSearch="
+            async (value) => (
+              console.log('search ........'),
+              (data.choseSearch = value),
+              (data.currentPage = 1)
+            )
+          "
+          @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
+          :options="[
+            {
+              _id: 'nameCus',
+              name: 'Tìm kiếm theo tên khách hàng',
+            },
+            {
+              _id: 'statustask',
+              name: 'Tìm kiếm theo trạng thái',
+            },
+            {
+              _id: 'cycle',
+              name: 'Tìm kiếm theo chu kỳ',
+            },
+          ]"
         />
       </div>
       <div class="d-flex align-items-start">
@@ -274,6 +321,7 @@ export default {
           class="btn btn-danger mr-3"
           data-toggle="modal"
           data-target="#model-delete-all"
+          @click="deleteMany()"
         >
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
@@ -282,28 +330,24 @@ export default {
           type="button"
           class="btn btn-primary"
           data-toggle="modal"
-          data-target="#model-add"
+          data-target="#modal-add"
         >
           <span id="add" class="mx-2">Thêm</span>
         </button>
-        <Add :item="data.itemAdd" @create="create" />
+        <Add @create="create" :taskId="params" :task="data.customer" />
       </div>
     </div>
     <!-- Table -->
     <Table
       :items="setPages"
-      :fields="['Thời gian hẹn', 'Nội dung cuộc hẹn']"
-      :labels="['date_time_format', 'content']"
-      @delete="(value) => deleteOne(value)"
-      @edit="
-        async (value, value1) => (
-          (data.editValue = await getOne(value._id)),
-          (data.activeEdit = value1),
-          (data.editValue.time_duration =
-            data.editValue.date_time.toUpperCase())
-        )
-      "
-      @view="(value) => view(value)"
+      :cus="data.customer"
+      :fields="['Ngày hẹn', 'Địa điểm', 'Nội dung lịch hẹn', 'Chú thích']"
+      :labels="['date_time_format', 'place', 'content', 'note']"
+      :selectAll="data.selectAll"
+      @selectAll="(value) => handleSelectAll(value)"
+      @selectOne="(id, item) => handlSelectOne(id, item)"
+      @delete="handleDelete"
+      @edit="(value, value1) => ((data.editValue = value), (data.activeEdit = value1))"
     />
     <!-- Pagination -->
     <Pagination
@@ -315,15 +359,14 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
+    <Edit
+      :item="data.editValue"
+      :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEdit = false"
+      @edit="edit(data.editValue)"
+    />
   </div>
-  <Edit
-    :item="data.editValue"
-    :class="[data.activeEdit ? 'show-modal' : 'd-none']"
-    @cancel="data.activeEdit = false"
-    @edit="edit(data.editValue)"
-  />
 </template>
-
 <style scoped>
 .border-box {
   border: 1px solid var(--gray);
