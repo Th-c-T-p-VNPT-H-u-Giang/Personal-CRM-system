@@ -28,7 +28,7 @@ export default {
   setup(ctx) {
     const route = useRoute();
     const router = useRouter();
-    const params = route.params.id;
+    const params = ref("");
 
     const data = reactive({
       items: {},
@@ -131,8 +131,8 @@ export default {
             <td>${value.content}</td>
             <td>  ${value.place} </td>
             <td>  ${value.note}</td>
-    //value.StatusApp.name cần thay đổi cho phù hợp vs DL trả về backend
-            <td>  ${value.StatusApp.name}</td> 
+        //value.StatusApp.name cần thay đổi cho phù hợp vs DL trả về backend
+            <td>  ${value.StatusApp.name}</td>
           </tr>`;
         }
         contentAlert += `</tbody>
@@ -165,9 +165,11 @@ export default {
         console.log(error);
       }
     };
-    onMounted = async () => {
-      await refresh();
-    };
+
+    onMounted(async () => {
+      // await refresh();
+      params.value = route.params.id;
+    });
     return {
       params,
       data,

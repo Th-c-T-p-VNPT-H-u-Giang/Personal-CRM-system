@@ -71,6 +71,7 @@ export default {
       ],
       customerCare: 0,
     });
+    var uniqueTasks = {};
     const toString = computed(() => {
       console.log("Starting search");
       return data.items.map((value, index) => {
@@ -123,24 +124,47 @@ export default {
       data.evaluate = await http_getAll(Evaluate);
       data.statusTask = await http_getAll(Status_Task);
       data.customerCycle = await http_getAll(Task);
+
+      //1****
+      // Mảng nhiệm vụ ban đầu
+      console.log("Ban đầu:", data.customerCycle);
+      // Đối tượng để lưu trữ nhiệm vụ duy nhất theo từng khách hàng
+      uniqueTasks = {};
+
+      // Duyệt qua mảng nhiệm vụ và lấy nhiệm vụ duy nhất có ngày bắt đầu lớn nhất
+      for (var i = 0; i < data.customerCycle.length; i++) {
+        var task = data.customerCycle[i];
+        var customer = task["customerId"];
+
+        if (uniqueTasks.hasOwnProperty(customer)) {
+          var existingTask = uniqueTasks[customer];
+          var existingStartDate = new Date(existingTask["start_date"]);
+          var currentStartDate = new Date(task["start_date"]);
+
+          if (currentStartDate > existingStartDate) {
+            uniqueTasks[customer] = task;
+          }
+        } else {
+          uniqueTasks[customer] = task;
+        }
+      }
+      // Kết quả - Mảng nhiệm vụ duy nhất có ngày bắt đầu lớn nhất cho từng khách hàng
+      var result = Object.values(uniqueTasks);
+      console.log("111KQ:", result);
+      data.customerCycle = result;
+      console.log("C:", data.customerCycle);
+      // cộng chu kỳ
       data.customerCycle = data.customerCycle.map((value, index) => {
         return {
           ...value,
           start_date: handleCycle(value.Cycle.name, value.start_date),
         };
       });
-
-      data.cycle = [
-        { _id: "tuần", name: "tuần" },
-        { _id: "tháng", name: "tháng" },
-        { _id: "quý", name: "quý" },
-        { _id: "năm", name: "năm" },
-      ];
-
+      //dữ liệu hiển thị trên bảng
       for (let value of data.customerCycle) {
         let customer = await http_getOne(Customer, value.customerId);
-        console.log("customer:", customer);
-        console.log("start");
+        // console.log("customer:", customer);
+        // console.log("start");
         let cus = {
           content: value.content,
           cycleId: value.cycleId,
@@ -151,7 +175,12 @@ export default {
         };
         data.items.push(cus);
       }
-
+      data.cycle = [
+        { _id: "tuần", name: "tuần" },
+        { _id: "tháng", name: "tháng" },
+        { _id: "quý", name: "quý" },
+        { _id: "năm", name: "năm" },
+      ];
       // console.log("Cus:", data.customerCare, data.items);
     };
 
@@ -224,35 +253,35 @@ export default {
     //Map tính lại chu kỳ tiếp theo cho tất cả trường hợp chu kỳ
     const handleCycle = (nameCycle, date) => {
       let coming_day = moment(date, "YYYY-MM-DD");
-      console.log("Ngày bắt đầu:", coming_day.format("YYYY-MM-DD"));
+      // console.log("Ngày bắt đầu:", coming_day.format("YYYY-MM-DD"));
       var parts = nameCycle.split(" ");
       var number = parseInt(parts[0]);
       var string = parts[1];
       switch (string) {
         case "ngày":
-          console.log(`${number} ngày`);
+          console.log(` chu kỳ ${number} ngày`);
           coming_day = coming_day.add(number, "days");
-          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
+          // console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         case "tuần":
-          console.log(`${number} tuần`);
+          console.log(` chu kỳ ${number} tuần`);
           coming_day = coming_day.add(number * 7, "days");
-          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
+          // console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         case "tháng":
-          console.log(`${number} tháng`);
+          console.log(`chu kỳ ${number} tháng`);
           coming_day = coming_day.add(number, "months");
-          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
+          // console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         case "quý":
-          console.log(`${number} quý`);
+          console.log(` chu kỳ ${number} quý`);
           coming_day = coming_day.add(number * 3, "months");
-          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
+          // console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         case "năm":
-          console.log(`${number} năm`);
+          console.log(` chu kỳ ${number} năm`);
           coming_day = coming_day.add(number, "years");
-          console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
+          // console.log("Ngày kết thúc:", coming_day.format("YYYY-MM-DD"));
           break;
         default:
           console.log("Chu kỳ không hợp lệ");
