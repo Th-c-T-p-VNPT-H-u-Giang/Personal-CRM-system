@@ -1,50 +1,111 @@
 <template>
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
-    <div class="d-flex menu my-3 mx-3 justify-content-end">
-      <router-link to="/report" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']" class="size-18">
-        Khách hàng lâu chưa chăm sóc
-      </router-link>
-      <div class="mx-1"></div>
-      <router-link to="/report_assignment_staff" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-        class="size-18">
-        Khách hàng do nhân viên chăm sóc
-      </router-link>
-      <div class="mx-1"></div>
-      <router-link to="/report_customer_cycle" :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
-        class="size-18">
-        Khách hàng tới chu kì nhưng chưa chăm sóc
-      </router-link>
-      <div class="mx-1"></div>
-      <router-link to="/report_leader_customer" :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
-        class="size-18">
-        Khách hàng do lảnh đạo phụ trách
-      </router-link>
-      <div class="mx-1"></div>
-      <router-link to="/report_leader_staff" :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
-        class="size-18">
-        Nhân viên do lảnh đạo phụ trách
-      </router-link>
+    <div class="report_container">
+
+      <div class="mx-1 report__item">
+        <router-link to="/report" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']" class="">
+          <span> KHÁCH HÀNG ĐÃ LÂU CHƯA CHĂM SÓC</span>
+          <span class="material-symbols-outlined">
+            group
+          </span>
+        </router-link>
+      </div>
+
+      <div class="mx-1 report__item">
+        <router-link to="/report_assignment_staff" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+          class="">
+          <span>
+            Khách hàng do nhân viên chăm sóc
+          </span>
+          <span class="material-symbols-outlined">
+            group
+          </span>
+        </router-link>
+      </div>
+
+      <div class="mx-1 report__item">
+        <router-link to="/report_customer_cycle" :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
+          class="">
+          <span>
+            Khách hàng tới chu kì nhưng chưa chăm sóc
+          </span>
+          <span class="material-symbols-outlined">
+            group
+          </span>
+        </router-link>
+      </div>
+
+      <div class="mx-1 report__item">
+        <router-link to="/report_leader_customer" :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
+          class="">
+          <span>
+            Khách hàng do lảnh đạo phụ trách
+          </span>
+          <span class="material-symbols-outlined">
+            group
+          </span>
+        </router-link>
+      </div>
+      <div class="mx-1 report__item">
+        <router-link to="/report_leader_staff" :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
+          class="">
+          <span>
+            Nhân viên do lảnh đạo phụ trách
+          </span>
+          <span class="material-symbols-outlined">
+            group
+          </span>
+        </router-link>
+      </div>
     </div>
     <!-- Filter -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">
       <div class="d-flex justify-content-start">
-        <!-- <Select
-            class="d-flex justify-content-start"
-            :options="options"
-            @update:entryValue="handleUpdateEntryValue"
-            :entryValue="data.entryValue"
-          /> -->
-        <!-- <Search
-            class="ml-3"
-            style="width: 300px"
-            @update:searchText="handleUpdateSearchText"
-          /> -->
+        <Select class="d-flex justify-content-start" :options="[
+          {
+            name: 5,
+            value: 5,
+          },
+          {
+            name: 10,
+            value: 10,
+          },
+          {
+            name: 20,
+            value: 20,
+          },
+          {
+            name: 30,
+            value: 30,
+          },
+        ]" style="width: 125px" :title="`Số bản ghi`" @update:entryValue="handleUpdateEntryValue"
+          :entryValue="data.entryValue" @refresh="data.entryValue = 'All'" />
+        <Search class="ml-3" style="width: 300px" @update:searchText="(value) => (data.searchText = value)"
+          :entryValue="data.searchText" @choseSearch="async (value) => (
+            console.log('search ........'),
+            (data.choseSearch = value),
+            (data.currentPage = 1)
+          )
+            " @refresh="(data.entryValue = 'All'), (data.currentPage = 1)" :options="[
+    {
+      _id: 'name',
+      name: 'Tìm kiếm theo tên',
+    },
+    {
+      _id: 'email',
+      name: 'Tìm kiếm theo email',
+    },
+    {
+      _id: 'phone',
+      name: 'Tìm kiếm theo số điện thoại',
+    },
+  ]" />
       </div>
       <div class="d-flex align-items-start">
-        <button class="btn btn-warning mx-2">
+        <button class="btn btn-warning mx-2" data-toggle="modal" data-target="#model-form-mail">
           <span id="delete-all" class="">Mail</span>
         </button>
         <button type="button" class="btn btn-primary" @click="handlePrintReport">
@@ -54,15 +115,26 @@
     </div>
 
     <!-- Table -->
-    <Table :items="data.items" :fields="['Tên', 'Email', 'Sdt', 'Công việc', 'Công ty', 'Loại khách hàng']"
-      :labels="['nameCustomer', 'emailCustomer', 'phoneCustomer', 'current_position', 'nameCompany', 'nameCustomerType']"
-      @delete="handleDelete" @edit="EditEmit" :showActionList="[true, false, false]" :startRow="0" @view="view"
-      :isActiveCheckbox='false' />
+    <Table :items="setPages" :fields="[
+      'Tên',
+      'Email',
+      'Sdt',
+      'Công việc',
+      'Công ty',
+      'Loại khách hàng',
+    ]" :labels="[
+  'nameCustomer',
+  'emailCustomer',
+  'phoneCustomer',
+  'current_position',
+  'nameCompany',
+  'nameCustomerType',
+]" @delete="handleDelete" @edit="EditEmit" :showActionList="[true, false, false]" :startRow="0" @view="view"
+      :isActiveCheckbox="false" />
     <!-- Pagination -->
     <Pagination :numberOfPages="data.numberOfPages" :totalRow="data.totalRow" :startRow="data.startRow"
       :endRow="data.endRow" :currentPage="data.currentPage" @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3" />
-    
 
     <div class="container pdf-content" ref="pdfContent">
       <img src="../../assets/images/vnpt-logo1.png" class="rounded-circle" alt="Cinque Terre" style="height: 70px" />
@@ -79,7 +151,8 @@
       </div>
       <div class="text-center mt-4 font-weight-bold">
         <h3 class="font-weight-bold text-center">
-          Báo Cáo <br> Danh Sách Khách Hàng Đã Lâu Chưa Chăm Sóc
+          Báo Cáo <br />
+          Danh Sách Khách Hàng Đã Lâu Chưa Chăm Sóc
         </h3>
       </div>
       <div class="">
@@ -97,46 +170,28 @@
         </thead>
         <tbody>
           <tr v-for="(item, index) in data.items" :key="index">
-            <td>{{ item.id }}</td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.email }}</td>
-            <td>{{ item.phone }}</td>
-            <td>{{ item.recent_using }}</td>
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.nameCustomer }}</td>
+            <td>{{ item.emailCustomer }}</td>
+            <td>{{ item.phoneCustomer }}</td>
+            <td>{{ item.nameCustomerType }}</td>
           </tr>
         </tbody>
       </table>
-
       <div class="d-flex justify-content-around mt-4">
         <p>Phụ trách bộ phận</p>
         <p>Người Báo Cáo</p>
       </div>
     </div>
-    <!-- <view /> -->
-    <div class="modal" id="model-view">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <!-- Modal Header -->
-        <div class="modal-header">
-          <h4 class="modal-title">Thông tin chi tiết khách hàng</h4>
-          <button type="button" class="close" data-dismiss="modal">
-            &times;
-          </button>
-        </div>
-
-        <!-- Modal body -->
-        <div class="modal-body">
-        </div>
-      </div> 
-    </div>
+    <View :item="data.viewValue" :itemViewCareCus="data.viewCareCus" />
+    <Mail />
   </div>
-  </div>
-
 </template>
     
 <script>
 import { reactive, computed, ref, onBeforeMount } from "vue";
-import Table from '../../components/table/table-report.vue'
-import view from './modal/view-report.vue'
+import Table from "../../components/table/table-report.vue";
+import Mail from './mail.vue'
 import {
   http_getAll,
   Pagination,
@@ -145,9 +200,9 @@ import {
   Customer_Work,
 } from "../common/import";
 
-
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import View from "./view.vue";
 
 export default {
   components: {
@@ -155,7 +210,8 @@ export default {
     Pagination,
     Select,
     Search,
-    view
+    View,
+    Mail
   },
   setup() {
     const data = reactive({
@@ -168,97 +224,126 @@ export default {
       currentPage: 1,
       searchText: "",
       activeMenu: 2,
+      viewValue: {
+        Customer: {
+          name: "",
+          birthday: "",
+          avatar: "",
+          phone: "",
+          email: "",
+          address: "",
+        },
+        Customer_Type: {
+          name: "",
+        },
+        Company_KH: {
+          name: "",
+        },
+        Events: [
+          {
+            name: "",
+            content: "",
+            time_duration: "",
+          },
+        ],
+        Habits: [
+          {
+            name: "",
+          },
+        ],
+        current_workplace: "",
+        work_history: "",
+        current_position: "",
+        work_temp: "",
+      },
+      viewCareCus: null,
     });
 
-    const options = reactive([
-      {
-        name: 5,
-        value: 5,
-      },
-      {
-        name: 10,
-        value: 10,
-      },
-      {
-        name: 20,
-        value: 20,
-      },
-      {
-        name: 30,
-        value: 30,
-      },
-      {
-        name: "All",
-        value: 9999,
-      },
-    ]);
-
-
+    const labels = [
+      "Tên khách hàng",
+      "Email",
+      "Số điện thoại",
+      "Loại khách hàng",
+    ];
 
     const reFresh = async () => {
       const cusWork = await http_getAll(Customer_Work);
       data.items = cusWork.documents.filter((cusWork) => {
         const taskCusCared = cusWork.Customer.Tasks.filter((task) => {
-          if (task.Status_Task.name == 'đã chăm sóc') {
-            const cycle = task.Cycle.name
-            let end_date = task.end_date
-            // console.log(end_date);
-            end_date = new Date(end_date)
-            // console.log('end_date: ' + end_date);
+          if (task.Status_Task.name == "đã chăm sóc") { // lấy các khách hàng đã chăm sóc
+            const cycle = task.Cycle.name; // lấy chu kì
+            let start_date = task.start_date; // lấy ngày bắt đầu
+            start_date = new Date(start_date); // chuyển chuổi sang date
 
-            let numberOfCycle = cycle.replace(/\D/g, ""); // lấy số trong chuổi 
+            let numberOfCycle = cycle.replace(/\D/g, ""); // lấy số trong chu kì 
 
-            numberOfCycle = +numberOfCycle // chuyển chuổi thành số nguyên
+            numberOfCycle = +numberOfCycle; // ép kiểu sang số nguyên
 
             var cycleDate = 0;
             var cycleMonth = 0;
             var cycleYear = 0;
-            if (cycle.includes('ngày')) {
-              cycleDate = numberOfCycle
-            }
-            if (cycle.includes('tháng')) {
-              cycleMonth = numberOfCycle
-            }
-            if (cycle.includes('năm')) {
-              cycleYear = numberOfCycle
+            switch (true) {
+              case cycle.includes("ngày"):
+                cycleDate = numberOfCycle; // Nửa sửa bỏ nhân 2
+                break;
+              case cycle.includes("tháng"):
+                cycleMonth = numberOfCycle; // Nửa sửa bỏ nhân 2
+                break;
+              case cycle.includes("năm"):
+                cycleYear = numberOfCycle; // Nửa sửa bỏ nhân 2
+                break;
+              case cycle.includes('tuần'):
+                cycleDate = numberOfCycle * 7
+                break;
             }
 
-            end_date.setDate(end_date.getDate() + cycleDate);
-            end_date.setMonth(end_date.getMonth() + cycleMonth);
-            end_date.setFullYear(end_date.getFullYear() + cycleYear);
+            // lần bắt đầu đầu tiên
+            start_date.setDate(start_date.getDate() + cycleDate);
+            start_date.setMonth(start_date.getMonth() + cycleMonth);
+            start_date.setFullYear(start_date.getFullYear() + cycleYear);
+            const year = start_date.getFullYear();
+            const month = start_date.getMonth() + 1;
+            const day = start_date.getDate();
+            const dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
 
-            const year = end_date.getFullYear()
-            const month = end_date.getMonth() + 1
-            const day = end_date.getDate()
-            const dayStartNewCycle = year + '-' + month + '-' + day // ngày bắt đầu chu kì mới  
-            task.dayStartNewCycle = dayStartNewCycle
-            return task
+            // lần bắt đầu thứ 2
+            cycleDate = cycleDate * 2;
+            cycleMonth = cycleMonth * 2;
+            cycleYear = cycleYear * 2
+            start_date.setDate(start_date.getDate() + cycleDate);
+            start_date.setMonth(start_date.getMonth() + cycleMonth);
+            start_date.setFullYear(start_date.getFullYear() + cycleYear);
+            const year2 = start_date.getFullYear();
+            const month2 = start_date.getMonth() + 1;
+            const day2 = start_date.getDate();
+            const dayStartNewCycle2 = year2 + "-" + month2 + "-" + day2;
+
+
+            task.dayStartNewCycle2 = dayStartNewCycle2;
+            task.dayStartNewCycle = dayStartNewCycle;
+            return task;
           }
-        })
+        });
 
-
-        const rsTaskCusCared = taskCusCared.filter(value => {
+        const rsTaskCusCared = taskCusCared.filter((value) => {
+          console.log('Value', value);
           if (value.customerId == cusWork.Customer._id) {
             return cusWork.Customer.Tasks.filter((task) => {
-              if (value.dayStartNewCycle == task.start_date) {
-                console.log('Run');
+              if (value.dayStartNewCycle2 == task.start_date && value.dayStartNewCycle != task.start_date) {
+                console.log("Run"); 
               } else {
-                // console.log('Value');
-                return value
+                return value;
               }
-            })
-
-
+            });
           }
-        })
+        });
 
         if (rsTaskCusCared.length > 0) {
-          return rsTaskCusCared
+          return rsTaskCusCared;
         }
-      })
+      });
 
-
-      // format lại data items 
+      // format lại data items
       data.items = data.items.map((item) => {
         return {
           nameCustomer: item.Customer.name,
@@ -266,15 +351,16 @@ export default {
           phoneCustomer: item.Customer.phone,
           current_position: item.current_position,
           nameCustomerType: item.Customer.Customer_Type.name,
-          nameCompany: item.Company_KH.name, 
+          nameCompany: item.Company_KH.name,
           Events: [...item.Customer.Events],
           Tasks: [...item.Customer.Tasks],
           Habits: {
-          ...item.Customer.Habits,
+            ...item.Customer.Habits,
           },
-          ...item
-        }
-      })
+          ...item,
+        };
+      });
+
 
       // data.viewCareCus = item.Customer.Tasks.map((value) => {
       //   console.log('Value:', value);
@@ -289,7 +375,7 @@ export default {
       //     comment: value.Comment == null ? 'Chưa cập nhật' : value.Comment.content
       //   }
       // })
-    }
+    };
 
     // handle update entry value
     const handleUpdateEntryValue = (value) => {
@@ -300,12 +386,36 @@ export default {
     const handleUpdateSearchText = (value) => {
       data.searchText = value;
     };
+
+    // nameCustomer: item.Customer.name,
+    //       emailCustomer: item.Customer.email,
+    //       phoneCustomer: item.Customer.phone,
     // // handle pagination
     const toString = computed(() => {
       console.log("Starting search");
-      return data.items.map((value, index) => {
-        return [value.nameCustomer].join("").toLocaleLowerCase();
-      });
+      if (data.choseSearch == "name") {
+        return data.items.map((value, index) => {
+          return [value.nameCustomer].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "email") {
+        return data.items.map((value, index) => {
+          return [value.emailCustomer].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "phone") {
+        return data.items.map((value, index) => {
+          return [value.phoneCustomer].join("").toLocaleLowerCase();
+        });
+      } else {
+        return data.items.map((value, index) => {
+          return [
+            value.nameCustomer,
+            value.emailCustomer,
+            value.phoneCustomer
+          ]
+            .join("")
+            .toLocaleLowerCase();
+        });
+      }
     });
     const filter = computed(() => {
       return data.items.filter((value, index) => {
@@ -375,22 +485,64 @@ export default {
     };
 
     const view = (item) => {
-      console.log('View: ' , item);
-    }
+      data.viewValue = {
+        Customer: {
+          _id: item.Customer._id,
+          name: item.Customer.name,
+          birthday: item.Customer.birthday,
+          avatar: item.Customer.avatar,
+          phone: item.Customer.phone,
+          email: item.Customer.email,
+          address: item.Customer.address,
+        },
+        Customer_Type: {
+          _id: item.Customer.Customer_Type._id,
+          name: item.Customer.Customer_Type.name,
+        },
+        Company_KH: {
+          _id: item.Company_KH._id,
+          name: item.Company_KH.name,
+        },
+        Events: [...item.Customer.Events],
+        Tasks: [...item.Customer.Tasks],
+        Habits: {
+          ...item.Customer.Habits,
+        },
+        _id: item._id,
+        current_workplace: item.current_workplace,
+        work_history: item.work_history,
+        current_position: item.current_position,
+        work_temp: item.work_temp,
+      };
 
+      data.viewCareCus = item.Customer.Tasks.map((value) => {
+        console.log("Value:", value);
+        return {
+          start_date: value.start_date,
+          end_date: value.end_date,
+          content: value.content,
+          customerName: item.Customer.name,
+          cycleName: value.Cycle.name, // join bản sao
+          statusName: value.Status_Task.name,
+          EvaluateStar: value.Evaluate.star,
+          comment:
+            value.Comment == null ? "Chưa cập nhật" : value.Comment.content,
+        };
+      });
+    };
 
     onBeforeMount(() => {
-      reFresh()
-    })
+      reFresh();
+    });
     return {
       data,
       setPages,
-      options,
       handleUpdateEntryValue,
       handleUpdateSearchText,
       handlePrintReport,
       pdfContent,
-      view
+      view,
+      labels,
     };
   },
 };
@@ -429,7 +581,7 @@ export default {
 }
 
 .active-menu {
-  color: blue;
+  color: blue !important;
 }
 
 .none-active-menu {
@@ -443,6 +595,46 @@ export default {
 #add,
 #delete-all {
   font-size: 14px;
+}
+
+.report_container {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 4px;
+}
+
+.mx-1.report__item {
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 18px;
+}
+
+.mx-1 .report__item a {
+  padding: 10px;
+}
+
+
+a.none-active-menu,
+a.router-link-active.router-link-exact-active.active-menu {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding: 5px;
+  text-decoration: none;
+} 
+
+
+ a.none-active-menu:hover {
+  border: 1px solid green;
+}
+
+span.material-symbols-outlined {
+  padding: 5px;
 }
 </style>
     

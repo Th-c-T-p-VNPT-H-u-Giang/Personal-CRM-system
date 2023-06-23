@@ -53,14 +53,14 @@ export default {
               <img :src="item.Customer.avatar" alt="" class="rounded-circle mx-auto d-block border border-dark my-3" height="100">
               <div class="d-flex justify-content-around">
                 <div>
-                  <p><span class="font-weight-bold">Họ tên: </span> {{ item.Customer.name }}</p>
-                  <p><span class="font-weight-bold">Email: </span> {{ item.Customer.email }}</p>
-                  <p><span class="font-weight-bold">SDT: </span> {{ item.Customer.phone }}</p>
+                  <p><span class="font-weight-bold">Họ khách hàng: </span> {{ item.Customer.name }}</p>
+                  <p><span class="font-weight-bold">Email khách hàng: </span> {{ item.Customer.email }}</p>
+                  <p><span class="font-weight-bold">Số điện thoại: </span> {{ item.Customer.phone }}</p>
                 </div>
                 <div>
-                  <p><span class="font-weight-bold">Ngày sinh: </span> {{ item.Customer.birthday }}</p>
-                  <p><span class="font-weight-bold">Địa chỉ: </span> {{ item.Customer.address }}</p>
-                  <p><span class="font-weight-bold">Loại: </span> {{ item.Customer_Type.name }}</p>
+                  <p><span class="font-weight-bold">Ngày sinh khách hàng: </span> {{ item.Customer.birthday }}</p>
+                  <p><span class="font-weight-bold">Địa chỉ khách hàng: </span> {{ item.Customer.address }}</p>
+                  <p><span class="font-weight-bold">Loại khách hàng: </span> {{ item.Customer_Type.name }}</p>
                 </div>
               </div>
             </div>

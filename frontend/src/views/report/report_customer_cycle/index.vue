@@ -1,287 +1,461 @@
 <template>
-    <div class="border-box d-flex flex-column ml-2">
-      <!-- Menu -->
-      <div class="d-flex menu my-3 mx-3 justify-content-end">
-        <router-link
-          to="/report"
-          :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
-          class="size-18"
-        >
-          Khách hàng lâu chưa chăm sóc
-        </router-link>
-        <div class="mx-1"></div>
-        <router-link
-          to="/report_assignment_staff"
-          :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-          class="size-18"
-        >
-          Khách hàng do nhân viên chăm sóc
-        </router-link>
-        <div class="mx-1"></div>
-        <router-link
-          to="/report_customer_cycle"
-          :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
-          class="size-18"
-        >
-          Khách hàng tới chu kì nhưng chưa chăm sóc
-        </router-link>
-        <div class="mx-1"></div>
-        <router-link
-          to="/report_leader_customer"
-          :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
-          class="size-18"
-        >
-          Khách hàng do lảnh đạo phụ trách
-        </router-link>
-        <div class="mx-1"></div>
-        <router-link
-          to="/report_leader_staff"
-          :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
-          class="size-18"
-        >
-          Nhân viên do lảnh đạo phụ trách
-        </router-link>
-      </div>
-      <!-- Filter -->
-      <!-- Search -->
-      <div class="border-hr mb-3"></div>
-      <div class="d-flex justify-content-between mx-3 mb-3">
-        <div class="d-flex justify-content-start">
-          <!-- <Select
-            class="d-flex justify-content-start"
-            :options="options"
-            @update:entryValue="(value) => (data.entryValue = value)"
-            :entryValue="data.entryValue"
-          />
-          <Search
-            class="ml-3"
-            style="width: 300px"
-            @update:searchText="handleUpdateSearchText"
-          /> -->
-        </div>
-        <div class="d-flex align-items-start">
-          <button class="btn btn-warning mx-2">
-            <span id="delete-all" class="">Mail</span>
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary mx-2"
-            @click="handlePrintData"
-          >
-            <span id="printrp" class="">In</span>
-          </button>
-        </div>
-      </div>
-      <!-- Table -->
-      <!-- <table-phuc-report
-        :items="setPages"
-        :fields="[
-          'Họ và tên khách hàng',
-          'Họ và tên nhân viên',
-          'Ngày',
-          'Chu kì',
-        ]"
-        :labels="['nameCT', 'nameEM', 'date', 'cycle']"
-        :isCumtomerCycle="true"
-      /> -->
-      <!-- <pagination-phuc
-        :numberOfPages="data.numberOfPages"
-        :totalRow="data.totalRow"
-        :startRow="data.startRow"
-        :endRow="data.endRow"
-        :currentPage="data.currentPage"
-        @update:currentPage="(value) => (data.currentPage = value)"
-        class="mx-3"
-      />
-   -->
-      <div class="container pdf-content" v-show="true" ref="pdfContent">
-        <img
-          src="../../../assets/images/vnpt-logo1.png"
-          class="rounded-circle"
-          alt="Cinque Terre"
-          style="height: 70px"
+  <div class="border-box d-flex flex-column ml-2">
+    <!-- Menu -->
+    <div class="report_container">
+
+<div class="mx-1 report__item">
+  <router-link to="/report" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']" class="">
+    <span> Khách hàng lâu chưa chăm sóc</span>
+    <span class="material-symbols-outlined">
+      group
+    </span>
+  </router-link>
+</div>
+
+<div class="mx-1 report__item">
+  <router-link to="/report_assignment_staff" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+    class="">
+    <span>
+      Khách hàng do nhân viên chăm sóc
+    </span>
+    <span class="material-symbols-outlined">
+      group
+    </span>
+  </router-link>
+</div>
+
+<div class="mx-1 report__item">
+  <router-link to="/report_customer_cycle" :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
+    class="">
+    <span>
+      Khách hàng tới chu kì nhưng chưa chăm sóc
+    </span>
+    <span class="material-symbols-outlined">
+      group
+    </span>
+  </router-link>
+</div>
+
+<div class="mx-1 report__item">
+  <router-link to="/report_leader_customer" :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
+    class="">
+    <span>
+      Khách hàng do lảnh đạo phụ trách
+    </span>
+    <span class="material-symbols-outlined">
+      group
+    </span>
+  </router-link>
+</div>
+<div class="mx-1 report__item">
+  <router-link to="/report_leader_staff" :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
+    class="">
+    <span>
+      Nhân viên do lảnh đạo phụ trách
+    </span>
+    <span class="material-symbols-outlined">
+      group
+    </span>
+  </router-link>
+</div>
+</div>
+    <!-- Filter -->
+    <!-- Search -->
+    <div class="border-hr mb-3"></div>
+    <div class="d-flex justify-content-between mx-3 mb-3">
+      <div class="d-flex justify-content-start">
+        <Select
+          class="d-flex justify-content-start"
+          :options="[
+            {
+              name: 5,
+              value: 5,
+            },
+            {
+              name: 10,
+              value: 10,
+            },
+            {
+              name: 20,
+              value: 20,
+            },
+            {
+              name: 30,
+              value: 30,
+            },
+          ]"
+          style="width: 125px"
+          :title="`Số bản ghi`"
+          @update:entryValue="handleUpdateEntryValue"
+          :entryValue="data.entryValue"
+          @refresh="data.entryValue = 'All'"
         />
-        <div class="d-flex justify-content-between mt-4">
-          <p class="text-center ml-4 font-weight-bold">VNPT Hậu Giang</p>
-          <div class="text-center font-weight-bold" style="margin-top: -40px">
-            <p>CỘNG HÒA XÃ HỘI CHỦ NGHỈA VIỆT NAM</p>
-            <p>Độc lập - Tự do - Hạnh phúc</p>
-            <p>-----------------</p>
-          </div>
-        </div>
-        <div class="float-right">
-          <p>....ngày....tháng....năm</p>
-        </div>
-        <div class="text-center mt-4 font-weight-bold">
-          <h3 class="font-weight-bold">
-            Báo Cáo <br />
-            Danh Sách Khách Hàng Tới Chu Kì Nhưng Chưa Chăm Sóc
-          </h3>
-        </div>
-        <div class="">
-          <span>Họ tên</span>
-          <br />
-          <span>Chức vụ</span>
-          <br />
-          <span>Bộ phận công tác</span>
-        </div>
-        <table class="table table-bordered mt-4">
-          <thead>
-            <tr>
-              <th v-for="(value, index) in labels" :key="index">
-                {{ value }}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(item, index) in data.items" :key="index">
-              <td>{{ item._id }}</td>
-              <td>{{ item.nameCT }}</td>
-              <td>{{ item.nameEM }}</td>
-              <td>{{ item.date }}</td>
-              <td>{{ item.cycle }}</td>
-            </tr>
-          </tbody>
-        </table>
-  
-        <div class="d-flex justify-content-around mt-4">
-          <p>Phụ trách bộ phận</p>
-          <p>Người Báo Cáo</p>
-        </div>
+        <Search
+          class="ml-3"
+          style="width: 300px"
+          @update:searchText="(value) => (data.searchText = value)"
+          :entryValue="data.searchText"
+          @choseSearch="
+            async (value) => (
+              console.log('search ........'),
+              (data.choseSearch = value),
+              (data.currentPage = 1)
+            )
+          "
+          @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
+          :options="[
+            {
+              _id: 'name',
+              name: 'Tìm kiếm theo tên',
+            },
+            {
+              _id: 'email',
+              name: 'Tìm kiếm theo email',
+            },
+            {
+              _id: 'phone',
+              name: 'Tìm kiếm theo số điện thoại',
+            },
+          ]"
+        />
+      </div>
+      <div class="d-flex align-items-start">
+        <button class="btn btn-warning mx-2" data-toggle="modal" data-target="#model-form-mail">
+          <span id="delete-all" class="">Mail</span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          @click="handlePrintReport"
+        >
+          <span id="add" class="">In</span>
+        </button>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import jsPDF from "jspdf"; //in
-  import html2canvas from "html2canvas";
-  
-  import { reactive, computed, ref } from "vue";
-//   import Select from "../../../components/form/select.vue";
-//   import PaginationPhuc from "../../../components/table/pagination-phuc.vue";
-//   import Search from "../../../components/form/search.vue";
-//   import TablePhucReport from "../../../components/table/table-phuc-report.vue";
-  export default {
-    components: {
-    //   Select,
-    //   PaginationPhuc,
-    //   Search,
-    //   TablePhucReport,
-    },
-    setup() {
-      const options = [
-        {
-          name: 5,
-          value: 5,
+
+    <!-- Table -->
+    <Table
+      :items="setPages"
+      :fields="[
+        'Tên',
+        'Email',
+        'Sdt',
+        'Công việc',
+        'Công ty',
+        'Loại khách hàng',
+      ]"
+      :labels="[
+        'nameCustomer',
+        'emailCustomer',
+        'phoneCustomer',
+        'current_position',
+        'nameCompany',
+        'nameCustomerType',
+      ]"
+      @delete="handleDelete"
+      @edit="EditEmit"
+      :showActionList="[true, false, false]"
+      :startRow="0"
+      @view="view"
+      :isActiveCheckbox="false"
+    />
+    <!-- Pagination -->
+    <Pagination
+      :numberOfPages="data.numberOfPages"
+      :totalRow="data.totalRow"
+      :startRow="data.startRow"
+      :endRow="data.endRow"
+      :currentPage="data.currentPage"
+      @update:currentPage="(value) => (data.currentPage = value)"
+      class="mx-3"
+    />
+
+    <div class="container pdf-content" ref="pdfContent">
+      <img
+        src="../../../assets/images/vnpt-logo1.png"
+        class="rounded-circle"
+        alt="Cinque Terre"
+        style="height: 70px"
+      />
+      <div class="d-flex justify-content-between mt-4">
+        <p class="text-center ml-4 font-weight-bold">VNPT Hậu Giang</p>
+        <div class="text-center font-weight-bold" style="margin-top: -40px">
+          <p>CỘNG HÒA XÃ HỘI CHỦ NGHỈA VIỆT NAM</p>
+          <p>Độc lập - Tự do - Hạnh phúc</p>
+          <p>-----------------</p>
+        </div>
+      </div>
+      <div class="float-right">
+        <p>....ngày....tháng....năm</p>
+      </div>
+      <div class="text-center mt-4 font-weight-bold">
+        <h3 class="font-weight-bold text-center">
+          Báo Cáo <br />
+          Danh Sách Khách Hàng Đã Lâu Chưa Chăm Sóc
+        </h3>
+      </div>
+      <div class="">
+        <span>Họ tên</span>
+        <br />
+        <span>Chức vụ</span>
+        <br />
+        <span>Bộ phận công tác</span>
+      </div>
+      <!-- nameCustomer: item.Customer.name,
+          emailCustomer: item.Customer.email,
+          phoneCustomer: item.Customer.phone,
+          current_position: item.current_position,
+          nameCustomerType: item.Customer.Customer_Type.name,
+          nameCompany: item.Company_KH.name, -->
+      <table class="table table-bordered mt-4">
+        <thead>
+          <tr>
+            <th v-for="(value, index) in ['STT', 'Tên khách hàng', 'Email khách hàng','Số điện thoại khách hàng','Công việc','Loại khách hàng']" :key="index">{{ value }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, index) in data.items" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td>{{ item.nameCustomer }}</td>
+            <td>{{ item.emailCustomer }}</td>
+            <td>{{ item.phoneCustomer }}</td>
+            <td>{{ item.current_position }}</td>
+            <td>{{ item.nameCustomerType }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="d-flex justify-content-around mt-4">
+        <p>Phụ trách bộ phận</p>
+        <p>Người Báo Cáo</p>
+      </div>
+    </div>
+    <View :item="data.viewValue" :itemViewCareCus="data.viewCareCus" />
+    <Mail />
+  </div>
+</template>
+    
+<script>
+import { reactive, computed, ref, onBeforeMount } from "vue";
+import Table from "../../../components/table/table-report.vue";
+import Mail from '../mail.vue'
+import {
+  http_getAll,
+  Pagination,
+  Select,
+  Search,
+  Customer_Work,
+} from "../../common/import";
+
+import View from './view.vue'
+
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
+export default {
+  components: {
+    Table,
+    Pagination,
+    Select,
+    Search,
+    View,
+    Mail
+  },
+  setup() {
+    const data = reactive({
+      items: [],
+      entryValue: 5, // total record in page
+      numberOfPages: 1,
+      totalRow: 0, // total row data
+      startRow: 0,
+      endRow: 0,
+      currentPage: 1,
+      searchText: "",
+      activeMenu: 0,
+      viewValue: {
+        Customer: {
+          name: "",
+          birthday: "",
+          avatar: "",
+          phone: "",
+          email: "",
+          address: "",
         },
-        {
-          name: 10,
-          value: 10,
+        Customer_Type: {
+          name: "",
         },
-        {
-          name: 20,
-          value: 20,
+        Company_KH: {
+          name: "",
         },
-        {
-          name: 30,
-          value: 30,
-        },
-        {
-          name: "All",
-          value: "All",
-        },
-      ];
-  
-      const labels = ["STT", "Tên khách hàng", "Tên nhân viên", "Ngày", "Chu kì"];
-      const data = reactive({
-        items: [
+        Events: [
           {
-            _id: "1",
-            nameCT: "Tran Tuan Duy",
-            nameEM: "Nguyen Van A",
-            date: "2023-01-01",
-            cycle: "Năm",
-          },
-          {
-            _id: "2",
-            nameCT: "Nguyen Lan Anh",
-            nameEM: "Nguyen Van A",
-            date: "2023-01-01",
-            cycle: "Năm",
-          },
-          {
-            _id: "3",
-            nameCT: "Nguyen Thi Thanh Truc",
-            nameEM: "Nguyen Van A",
-            date: "2023-01-01",
-            cycle: "Năm",
-          },
-          {
-            _id: "4",
-            nameCT: "Nguyen Ngoc Van Anh",
-            nameEM: "Nguyen Van B",
-            date: "2023-01-01",
-            cycle: "Tháng",
-          },
-          {
-            _id: "5",
-            nameCT: "Truong Thiet Long",
-            nameEM: "Nguyen Van B",
-            date: "2023-01-01",
-            cycle: "Tháng",
-          },
-          {
-            _id: "6",
-            nameCT: "Dang Van Phuc",
-            nameEM: "Nguyen Van B",
-            date: "2023-01-01",
-            cycle: "Tháng",
+            name: "",
+            content: "",
+            time_duration: "",
           },
         ],
-        entryValue: 5,
-        numberOfPages: 1,
-        totalRow: 0,
-        startRow: 0,
-        endRow: 0,
-        currentPage: 1,
-        searchText: "",
-        activeMenu: 0,
-        deleteValue: {
-          _id: "",
-          nameCT: "",
-          nameEM: "",
-          date: "",
-          cycle: "",
-        },
-      });
-  
-      // computed
-      const toString = computed(() => {
-        console.log("Starting search");
-        return data.items.map((value, index) => {
-          return [value.nameCT].join("").toLocaleLowerCase();
+        Habits: [
+          {
+            name: "",
+          },
+        ],
+        current_workplace: "",
+        work_history: "",
+        current_position: "",
+        work_temp: "",
+      },
+      viewCareCus: null,
+    });
+
+
+    const reFresh = async () => {
+      const cusWork = await http_getAll(Customer_Work);
+      data.items = cusWork.documents.filter((cusWork) => {
+        const taskCusCared = cusWork.Customer.Tasks.filter((task) => {
+          if (task.Status_Task.name == "đã chăm sóc") {
+            const cycle = task.Cycle.name;
+            let start_date = task.start_date;
+            // console.log(start_date);
+            start_date = new Date(start_date);
+            // console.log('end_date: ' + end_date);
+
+            let numberOfCycle = cycle.replace(/\D/g, ""); // lấy số trong chuổi
+
+            numberOfCycle = +numberOfCycle; // chuyển chuổi thành số nguyên
+
+            var cycleDate = 0;
+            var cycleMonth = 0;
+            var cycleYear = 0;
+            if (cycle.includes("ngày")) {
+              cycleDate = numberOfCycle; // nửa sửa bỏ nhân 2 
+            }
+            if (cycle.includes("tháng")) {
+              cycleMonth = numberOfCycle;// nửa sửa bỏ nhân 2 
+            }
+            if (cycle.includes("năm")) {
+              cycleYear = numberOfCycle;// nửa sửa bỏ nhân 2 
+            }
+
+            start_date.setDate(start_date.getDate() + cycleDate);
+            start_date.setMonth(start_date.getMonth() + cycleMonth);
+            start_date.setFullYear(start_date.getFullYear() + cycleYear);
+
+            const year = start_date.getFullYear();
+            const month = start_date.getMonth() + 1;
+            const day = start_date.getDate();
+            const dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
+            task.dayStartNewCycle = dayStartNewCycle;
+            return task;
+          }
         });
-      });
-      const filter = computed(() => {
-        return data.items.filter((value, index) => {
-          return toString.value[index].includes(
-            data.searchText.toLocaleLowerCase()
-          );
+
+        const rsTaskCusCared = taskCusCared.filter((value) => {
+          if (value.customerId == cusWork.Customer._id) {
+            return cusWork.Customer.Tasks.filter((task) => {
+              if (value.dayStartNewCycle == task.start_date) {
+                console.log("Run");
+              } else {
+                // console.log('Value');
+                return value;
+              }
+            });
+          }
         });
-      });
-      const filtered = computed(() => {
-        if (!data.searchText) {
-          data.totalRow = data.items.length;
-          return data.items;
-        } else {
-          data.totalRow = filter.value.length;
-          return filter.value;
+
+        if (rsTaskCusCared.length > 0) {
+          return rsTaskCusCared;
         }
       });
-      const setNumberOfPages = computed(() => {
-        return Math.ceil(filtered.value.length / data.entryValue);
+
+      // format lại data items
+      data.items = data.items.map((item) => {
+        return {
+          nameCustomer: item.Customer.name,
+          emailCustomer: item.Customer.email,
+          phoneCustomer: item.Customer.phone,
+          current_position: item.current_position,
+          nameCustomerType: item.Customer.Customer_Type.name,
+          nameCompany: item.Company_KH.name,
+          Events: [...item.Customer.Events],
+          Tasks: [...item.Customer.Tasks],
+          Habits: {
+            ...item.Customer.Habits,
+          },
+          ...item,
+        };
       });
-      const setPages = computed(() => {
+
+      // data.viewCareCus = item.Customer.Tasks.map((value) => {
+      //   console.log('Value:', value);
+      //   return {
+      //     start_date: value.start_date,
+      //     end_date: value.end_date,
+      //     content: value.content,
+      //     customerName: item.Customer.name,
+      //     cycleName: value.Cycle.name, // join bản sao
+      //     statusName: value.Status_Task.name,
+      //     EvaluateStar: value.Evaluate.star,
+      //     comment: value.Comment == null ? 'Chưa cập nhật' : value.Comment.content
+      //   }
+      // })
+    };
+
+    // handle update entry value
+    const handleUpdateEntryValue = (value) => {
+      data.entryValue = value;
+    };
+
+    //handle update search text
+    const handleUpdateSearchText = (value) => {
+      data.searchText = value;
+    };
+    // // handle pagination
+    const toString = computed(() => {
+      console.log("Starting search");
+      if (data.choseSearch == "name") {
+        return data.items.map((value, index) => {
+          return [value.Customer.name].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "email") {
+        return data.items.map((value, index) => {
+          return [value.Customer.email].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "phone") {
+        return data.items.map((value, index) => {
+          return [value.Customer.phone].join("").toLocaleLowerCase();
+        });
+      } else {
+        return data.items.map((value, index) => {
+          return [
+            value.Customer.name,
+            value.Customer.email,
+            value.Customer.phone,
+          ]
+            .join("")
+            .toLocaleLowerCase();
+        });
+      }
+    });
+    const filter = computed(() => {
+      return data.items.filter((value, index) => {
+        return toString.value[index].includes(
+          data.searchText.toLocaleLowerCase()
+        );
+      });
+    });
+    const filtered = computed(() => {
+      if (!data.searchText) {
+        data.totalRow = data.items.length;
+        return data.items;
+      } else {
+        data.totalRow = filter.value.length;
+        return filter.value;
+      }
+    });
+    const setNumberOfPages = computed(() => {
+      return Math.ceil(filtered.value.length / data.entryValue);
+    });
+    const setPages = computed(() => {
+      if (data.items.length > 0) {
         if (setNumberOfPages.value == 0 || data.entryValue == "All") {
           data.entryValue = data.items.length;
           data.numberOfPages = 1;
@@ -294,100 +468,190 @@
             index + 1 <= data.currentPage * data.entryValue
           );
         });
+      } else return data.items.value;
+    });
+
+    // handle print data
+    const pdfContent = ref(null);
+    const handlePrintReport = async () => {
+      const doc = new jsPDF();
+
+      if (pdfContent.value) {
+        const content = pdfContent.value;
+
+        // Chuyển đổi nội dung HTML thành ảnh sử dụng html2canvas
+        html2canvas(content).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+
+          // Đợi cho hình ảnh tải hoàn toàn trước khi thêm vào tài liệu PDF
+          const image = new Image();
+          image.onload = function () {
+            // Tạo tài liệu PDF và thêm ảnh vào
+            const imgWidth = 210; // Đặt chiều rộng ảnh bằng chiều rộng trang A4
+            const imgHeight = (canvas.height * imgWidth) / canvas.width; // Tính toán chiều cao dựa trên tỷ lệ
+
+            doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight); // Đặt kích thước ảnh là kích thước trang PDFF
+
+            // Tải xuống tệp PDF
+            doc.save("DanhSachKhachHangToiChuKiNhungChuaChamSoc.pdf");
+          };
+
+          // Thiết lập nguồn dữ liệu cho hình ảnh và kích hoạt sự kiện onload
+          image.src = imgData;
+        });
+      }
+    };
+
+    const view = (item) => {
+      data.viewValue = {
+        Customer: {
+          _id: item.Customer._id,
+          name: item.Customer.name,
+          birthday: item.Customer.birthday,
+          avatar: item.Customer.avatar,
+          phone: item.Customer.phone,
+          email: item.Customer.email,
+          address: item.Customer.address,
+        },
+        Customer_Type: {
+          _id: item.Customer.Customer_Type._id,
+          name: item.Customer.Customer_Type.name,
+        },
+        Company_KH: {
+          _id: item.Company_KH._id,
+          name: item.Company_KH.name,
+        },
+        Events: [...item.Customer.Events],
+        Tasks: [...item.Customer.Tasks],
+        Habits: {
+          ...item.Customer.Habits,
+        },
+        _id: item._id,
+        current_workplace: item.current_workplace,
+        work_history: item.work_history,
+        current_position: item.current_position,
+        work_temp: item.work_temp,
+      };
+
+      data.viewCareCus = item.Customer.Tasks.map((value) => {
+        console.log("Value:", value);
+        return {
+          start_date: value.start_date,
+          end_date: value.end_date,
+          content: value.content,
+          customerName: item.Customer.name,
+          cycleName: value.Cycle.name, // join bản sao
+          statusName: value.Status_Task.name,
+          EvaluateStar: value.Evaluate.star,
+          comment:
+            value.Comment == null ? "Chưa cập nhật" : value.Comment.content,
+        };
       });
-  
-      // methods
-      const update = (item) => {
-        console.log("updating", item);
-      };
-  
-      const handleUpdateSearchText = (value) => {
-        data.searchText = value;
-      };
-  
-      const pdfContent = ref(null);
-      const handlePrintData = () => {
-        const doc = new jsPDF();
-  
-        if (pdfContent.value) {
-          const content = pdfContent.value;
-  
-          // Chuyển đổi nội dung HTML thành ảnh sử dụng html2canvas
-          html2canvas(content).then((canvas) => {
-            const imgData = canvas.toDataURL("image/png");
-  
-            // Đợi cho hình ảnh tải hoàn toàn trước khi thêm vào tài liệu PDF
-            const image = new Image();
-            image.onload = function () {
-              // Tạo tài liệu PDF và thêm ảnh vào
-              const imgWidth = 210; // Đặt chiều rộng ảnh bằng chiều rộng trang A4
-              const imgHeight = (canvas.height * imgWidth) / canvas.width; // Tính toán chiều cao dựa trên tỷ lệ
-  
-              doc.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight); // Đặt kích thước ảnh là kích thước trang PDFF
-  
-              // Tải xuống tệp PDF
-              doc.save("BaoCaoDanhSachKhachHangToiCHuKiNhungChuaChamSoc.pdf");
-            };
-  
-            // Thiết lập nguồn dữ liệu cho hình ảnh và kích hoạt sự kiện onload
-            image.src = imgData;
-          });
-        }
-      };
-  
-      return {
-        options,
-        data,
-        setPages,
-        handleUpdateSearchText,
-        handlePrintData,
-        labels,
-        pdfContent,
-      };
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .pdf-content {
-    position: absolute;
-    left: -9999px;
-    top: -9999px;
-  }
-  .border-box {
-    border: 1px solid var(--gray);
-    border-radius: 5px;
-  }
-  
-  .menu {
-    /* border: 1px solid var(--gray); */
-    border-collapse: collapse;
-  }
-  
-  .menu a {
-    border: 1px solid var(--gray);
-    border-collapse: collapse;
-    padding: 8px 12px;
-    font-size: 15px;
-  }
-  
-  .active-menu {
-    color: blue;
-  }
-  
-  .none-active-menu {
-    color: var(--dark);
-  }
-  
-  .border-hr {
-    border-top: 1px solid var(--gray);
-  }
-  
-  .show-modal {
-    display: block;
-    opacity: 1;
-    background-color: var(--dark);
-    /* pointer-events: auto; */
-    z-index: 1;
-  }
-  </style>
+    };
+
+    onBeforeMount(() => {
+      reFresh();
+    });
+    return {
+      data,
+      setPages,
+      handleUpdateEntryValue,
+      handleUpdateSearchText,
+      handlePrintReport,
+      pdfContent,
+      view,
+    };
+  },
+};
+</script>
+    
+<style scoped>
+.pdf-content {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+.material-symbols-outlined {
+  font-size: 18px;
+}
+
+.navbar {
+  margin-top: -8px;
+}
+
+.border-box {
+  border: 1px solid var(--gray);
+  border-radius: 5px;
+}
+
+.menu {
+  /* border: 1px solid var(--gray); */
+  border-collapse: collapse;
+}
+
+.menu a {
+  border: 1px solid var(--gray);
+  border-collapse: collapse;
+  padding: 8px 12px;
+  font-size: 15px;
+}
+
+.active-menu {
+  color: blue;
+}
+
+.none-active-menu {
+  color: var(--dark);
+}
+
+.border-hr {
+  border-top: 1px solid var(--gray);
+}
+
+#add,
+#delete-all {
+  font-size: 14px;
+}
+
+.report_container {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 4px;
+}
+
+.mx-1.report__item {
+  height: 100px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 18px;
+}
+
+.mx-1 .report__item a {
+  padding: 10px;
+}
+
+
+a.none-active-menu,
+a.router-link-active.router-link-exact-active.active-menu {
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding: 5px;
+  text-decoration: none;
+}
+
+
+a.none-active-menu:hover {
+  color: blue;
+  opacity: 0.6;
+}
+span.material-symbols-outlined {
+    padding: 5px;
+}
+</style>
+    

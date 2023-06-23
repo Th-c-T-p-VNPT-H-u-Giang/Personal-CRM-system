@@ -69,6 +69,7 @@ exports.findOne = async (req, res, next) => {
         ? "Thông tin khách hàng"
         : "Thông tin khách hàng không tồn tại!!",
       error: documents ? false : true,
+      document: documents,
     });
   } catch (error) {
     return next(createError(500, error.message));
