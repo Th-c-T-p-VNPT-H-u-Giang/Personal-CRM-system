@@ -8,6 +8,7 @@ import Select from "../../components/form/select.vue";
 import Box from "../../components/box_lananh/box.vue";
 import SelectOption from "../../components/box_lananh/select.vue";
 import Add from "../dashboard/add_taskemployeedash.vue";
+import { formatDate } from "../../assets/js/common";
 import {
   Customer,
   Customer_Types,
@@ -39,8 +40,7 @@ export default {
       items: [],
 
       activeEdit: false,
-
-      entryValue: 4,
+      entryValue: 2,
       numberOfPages: 1,
       totalRow: 0,
       startRow: 0,
@@ -123,64 +123,14 @@ export default {
       data.task = await http_getAll(Task);
       data.evaluate = await http_getAll(Evaluate);
       data.statusTask = await http_getAll(Status_Task);
-      data.customerCycle = await http_getAll(Task);
-
-      //1****
-      // Mảng nhiệm vụ ban đầu
-      console.log("Ban đầu:", data.customerCycle);
-      // Đối tượng để lưu trữ nhiệm vụ duy nhất theo từng khách hàng
-      uniqueTasks = {};
-
-      // Duyệt qua mảng nhiệm vụ và lấy nhiệm vụ duy nhất có ngày bắt đầu lớn nhất
-      for (var i = 0; i < data.customerCycle.length; i++) {
-        var task = data.customerCycle[i];
-        var customer = task["customerId"];
-
-        if (uniqueTasks.hasOwnProperty(customer)) {
-          var existingTask = uniqueTasks[customer];
-          var existingStartDate = new Date(existingTask["start_date"]);
-          var currentStartDate = new Date(task["start_date"]);
-
-          if (currentStartDate > existingStartDate) {
-            uniqueTasks[customer] = task;
-          }
-        } else {
-          uniqueTasks[customer] = task;
-        }
-      }
-      // Kết quả - Mảng nhiệm vụ duy nhất có ngày bắt đầu lớn nhất cho từng khách hàng
-      var result = Object.values(uniqueTasks);
-      console.log("111KQ:", result);
-      data.customerCycle = result;
-      console.log("C:", data.customerCycle);
-      // cộng chu kỳ
-      data.customerCycle = data.customerCycle.map((value, index) => {
-        return {
-          ...value,
-          start_date: handleCycle(value.Cycle.name, value.start_date),
-        };
-      });
-      //dữ liệu hiển thị trên bảng
-      for (let value of data.customerCycle) {
-        let customer = await http_getOne(Customer, value.customerId);
-        // console.log("customer:", customer);
-        // console.log("start");
-        let cus = {
-          content: value.content,
-          cycleId: value.cycleId,
-          cycle: value.Cycle.name,
-          start_date: value.start_date,
-          end_date: value.end_date,
-          customer: customer.documents,
-        };
-        data.items.push(cus);
-      }
       data.cycle = [
         { _id: "tuần", name: "tuần" },
         { _id: "tháng", name: "tháng" },
         { _id: "quý", name: "quý" },
         { _id: "năm", name: "năm" },
       ];
+      data.customerCycle = await http_getAll(Task);
+
       // console.log("Cus:", data.customerCare, data.items);
     };
 
@@ -304,24 +254,50 @@ export default {
       // await refresh();
       data.items = [];
       data.customerCycle = await http_getAll(Task);
+      // Mảng nhiệm vụ ban đầu
+      console.log("Ban đầu:", data.customerCycle);
+      // Đối tượng để lưu trữ nhiệm vụ duy nhất theo từng khách hàng
+      uniqueTasks = {};
+
+      // Duyệt qua mảng nhiệm vụ và lấy nhiệm vụ duy nhất có ngày bắt đầu lớn nhất
+      for (var i = 0; i < data.customerCycle.length; i++) {
+        var task = data.customerCycle[i];
+        var customer = task["customerId"];
+
+        if (uniqueTasks.hasOwnProperty(customer)) {
+          var existingTask = uniqueTasks[customer];
+          var existingStartDate = new Date(existingTask["start_date"]);
+          var currentStartDate = new Date(task["start_date"]);
+
+          if (currentStartDate > existingStartDate) {
+            uniqueTasks[customer] = task;
+          }
+        } else {
+          uniqueTasks[customer] = task;
+        }
+      }
+      // Kết quả - Mảng nhiệm vụ duy nhất có ngày bắt đầu lớn nhất cho từng khách hàng
+      var result = Object.values(uniqueTasks);
+      data.customerCycle = result;
+
       data.customerCycle = data.customerCycle.map((value, index) => {
         return {
           ...value,
-          start_date: handleCycle(value.Cycle.name, value.start_date),
+          start_date_new: handleCycle(value.Cycle.name, value.start_date),
         };
       });
+
       data.customerCycle = data.customerCycle.filter((item) => {
-        return item.start_date >= start && item.start_date <= end;
+        return item.start_date_new >= start && item.start_date_new <= end;
       });
       for (let value of data.customerCycle) {
         let customer = await http_getOne(Customer, value.customerId);
-        console.log("customer:", customer);
         let cus = {
           content: value.content,
           cycleId: value.cycleId,
           cycle: value.Cycle.name,
-          start_date: value.start_date,
-          end_date: value.end_date,
+          start_date: formatDate1(value.start_date),
+          end_date: formatDate1(value.end_date),
           customer: customer.documents,
         };
         data.items.push(cus);
@@ -466,6 +442,7 @@ export default {
               currentQuarterDates.data.end
             );
             console.log("Customer cycle quý:", data.customerCycle);
+            break;
           }
           case "năm": {
             const getCurrentYearDates = getCurrentYear();
@@ -474,6 +451,16 @@ export default {
               getCurrentYearDates.end
             );
             console.log("Customer cycle:", data.customerCycle);
+            break;
+          }
+          default: {
+            console.log("weak+customerCycle");
+            const week = getCurrentWeekDays();
+            const firstDayOfWeek = week[0];
+            const lastDayOfWeek = week[week.length - 1];
+            await initCustomer(firstDayOfWeek, lastDayOfWeek);
+            console.log("Customer cycle:", data.customerCycle);
+            break;
           }
         }
       }
@@ -556,6 +543,13 @@ export default {
 
       return `${year}-${month}-${day}`;
     };
+    const formatDate1 = (date) => {
+      var date1 = new Date(date);
+      const year = date1.getFullYear();
+      const month = (date1.getMonth() + 1).toString().padStart(2, "0");
+      const day = date1.getDate().toString().padStart(2, "0");
+      return `ngày ${day}-${month}-${year}`;
+    };
     // watch selectOptionCycle
     watch(selectedOptionCycle, (newValue, oldValue) => {
       console.log("Dropdown value changed cycles:", newValue);
@@ -568,10 +562,67 @@ export default {
     });
     onMounted(async () => {
       await refresh();
-      data.customerCare = data.items.length;
+
       const week = getCurrentWeekDays();
       const firstDayOfWeek = week[0];
       const lastDayOfWeek = week[week.length - 1];
+
+      //1****
+      // Mảng nhiệm vụ ban đầu
+      console.log("Ban đầu:", data.customerCycle);
+      // Đối tượng để lưu trữ nhiệm vụ duy nhất theo từng khách hàng
+      uniqueTasks = {};
+
+      // Duyệt qua mảng nhiệm vụ và lấy nhiệm vụ duy nhất có ngày bắt đầu lớn nhất
+      for (var i = 0; i < data.customerCycle.length; i++) {
+        var task = data.customerCycle[i];
+        var customer = task["customerId"];
+
+        if (uniqueTasks.hasOwnProperty(customer)) {
+          var existingTask = uniqueTasks[customer];
+          var existingStartDate = new Date(existingTask["start_date"]);
+          var currentStartDate = new Date(task["start_date"]);
+
+          if (currentStartDate > existingStartDate) {
+            uniqueTasks[customer] = task;
+          }
+        } else {
+          uniqueTasks[customer] = task;
+        }
+      }
+      // Kết quả - Mảng nhiệm vụ duy nhất có ngày bắt đầu lớn nhất cho từng khách hàng
+      var result = Object.values(uniqueTasks);
+      data.customerCycle = result;
+      // cộng chu kỳ
+      data.customerCycle = data.customerCycle.map((value, index) => {
+        return {
+          ...value,
+          start_date_new: handleCycle(value.Cycle.name, value.start_date),
+        };
+      });
+      // tính trong tuần , khởi tại ban đầu
+      data.customerCycle = data.customerCycle.filter((item) => {
+        return (
+          item.start_date_new >= firstDayOfWeek &&
+          item.start_date_new <= lastDayOfWeek
+        );
+      });
+
+      //dữ liệu hiển thị trên bảng
+      for (let value of data.customerCycle) {
+        let customer = await http_getOne(Customer, value.customerId);
+        let cus = {
+          content: value.content,
+          cycleId: value.cycleId,
+          cycle: value.Cycle.name,
+          start_date: formatDate1(value.start_date),
+          end_date: formatDate1(value.end_date),
+          customer: customer.documents,
+        };
+        data.items.push(cus);
+      }
+      data.customerCare = data.items.length;
+      //biểu đồ
       data.task = data.task.filter((value, index) => {
         return (
           value.start_date >= firstDayOfWeek &&
@@ -637,8 +688,9 @@ export default {
 <template>
   <div class="border-box ml-2">
     <!-- select_option - overview+detail -->
-    <div class="d-flex my-2 menu justify-content-end" style="border: none">
+    <div class="d-flex my-2 mx-4 menu justify-content-end" style="border: none">
       <!-- select cycles -->
+      <!-- BTN tổng quan chi tiêt -->
       <div class="">
         <button
           class="btn m-0"
@@ -652,7 +704,7 @@ export default {
         >
           Tổng quan
         </button>
-        <button
+        <!--<button
           class="btn mr-4"
           @click="
             () => {
@@ -663,7 +715,7 @@ export default {
           :class="{ 'btn-primary': detail }"
         >
           Chi tiết
-        </button>
+        </button> -->
       </div>
     </div>
     <div class="border-hr mb-3"></div>
@@ -902,7 +954,7 @@ export default {
     </div>
     <!--Detail -->
     <div v-if="showchart == 'customerCycle'">
-      <h4 class="text-center my-2">Danh sách khách hàng gần tới chu kỳ</h4>
+      <!-- <h4 class="text-center my-2">Danh sách khách hàng gần tới chu kỳ</h4> -->
       <!--Table Cus -->
       <Table
         :items="setPages"
@@ -958,7 +1010,7 @@ export default {
         :startRow="data.startRow"
         :endRow="data.endRow"
         :currentPage="data.currentPage"
-        @updateCurrentPage="(value) => (data.currentPage = value)"
+        @update:currentPage="(value) => (data.currentPage = value)"
         class="mx-3"
       />
     </div>

@@ -1,6 +1,7 @@
 <script>
 import { reactive, ref } from "vue";
 import { stringifyQuery, useRouter } from "vue-router";
+
 export default {
   components: {},
   props: {
