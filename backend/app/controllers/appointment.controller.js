@@ -170,8 +170,25 @@ exports.deleteAll = async (req, res, next) => {
 }
 
 exports.update = async (req, res, next) => {
-    console.log("hahaha",req.body)
+    console.log("hahaha",req.body.taskId)
     const { date_time, content, place, note, StatusAppId } = req.body;
+    const appointments = await Appointment.findAll({
+        where:{
+            taskId: req.body.taskId
+        }
+    });
+    console.log("app", appointments);
+        for (let value of appointments) {
+            value.dataValues.date_time = getDecrypt(value.dataValues.date_time);
+            value.dataValues.content = getDecrypt(value.dataValues.content);
+            console.log("gio ",value.dataValues.date_time == date_time )
+            if (value.dataValues.date_time == date_time) {
+                return res.send({
+                    error: true,
+                    msg: `Đã tồn tại cuộc hẹn ${value.dataValues.content} lúc ${value.dataValues.date_time}.`
+                })
+            }
+        }
     try {
         let appointments = [await Appointment.findOne({
             where: {

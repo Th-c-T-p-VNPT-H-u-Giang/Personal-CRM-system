@@ -405,8 +405,34 @@ exports.deleteAll = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
     console.log('update', req.body);
+    console.log("coo", req.body.EvaluateId);
     // console.log(req.body.Status_Task.status);
     // console.log(req.body.Status_Task.reason);
+    if(req.body.fb){
+        console.log("dooooooooooooo")
+        try{
+            const comment = await Comment.update({
+                content: req.body.Comment.content,
+            }, { where: { TaskId: req.params.id }, returning: true, });
+            console.log("abchg")
+            const task = await Task.update({
+                EvaluateId: req.body.EvaluateId,
+            },
+            {
+                where: { _id: req.params.id }, returning: true, 
+            });
+            console.log("ne ne ne")
+            return res.send({
+                error: false,
+                msg: 'Dữ liệu đã được thay đổi thành công.',
+            })  
+        }
+        catch (error) {
+            return next(
+                createError(400, 'Error update')
+            )
+        }
+    }else{
     const { start_date, end_date, content, cycleId, customerId, leaderId, note, StatusTaskId, EvaluateId } = req.body;
     try {
         let tasks = [await Task.findOne({
@@ -426,7 +452,7 @@ exports.update = async (req, res, next) => {
             (value, index) => {
                 return value.start_date == start_date && value.end_date == end_date && value.content == content
                     && value.cycleId == cycleId && value.customerId == customerId && value.leaderId == leaderId
-                    && value.note== note && value.StatusTaskId == StatusTaskId && value.EvaluateId == EvaluateId;
+                    && value.note== note && value.StatusTaskId == StatusTaskId || value.EvaluateId == EvaluateId;
             }
         )
 
@@ -440,7 +466,7 @@ exports.update = async (req, res, next) => {
                 leaderId: req.body.leaderId,
                 note: req.body.note,
                 StatusTaskId: req.body.StatusTaskId,
-                EvaluateId : req.body.EvaluateId,
+                EvaluateId: req.body.EvaluateId,
             }, { where: { _id: req.params.id }, returning: true, });
 
             console.log(document);
@@ -448,6 +474,7 @@ exports.update = async (req, res, next) => {
             const comment = await Comment.update({
                 content: req.body.Comment.content,
             }, { where: { TaskId: req.params.id }, returning: true, });
+
             return res.send({
                 error: false,
                 msg: 'Dữ liệu đã được thay đổi thành công.',
@@ -464,6 +491,8 @@ exports.update = async (req, res, next) => {
             createError(400, 'Error update')
         )
     }
+}
+    
 
 }
 

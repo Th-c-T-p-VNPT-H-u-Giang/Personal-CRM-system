@@ -54,6 +54,7 @@ export default {
     const handleFeedback = async () => {
       console.log("hello");
       console.log("id Task dang chon:", props.item._id, props.item);
+      props.item.fb = true;
       const result = await http_update(Task, props.item._id, props.item);
       console.log("ne", result);
       if (!result.error) {
@@ -64,7 +65,7 @@ export default {
       }
     };
     let selectedOptionEvaluate = ref("0");
-    selectedOptionEvaluate.value = props.item.EvaluateId;
+    // selectedOptionEvaluate.value = props.item.EvaluateId;
     watch(selectedOptionEvaluate, async (newValue, oldValue) => {
       if (newValue == "other") {
         const showSweetAlert = async () => {
