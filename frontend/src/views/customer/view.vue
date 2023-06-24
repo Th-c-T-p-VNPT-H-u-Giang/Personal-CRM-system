@@ -129,6 +129,7 @@ export default {
                 :showActionList="[false, false, false]"
                 :activeAction="false"
                 :isActiveCheckbox="false"
+                :startRow="0"
               />
             </div>
           </div>
@@ -145,6 +146,7 @@ export default {
                 :showActionList="[false, false, false]"
                 :activeAction="false"
                 :isActiveCheckbox="false"
+                :startRow="0"
               />
               <!-- <div v-for="(value, index) in item.Habits" :key="index">
                 <p class="text-center">

@@ -371,6 +371,7 @@ export default {
                       id="phone"
                       v-model="item.Customer.phone"
                       required
+                      disabled
                     />
                   </div>
                   <div class="form-row">
@@ -384,6 +385,7 @@ export default {
                         id="email"
                         v-model="item.Customer.email"
                         required
+                        disabled
                       />
                     </div>
                     <div class="form-group col-md-6">

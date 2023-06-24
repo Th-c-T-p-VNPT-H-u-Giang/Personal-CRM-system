@@ -350,6 +350,12 @@ exports.findOne = async (req, res, next) => {
                 },
               ],
             },
+            {
+              model: Event,
+            },
+            {
+              model: Habit,
+            },
           ],
         },
         {

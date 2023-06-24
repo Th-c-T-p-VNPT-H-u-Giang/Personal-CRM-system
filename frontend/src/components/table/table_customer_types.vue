@@ -63,7 +63,7 @@ export default {
       <!-- {{ startRow }} -->
       <tr v-for="(item, index) in items" :key="index">
         <td  v-if="isActiveCheckbox" ><input type="checkbox" v-model="item.checked" name="" id="" /></td>
-        <td>{{ startRow + index + 1 }}</td>
+        <td>{{ startRow + Math.ceil(index)  + 1 }}</td>
         <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
         <td v-if="activeAction == true">
           <button

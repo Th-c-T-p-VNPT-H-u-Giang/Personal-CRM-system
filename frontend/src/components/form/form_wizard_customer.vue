@@ -9,17 +9,14 @@ import {
   http_create,
   http_deleteOne,
   alert_delete,
-  http_getOne,
   Company_KH,
   Customer_Work,
   Customer,
   Event,
-  Habit,
 } from "../../views/common/import";
 
 import Swal from "sweetalert2";
 import Select_Advanced from "./select_advanced.vue";
-import axios from "axios";
 
 export default {
   components: {
@@ -212,7 +209,6 @@ export default {
       refresh();
       for (const value of data.customer) {
         if (
-          value.name == viewData.customerInfo.name &&
           value.phone == viewData.customerInfo.phone &&
           value.email == viewData.customerInfo.email
         ) {
