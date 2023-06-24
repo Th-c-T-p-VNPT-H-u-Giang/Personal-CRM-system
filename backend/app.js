@@ -117,23 +117,36 @@ io.on('connection', (socket) => {
             break;
         }      
         for (const i of Tasks) {
-          if (value.Customer._id == i.Customer._id && !value.Employees.length && value.Status_Task.name == "đã chăm sóc"){
+          console.log("cus cu",value.Customer._id,"cú moi",i.Customer._id)
+          console.log("dai nhieu",value.Employees.length)
+          if (value.Customer._id == i.Customer._id && value.Employees.length!=0){
             const start_dateItem = moment(i.start_date, 'YYYY-MM-DD');
             const end_dateItem = moment(i.end_date, 'YYYY-MM-DD');
+            if (coming_day.isSame(value.end_date)){
+              if ((start_dateItem).isSame(coming_day.add(1,'days')) && (end_dateItem).isSame(end_day.add(1,'days'))){
+                coming_day = start_dateItem
+                value.Employees = i.Employees
+                value.content =  i.content
+                console.log("hahahahaha",value.Employees)          
+              } 
+            } else                
             if ((start_dateItem).isSame(coming_day) && (end_dateItem).isSame(end_day)){
               coming_day = start_dateItem
               value.Employees = i.Employees
               value.content =  i.content
-              console.log("hahahahaha",value.Employees)          
-            }          
+              console.log("hahahahaha",value.Employees) 
+            }     
           }       
         }
         today.startOf('day');
         coming_day.startOf('day');
         console.log("coming_day",coming_day,"cua khach hang",value.Customer.name)  
         console.log("today",today)    
-        if (coming_day == value.end_date){
+        console.log("1 ngay bat dau moi",coming_day,"ngay ket thuc cu",value.end_date)
+        if (coming_day.isSame(value.end_date)){
           coming_day = coming_day.add(1, 'days');
+          end_day = end_day.add(1, 'days');
+          console.log("hihihihi")
         }
         if (coming_day.subtract(1, 'days').isSame(today)){    
           if (!value.Employees.length){
