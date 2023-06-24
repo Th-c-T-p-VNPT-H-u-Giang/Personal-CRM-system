@@ -2,63 +2,75 @@
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="report_container">
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report"
+          :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-danger"> Khách hàng lâu chưa chăm sóc</span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']" class="">
-    <span> Khách hàng lâu chưa chăm sóc</span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_assignment_staff"
+          :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-info"> Khách hàng do nhân viên chăm sóc </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report_assignment_staff" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng do nhân viên chăm sóc
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_customer_cycle"
+          :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span style="color: #660099;" > Khách hàng tới chu kì nhưng chưa chăm sóc </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">{{ data.items.length }}/{{data.lengthCustomer}}</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report_customer_cycle" :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng tới chu kì nhưng chưa chăm sóc
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-
-<div class="mx-1 report__item">
-  <router-link to="/report_leader_customer" :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng do lảnh đạo phụ trách
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-<div class="mx-1 report__item">
-  <router-link to="/report_leader_staff" :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Nhân viên do lảnh đạo phụ trách
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_leader_customer"
+          :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-primary"> Khách hàng do lãnh đạo phụ trách </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_leader_staff"
+          :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-success"> Nhân viên do lãnh đạo phụ trách </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
+    </div>
     <!-- Filter -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
@@ -304,11 +316,14 @@ export default {
         work_temp: "",
       },
       viewCareCus: null,
+      lengthCustomer: 0
     });
+
 
 
     const reFresh = async () => {
       const cusWork = await http_getAll(Customer_Work);
+      data.lengthCustomer = cusWork.documents.length
       data.items = cusWork.documents.filter((cusWork) => {
         const taskCusCared = cusWork.Customer.Tasks.filter((task) => {
           if (task.Status_Task.name == "đã chăm sóc") {
@@ -325,14 +340,19 @@ export default {
             var cycleDate = 0;
             var cycleMonth = 0;
             var cycleYear = 0;
-            if (cycle.includes("ngày")) {
-              cycleDate = numberOfCycle; // nửa sửa bỏ nhân 2 
-            }
-            if (cycle.includes("tháng")) {
-              cycleMonth = numberOfCycle;// nửa sửa bỏ nhân 2 
-            }
-            if (cycle.includes("năm")) {
-              cycleYear = numberOfCycle;// nửa sửa bỏ nhân 2 
+            switch (true) {
+              case cycle.includes("ngày"):
+                cycleDate = numberOfCycle; 
+                break;
+              case cycle.includes("tháng"):
+                cycleMonth = numberOfCycle; 
+                break;
+              case cycle.includes("năm"):
+                cycleYear = numberOfCycle; 
+                break;
+              case cycle.includes("tuần"):
+                cycleDate = numberOfCycle * 7;
+                break;
             }
 
             start_date.setDate(start_date.getDate() + cycleDate);
@@ -384,19 +404,6 @@ export default {
         };
       });
 
-      // data.viewCareCus = item.Customer.Tasks.map((value) => {
-      //   console.log('Value:', value);
-      //   return {
-      //     start_date: value.start_date,
-      //     end_date: value.end_date,
-      //     content: value.content,
-      //     customerName: item.Customer.name,
-      //     cycleName: value.Cycle.name, // join bản sao
-      //     statusName: value.Status_Task.name,
-      //     EvaluateStar: value.Evaluate.star,
-      //     comment: value.Comment == null ? 'Chưa cập nhật' : value.Comment.content
-      //   }
-      // })
     };
 
     // handle update entry value
@@ -601,6 +608,7 @@ export default {
   color: blue;
 }
 
+
 .none-active-menu {
   color: var(--dark);
 }
@@ -621,7 +629,7 @@ export default {
 }
 
 .mx-1.report__item {
-  height: 100px;
+  height: 75px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -651,7 +659,35 @@ a.none-active-menu:hover {
   opacity: 0.6;
 }
 span.material-symbols-outlined {
-    padding: 5px;
+  padding: 5px;
+  font-size: 24px;
+  color: #000
+
 }
+
+.border-danger {
+  border: 2px solid #dc3545!important;
+}
+
+.border-info {
+  border: 2px solid #17a2b8
+}
+
+.border-purple {
+  border: 2px solid rgb(102, 0, 153);
+}
+
+.border-primary {
+    border: 2px solid #007bff;
+}
+
+.border-success {
+  border: 2px solid #28a745;
+}
+
+a.router-link-active.router-link-exact-active.active-menu{
+  font-weight: bold;
+}
+
 </style>
     

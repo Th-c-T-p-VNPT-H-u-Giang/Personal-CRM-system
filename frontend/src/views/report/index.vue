@@ -2,59 +2,71 @@
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="report_container">
-
       <div class="mx-1 report__item">
-        <router-link to="/report" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']" class="">
-          <span> KHÁCH HÀNG ĐÃ LÂU CHƯA CHĂM SÓC</span>
-          <span class="material-symbols-outlined">
-            group
+        <router-link
+          to="/report"
+          :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-danger"> Khách hàng lâu chưa chăm sóc</span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">{{data.items.length}}/{{data.lengthCustomer}}</span>
           </span>
         </router-link>
       </div>
 
       <div class="mx-1 report__item">
-        <router-link to="/report_assignment_staff" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-          class="">
-          <span>
-            Khách hàng do nhân viên chăm sóc
-          </span>
-          <span class="material-symbols-outlined">
-            group
-          </span>
-        </router-link>
-      </div>
-
-      <div class="mx-1 report__item">
-        <router-link to="/report_customer_cycle" :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
-          class="">
-          <span>
-            Khách hàng tới chu kì nhưng chưa chăm sóc
-          </span>
-          <span class="material-symbols-outlined">
-            group
+        <router-link
+          to="/report_assignment_staff"
+          :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-info"> Khách hàng do nhân viên chăm sóc </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
           </span>
         </router-link>
       </div>
 
       <div class="mx-1 report__item">
-        <router-link to="/report_leader_customer" :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
-          class="">
-          <span>
-            Khách hàng do lảnh đạo phụ trách
+        <router-link
+          to="/report_customer_cycle"
+          :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span style="color: #660099;" > Khách hàng tới chu kì nhưng chưa chăm sóc </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
           </span>
-          <span class="material-symbols-outlined">
-            group
+        </router-link>
+      </div>
+
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_leader_customer"
+          :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-primary"> Khách hàng do lãnh đạo phụ trách </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
           </span>
         </router-link>
       </div>
       <div class="mx-1 report__item">
-        <router-link to="/report_leader_staff" :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
-          class="">
-          <span>
-            Nhân viên do lảnh đạo phụ trách
-          </span>
-          <span class="material-symbols-outlined">
-            group
+        <router-link
+          to="/report_leader_staff"
+          :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-success"> Nhân viên do lãnh đạo phụ trách </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
           </span>
         </router-link>
       </div>
@@ -64,80 +76,123 @@
     <div class="border-hr mb-3"></div>
     <div class="d-flex justify-content-between mx-3 mb-3">
       <div class="d-flex justify-content-start">
-        <Select class="d-flex justify-content-start" :options="[
-          {
-            name: 5,
-            value: 5,
-          },
-          {
-            name: 10,
-            value: 10,
-          },
-          {
-            name: 20,
-            value: 20,
-          },
-          {
-            name: 30,
-            value: 30,
-          },
-        ]" style="width: 125px" :title="`Số bản ghi`" @update:entryValue="handleUpdateEntryValue"
-          :entryValue="data.entryValue" @refresh="data.entryValue = 'All'" />
-        <Search class="ml-3" style="width: 300px" @update:searchText="(value) => (data.searchText = value)"
-          :entryValue="data.searchText" @choseSearch="async (value) => (
-            console.log('search ........'),
-            (data.choseSearch = value),
-            (data.currentPage = 1)
-          )
-            " @refresh="(data.entryValue = 'All'), (data.currentPage = 1)" :options="[
-    {
-      _id: 'name',
-      name: 'Tìm kiếm theo tên',
-    },
-    {
-      _id: 'email',
-      name: 'Tìm kiếm theo email',
-    },
-    {
-      _id: 'phone',
-      name: 'Tìm kiếm theo số điện thoại',
-    },
-  ]" />
+        <Select
+          class="d-flex justify-content-start"
+          :options="[
+            {
+              name: 5,
+              value: 5,
+            },
+            {
+              name: 10,
+              value: 10,
+            },
+            {
+              name: 20,
+              value: 20,
+            },
+            {
+              name: 30,
+              value: 30,
+            },
+          ]"
+          style="width: 125px"
+          :title="`Số bản ghi`"
+          @update:entryValue="handleUpdateEntryValue"
+          :entryValue="data.entryValue"
+          @refresh="data.entryValue = 'All'"
+        />
+        <Search
+          class="ml-3"
+          style="width: 300px"
+          @update:searchText="(value) => (data.searchText = value)"
+          :entryValue="data.searchText"
+          @choseSearch="
+            async (value) => (
+              console.log('search ........'),
+              (data.choseSearch = value),
+              (data.currentPage = 1)
+            )
+          "
+          @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
+          :options="[
+            {
+              _id: 'name',
+              name: 'Tìm kiếm theo tên',
+            },
+            {
+              _id: 'email',
+              name: 'Tìm kiếm theo email',
+            },
+            {
+              _id: 'phone',
+              name: 'Tìm kiếm theo số điện thoại',
+            },
+          ]"
+        />
       </div>
       <div class="d-flex align-items-start">
-        <button class="btn btn-warning mx-2" data-toggle="modal" data-target="#model-form-mail">
+        <button
+          class="btn btn-warning mx-2"
+          data-toggle="modal"
+          data-target="#model-form-mail"
+        >
           <span id="delete-all" class="">Mail</span>
         </button>
-        <button type="button" class="btn btn-primary" @click="handlePrintReport">
+        <button
+          type="button"
+          class="btn btn-primary"
+          @click="handlePrintReport"
+        >
           <span id="add" class="">In</span>
         </button>
       </div>
     </div>
 
     <!-- Table -->
-    <Table :items="setPages" :fields="[
-      'Tên',
-      'Email',
-      'Sdt',
-      'Công việc',
-      'Công ty',
-      'Loại khách hàng',
-    ]" :labels="[
-  'nameCustomer',
-  'emailCustomer',
-  'phoneCustomer',
-  'current_position',
-  'nameCompany',
-  'nameCustomerType',
-]" @delete="handleDelete" @edit="EditEmit" :showActionList="[true, false, false]" :startRow="0" @view="view"
-      :isActiveCheckbox="false" />
+    <Table
+      :items="setPages"
+      :fields="[
+        'Tên',
+        'Email',
+        'Sdt',
+        'Công việc',
+        'Công ty',
+        'Loại khách hàng',
+      ]"
+      :labels="[
+        'nameCustomer',
+        'emailCustomer',
+        'phoneCustomer',
+        'current_position',
+        'nameCompany',
+        'nameCustomerType',
+      ]"
+      @delete="handleDelete"
+      @edit="EditEmit"
+      :showActionList="[true, false, false]"
+      :startRow="0"
+      @view="view"
+      :isActiveCheckbox="false"
+    />
     <!-- Pagination -->
-    <Pagination :numberOfPages="data.numberOfPages" :totalRow="data.totalRow" :startRow="data.startRow"
-      :endRow="data.endRow" :currentPage="data.currentPage" @update:currentPage="(value) => (data.currentPage = value)"
-      class="mx-3" />
+    <Pagination
+      :numberOfPages="data.numberOfPages"
+      :totalRow="data.totalRow"
+      :startRow="data.startRow"
+      :endRow="data.endRow"
+      :currentPage="data.currentPage"
+      @update:currentPage="(value) => (data.currentPage = value)"
+      class="mx-3"
+    />
 
     <div class="container pdf-content" ref="pdfContent">
-      <img src="../../assets/images/vnpt-logo1.png" class="rounded-circle" alt="Cinque Terre" style="height: 70px" />
+      <img
+        src="../../assets/images/vnpt-logo1.png"
+        class="rounded-circle"
+        alt="Cinque Terre"
+        style="height: 70px"
+      />
       <div class="d-flex justify-content-between mt-4">
         <p class="text-center ml-4 font-weight-bold">VNPT Hậu Giang</p>
         <div class="text-center font-weight-bold" style="margin-top: -40px">
@@ -187,11 +242,11 @@
     <Mail />
   </div>
 </template>
-    
+
 <script>
 import { reactive, computed, ref, onBeforeMount } from "vue";
 import Table from "../../components/table/table-report.vue";
-import Mail from './mail.vue'
+import Mail from "./mail.vue";
 import {
   http_getAll,
   Pagination,
@@ -211,7 +266,7 @@ export default {
     Select,
     Search,
     View,
-    Mail
+    Mail,
   },
   setup() {
     const data = reactive({
@@ -257,6 +312,7 @@ export default {
         work_temp: "",
       },
       viewCareCus: null,
+      lengthCustomer: 0,
     });
 
     const labels = [
@@ -268,14 +324,17 @@ export default {
 
     const reFresh = async () => {
       const cusWork = await http_getAll(Customer_Work);
+      // console.log('lengh ',cusWork.documents.length);
+      data.lengthCustomer = cusWork.documents.length
       data.items = cusWork.documents.filter((cusWork) => {
         const taskCusCared = cusWork.Customer.Tasks.filter((task) => {
-          if (task.Status_Task.name == "đã chăm sóc") { // lấy các khách hàng đã chăm sóc
+          if (task.Status_Task.name == "đã chăm sóc") {
+            // lấy các khách hàng đã chăm sóc
             const cycle = task.Cycle.name; // lấy chu kì
             let start_date = task.start_date; // lấy ngày bắt đầu
             start_date = new Date(start_date); // chuyển chuổi sang date
 
-            let numberOfCycle = cycle.replace(/\D/g, ""); // lấy số trong chu kì 
+            let numberOfCycle = cycle.replace(/\D/g, ""); // lấy số trong chu kì
 
             numberOfCycle = +numberOfCycle; // ép kiểu sang số nguyên
 
@@ -292,8 +351,8 @@ export default {
               case cycle.includes("năm"):
                 cycleYear = numberOfCycle; // Nửa sửa bỏ nhân 2
                 break;
-              case cycle.includes('tuần'):
-                cycleDate = numberOfCycle * 7
+              case cycle.includes("tuần"):
+                cycleDate = numberOfCycle * 7;
                 break;
             }
 
@@ -309,7 +368,7 @@ export default {
             // lần bắt đầu thứ 2
             cycleDate = cycleDate * 2;
             cycleMonth = cycleMonth * 2;
-            cycleYear = cycleYear * 2
+            cycleYear = cycleYear * 2;
             start_date.setDate(start_date.getDate() + cycleDate);
             start_date.setMonth(start_date.getMonth() + cycleMonth);
             start_date.setFullYear(start_date.getFullYear() + cycleYear);
@@ -318,7 +377,6 @@ export default {
             const day2 = start_date.getDate();
             const dayStartNewCycle2 = year2 + "-" + month2 + "-" + day2;
 
-
             task.dayStartNewCycle2 = dayStartNewCycle2;
             task.dayStartNewCycle = dayStartNewCycle;
             return task;
@@ -326,11 +384,14 @@ export default {
         });
 
         const rsTaskCusCared = taskCusCared.filter((value) => {
-          console.log('Value', value);
+          console.log("Value", value);
           if (value.customerId == cusWork.Customer._id) {
             return cusWork.Customer.Tasks.filter((task) => {
-              if (value.dayStartNewCycle2 == task.start_date && value.dayStartNewCycle != task.start_date) {
-                console.log("Run"); 
+              if (
+                value.dayStartNewCycle2 == task.start_date &&
+                value.dayStartNewCycle != task.start_date
+              ) {
+                console.log("Run");
               } else {
                 return value;
               }
@@ -360,21 +421,6 @@ export default {
           ...item,
         };
       });
-
-
-      // data.viewCareCus = item.Customer.Tasks.map((value) => {
-      //   console.log('Value:', value);
-      //   return {
-      //     start_date: value.start_date,
-      //     end_date: value.end_date,
-      //     content: value.content,
-      //     customerName: item.Customer.name,
-      //     cycleName: value.Cycle.name, // join bản sao
-      //     statusName: value.Status_Task.name,
-      //     EvaluateStar: value.Evaluate.star,
-      //     comment: value.Comment == null ? 'Chưa cập nhật' : value.Comment.content
-      //   }
-      // })
     };
 
     // handle update entry value
@@ -407,11 +453,7 @@ export default {
         });
       } else {
         return data.items.map((value, index) => {
-          return [
-            value.nameCustomer,
-            value.emailCustomer,
-            value.phoneCustomer
-          ]
+          return [value.nameCustomer, value.emailCustomer, value.phoneCustomer]
             .join("")
             .toLocaleLowerCase();
         });
@@ -547,7 +589,7 @@ export default {
   },
 };
 </script>
-    
+
 <style scoped>
 .pdf-content {
   position: absolute;
@@ -581,7 +623,7 @@ export default {
 }
 
 .active-menu {
-  color: blue !important;
+  color: blue;
 }
 
 .none-active-menu {
@@ -604,7 +646,7 @@ export default {
 }
 
 .mx-1.report__item {
-  height: 100px;
+  height: 75px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -613,9 +655,10 @@ export default {
   font-size: 18px;
 }
 
-.mx-1 .report__item a {
-  padding: 10px;
+.mx-1.report__item:active{
+  border: 2px solid #28a745;
 }
+
 
 
 a.none-active-menu,
@@ -626,15 +669,18 @@ a.router-link-active.router-link-exact-active.active-menu {
   align-items: start;
   padding: 5px;
   text-decoration: none;
-} 
-
-
- a.none-active-menu:hover {
-  border: 1px solid green;
 }
+
+a.router-link-active.router-link-exact-active.active-menu{
+  font-weight: bold;
+}
+
+
 
 span.material-symbols-outlined {
   padding: 5px;
+  font-size: 24px;
+  color: #000
 }
+
 </style>
-    

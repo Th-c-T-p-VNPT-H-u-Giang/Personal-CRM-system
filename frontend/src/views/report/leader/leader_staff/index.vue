@@ -2,63 +2,75 @@
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="report_container">
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report"
+          :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-danger"> Khách hàng lâu chưa chăm sóc</span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']" class="">
-    <span> Khách hàng lâu chưa chăm sóc</span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_assignment_staff"
+          :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-info"> Khách hàng do nhân viên chăm sóc </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report_assignment_staff" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng do nhân viên chăm sóc
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_customer_cycle"
+          :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span style="color: #660099;" > Khách hàng tới chu kì nhưng chưa chăm sóc </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report_customer_cycle" :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng tới chu kì nhưng chưa chăm sóc
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-
-<div class="mx-1 report__item">
-  <router-link to="/report_leader_customer" :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng do lảnh đạo phụ trách
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-<div class="mx-1 report__item">
-  <router-link to="/report_leader_staff" :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Nhân viên do lảnh đạo phụ trách
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_leader_customer"
+          :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-primary"> Khách hàng do lãnh đạo phụ trách </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_leader_staff"
+          :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-success"> Nhân viên do lãnh đạo phụ trách </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">{{ data.items.length }}/{{ data.lengthEmpoyee }}</span>
+          </span>
+        </router-link>
+      </div>
+    </div>
     <!-- Filter -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
@@ -194,11 +206,7 @@
         <br />
         <span>Bộ phận công tác</span>
       </div>
-      <!-- nameEmployee: item.Employee.name,
-          phoneEmployee: item.Employee.phone,
-          emailEmployee: item.Employee.email,
-          addressEmployee: item.Employee.address,
-          birthdayEmployee: item.Employee.birthday, -->
+
       <table class="table table-bordered mt-4">
         <thead>
           <tr>
@@ -207,11 +215,7 @@
             </th>
           </tr>
         </thead>
-        <!-- nameEmployee: item.Employee.name,
-          phoneEmployee: item.Employee.phone,
-          emailEmployee: item.Employee.email,
-          addressEmployee: item.Employee.address,
-          birthdayEmployee: item.Employee.birthday, -->
+
         <tbody>
           <tr v-for="(item, index) in data.items" :key="index">
             <td>{{ index + 1 }}</td>
@@ -247,6 +251,7 @@ import {
   Pagination,
   Select,
   Search,
+  Employee
 } from '../../../common/import'
 import jsPDF from "jspdf"; //in
 import html2canvas from "html2canvas";
@@ -294,14 +299,17 @@ export default {
       currentPage: 1,
       searchText: "",
       activeMenu: 4,
-      viewValue: {}
+      viewValue: {},
+      lengthEmpoyee: 0
     });
 
     const reFresh = async () => {
       const leaderId = sessionStorage.getItem("employeeId")
+      const employee = await http_getAll(Employee)
+      data.lengthEmpoyee =  employee.length;
       const tasks = await http_getAll(Task)
-      data.items = tasks.filter(task => {
-        return task.leaderId == leaderId
+      data.items = tasks.filter((task, index) => {
+        return task.leaderId == leaderId 
       })
 
       console.log('Data items before', data.items);
@@ -502,7 +510,7 @@ export default {
 }
 
 .mx-1.report__item {
-  height: 100px;
+  height: 75px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -533,5 +541,11 @@ a.none-active-menu:hover {
 }
 span.material-symbols-outlined {
     padding: 5px;
+  color: #000
+
+}
+
+a.router-link-active.router-link-exact-active.active-menu{
+  font-weight: bold;
 }
 </style>

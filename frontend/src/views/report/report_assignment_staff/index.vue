@@ -2,63 +2,75 @@
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
     <div class="report_container">
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report"
+          :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-danger"> Khách hàng lâu chưa chăm sóc</span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report" :class="[data.activeMenu == 2 ? 'active-menu' : 'none-active-menu']" class="">
-    <span> Khách hàng lâu chưa chăm sóc</span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_assignment_staff"
+          :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-info"> Khách hàng do nhân viên chăm sóc </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">{{ data.items.length }}/{{data.lengthCustomer}}</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report_assignment_staff" :class="[data.activeMenu == 1 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng do nhân viên chăm sóc
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_customer_cycle"
+          :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span style="color: #660099;" > Khách hàng tới chu kì nhưng chưa chăm sóc </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
 
-<div class="mx-1 report__item">
-  <router-link to="/report_customer_cycle" :class="[data.activeMenu == 0 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng tới chu kì nhưng chưa chăm sóc
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-
-<div class="mx-1 report__item">
-  <router-link to="/report_leader_customer" :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Khách hàng do lảnh đạo phụ trách
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-<div class="mx-1 report__item">
-  <router-link to="/report_leader_staff" :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
-    class="">
-    <span>
-      Nhân viên do lảnh đạo phụ trách
-    </span>
-    <span class="material-symbols-outlined">
-      group
-    </span>
-  </router-link>
-</div>
-</div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_leader_customer"
+          :class="[data.activeMenu == 3 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-primary"> Khách hàng do lãnh đạo phụ trách </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
+      <div class="mx-1 report__item">
+        <router-link
+          to="/report_leader_staff"
+          :class="[data.activeMenu == 4 ? 'active-menu' : 'none-active-menu']"
+          class=""
+        >
+          <span class="text-success"> Nhân viên do lãnh đạo phụ trách </span>
+          <span class="pl-3" style="margin-top: -4px;">
+            <span class="material-symbols-outlined"> group </span>
+            <span class="text-center">2/10</span>
+          </span>
+        </router-link>
+      </div>
+    </div>
     <!-- Filter -->
     <!-- Search -->
     <div class="border-hr mb-3"></div>
@@ -132,15 +144,6 @@
         </button>
       </div>
     </div>
-    <!-- Table -->
-    <!-- statusTask: task.Status_Task.name,
-          nameCustomer: task.Customer.name,
-          phoneCustomer: task.Customer.,
-          emailCustomer: task.Customer.email,
-          customerType: task.Customer.Customer_Type.name,
-          nameEmployee: task.Employee.name,
-          phoneEmployee: task.Employee.phone,
-          emailEmployee: task.Employee.email, -->
     <Table
       :items="setPages"
       :fields="[
@@ -214,14 +217,6 @@
         <br />
         <span>Bộ phận công tác</span>
       </div>
-      <!-- statusTask: task.Status_Task.name,
-          nameCustomer: task.Customer.name,
-          phoneCustomer: task.Customer.phone,
-          emailCustomer: task.Customer.email,
-          customerType: task.Customer.Customer_Type.name,
-          nameEmployee: task.Employee.name,
-          phoneEmployee: task.Employee.phone,
-          emailEmployee: task.Employee.email, -->
       <table class="table table-bordered mt-4">
         <thead>
           <tr>
@@ -280,6 +275,7 @@ import {
   Pagination,
   Select,
   Search,
+  Customer
 } from "../../common/import";
 
 import View from './view.vue'
@@ -313,11 +309,14 @@ export default {
       currentPage: 1,
       searchText: "",
       activeMenu: 1,
-      viewValue: []
+      viewValue: [],
+      lengthCustomer: 0
     });
 
     const reFresh = async () => {
       const tasks = await http_getAll(Task);
+      const customer = await http_getAll(Customer);
+      data.lengthCustomer = customer.documents.length;
       data.items = tasks.map((task) => {
         console.log('task: ' , task);
         return {
@@ -535,7 +534,7 @@ export default {
 }
 
 .mx-1.report__item {
-  height: 100px;
+  height: 75px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -566,5 +565,11 @@ a.none-active-menu:hover {
 }
 span.material-symbols-outlined {
     padding: 5px;
+  color: #000
+
+}
+
+a.router-link-active.router-link-exact-active.active-menu{
+  font-weight: bold;
 }
 </style>
