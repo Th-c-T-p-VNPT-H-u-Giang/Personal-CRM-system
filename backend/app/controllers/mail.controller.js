@@ -1,4 +1,5 @@
 /////
+const path = require("path");
 const nodemailer = require("nodemailer");
 
 exports.sendEmail = async (req, res, next) => {
