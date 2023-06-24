@@ -32,6 +32,7 @@ export default {
         start_date: "",
         end_date: "",
         content: "",
+        note: "",
         customerId: "",
         cycleId: "",
         leaderId: "",
@@ -130,10 +131,8 @@ export default {
         customerId: "",
         cycleId: "",
         leaderId: "",
-        modelCus: "",
-        modelValue: "",
       };
-      ctx.emit("create");
+      (data.modelCus = ""), (data.modelValue = ""), ctx.emit("create");
     };
 
     //xoa phan cong
@@ -173,6 +172,9 @@ export default {
       cycles.cycle = await http_getAll(Cycle);
       customers.customer = await http_getAll(Customer);
       customers.customer = customers.customer.documents;
+      for (let value of customers.customer) {
+        value.name += " - " + value.phone + " - " + value.email;
+      }
       employees.employee = await http_getAll(Employee);
       statustasks.statustask = await http_getAll(StatusTask);
       evaluates.evaluate = await http_getAll(Evaluate);

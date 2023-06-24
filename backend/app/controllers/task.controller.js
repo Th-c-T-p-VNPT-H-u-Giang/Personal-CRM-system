@@ -43,7 +43,7 @@ const getDecrypt = (name) => {
 
 exports.create = async (req, res, next) => {
   console.log(req.body);
-  if (Object.keys(req.body).length === 9) {
+  if (Object.keys(req.body).length >= 7) {
     const {
       start_date,
       end_date,
@@ -258,64 +258,6 @@ exports.findAll = async (req, res, next) => {
         },
       ],
     });
-    // console.log("chieu dai", documents.length);
-    // for(let i =0; i< documents.length; i++){
-    //     console.log("dl neeee",documents[i]);
-    //     console.log("id neeee",documents[i]._id);
-    //     documents[i].dataValues["Emloyees_Task"] = []
-    //     console.log("document thuuuu",documents[i] )
-    //     const task_employee = await Task.findOne({
-    //         where: {
-    //             _id:documents[i]._id
-    //         },
-    //     })
-    //     console.log("task employee", task_employee._id);
-    //     const employee1 = await Employee_Task.findAll({
-    //         where: {
-    //           TaskId: task_employee._id,
-    //         },
-    //       });
-    //       console.log("employee1", employee1);
-    //       task_employee.dataValues["Employees"] = [];
-    //       console.log("task employee sauuuuu", task_employee);
-    //       for (let i = 0; i < employee1.length; i++) {
-    //         console.log("EID:", employee1[i].dataValues.EmployeeId);
-    //         const employee = await Employee.findOne({
-    //           where: { _id: employee1[i].dataValues.EmployeeId },
-    //         });
-    //         console.log("id position",employee.dataValues)
-    //         const position = await Position.findOne({
-    //             where: { _id: employee.dataValues.postionId },
-    //           });
-    //           console.log("id position",employee.dataValues)
-    //         const unit = await Unit.findOne({
-    //             where: { _id: employee.dataValues.unitId },
-    //         });
-    //         const department = await Department.findOne({
-    //             where: { _id: unit.dataValues.departmentId },
-    //         });
-    //         const center = await Center_VNPTHG.findOne({
-    //             where: { _id: department.dataValues.centerVNPTHGId },
-    //         });
-    //         console.log("position:", unit);
-    //         console.log("dep:", department);
-    //         console.log("center:", center);
-    //         console.log("nhân viên:", employee.dataValues);
-    //         employee.dataValues.name = getDecrypt(employee.dataValues.name);
-    //         employee.dataValues.phone = getDecrypt(employee.dataValues.phone);
-    //         employee.dataValues.email = getDecrypt(employee.dataValues.email);
-    //         position.dataValues.name = getDecrypt(position.dataValues.name);
-    //         unit.dataValues.name = getDecrypt(unit.dataValues.name);
-    //         department.dataValues.name = getDecrypt(department.dataValues.name);
-    //         center.dataValues.name = getDecrypt(center.dataValues.name);
-    //         task_employee.dataValues.Employees[i] = employee.dataValues;
-    //         task_employee.dataValues.Employees[i].Position = position.dataValues;
-    //         task_employee.dataValues.Employees[i].Unit = unit.dataValues;
-    //         task_employee.dataValues.Employees[i].Unit.Department = department.dataValues;
-    //         task_employee.dataValues.Employees[i].Unit.Department.Center = center.dataValues;
-    //     }
-    //     documents[i].dataValues = task_employee.dataValues;
-    // }
 
     return res.send(documents);
   } catch (error) {
@@ -445,31 +387,59 @@ exports.update = async (req, res, next) => {
   // console.log(req.body.Status_Task.reason);
   if (req.body.fb) {
     console.log("dooooooooooooo");
-    try {
-      const comment = await Comment.update(
-        {
-          content: req.body.Comment.content,
-        },
-        { where: { TaskId: req.params.id }, returning: true }
-      );
-      console.log("abchg");
-      const task = await Task.update(
-        {
-          EvaluateId: req.body.EvaluateId,
-        },
-        {
-          where: { _id: req.params.id },
-          returning: true,
-        }
-      );
-      console.log("ne ne ne");
-      return res.send({
-        error: false,
-        msg: "Dữ liệu đã được thay đổi thành công.",
-      });
-    } catch (error) {
-      return next(createError(400, "Error update"));
-    }
+    try{
+      let tasks1 = [await Task.findOne({
+          where: {
+              _id: req.params.id,
+          },
+          include: [{
+              model: Status_Task,
+          },
+          {
+              model: Cycle,
+          },
+          {
+              model: Comment,
+          }
+          ]
+      })];
+
+      tasks1 = tasks1.filter(
+          (value, index) => {
+              return value.EvaluateId == req.body.EvaluateId && value.Comment.content == req.body.Comment.content;
+          }
+      )
+      if(tasks1.length == 0){
+          const comment = await Comment.update({
+              content: req.body.Comment.content,
+          }, { where: { TaskId: req.params.id }, returning: true, });
+          console.log("abchg")
+          const task = await Task.update({
+              EvaluateId: req.body.EvaluateId,
+          },
+          {
+              where: { _id: req.params.id }, returning: true, 
+          });
+          console.log("ne ne ne")
+          return res.send({
+              error: false,
+              msg: 'Dữ liệu đã được thay đổi thành công.',
+          })  
+      }
+      else {
+          return res.send({
+              error: true,
+              msg: 'Dữ liệu chưa được thay đổi.'
+          })
+      }
+
+     
+  }
+  catch (error) {
+      return next(
+          createError(400, 'Error update')
+      )
+  }
   } else {
     const {
       start_date,
