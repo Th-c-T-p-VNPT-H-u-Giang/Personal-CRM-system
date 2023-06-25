@@ -260,15 +260,16 @@ export default {
       console.log("start1", data.department[0]._id);
       data.unit = [];
       //Lấy tất cả tổ của 1 trung tâm
-      for (let value of data.department) {
-        console.log("id", value._id);
-        var newUnit = await unitsServices.findAllUnitsOfADep(value._id);
-        for (let value of newUnit) {
-          console.log("new:", value);
-          data.unit.push(value);
-        }
-        // console.log("start2", data.unit);
-      }
+      // for (let value of data.department) {
+      //   console.log("id", value._id);
+
+      //   var newUnit = await unitsServices.findAllUnitsOfADep(value._id);
+      //   for (let value of newUnit) {
+      //     console.log("new:", value);
+      //     data.unit.push(value);
+      //   }
+      //   // console.log("start2", data.unit);
+      // }
       console.log("start2");
       data.unit = data.unit.map((value, index) => {
         return {
