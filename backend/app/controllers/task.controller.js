@@ -425,12 +425,28 @@ exports.findOne = async (req, res, next) => {
 
 exports.deleteOne = async (req, res, next) => {
   try {
+    const task = await Task.findOne({
+      where: {
+        _id: req.params.id,
+      },
+      include: [
+        {
+          model: Customer,
+        },
+      ],
+    });
+
+    console.log("11Task", task.dataValues);
     const documents = await Task.destroy({
       where: {
         _id: req.params.id,
       },
     });
-    return res.send(`Đã xóa phân công`);
+
+    return res.json({
+      msg: `Đã xóa phân công`,
+      documents: task.dataValues,
+    });
   } catch (error) {
     return next(createError(400, "Lỗi không xóa được phân công !"));
   }
@@ -440,64 +456,68 @@ exports.deleteAll = async (req, res, next) => {};
 
 exports.update = async (req, res, next) => {
   console.log("update", req.body);
-  // console.log("coo", req.body._id);
+  console.log("coo", req.body.fb);
   // console.log(req.body.Status_Task.status);
   // console.log(req.body.Status_Task.reason);
   if (req.body.fb == true) {
     console.log("dooooooooooooo");
-    try{
-      let tasks1 = [await Task.findOne({
+    try {
+      let tasks1 = [
+        await Task.findOne({
           where: {
-              _id: req.params.id,
+            _id: req.params.id,
           },
-          include: [{
+          include: [
+            {
               model: Status_Task,
-          },
-          {
+            },
+            {
               model: Cycle,
-          },
-          {
+            },
+            {
               model: Comment,
-          }
-          ]
-      })];
+            },
+          ],
+        }),
+      ];
 
-      tasks1 = tasks1.filter(
-          (value, index) => {
-              return value.EvaluateId == req.body.EvaluateId && value.Comment.content == req.body.Comment.content;
-          }
-      )
-      if(tasks1.length == 0){
-          const comment = await Comment.update({
-              content: req.body.Comment.content,
-          }, { where: { TaskId: req.params.id }, returning: true, });
-          console.log("abchg")
-          const task = await Task.update({
-              EvaluateId: req.body.EvaluateId,
+      tasks1 = tasks1.filter((value, index) => {
+        return (
+          value.EvaluateId == req.body.EvaluateId &&
+          value.Comment.content == req.body.Comment.content
+        );
+      });
+      if (tasks1.length == 0) {
+        const comment = await Comment.update(
+          {
+            content: req.body.Comment.content,
+          },
+          { where: { TaskId: req.params.id }, returning: true }
+        );
+        console.log("abchg");
+        const task = await Task.update(
+          {
+            EvaluateId: req.body.EvaluateId,
           },
           {
-              where: { _id: req.params.id }, returning: true, 
-          });
-          console.log("ne ne ne")
-          return res.send({
-              error: false,
-              msg: 'Dữ liệu đã được thay đổi thành công.',
-          })  
+            where: { _id: req.params.id },
+            returning: true,
+          }
+        );
+        console.log("ne ne ne");
+        return res.send({
+          error: false,
+          msg: "Dữ liệu đã được thay đổi thành công.",
+        });
+      } else {
+        return res.send({
+          error: true,
+          msg: "Dữ liệu chưa được thay đổi.",
+        });
       }
-      else {
-          return res.send({
-              error: true,
-              msg: 'Dữ liệu chưa được thay đổi.'
-          })
-      }
-
-     
-  }
-  catch (error) {
-      return next(
-          createError(400, 'Error update')
-      )
-  }
+    } catch (error) {
+      return next(createError(400, "Error update"));
+    }
   } else {
     console.log("ELSE:");
     const {

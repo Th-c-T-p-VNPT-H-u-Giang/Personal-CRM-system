@@ -10,7 +10,7 @@ const config = {
 const sequelize = new Sequelize(
   "personal_crm_system",
   "root",
-  "thanhtruc",
+  "#NguyenAnh1111",
   {
     host: "localhost",
     dialect: "mysql",

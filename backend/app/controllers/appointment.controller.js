@@ -1,4 +1,9 @@
-const { Appointment, Status_App, Task } = require("../models/index.model.js");
+const {
+  Appointment,
+  Status_App,
+  Task,
+  Status_Task,
+} = require("../models/index.model.js");
 const { DataTypes, Op } = require("sequelize");
 const createError = require("http-errors");
 const { v4: uuidv4 } = require("uuid");
