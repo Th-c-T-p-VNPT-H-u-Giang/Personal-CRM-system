@@ -103,7 +103,7 @@ export default {
           },
         },
       ],
-      entryValue: 5,
+      entryValue: 2,
       numberOfPages: 1,
       totalRow: 0,
       startRow: 0,
@@ -1284,6 +1284,10 @@ export default {
     const view = async (id) => {
       console.log(id);
       data.viewValue = await http_getOne(Task, id);
+
+      data.viewValue.Customer.birthday = formatDate(
+        data.viewValue.Customer.birthday
+      );
       console.log(data.viewValue);
       // router.push({ name: "Assignment.view", params: { id: _id } });
     };
@@ -1723,8 +1727,8 @@ export default {
     <Table
       :items="setPages"
       :fields="[
-        'Ngày bắt đầu',
-        'Ngày kết thúc',
+        'Bắt đầu',
+        'Kết thúc',
         'Nội dung chăm sóc',
         'SLNV',
         'Đánh giá',

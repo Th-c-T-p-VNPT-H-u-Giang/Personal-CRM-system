@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import Table from "../../components/table/table-appointment.vue";
 import EditAppointment from "../../views/appointment/edit.vue";
+import { formatDate } from "../common/import";
 export default {
   components: {
     Table,

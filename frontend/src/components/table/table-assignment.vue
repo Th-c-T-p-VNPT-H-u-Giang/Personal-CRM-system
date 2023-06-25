@@ -73,9 +73,16 @@ export default {
             />
           </td>
           <td class="size-16">{{ index + 1 }}</td>
-          <td class="size-16">{{ item.Customer.name }}</td>
-          <td class="size-16">{{ item.Cycle.name }}</td>
-          <td v-for="(label, index1) in labels" :key="index1" class="size-16">
+          <td class="size-16" width="12%">{{ item.Customer.name }}</td>
+          <td class="size-16" width="8%">{{ item.Cycle.name }}</td>
+          <td
+            v-for="(label, index1) in labels"
+            :key="index1"
+            class="size-16"
+            :style="{
+              width: label === 'content' ? '33.5%' : '14%',
+            }"
+          >
             {{ item[label] }}
           </td>
           <td class="size-16">{{ item.Evaluate.star }}</td>

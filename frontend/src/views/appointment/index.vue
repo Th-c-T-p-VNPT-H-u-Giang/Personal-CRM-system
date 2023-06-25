@@ -68,9 +68,6 @@ export default {
             _id: "",
             name: "",
           },
-          cycle: "",
-          start_date: "",
-          end_date: "",
         },
       ],
       entryValue: 5,
@@ -102,6 +99,7 @@ export default {
       customer: {
         name: "",
       },
+
       task: [
         {
           _id: "",
@@ -275,10 +273,9 @@ export default {
       console.log("ne", result);
       if (!result.error) {
         alert_success(`Sửa lịch hẹn`, `${result.msg}`);
-        await refresh();
+        refresh();
       } else if (result.error) {
         alert_error(`Sửa lịch hẹn`, `${result.msg}`);
-        await refresh();
       }
     };
 
@@ -288,11 +285,7 @@ export default {
       data.task = await http_getOne(Task, params);
       data.customer = data.customer.Customer.name;
       data.items = await Appointment.findAllAppointment(params);
-      data.items[0].cycle = data.task.Cycle.name;
-      data.items[0].start_date = formatDate(data.task.start_date);
-      data.items[0].end_date = formatDate(data.task.end_date);
-      console.log("Dl", data.items);
-      console.log("Dl", data.task, data.task.Cycle.name);
+      console.log("Dl", data.task);
       status_apps.status_app = await http_getAll(Status_App);
 
       // data.items = await data.items.Appointments;
@@ -309,15 +302,6 @@ export default {
           value: value._id,
         };
       });
-
-      for (let value of data.items) {
-        console.log(value);
-        if (value.note == null || value.note.length == 0) {
-          value.note = "không có";
-        } else value.note = value.note;
-      }
-      console.log("data items:", data.items);
-
       status_apps.status_app = status_apps.status_app.map((value, index) => {
         return {
           ...value,
@@ -349,7 +333,6 @@ export default {
           value1.checked = false;
           const index = arrayCheck.data.indexOf(value1._id);
           if (index !== -1) {
-            contentAlert;
             arrayCheck.data.splice(index, 1);
           }
         }
@@ -370,6 +353,24 @@ export default {
     };
     // handle http methods
     //XÓA 1
+    // const handleDelete = async (id, item) => {
+    //   console.log("D id & item:", id, item);
+    //   const isConfirmed = await alert_delete(
+    //     "Xóa",
+    //     `Bạn có chắc là xóa lịch hẹn này không!!`
+    //   );
+    //   if (isConfirmed) {
+    //     // 1***** xem thay đổi Appoiment cho phù hợp
+    //     const rsAppointment = await http_deleteOne(Appointment, id);
+    //     console.log(rsAppointment);
+    //     if (rsAppointment.error) {
+    //       alert_error("Lỗi ", rsAppointment.msg);
+    //     } else {
+    //       await refresh();
+    //       alert_success("Thành công", "Xóa lịch hẹn thành công");
+    //     }
+    //   }
+    // };
     const handleDelete = async (id, item) => {
       console.log("D id & item:", id, item);
       const isConfirmed = await alert_delete(
@@ -513,14 +514,7 @@ export default {
             style="height: 35px; width: 200px"
           />
         </div>
-        <!-- <div class="form-group w-100 ml-3">
-          <InputFilter
-            @update:entryValue="(value) => (datetimeValue = value)"
-            :title="`Ngày hẹn`"
-            :entryValue="`Ngày hẹn`"
-            style="height: 35px"
-          />
-        </div> -->
+
         <div class="form-group"></div>
       </div>
     </div>
@@ -602,9 +596,6 @@ export default {
           :taskId="params"
           :task="data.task"
           :customer="data.customer"
-          :cycle="data.items[0].cycle"
-          :start_date="data.items[0].start_date"
-          :end_date="data.items[0].end_date"
         />
       </div>
     </div>

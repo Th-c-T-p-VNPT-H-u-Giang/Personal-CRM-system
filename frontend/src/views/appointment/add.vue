@@ -66,18 +66,6 @@ export default {
       type: String,
       default: "",
     },
-    cycle: {
-      type: String,
-      default: "",
-    },
-    start_date: {
-      type: String,
-      default: "",
-    },
-    end_date: {
-      type: String,
-      default: "",
-    },
   },
   setup(props, ctx) {
     const data = reactive({
@@ -136,35 +124,15 @@ export default {
         <div class="modal-body">
           <form action="/action_page.php" class="was-validated">
             <div class="form-group">
-              <label for="name">Khách hàng:</label>
+              <label for="name"
+                >Khách hàng(<span style="color: red">*</span>):</label
+              >
               <input
                 type="text"
                 class="form-control"
                 id="name"
                 name="name"
                 :value="customer"
-                disabled
-              />
-            </div>
-            <div class="form-group">
-              <label for="name">Chu kỳ:</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name"
-                :value="cycle"
-                disabled
-              />
-            </div>
-            <div class="form-group">
-              <label for="name">Ngày bắt đầu:</label>
-              <input
-                type="text"
-                class="form-control"
-                id="name"
-                name="name"
-                :value="start_date"
                 disabled
               />
             </div>
@@ -215,6 +183,7 @@ export default {
               <label for="content">Chú thích:</label>
               <textarea
                 id="content"
+                required
                 class="form-control"
                 rows="5"
                 v-model="data.item.note"

@@ -82,28 +82,28 @@ export default {
               v-if="activeCheck == true"
             />
           </td>
-          <td class="size-16">{{ index + 1 }}</td>
-          <td class="size-16">{{ cus }}</td>
-          <td class="size-16" v-for="(label, index1) in labels" :key="index1">
+          <td>{{ index + 1 }}</td>
+          <td>{{ cus }}</td>
+          <td v-for="(label, index1) in labels" :key="index1">
             {{ item[label] }}
           </td>
-          <td class="size-16">{{ item.Status_App.name }}</td>
+          <td>{{ item.Status_App.name }}</td>
           <td class="" v-if="activeAction == true">
-            <div class="d-flex align-items-center size-16">
+            <div class="d-flex align-items-center">
               <!-- <button
-                type="button"
-                class="format-btn"
-                data-toggle="modal"
-                data-target="#model-view"
+              type="button"
+              class="format-btn"
+              data-toggle="modal"
+              data-target="#model-view"
+            >
+              <span
+                id="view"
+                class="material-symbols-outlined d-flex align-content-center"
+                @click="$emit('view', item._id)"
               >
-                <span
-                  id="view"
-                  class="material-symbols-outlined d-flex align-content-center"
-                  @click="$emit('view', item._id)"
-                >
-                  visibility
-                </span>
-              </button> -->
+                visibility
+              </span>
+            </button> -->
               <button
                 type="button"
                 class="mx-2 format-btn"
