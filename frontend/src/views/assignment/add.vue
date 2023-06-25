@@ -37,6 +37,7 @@ export default {
         leaderId: "",
         EvaluateId: "",
         StatusTaskId: "",
+        note: "",
       },
       modelCus: "",
       modelValue: "",

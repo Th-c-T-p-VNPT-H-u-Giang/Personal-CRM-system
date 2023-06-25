@@ -42,8 +42,8 @@
           <td class="size-16">{{ item.Unit.name }}</td>
           <td class="size-16">{{ item.Unit.Department.name }}</td>
           <td class="size-16">{{ item.Unit.Department.Center_VNPTHG.name }}</td>
-          <td class="" v-if="activeAction == true">
-            <div class="d-flex align-items-center">
+          <td class="">
+            <div class="d-flex align-items-center" v-if="activeAction == true">
               <button
                 type="button"
                 class="format-btn"
@@ -143,8 +143,7 @@ export default {
   border: 1px solid var(--gray);
   border-left: 0;
   border-right: 0;
-
-  padding: 8px 0px;
+  padding: 8px;
 }
 
 .my-table th {
