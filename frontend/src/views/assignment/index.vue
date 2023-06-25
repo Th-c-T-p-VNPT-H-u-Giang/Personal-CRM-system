@@ -1336,7 +1336,10 @@ export default {
           alert_error("Lỗi ", rsTask.msg);
         } else {
           await refresh();
-          alert_success("Thành công", `Xóa phân công phân công`);
+          alert_success(
+            "Thành công",
+            `Bạn đã xóa phân công khách hàng ${rsTask.documents.Customer.name} `
+          );
         }
       }
     };
