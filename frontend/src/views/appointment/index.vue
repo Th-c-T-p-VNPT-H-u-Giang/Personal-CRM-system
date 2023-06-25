@@ -342,6 +342,7 @@ export default {
           value1.checked = false;
           const index = arrayCheck.data.indexOf(value1._id);
           if (index !== -1) {
+            contentAlert;
             arrayCheck.data.splice(index, 1);
           }
         }
@@ -376,7 +377,10 @@ export default {
           alert_error("Lỗi ", rsAppointment.msg);
         } else {
           await refresh();
-          alert_success("Thành công", "Xóa lịch hẹn thành công");
+          alert_success(
+            "Thành công",
+            `Xóa lịch hẹn ngày ${rsAppointment.document.date_time} với khách hàng  ${data.customer}`
+          );
         }
       }
     };

@@ -595,7 +595,7 @@ export default {
       const week = getCurrentWeekDays();
       const firstDayOfWeek = week[0];
       const lastDayOfWeek = week[week.length - 1];
-
+      console.log("7 ngày", firstDayOfWeek, lastDayOfWeek);
       //1****
       // Mảng nhiệm vụ ban đầu
       console.log("Ban đầu:", data.customerCycle);

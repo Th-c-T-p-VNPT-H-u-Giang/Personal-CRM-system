@@ -1,6 +1,6 @@
 <template>
   <div>
-    <table class="my-table mb-2">
+    <table class="my-table">
       <thead>
         <tr class="">
           <th>
@@ -18,18 +18,20 @@
           <th v-for="(value, index) in fields" :key="index">
             <span class="size-16">{{ value }}</span>
           </th>
-          <th><span class="size-16" v-if="activeAction == true">Hành động</span></th>
+          <th>
+            <span class="size-16" v-if="activeAction == true">Hành động</span>
+          </th>
         </tr>
       </thead>
       <tbody>
-        <tr class="size-16" v-for="(item, index) in items" :key="index">
+        <tr class="" v-for="(item, index) in items" :key="index">
           <td>
             <input
               type="checkbox"
               :checked="item.checked == true"
               v-model="item.checked"
               @click="$emit('selectOne', item._id, item)"
-              class="d-flex align-items-center size-16"
+              class="d-flex align-items-center"
             />
           </td>
           <td class="size-16">{{ startRow + index }}</td>
@@ -82,7 +84,9 @@
         </tr>
       </tbody>
     </table>
-    <p v-if="items.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p>
+    <p v-if="items.length == 0" class="text-center mt-2">
+      Không tồn tại bản ghi.
+    </p>
   </div>
 </template>
 
@@ -139,7 +143,8 @@ export default {
   border: 1px solid var(--gray);
   border-left: 0;
   border-right: 0;
-  padding: 8px;
+
+  padding: 8px 0px;
 }
 
 .my-table th {
