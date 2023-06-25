@@ -501,7 +501,7 @@ export default {
       const currentDate = new Date();
       const currentDay = currentDate.getDay(); // Lấy số thứ tự của ngày hiện tại (0 - Chủ nhật, 1 - Thứ 2, ..., 6 - Thứ 7)
       const firstDayOfWeek = new Date(currentDate);
-      firstDayOfWeek.setDate(currentDate.getDate() - currentDay + 1); // Đặt ngày đầu tiên của tuần là ngày hiện tại trừ đi số ngày từ ngày đầu tuần đến ngày hiện tại và cộng thêm 1 ngày để đảm bảo nó là ngày thứ 2
+      firstDayOfWeek.setDate(currentDate.getDate() - currentDay - 6); // Đặt ngày đầu tiên của tuần là ngày hiện tại trừ đi số ngày từ ngày đầu tuần đến ngày hiện tại và cộng thêm 1 ngày để đảm bảo nó là ngày thứ 2
       const weekDays = [];
       for (let i = 0; i < 7; i++) {
         const date = new Date(firstDayOfWeek);

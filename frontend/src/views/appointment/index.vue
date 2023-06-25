@@ -68,6 +68,9 @@ export default {
             _id: "",
             name: "",
           },
+          cycle: "",
+          start_date: "",
+          end_date: "",
         },
       ],
       entryValue: 5,
@@ -285,7 +288,11 @@ export default {
       data.task = await http_getOne(Task, params);
       data.customer = data.customer.Customer.name;
       data.items = await Appointment.findAllAppointment(params);
-      console.log("Dl", data.task);
+      data.items[0].cycle = data.task.Cycle.name;
+      data.items[0].start_date = formatDate(data.task.start_date);
+      data.items[0].end_date = formatDate(data.task.end_date);
+      console.log("Dl", data.items);
+      console.log("Dl", data.task, data.task.Cycle.name);
       status_apps.status_app = await http_getAll(Status_App);
 
       // data.items = await data.items.Appointments;
@@ -595,6 +602,9 @@ export default {
           :taskId="params"
           :task="data.task"
           :customer="data.customer"
+          :cycle="data.items[0].cycle"
+          :start_date="data.items[0].start_date"
+          :end_date="data.items[0].end_date"
         />
       </div>
     </div>
