@@ -44,7 +44,10 @@ export default {
 </script>
 
 <template>
-  <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
+  <table
+    class="my-table mb-2"
+    :class="[borderTableAll ? 'border-table-all' : '']"
+  >
     <thead>
       <tr>
         <th>
@@ -78,12 +81,14 @@ export default {
             v-if="activeCheck == true"
           />
         </td>
-        <td>{{ index + 1 }}</td>
-        <td>{{ cus }}</td>
-        <td v-for="(label, index1) in labels" :key="index1">{{ item[label] }}</td>
-        <td>{{ item.Status_App.name }}</td>
+        <td class="size-16">{{ index + 1 }}</td>
+        <td class="size-16">{{ cus }}</td>
+        <td class="size-16" v-for="(label, index1) in labels" :key="index1">
+          {{ item[label] }}
+        </td>
+        <td class="size-16">{{ item.Status_App.name }}</td>
         <td class="" v-if="activeAction == true">
-          <div class="d-flex align-items-center">
+          <div class="d-flex align-items-center size-16">
             <!-- <button
               type="button"
               class="format-btn"

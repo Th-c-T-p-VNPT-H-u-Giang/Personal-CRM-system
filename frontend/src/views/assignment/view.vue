@@ -47,8 +47,10 @@ export default {
         focusConfirm: false,
         showCancelButton: true,
         preConfirm: () => {
-          const selectedOptionCenter = document.getElementById("my-select-center").value;
-          const selectedOptionDep = document.getElementById("my-select-dep").value;
+          const selectedOptionCenter =
+            document.getElementById("my-select-center").value;
+          const selectedOptionDep =
+            document.getElementById("my-select-dep").value;
 
           const inputValue = document.getElementById("my-input").value;
           if (!selectedOptionCenter || !inputValue || !selectedOptionDep) {
@@ -75,7 +77,9 @@ export default {
             .map(
               (option) =>
                 `<option value="${option._id}"
-                ${option._id == selectedOptionDepartment.value ? "selected" : ""}
+                ${
+                  option._id == selectedOptionDepartment.value ? "selected" : ""
+                }
 
                 >${option.name}</option>`
             )
@@ -141,7 +145,9 @@ export default {
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title">Thông tin chi tiết phân công</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
         </div>
 
         <!-- Modal body -->
@@ -156,9 +162,16 @@ export default {
             >
               Thông tin phân công
             </button>
-            <div v-if="isActive" id="personal-info" class="collapse m-3 border-all">
-              <div class="d-flex justify-content-around" style="margin-top: 12px">
-                <div>
+            <div
+              v-if="isActive"
+              id="personal-info"
+              class="collapse m-3 border-all"
+            >
+              <div
+                class="d-flex justify-content-around row mx-2"
+                style="margin-top: 12px"
+              >
+                <div class="col-6">
                   <p>
                     <span class="font-weight-bold">Khách hàng: </span>
                     {{ viewValue.Customer.name }}
@@ -175,22 +188,24 @@ export default {
                     <span class="font-weight-bold">Chu kỳ chăm sóc: </span>
                     {{ viewValue.Cycle.name }}
                   </p>
-                </div>
-                <div>
                   <p>
-                    <span class="font-weight-bold">Nội dung chăm sóc: </span>
-                    {{ viewValue.content }}
+                    <span class="font-weight-bold">Đánh giá: </span>
+                    {{ viewValue.Evaluate.star }}
                   </p>
+                </div>
+                <div class="col-6">
                   <p>
                     <span class="font-weight-bold">Trạng thái: </span>
                     {{ viewValue.Status_Task.name }}
                   </p>
                   <p>
-                    <span class="font-weight-bold">Lưu ý: </span> {{ viewValue.note }}
+                    <span class="font-weight-bold">Nội dung chăm sóc: </span>
+                    {{ viewValue.content }}
                   </p>
+
                   <p>
-                    <span class="font-weight-bold">Đánh giá: </span>
-                    {{ viewValue.Evaluate.star }}
+                    <span class="font-weight-bold">Lưu ý: </span>
+                    {{ viewValue.note }}
                   </p>
                   <p>
                     <span class="font-weight-bold">Nhận xét: </span>
@@ -210,7 +225,11 @@ export default {
             >
               Thông tin khách hàng
             </button>
-            <div v-if="isActive" id="customer-work" class="collapse border-all">
+            <div
+              v-if="isActive"
+              id="customer-work"
+              class="collapse border-all my-3"
+            >
               <img
                 :src="viewValue.Customer.avatar"
                 alt=""
@@ -278,19 +297,27 @@ export default {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(item, index) in viewValue.Employees" :key="index">
-                      <td>{{ Math.ceil(index) + 1 }}</td>
-                      <td>{{ item.name }}</td>
-                      <td>{{ item.phone }}</td>
-                      <td>{{ item.email }}</td>
-                      <td>{{ item.Position.name }}</td>
-                      <td>{{ item.Unit.name }}</td>
-                      <td>{{ item.Unit.Department.name }}</td>
-                      <td>{{ item.Unit.Department.Center.name }}</td>
+                    <tr
+                      v-for="(item, index) in viewValue.Employees"
+                      :key="index"
+                    >
+                      <td class="size-16">{{ Math.ceil(index) + 1 }}</td>
+                      <td class="size-16">{{ item.name }}</td>
+                      <td class="size-16">{{ item.phone }}</td>
+                      <td class="size-16">{{ item.email }}</td>
+                      <td class="size-16">{{ item.Position.name }}</td>
+                      <td class="size-16">{{ item.Unit.name }}</td>
+                      <td class="size-16">{{ item.Unit.Department.name }}</td>
+                      <td class="size-16">
+                        {{ item.Unit.Department.Center.name }}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
-                <p v-if="viewValue.Employees.length == 0" class="text-center mt-2">
+                <p
+                  v-if="viewValue.Employees.length == 0"
+                  class="text-center mt-2"
+                >
                   Không tồn tại bản ghi.
                 </p>
               </div>
@@ -335,7 +362,12 @@ export default {
               <Table
                 :items="viewValue.Appointments"
                 :cus="viewValue.Customer.name"
-                :fields="['Ngày hẹn', 'Địa điểm', 'Nội dung lịch hẹn', 'Chú thích']"
+                :fields="[
+                  'Ngày hẹn',
+                  'Địa điểm',
+                  'Nội dung lịch hẹn',
+                  'Chú thích',
+                ]"
                 :labels="['date_time', 'place', 'content', 'note']"
                 :activeAction="false"
                 :activeCheck="false"

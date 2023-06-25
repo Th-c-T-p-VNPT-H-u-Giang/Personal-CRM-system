@@ -592,7 +592,6 @@ export default {
     });
     onMounted(async () => {
       await refresh();
-
       const week = getCurrentWeekDays();
       const firstDayOfWeek = week[0];
       const lastDayOfWeek = week[week.length - 1];
@@ -712,11 +711,17 @@ export default {
           data: [count],
         };
       }
-      data.progress = (data.progress / data.task.length) * 100;
-      data.progress = data.progress.toFixed(2);
+      //
+      if (data.task.length == 0) {
+        data.progress = 0.0;
+      } else {
+        data.progress = (data.progress / data.task.length) * 100;
+        data.progress = data.progress.toFixed(2);
+      }
+      console.log("progress:", data.progress);
     });
 
-    //****
+    //3****
     watch(takeCare, (newValue, oldValue) => {
       console.log("takecare", newValue);
     });

@@ -116,13 +116,17 @@ export default {
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title" style="font-size: 15px">Thêm lịch hẹn</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
         </div>
         <!-- Modal body -->
         <div class="modal-body">
           <form action="/action_page.php" class="was-validated">
             <div class="form-group">
-              <label for="name">Khách hàng(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Khách hàng(<span style="color: red">*</span>):</label
+              >
               <input
                 type="text"
                 class="form-control"
@@ -137,7 +141,9 @@ export default {
               <input type="text" class="form-control" name="name" disabled />
             </div> -->
             <div class="form-group">
-              <label for="name">Ngày hẹn(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Ngày hẹn(<span style="color: red">*</span>):</label
+              >
               <input
                 type="datetime-local"
                 class="form-control"
@@ -148,7 +154,9 @@ export default {
               />
             </div>
             <div class="form-group">
-              <label for="name">Địa điểm(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Địa điểm(<span style="color: red">*</span>):</label
+              >
               <input
                 id="content"
                 required

@@ -36,7 +36,10 @@ export default {
 </script>
 
 <template>
-  <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
+  <table
+    class="my-table mb-2"
+    :class="[borderTableAll ? 'border-table-all' : '']"
+  >
     <thead>
       <tr>
         <th>
@@ -68,16 +71,16 @@ export default {
             class="d-flex align-items-center size-16"
           />
         </td>
-        <td>{{ index + 1 }}</td>
-        <td>{{ item.Customer.name }}</td>
-        <td>{{ item.Cycle.name }}</td>
-        <td v-for="(label, index1) in labels" :key="index1">
+        <td class="size-16">{{ index + 1 }}</td>
+        <td class="size-16">{{ item.Customer.name }}</td>
+        <td class="size-16">{{ item.Cycle.name }}</td>
+        <td v-for="(label, index1) in labels" :key="index1" class="size-16">
           {{ item[label] }}
         </td>
-        <td>{{ item.Evaluate.star }}</td>
-        <td>{{ item.Status_Task.name }}</td>
-        <td class="" v-if="activeAction == true">
-          <div class="d-flex align-items-center">
+        <td class="size-16">{{ item.Evaluate.star }}</td>
+        <td class="size-16">{{ item.Status_Task.name }}</td>
+        <td class="size-16" v-if="activeAction == true">
+          <div class="d-flex align-items-center size-16">
             <button
               type="button"
               class="format-btn"
