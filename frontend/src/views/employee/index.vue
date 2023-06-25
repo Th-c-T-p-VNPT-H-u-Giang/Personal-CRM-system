@@ -283,22 +283,30 @@ export default {
       data.position = await http_getAll(Position);
       data.center = await CenterServices.getAll();
       if (entryValueCenter.value != "") {
-        data.department = await departmentsServices.getAll();
+        data.department = await departmentsServices.findAllDepOfACenter(
+          entryValueCenter.value
+        );
         data.department = data.department.map((value, index) => {
           return {
             ...value,
             value: value._id,
           };
         });
+      } else {
+        data.department = [];
       }
       if (entryValueDepartment.value != "") {
-        data.unit = await unitsServices.getAll();
+        data.unit = await unitsServices.findAllUnitsOfADep(
+          entryValueDepartment.value
+        );
         data.unit = data.unit.map((value, index) => {
           return {
             ...value,
             value: value._id,
           };
         });
+      } else {
+        data.unit = [];
       }
 
       data.position = data.position.map((value, index) => {
@@ -314,11 +322,6 @@ export default {
         };
       });
 
-      // if (entryValuePosition.value.length > 0) {
-      //   data.items = data.items.filter((val) => {
-      //     return val.postionId == entryValuePosition.value;
-      //   });
-      // }
       // ***
       entryNamePosition.value = "Chức vụ";
       entryValuePosition.value = "";
