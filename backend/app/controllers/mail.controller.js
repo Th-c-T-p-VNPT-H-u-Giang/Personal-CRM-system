@@ -1,5 +1,6 @@
 /////
 const nodemailer = require("nodemailer");
+const path = require("path");
 
 exports.sendEmail = async (req, res, next) => {
   console.log("Nội dung mail:", req.body);
@@ -61,6 +62,6 @@ exports.sendEmailReport = async (req, res, next) => {
     return res.send({ error: false, msg: "Thành công" });
     // res.json({ msg: "Thành công" });
   } catch (error) {
-    return res.json({ error: true, msg: "Thất bại" });
+    return res.json({ error: true, msg: error.message });
   }
 };

@@ -35,6 +35,7 @@ export default {
       // console.log('content', item.content);
       // console.log('mail', item.mail);
       const response = await MailService.sendMailReport(formData)
+      console.log(response);
       if (response.error) {
         alert_error('Lỗi', 'Mail gửi đi thất bại')
       } else {

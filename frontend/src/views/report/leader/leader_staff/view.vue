@@ -54,33 +54,33 @@ export default {
               <div class="d-flex justify-content-around">
                 <div class="mt-3">
                   <p>
-                    <span class="font-weight-bold">Họ tên nhân viên:  </span> {{ item.Employee.name }}
+                    <span class="font-weight-bold">Họ tên nhân viên:  </span> {{ item.name }}
                   </p>
                   <p>
-                    <span class="font-weight-bold">Ngày sinh: </span> {{ item.Employee.birthday }}
+                    <span class="font-weight-bold">Ngày sinh: </span> {{ item.birthday }}
                   </p>
                   <p> 
-                    <span class="font-weight-bold">Số điện thoại:  </span> {{ item.Employee.phone }}
+                    <span class="font-weight-bold">Số điện thoại:  </span> {{ item.phone }}
                   </p>
                   <p>
-                    <span class="font-weight-bold">Địa chỉ: </span>  {{ item.Employee.address }}
+                    <span class="font-weight-bold">Địa chỉ: </span>  {{ item.address }}
                   </p>
                   <p>
-                    <span class="font-weight-bold">Email: </span> {{ item.Employee.email }}
+                    <span class="font-weight-bold">Email: </span> {{ item.email }}
                   </p>
                 </div>
                 <div class="mt-3">
                   <p>
-                    <span class="font-weight-bold">Chức vụ: </span>  {{ item.position }}
+                    <span class="font-weight-bold">Chức vụ: </span>  {{ item.Position.name }}
                   </p>
                   <p>
-                    <span class="font-weight-bold">Đơn vị: </span>   {{ item.unit }}
+                    <span class="font-weight-bold">Đơn vị: </span>   {{ item.Unit.name }}
                   </p>
                   <p>
-                    <span class="font-weight-bold">Phòng: </span>  {{ item.department }}
+                    <span class="font-weight-bold">Phòng: </span>  {{ item.Unit.Department.name }}
                   </p>
                   <p>
-                    <span class="font-weight-bold">Trung tâm: </span>  {{ item.center }}
+                    <span class="font-weight-bold">Trung tâm: </span>  {{ item.Unit.Department.Center.name }}
                   </p>
                 </div>
               </div>

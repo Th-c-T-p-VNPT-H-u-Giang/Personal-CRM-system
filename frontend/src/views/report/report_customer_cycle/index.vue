@@ -103,7 +103,7 @@
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
             <span class="text-center"
-              >{{ store.countleaderStaff }}/{{ store.countCustomer }}</span
+              >{{ store.countleaderStaff }}/{{ store.countEmployee }}</span
             >
           </span>
         </router-link>
@@ -410,8 +410,13 @@ export default {
           if (task.Status_Task.name == "đã chăm sóc") {
             const cycle = task.Cycle.name;
             let start_date = task.start_date;
+            let end_date = task.end_date;
             // console.log(start_date);
             start_date = new Date(start_date);
+            end_date = new Date(end_date);
+
+            end_date = end_date.getFullYear() + '-' + (end_date.getMonth() + 1 )+ '-' + end_date.getDate();
+            
             // console.log('end_date: ' + end_date);
 
             let numberOfCycle = cycle.replace(/\D/g, ""); // lấy số trong chuổi
@@ -443,16 +448,29 @@ export default {
             const year = start_date.getFullYear();
             const month = start_date.getMonth() + 1;
             const day = start_date.getDate();
-            const dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
+            let dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
+            if(dayStartNewCycle == end_date) { // nếu ngày bắt đầu chu kì mới == end_date thì + 1
+              dayStartNewCycle = year + "-" + month + "-" + (day + 1)
+            }
             task.dayStartNewCycle = dayStartNewCycle;
             return task;
           }
         });
 
+        // const currentDate = new Date();
+
+        // const day = currentDate.getDate();
+        // const month = currentDate.getMonth() + 1; // Lưu ý: tháng trong JavaScript bắt đầu từ 0, nên cần cộng thêm 1
+        // const year = currentDate.getFullYear();
+
+        // const formattedCurrentdayDate = `${day}/${month}/${year}`;
+
         const rsTaskCusCared = taskCusCared.filter((value) => {
           if (value.customerId == cusWork.Customer._id) {
             return cusWork.Customer.Tasks.filter((task) => {
+              // console.log('Compare' , typeof formattedCurrentdayDate, typeof value.dayStartNewCycle);
               if (value.dayStartNewCycle == task.start_date) {
+                // console.log('Compare' , new Date());
                 console.log("Run");
               } else {
                 // console.log('Value');

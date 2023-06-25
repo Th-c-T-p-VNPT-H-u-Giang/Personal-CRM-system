@@ -411,6 +411,8 @@ exports.findOne = async (req, res, next) => {
       employee.dataValues.name = getDecrypt(employee.dataValues.name);
       employee.dataValues.phone = getDecrypt(employee.dataValues.phone);
       employee.dataValues.email = getDecrypt(employee.dataValues.email);
+      employee.dataValues.address = getDecrypt(employee.dataValues.address);
+      employee.dataValues.birthday = getDecrypt(employee.dataValues.birthday);
       position.dataValues.name = getDecrypt(position.dataValues.name);
       unit.dataValues.name = getDecrypt(unit.dataValues.name);
       department.dataValues.name = getDecrypt(department.dataValues.name);

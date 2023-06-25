@@ -1,7 +1,7 @@
 <template>
   <div class="border-box d-flex flex-column ml-2">
     <!-- Menu -->
-    
+
     <div class="report_container">
       <div
         class="mx-1 report__item"
@@ -41,7 +41,11 @@
           <span class=""> Khách hàng do nhân viên chăm sóc </span>
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
-            <span class="text-center">{{ store.countReportAssignmentStaff }}/{{ store.countCustomer }}</span>
+            <span class="text-center"
+              >{{ store.countReportAssignmentStaff }}/{{
+                store.countCustomer
+              }}</span
+            >
           </span>
         </router-link>
       </div>
@@ -58,7 +62,11 @@
           <span> Khách hàng tới chu kì nhưng chưa chăm sóc </span>
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
-            <span class="text-center">{{ store.countReportCustomerCycle }}/{{ store.countCustomer }}</span>
+            <span class="text-center"
+              >{{ store.countReportCustomerCycle }}/{{
+                store.countCustomer
+              }}</span
+            >
           </span>
         </router-link>
       </div>
@@ -75,7 +83,11 @@
           <span class=""> Khách hàng do lãnh đạo phụ trách </span>
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
-            <span class="text-center">{{ store.countReportCustomerCycle }}/{{ store.countCustomer }}</span>
+            <span class="text-center"
+              >{{ store.countReportCustomerCycle }}/{{
+                store.countCustomer
+              }}</span
+            >
           </span>
         </router-link>
       </div>
@@ -91,7 +103,9 @@
           <span class=""> Nhân viên do lãnh đạo phụ trách </span>
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
-            <span class="text-center">{{ store.countleaderStaff }}/{{ store.countCustomer }}</span>
+            <span class="text-center"
+              >{{ store.countleaderStaff }}/{{ store.countEmployee }}</span
+            >
           </span>
         </router-link>
       </div>
@@ -278,8 +292,9 @@ import {
   Select,
   Search,
   Customer_Work,
-  Log,
 } from "../common/import";
+
+import { isEqual, isBefore, isAfter, isSameDay } from "date-fns";
 
 import {
   countCustomer,
@@ -312,8 +327,8 @@ export default {
       countReportAssignmentStaff: 0,
       countReportCustomerCycle: 0,
       countLeaderCustomer: 0,
-      countleaderStaff: 0
-    })
+      countleaderStaff: 0,
+    });
     const data = reactive({
       items: [],
       entryValue: 5, // total record in page
@@ -367,32 +382,16 @@ export default {
       "Loại khách hàng",
     ];
 
-    // const store = reactive({
-    //   countCustomer: 0,
-    //   countEmployee: 0,
-    //   countReportAssignmentStaff: 0,
-    //   countReportCustomerCycle: 0,
-    //   countLeaderCustomer: 0,
-    //   countleaderStaff: 0
-    // })
-
-  //   countCustomer,
-  // countEmployee,
-  // countElementReportPage,
-  // countElementReportCustomerCyclePage,
-  // countElementReportAssignmentStaff,
-  // countElementReportLeaderCustomer,
-  // countElementReportLeaderStaff,
-
     const reFresh = async () => {
       store.countCustomer = await countCustomer();
       store.countEmployee = await countEmployee();
       store.countReport = await countElementReportPage();
-      store.countReportAssignmentStaff = await countElementReportAssignmentStaff();
-      store.countReportCustomerCycle = await countElementReportCustomerCyclePage();
-      store.countLeaderCustomer  = await countElementReportLeaderCustomer();
+      store.countReportAssignmentStaff =
+        await countElementReportAssignmentStaff();
+      store.countReportCustomerCycle =
+        await countElementReportCustomerCyclePage();
+      store.countLeaderCustomer = await countElementReportLeaderCustomer();
       store.countleaderStaff = await countElementReportLeaderStaff();
-
 
       const cusWork = await http_getAll(Customer_Work);
       data.lengthCustomer = cusWork.documents.length;
@@ -402,7 +401,17 @@ export default {
             // lấy các khách hàng đã chăm sóc
             const cycle = task.Cycle.name; // lấy chu kì
             let start_date = task.start_date; // lấy ngày bắt đầu
+            let end_date = task.end_date; 
             start_date = new Date(start_date); // chuyển chuổi sang date
+
+            end_date = new Date(end_date);
+
+            end_date =
+              end_date.getFullYear() +
+              "-" +
+              (end_date.getMonth() + 1) +
+              "-" +
+              end_date.getDate();
 
             let numberOfCycle = cycle.replace(/\D/g, ""); // lấy số trong chu kì
 
@@ -433,10 +442,33 @@ export default {
             const year = start_date.getFullYear();
             const month = start_date.getMonth() + 1;
             const day = start_date.getDate();
-            const dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
+            let dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
+            // console.log('So sanh dayStartNewCycle', dayStartNewCycle , 'End date',end_date);
+
+            // cycleDate = ((cycleDate) * 2);
+
+            if(isAfter(new Date(dayStartNewCycle), new Date(end_date))){
+              cycleDate = ((cycleDate) * 2);
+            }
+
+            if(dayStartNewCycle == end_date) { // nếu ngày bắt đầu chu kì mới == end_date thì + 1
+              dayStartNewCycle = year + "-" + month + "-" + (day + 1)
+              cycleDate = ((cycleDate) * 2);
+            }
+
+            if(isBefore(new Date(dayStartNewCycle), new Date(end_date))){
+              let end_day = new Date(end_date)
+              dayStartNewCycle = end_day.getFullYear() +
+              "-" +
+              (end_day.getMonth() + 1) +
+              "-" +
+              (end_day.getDate() + 1);
+              cycleDate = ((cycleDate) * 2) + 1;
+            }
+
+            // console.log('So sanh dayStartNewCycle ++ ', dayStartNewCycle , 'End date ++ ',end_date);
 
             // lần bắt đầu thứ 2
-            cycleDate = cycleDate * 2;
             cycleMonth = cycleMonth * 2;
             cycleYear = cycleYear * 2;
             start_date.setDate(start_date.getDate() + cycleDate);
@@ -453,17 +485,31 @@ export default {
           }
         });
 
-        const rsTaskCusCared = taskCusCared.filter((value) => {
-          console.log("Value", value);
+        // import { isEqual, isBefore, isAfter } from 'date-fns';
+
+        const rsTaskCusCared = taskCusCared.filter((value, index) => {
+          let dayStartNewCycle2 = new Date(value.dayStartNewCycle2);
+          let dayStartNewCycle = new Date(value.dayStartNewCycle);
+          console.log('Index', index);
+          console.log('Day 1', dayStartNewCycle);
+          console.log('Day 2',  dayStartNewCycle2);
+
+          let currentDay = new Date();
           if (value.customerId == cusWork.Customer._id) {
             return cusWork.Customer.Tasks.filter((task) => {
+              let start_date = new Date(task.start_date);
+              
               if (
-                value.dayStartNewCycle2 == task.start_date &&
-                value.dayStartNewCycle != task.start_date
+                (isAfter(dayStartNewCycle2, currentDay) ||
+                isEqual(dayStartNewCycle2, currentDay)) 
+                &&
+                !isSameDay(dayStartNewCycle2, start_date) 
+                &&
+                !isSameDay(dayStartNewCycle, start_date)  
               ) {
-                console.log("Run");
+                return task;
               } else {
-                return value;
+                console.log('Run task');
               }
             });
           }
@@ -656,7 +702,7 @@ export default {
       pdfContent,
       view,
       labels,
-      store
+      store,
     };
   },
 };

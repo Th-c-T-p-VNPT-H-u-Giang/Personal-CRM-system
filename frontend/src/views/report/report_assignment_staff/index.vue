@@ -90,7 +90,7 @@
           <span class=""> Nhân viên do lãnh đạo phụ trách </span>
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
-            <span class="text-center">{{ store.countleaderStaff }}/{{ store.countCustomer }}</span>
+            <span class="text-center">{{ store.countleaderStaff }}/{{ store.countEmployee }}</span>
           </span>
         </router-link>
       </div>
@@ -370,8 +370,6 @@
 
         const tasks = await http_getAll(Task);
         const ListTaskId = []
-        const customer = await http_getAll(Customer);
-        data.lengthCustomer = customer.documents.length;
         tasks.map((task) => {
           ListTaskId.push(task._id)
         });

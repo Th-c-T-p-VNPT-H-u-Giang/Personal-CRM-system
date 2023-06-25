@@ -90,7 +90,7 @@
           <span class=""> Nhân viên do lãnh đạo phụ trách </span>
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
-            <span class="text-center">{{ store.countleaderStaff }}/{{ store.countCustomer }}</span>
+            <span class="text-center">{{ store.countleaderStaff }}/{{ store.countEmployee }}</span>
           </span>
         </router-link>
       </div>
@@ -370,7 +370,8 @@
         const tasks = await http_getAll(Task)
         data.items = tasks.filter(task => {
           console.log(task);
-          return task.leaderId == task.Employee._id && task.leaderId == leaderId; // người giao việc và nhân viên là mình
+          // return task.leaderId == task.Employee._id && task.leaderId == leaderId; // người giao việc và nhân viên là mình
+          return task.leaderId == leaderId
         })
   
         data.items = data.items.map((item) => {

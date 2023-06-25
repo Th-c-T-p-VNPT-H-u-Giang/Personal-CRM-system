@@ -39,7 +39,7 @@ export default {
 
     // declare variables
     let data = reactive({
-      items: null,
+      items: [],
       activeEdit: false,
       editValue: {
         _id: "",
