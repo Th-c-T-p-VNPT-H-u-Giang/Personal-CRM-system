@@ -476,6 +476,7 @@ export default {
       }
       alert_success("Đã giao việc cho nhân viên thành công", "");
       await refresh();
+      ctx.emit("giaoviec");
     };
 
     //tu giao viec
@@ -500,6 +501,7 @@ export default {
       } catch (error) {
         console.error("Lỗi tạo công việc:", error);
       }
+      ctx.emit("giaoviec");
     };
 
     //CHECKALL

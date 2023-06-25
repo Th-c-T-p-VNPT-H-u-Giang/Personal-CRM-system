@@ -136,6 +136,7 @@ export default {
                 disabled
               />
             </div>
+
             <!-- <div class="form-group">
               <label for="name">Nhân viên(<span style="color: red">*</span>):</label>
               <input type="text" class="form-control" name="name" disabled />
@@ -182,7 +183,6 @@ export default {
               <label for="content">Chú thích:</label>
               <textarea
                 id="content"
-                required
                 class="form-control"
                 rows="5"
                 v-model="data.item.note"

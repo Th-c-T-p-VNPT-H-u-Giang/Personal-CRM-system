@@ -162,7 +162,9 @@ export default {
     });
     const filter = computed(() => {
       return data.items.filter((value, index) => {
-        return toString.value[index].includes(data.searchText.toLocaleLowerCase());
+        return toString.value[index].includes(
+          data.searchText.toLocaleLowerCase()
+        );
       });
     });
     const filtered = computed(() => {
@@ -270,9 +272,10 @@ export default {
       console.log("ne", result);
       if (!result.error) {
         alert_success(`Sửa lịch hẹn`, `${result.msg}`);
-        refresh();
+        await refresh();
       } else if (result.error) {
         alert_error(`Sửa lịch hẹn`, `${result.msg}`);
+        await refresh();
       }
     };
 
@@ -299,6 +302,15 @@ export default {
           value: value._id,
         };
       });
+
+      for (let value of data.items) {
+        console.log(value);
+        if (value.note == null || value.note.length == 0) {
+          value.note = "không có";
+        } else value.note = value.note;
+      }
+      console.log("data items:", data.items);
+
       status_apps.status_app = status_apps.status_app.map((value, index) => {
         return {
           ...value,
@@ -405,12 +417,18 @@ export default {
         }
         contentAlert += `</tbody>
       </table>`;
-        const isConfirmed = await alert_delete_wide(`Xoá nhiều lịch hẹn`, contentAlert);
+        const isConfirmed = await alert_delete_wide(
+          `Xoá nhiều lịch hẹn`,
+          contentAlert
+        );
         if (isConfirmed) {
           let checkDeleteAll = false;
           for (let valueDelete of arrayCheck.data) {
             // 1***** xem thay đổi Appoiment cho phù hợp
-            const rsAppointment = await http_deleteOne(Appointment, valueDelete._id);
+            const rsAppointment = await http_deleteOne(
+              Appointment,
+              valueDelete._id
+            );
             if (rsAppointment.error) {
               alert_error("Lỗi ", rsAppointment.msg);
               checkDeleteAll = false;
@@ -478,7 +496,9 @@ export default {
                 updateEntryValueStatus(value), (entryNameStatus = value1.name)
               )
             "
-            @refresh="(entryNameStatus = 'Trạng thái'), updateEntryValueStatus('')"
+            @refresh="
+              (entryNameStatus = 'Trạng thái'), updateEntryValueStatus('')
+            "
             style="height: 35px; width: 200px"
           />
         </div>
