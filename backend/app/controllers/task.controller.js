@@ -452,25 +452,24 @@ exports.update = async (req, res, next) => {
   console.log("coo", req.body.changeStatus);
   // console.log(req.body.Status_Task.status);
   // console.log(req.body.Status_Task.reason);
-  if(req.body.changeStatus){
+  if (req.body.changeStatus) {
     var EditStatusTask;
     console.log("dayyyyyyy");
     const statustask = await Status_Task.findAll();
-    var c =0;
-    for(let value of statustask){
+    var c = 0;
+    for (let value of statustask) {
       value.dataValues.name = getDecrypt(value.dataValues.name);
       console.log("name", value.dataValues.name);
-      if(value.dataValues.name == "đang chăm sóc"){
+      if (value.dataValues.name == "đang chăm sóc") {
         console.log("da co dang cham soc", value.dataValues._id);
         c = 0;
         EditStatusTask = value.dataValues._id;
         break;
-      }
-      else{
-        c=1;
+      } else {
+        c = 1;
       }
     }
-    if( c != 0){
+    if (c != 0) {
       const statustask1 = await Status_Task.create({
         name: "đang chăm sóc",
       });
@@ -486,64 +485,67 @@ exports.update = async (req, res, next) => {
     );
     return res.send({
       error: false,
-      msg: 'Dữ liệu đã được thay đổi thành công.',
-    })  
-  }
-  else if (req.body.fb == true) {
+      msg: "Dữ liệu đã được thay đổi thành công.",
+    });
+  } else if (req.body.fb == true) {
     console.log("dooooooooooooo");
-    try{
-      let tasks1 = [await Task.findOne({
+    try {
+      let tasks1 = [
+        await Task.findOne({
           where: {
-              _id: req.params.id,
+            _id: req.params.id,
           },
-          include: [{
+          include: [
+            {
               model: Status_Task,
-          },
-          {
+            },
+            {
               model: Cycle,
-          },
-          {
+            },
+            {
               model: Comment,
-          }
-          ]
-      })];
+            },
+          ],
+        }),
+      ];
 
-      tasks1 = tasks1.filter(
-          (value, index) => {
-              return value.EvaluateId == req.body.EvaluateId && value.Comment.content == req.body.Comment.content;
-          }
-      )
-      if(tasks1.length == 0){
-          const comment = await Comment.update({
-              content: req.body.Comment.content,
-          }, { where: { TaskId: req.params.id }, returning: true, });
-          console.log("abchg")
-          const task = await Task.update({
-              EvaluateId: req.body.EvaluateId,
+      tasks1 = tasks1.filter((value, index) => {
+        return (
+          value.EvaluateId == req.body.EvaluateId &&
+          value.Comment.content == req.body.Comment.content
+        );
+      });
+      if (tasks1.length == 0) {
+        const comment = await Comment.update(
+          {
+            content: req.body.Comment.content,
+          },
+          { where: { TaskId: req.params.id }, returning: true }
+        );
+        console.log("abchg");
+        const task = await Task.update(
+          {
+            EvaluateId: req.body.EvaluateId,
           },
           {
-              where: { _id: req.params.id }, returning: true, 
-          });
-          console.log("ne ne ne")
-          return res.send({
-              error: false,
-              msg: 'Dữ liệu đã được thay đổi thành công.',
-          })  
+            where: { _id: req.params.id },
+            returning: true,
+          }
+        );
+        console.log("ne ne ne");
+        return res.send({
+          error: false,
+          msg: "Dữ liệu đã được thay đổi thành công.",
+        });
+      } else {
+        return res.send({
+          error: true,
+          msg: "Dữ liệu chưa được thay đổi.",
+        });
       }
-      else {
-          return res.send({
-              error: true,
-              msg: 'Dữ liệu chưa được thay đổi.'
-          })
-      }
-
-     
-  }
-  catch (error) {
-      return next(
-          createError(400, 'Error update')
-      )
-  }
+    } catch (error) {
+      return next(createError(400, "Error update"));
+    }
   } else {
     console.log("ELSE:");
     const {
@@ -601,23 +603,44 @@ exports.update = async (req, res, next) => {
           value.dataValues.EvaluateId == EvaluateId
         );
       });
-      console.log("chiều dài:", tasks.length);
+      console.log("chiều dài:", tasks.length, req.body.note == null);
 
       if (tasks.length == 0) {
-        const document = await Task.update(
-          {
-            start_date: req.body.start_date,
-            end_date: req.body.end_date,
-            content: req.body.content,
-            cycleId: req.body.cycleId,
-            customerId: req.body.customerId,
-            leaderId: req.body.leaderId,
-            note: req.body.note,
-            StatusTaskId: req.body.StatusTaskId,
-            EvaluateId: req.body.EvaluateId,
-          },
-          { where: { _id: req.params.id }, returning: true }
-        );
+        console.log("Start");
+        let document = {};
+        if (req.body.note == null) {
+          console.log("note underfine");
+          document = await Task.update(
+            {
+              start_date: req.body.start_date,
+              end_date: req.body.end_date,
+              content: req.body.content,
+              cycleId: req.body.cycleId,
+              customerId: req.body.customerId,
+              leaderId: req.body.leaderId,
+              note: "",
+              StatusTaskId: req.body.StatusTaskId,
+              EvaluateId: req.body.EvaluateId,
+            },
+            { where: { _id: req.params.id }, returning: true }
+          );
+        } else if (req.body.note != null) {
+          console.log("note khác underfine");
+          document = await Task.update(
+            {
+              start_date: req.body.start_date,
+              end_date: req.body.end_date,
+              content: req.body.content,
+              cycleId: req.body.cycleId,
+              customerId: req.body.customerId,
+              leaderId: req.body.leaderId,
+              note: req.body.note,
+              StatusTaskId: req.body.StatusTaskId,
+              EvaluateId: req.body.EvaluateId,
+            },
+            { where: { _id: req.params.id }, returning: true }
+          );
+        }
 
         console.log(document);
         console.log("id", req.params.id);
