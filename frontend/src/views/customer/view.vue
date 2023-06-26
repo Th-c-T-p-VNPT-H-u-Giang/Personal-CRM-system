@@ -1,6 +1,7 @@
 <script>
 import { ref } from "vue";
 import Table from "../../components/table/table_customer_types.vue";
+import {formatDate} from '../common/import'
 export default {
   components: {
     Table,

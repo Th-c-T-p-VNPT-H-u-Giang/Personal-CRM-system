@@ -74,7 +74,7 @@
           <span class=""> Khách hàng do lãnh đạo phụ trách </span>
           <span class="pl-3" style="margin-top: -4px">
             <span class="material-symbols-outlined"> group </span>
-            <span class="text-center">{{ store.countReportCustomerCycle }}/{{ store.countCustomer }}</span>
+            <span class="text-center">{{ store.countLeaderCustomer }}/{{ store.countCustomer }}</span>
           </span>
         </router-link>
       </div>

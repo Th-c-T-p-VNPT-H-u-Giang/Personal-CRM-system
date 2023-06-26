@@ -100,7 +100,7 @@ export default {
              <div class="table-responsive">
               <Table
                 :items="itemViewCareCus"
-                :fields="['Ngày bắt đầu', 'Ngày kết thúc', 'Nội dung chăm sóc', 'Tên khách hàng', 'Chu kì', 'Trạng thái' , 'Sao', 'Đánh giá']"
+                :fields="['Ngày bắt đầu', 'Ngày kết thúc', 'Nội dung chăm sóc', 'Tên khách hàng', 'Chu kì', 'Trạng thái' , 'Đánh giá', 'Nhận xét']"
                 :labels="['start_date','end_date', 'content' ,'customerName','cycleName','statusName','EvaluateStar', 'comment']" 
                 :borderTableAll="true"
                 :showActionList="[false, false, false]"

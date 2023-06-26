@@ -83,7 +83,7 @@
             <span class="pl-3" style="margin-top: -4px">
               <span class="material-symbols-outlined"> group </span>
               <span class="text-center"
-                >{{ store.countReportCustomerCycle }}/{{
+                >{{ store.countLeaderCustomer }}/{{
                   store.countCustomer
                 }}</span
               >

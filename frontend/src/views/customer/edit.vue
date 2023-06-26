@@ -20,6 +20,7 @@ import {
 
 import Swal from "sweetalert2";
 import Select_Advanced from "../../components/form/select_advanced.vue";
+import { onBeforeUpdate } from 'vue';
 
 export default {
   components: {
@@ -32,8 +33,8 @@ export default {
     },
   },
   setup(props, ctx) {
-    console.log(props.item.Company_KH.name);
-    console.log(props.item);
+    // console.log(props.item.Company_KH.name);
+    // console.log(props.item);
     const data = reactive({
       imgSrc: null,
       stepList: [
@@ -60,7 +61,9 @@ export default {
     // method
     const refresh = async () => {
       const cusTypes = await http_getAll(Customer_Types);
+      console.log('Customer_Types', cusTypes.documents);
       const company = await http_getAll(Company_KH);
+      console.log('Company name', Company_KH);
       const customer = await http_getAll(Customer);
       const event = await http_getAll(Event);
       data.items = [
@@ -70,10 +73,16 @@ export default {
           name: "other",
         },
       ];
+
       data.dataSelect = cusTypes.documents;
       data.customer = customer.documents;
       data.event = event.documents;
     };
+
+    const getAllCustomerType = async () => {
+      const cusTypes = await http_getAll(Customer_Types);
+      return cusTypes.documents;
+    }
 
     const onFileChange = (event) => {
       console.log('qua met moi')
@@ -100,32 +109,6 @@ export default {
       reader.readAsDataURL(files);
     };
 
-    // const handleAddCustometType = async () => {
-    //   if (props.item.Customer_Type._id == "Add") {
-    //     const { value: customerType } = await Swal.fire({
-    //       title: "Thêm loại khách hàng",
-    //       input: "text",
-    //       inputLabel: "Tên loại khách hàng",
-    //       inputValidator: (value) => {
-    //         if (!value) {
-    //           return "Bạn không được phép để trường này trống!";
-    //         }
-    //       },
-    //     });
-
-    //     const res = await http_create(Customer_Types, { name: customerType });
-    //     if (res.error) {
-    //       alert_error(`Thêm loại khách hàng`, `${res.msg}`);
-    //     } else {
-    //       props.item.Customer_Type._id = res.document._id;
-    //       refresh();
-    //       alert_success(
-    //         `Thêm loại khách hàng`,
-    //         `Loại khách hàng ${customerType}  đã được tạo thành công.`
-    //       );
-    //     }
-    //   }
-    // };
     const handleAddCustometType = async () => {
       if (props.item.Customer_Type._id == "Add") {
         const { value: customerType, dismiss } = await Swal.fire({
@@ -229,15 +212,6 @@ export default {
       event.preventDefault();
       let isCheck = false;
       refresh();
-      // for (const value of data.customer) {
-      //   if (
-      //     value.name == props.item.Customer.name &&
-      //     value.phone == props.item.Customer.phone &&
-      //     value.email == props.item.Customer.email
-      //   ) {
-      //     isCheck = true;
-      //   }
-      // }
       if (isCheck == true) {
         return alert_error(
           "Lổi",
@@ -256,16 +230,6 @@ export default {
         formData.append("phone", props.item.Customer.phone);
         formData.append("email", props.item.Customer.email);
         formData.append("customerTypesId", props.item.Customer_Type._id);
-
-        // console.log("Object formdata avatar" + props.item.Customer.avatar);
-        // console.log("Object formdata name" + props.item.Customer.name);
-        // console.log("Object formdata birthday" + props.item.Customer.birthday);
-        // console.log("Object formdata address" + props.item.Customer.address);
-        // console.log("Object formdata phone" + props.item.Customer.phone);
-        // console.log("Object formdata email" + props.item.Customer.email);
-        // console.log(
-        //   "Object formdata customerTypesId" + props.item.Customer_Type._id
-        // );
         const res = await http_update(
           Customer,
           props.item.Customer._id,
@@ -302,6 +266,8 @@ export default {
     onBeforeMount(() => {
       refresh();
     });
+
+
     return {
       data,
       onFileChange,
@@ -310,6 +276,7 @@ export default {
       choosed,
       deleted,
       update,
+      getAllCustomerType,
     };
   },
 };
@@ -366,6 +333,7 @@ export default {
                 <div v-if="data.activeStep == 1" class="page-1">
                   <div class="form-row">
                     <div class="form-group col-md-6">
+                      <!-- {{ item.Customer_Type }} -->
                       <label for="name"
                         >Tên (<span style="color: red">*</span>)</label
                       >
@@ -444,7 +412,7 @@ export default {
                           :key="index"
                           :value="value._id"
                         >
-                          {{ value.name || item.Customer_Type.name}}
+                          {{value.name}}
                         </option>
                         <option value="Add">Thêm</option>
                       </select>

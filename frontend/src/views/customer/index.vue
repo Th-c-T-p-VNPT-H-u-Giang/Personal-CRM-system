@@ -24,6 +24,7 @@ import {
   Customer,
   Customer_Types,
   Status_Task,
+  http_getOne,
 } from "../common/import";
 
 export default {
@@ -42,6 +43,7 @@ export default {
   },
   setup(ctx) {
     const data = reactive({
+      activeShowEdit: false,
       items: [],
       entryValue: 5,
       numberOfPages: 1,
@@ -344,6 +346,8 @@ export default {
     //   formatDateTime,
     // formatDate,
     const edit = (item, isCheck) => {
+      data.activeShowEdit = true
+      reFresh();
       console.log(item.Customer);
       data.viewValue = {
         Customer: {
@@ -374,6 +378,7 @@ export default {
       console.log("Edit data", data.viewValue);
       console.log("Check edit", data.activeEdit);
     };
+
 
     const updateEntryValueCustomerType = (value) => {
       entryValueCustomerType.value = value;
@@ -697,7 +702,10 @@ export default {
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
     />
+
+    <!-- {{ data.viewValue.Customer_Type }} -->
     <Edit
+      v-if="data.activeShowEdit"
       :item="data.viewValue"
       :class="[data.activeEdit ? 'show-modal' : 'd-none']"
       @cancel="data.activeEdit = false"
