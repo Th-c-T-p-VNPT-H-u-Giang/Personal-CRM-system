@@ -32,7 +32,9 @@ export default {
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title">Thông tin chi tiết nhân viên</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
         </div>
 
         <!-- Modal body -->
@@ -47,7 +49,11 @@ export default {
             >
               Thông tin cá nhân
             </button>
-            <div v-if="isActive" id="personal-info" class="collapse my-3 border-all">
+            <div
+              v-if="isActive"
+              id="personal-info"
+              class="collapse my-3 border-all"
+            >
               <div class="d-flex justify-content-around row mx-3">
                 <div class="mt-3 col-6">
                   <p>
@@ -55,7 +61,7 @@ export default {
                     {{ item.name }}
                   </p>
                   <p>
-                    <span class="font-weight-bold">Email: </span>
+                    <span class="font-weight-bold">Ngày sinh: </span>
                     {{ item.birthday }}
                   </p>
                   <p>
@@ -65,7 +71,7 @@ export default {
                 </div>
                 <div class="mt-3 col-6">
                   <p>
-                    <span class="font-weight-bold">Họ tên: </span>
+                    <span class="font-weight-bold">Địa chỉ: </span>
                     {{ item.address }}
                   </p>
                   <p>
@@ -85,7 +91,11 @@ export default {
             >
               Công việc
             </button>
-            <div v-if="isActive" id="customer-type" class="collapse border-all mt-2 mb-3">
+            <div
+              v-if="isActive"
+              id="customer-type"
+              class="collapse border-all mt-2 mb-3"
+            >
               <div
                 class="d-flex justify-content-around align-items-center"
                 style="height: 100px"
