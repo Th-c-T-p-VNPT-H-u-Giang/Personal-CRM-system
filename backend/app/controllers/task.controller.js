@@ -53,6 +53,7 @@ exports.create = async (req, res, next) => {
       leaderId,
       note,
     } = req.body;
+
     var StatusTaskId;
     var EvaluateId;
     const tasks = await Task.findAll();
@@ -166,7 +167,12 @@ exports.create = async (req, res, next) => {
         content: "Chưa có đánh giá nào",
         TaskId: document._id,
       });
-
+      const user = await Employee.findOne({
+        where: {
+          _id: leaderId,
+        },
+      });
+      console.log("111", user);
       return res.send({
         error: false,
         msg: `Tạo phân công thành công`,
