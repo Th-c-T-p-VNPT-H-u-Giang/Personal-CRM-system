@@ -1586,7 +1586,7 @@ export default {
       for (let value of data.items) {
         // employees.data = await http_getOne(Task, value._id);
         // console.log("count:", employees.data.Employees.length);
-        // value.count = employees.data.Employees.length;
+        value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
           // value.count = employees.Employees.length;

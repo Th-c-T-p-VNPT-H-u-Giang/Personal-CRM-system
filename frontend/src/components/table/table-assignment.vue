@@ -80,12 +80,12 @@ export default {
             :key="index1"
             class="size-16"
             :style="{
-              width: label === 'content' ? '33.5%' : '14%',
+              width: label === 'content' ? '30%' : '14%',
             }"
           >
             {{ item[label] }}
           </td>
-          <td class="size-16">{{ item.EmployeesList.length }}</td>
+          <td class="size-16">{{ item.count }}</td>
           <td class="size-16">{{ item.Evaluate.star }}</td>
           <td class="size-16">{{ item.Status_Task.name }}</td>
           <td class="size-16" v-if="activeAction == true">

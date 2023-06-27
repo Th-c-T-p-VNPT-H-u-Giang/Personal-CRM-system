@@ -146,7 +146,10 @@ export default {
       console.log(isConfirmed);
       if (isConfirmed == true) {
         const result = await http_deleteOne(Cycle, _id);
-        alert_success(`Xoá chu kỳ`, `Bạn đã xoá thành công chu kỳ ${cycle.name} .`);
+        alert_success(
+          `Xoá chu kỳ`,
+          `Bạn đã xoá thành công chu kỳ ${cycle.name} .`
+        );
         refresh();
       }
     };
@@ -174,7 +177,7 @@ export default {
       customers.customer = customers.customer.documents;
       for (let value of customers.customer) {
         value.name += " - " + value.phone + " - " + value.email;
-        console.log("name", value.name);
+        // console.log("name", value.name);
       }
       employees.employee = await http_getAll(Employee);
       statustasks.statustask = await http_getAll(StatusTask);
@@ -218,15 +221,21 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Thêm mới phân công</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" style="font-size: 15px">
+            Thêm mới phân công
+          </h4>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
         </div>
 
         <!-- Modal body -->
         <div class="modal-body">
           <form class="was-validated">
             <div class="form-group">
-              <label for="name">Khách hàng(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Khách hàng(<span style="color: red">*</span>):</label
+              >
               <Select_Advanced
                 style="height: 40px"
                 required
@@ -236,22 +245,27 @@ export default {
                 @searchSelect="
                   async (value) => (
                     await refresh(),
-                    (customers.customer = customers.customer.filter((value1, index) => {
-                      console.log(value1, value);
-                      return value1.name.includes(value) || value.length == 0;
-                    })),
+                    (customers.customer = customers.customer.filter(
+                      (value1, index) => {
+                        console.log(value1, value);
+                        return value1.name.includes(value) || value.length == 0;
+                      }
+                    )),
                     console.log('searchSlect', value.length)
                   )
                 "
                 @chose="
                   (value, value1) => (
-                    (data.itemAdd.customerId = value), (data.modelCus = value1.name)
+                    (data.itemAdd.customerId = value),
+                    (data.modelCus = value1.name)
                   )
                 "
               />
             </div>
             <div class="form-group">
-              <label for="name">Ngày bắt đầu(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Ngày bắt đầu(<span style="color: red">*</span>):</label
+              >
               <input
                 type="date"
                 class="form-control"
@@ -262,7 +276,9 @@ export default {
             </div>
 
             <div class="form-group">
-              <label for="name">Ngày kết thúc(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Ngày kết thúc(<span style="color: red">*</span>):</label
+              >
               <input
                 type="date"
                 class="form-control"
@@ -273,7 +289,9 @@ export default {
             </div>
 
             <div class="form-group">
-              <label for="content">Chu kỳ(<span style="color: red">*</span>):</label>
+              <label for="content"
+                >Chu kỳ(<span style="color: red">*</span>):</label
+              >
               <Select_Advanced
                 style="height: 40px"
                 required
@@ -292,7 +310,8 @@ export default {
                 @delete="(value) => deleteCycle(value._id)"
                 @chose="
                   (value, value1) => (
-                    (selectedOptionCycle = value), (data.modelValue = value1.name)
+                    (selectedOptionCycle = value),
+                    (data.modelValue = value1.name)
                   )
                 "
               />
