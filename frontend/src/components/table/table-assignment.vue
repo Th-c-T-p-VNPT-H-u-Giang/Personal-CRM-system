@@ -37,7 +37,10 @@ export default {
 
 <template>
   <div>
-    <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
+    <table
+      class="my-table mb-2"
+      :class="[borderTableAll ? 'border-table-all' : '']"
+    >
       <thead>
         <tr>
           <th>
@@ -82,6 +85,7 @@ export default {
           >
             {{ item[label] }}
           </td>
+          <td class="size-16">{{ item.EmployeesList.length }}</td>
           <td class="size-16">{{ item.Evaluate.star }}</td>
           <td class="size-16">{{ item.Status_Task.name }}</td>
           <td class="size-16" v-if="activeAction == true">
@@ -212,7 +216,9 @@ export default {
         </tr>
       </tbody>
     </table>
-    <p v-if="items.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p>
+    <p v-if="items.length == 0" class="text-center mt-2">
+      Không tồn tại bản ghi.
+    </p>
   </div>
 </template>
 
