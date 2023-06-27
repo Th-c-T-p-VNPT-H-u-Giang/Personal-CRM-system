@@ -28,6 +28,7 @@ export const countEmployee = async () => {
 
 export const countElementReportPage = async () => {
   const cusWork = await http_getAll(Customer_Work);
+  const tasks = await http_getAll(Task);
   data.items = cusWork.documents.filter((cusWork) => {
     const taskCusCared = cusWork.Customer.Tasks.filter((task) => {
       if (task.Status_Task.name == "đã chăm sóc") {
@@ -66,6 +67,10 @@ export const countElementReportPage = async () => {
           case cycle.includes("tuần"):
             cycleDate = numberOfCycle * 7;
             break;
+          case cycle.includes("quý"):
+            cycleDate = 90;
+          case cycle.includes("quí"):
+            cycleDate = 90;
         }
 
         // lần bắt đầu đầu tiên
@@ -76,32 +81,34 @@ export const countElementReportPage = async () => {
         const month = start_date.getMonth() + 1;
         const day = start_date.getDate();
         let dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
-        // console.log('So sanh dayStartNewCycle', dayStartNewCycle , 'End date',end_date);
-
-        // cycleDate = ((cycleDate) * 2);
 
         if (isAfter(new Date(dayStartNewCycle), new Date(end_date))) {
           cycleDate = cycleDate * 2;
         }
 
         if (dayStartNewCycle == end_date) {
-          // nếu ngày bắt đầu chu kì mới == end_date thì + 1
-          dayStartNewCycle = year + "-" + month + "-" + (day + 1);
+          dayStartNewCycle = new Date(dayStartNewCycle);
+          dayStartNewCycle.setDate(dayStartNewCycle.getDate() + 1);
+          dayStartNewCycle =
+            dayStartNewCycle.getFullYear() +
+            "-" +
+            (dayStartNewCycle.getMonth() + 1) +
+            "-" +
+            dayStartNewCycle.getDate();
           cycleDate = cycleDate * 2;
         }
 
         if (isBefore(new Date(dayStartNewCycle), new Date(end_date))) {
           let end_day = new Date(end_date);
+          end_day.setDate(end_day.getDate() + 1);
           dayStartNewCycle =
             end_day.getFullYear() +
             "-" +
             (end_day.getMonth() + 1) +
             "-" +
-            (end_day.getDate() + 1);
+            end_day.getDate();
           cycleDate = cycleDate * 2 + 1;
         }
-
-        // console.log('So sanh dayStartNewCycle ++ ', dayStartNewCycle , 'End date ++ ',end_date);
 
         // lần bắt đầu thứ 2
         cycleMonth = cycleMonth * 2;
@@ -120,14 +127,12 @@ export const countElementReportPage = async () => {
       }
     });
 
-    // import { isEqual, isBefore, isAfter } from 'date-fns';
-
     const rsTaskCusCared = taskCusCared.filter((value, index) => {
       let dayStartNewCycle2 = new Date(value.dayStartNewCycle2);
       let dayStartNewCycle = new Date(value.dayStartNewCycle);
-      console.log("Index", index);
-      console.log("Day 1", dayStartNewCycle);
-      console.log("Day 2", dayStartNewCycle2);
+      // console.log("Index", index);
+      // console.log("Day 1", dayStartNewCycle);
+      // console.log("Day 2", dayStartNewCycle2);
 
       let currentDay = new Date();
       if (value.customerId == cusWork.Customer._id) {
@@ -135,25 +140,46 @@ export const countElementReportPage = async () => {
           let start_date = new Date(task.start_date);
 
           if (
+            value.customerId == cusWork.Customer._id &&
             (isAfter(dayStartNewCycle2, currentDay) ||
               isEqual(dayStartNewCycle2, currentDay)) &&
-            !isSameDay(dayStartNewCycle2, start_date) &&
-            !isSameDay(dayStartNewCycle, start_date)
+            !isEqual(dayStartNewCycle2, start_date) &&
+            !isEqual(dayStartNewCycle, start_date) &&
+            task.Status_Task.name == "đã chăm sóc"
           ) {
+            // console.log('Report ', task);
             return task;
-          } else {
-            console.log("Run task");
           }
         });
       }
     });
 
     if (rsTaskCusCared.length > 0) {
-      return rsTaskCusCared;
+      const filteredTasks = rsTaskCusCared.filter((taskCusCared) => {
+        const matchingTasks = tasks.filter((task) => {
+          return taskCusCared.customerId === task.customerId;
+        });
+
+        const hasOtherTasks = matchingTasks.some(
+          // lấy
+          (task) => task.Status_Task.name !== "đã chăm sóc"
+        );
+
+        if (hasOtherTasks) {
+          return false; // Không trả về nếu có task khác đã chăm sóc
+        }
+
+        return taskCusCared;
+      });
+
+      // console.log("All tasks", filteredTasks);
+      if (filteredTasks.length > 0) {
+        return filteredTasks;
+      }
     }
   });
 
-  //   console.log("data items in use index", data.items.length);
+  // console.log("data items in use index", data.items.length);
   return data.items.length;
 };
 
@@ -161,13 +187,24 @@ export const countElementReportPage = async () => {
 
 export const countElementReportCustomerCyclePage = async () => {
   const cusWork = await http_getAll(Customer_Work);
+  const tasks = await http_getAll(Task);
   data.items = cusWork.documents.filter((cusWork) => {
     const taskCusCared = cusWork.Customer.Tasks.filter((task) => {
       if (task.Status_Task.name == "đã chăm sóc") {
         const cycle = task.Cycle.name;
         let start_date = task.start_date;
+        let end_date = task.end_date;
         // console.log(start_date);
         start_date = new Date(start_date);
+        end_date = new Date(end_date);
+
+        end_date =
+          end_date.getFullYear() +
+          "-" +
+          (end_date.getMonth() + 1) +
+          "-" +
+          end_date.getDate();
+
         // console.log('end_date: ' + end_date);
 
         let numberOfCycle = cycle.replace(/\D/g, ""); // lấy số trong chuổi
@@ -190,6 +227,12 @@ export const countElementReportCustomerCyclePage = async () => {
           case cycle.includes("tuần"):
             cycleDate = numberOfCycle * 7;
             break;
+          case cycle.includes("quý"):
+            cycleDate = 90;
+            break;
+          case cycle.includes("quí"):
+            cycleDate = 90;
+            break;
         }
 
         start_date.setDate(start_date.getDate() + cycleDate);
@@ -199,27 +242,83 @@ export const countElementReportCustomerCyclePage = async () => {
         const year = start_date.getFullYear();
         const month = start_date.getMonth() + 1;
         const day = start_date.getDate();
-        const dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
+        let dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
+
+        if (dayStartNewCycle == end_date) {
+          // nếu ngày bắt đầu chu kì mới == end_date thì + 1
+          dayStartNewCycle = new Date(dayStartNewCycle);
+          dayStartNewCycle.setDate(dayStartNewCycle.getDate() + 1);
+          dayStartNewCycle =
+            dayStartNewCycle.getFullYear() +
+            "-" +
+            (dayStartNewCycle.getMonth() + 1) +
+            "-" +
+            dayStartNewCycle.getDate();
+        }
+
+        if (isBefore(new Date(dayStartNewCycle), new Date(end_date))) {
+          let end_day = new Date(end_date);
+          end_day.setDate(end_day.getDate() + 1);
+          dayStartNewCycle =
+            end_day.getFullYear() +
+            "-" +
+            (end_day.getMonth() + 1) +
+            "-" +
+            end_day.getDate();
+        }
+
+        // console.log("Start date: ", start_date);
+        // console.log("Cycle", cycle);
+        // console.log("Day start new cycle", dayStartNewCycle);
+
         task.dayStartNewCycle = dayStartNewCycle;
         return task;
       }
     });
 
-    const rsTaskCusCared = taskCusCared.filter((value) => {
+    const rsTaskCusCared = taskCusCared.filter((value, index) => {
+      let dayStartNewCycle = new Date(value.dayStartNewCycle);
+      // console.log("Index", index);
+      // console.log("Day 1", dayStartNewCycle);
+
+      let currentDay = new Date();
       if (value.customerId == cusWork.Customer._id) {
         return cusWork.Customer.Tasks.filter((task) => {
-          if (value.dayStartNewCycle == task.start_date) {
-            console.log("Run");
-          } else {
-            // console.log('Value');
-            return value;
+          let start_date = new Date(task.start_date);
+
+          if (
+            value.customerId == cusWork.Customer._id &&
+            !isEqual(dayStartNewCycle, start_date) &&
+            task.Status_Task.name == "đã chăm sóc"
+          ) {
+            return task;
           }
         });
       }
     });
 
     if (rsTaskCusCared.length > 0) {
-      return rsTaskCusCared;
+      const filteredTasks = rsTaskCusCared.filter((taskCusCared) => {
+        const matchingTasks = tasks.filter((task) => {
+          return taskCusCared.customerId === task.customerId;
+        });
+
+        const hasOtherTasks = matchingTasks.some(
+          // lấy
+          (task) => task.Status_Task.name !== "đã chăm sóc"
+        );
+
+        if (hasOtherTasks) {
+          return false; // Không trả về nếu có task khác đã chăm sóc
+        }
+
+        return taskCusCared;
+      });
+
+      // console.log("All tasks", filteredTasks);
+      if (filteredTasks.length > 0) {
+        return filteredTasks;
+      }
     }
   });
 

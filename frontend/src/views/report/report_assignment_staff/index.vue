@@ -328,7 +328,6 @@ import {
 } from "../use/index";
 
 import View from "./view.vue";
-import { format } from "date-fns";
 
 export default {
   components: {
@@ -396,6 +395,16 @@ export default {
         const rs = await http_getOne(Task, _id);
         data.items.push(rs);
       }
+
+      // console.log('Data items report assignment staff:', data.items); 
+
+      data.items.filter( (item) => {
+        if(item.Employees.length > 0) {
+          return item
+        }
+      })
+
+      console.log('data items:', data.items);
 
       data.items = data.items.map((task) => {
         return {

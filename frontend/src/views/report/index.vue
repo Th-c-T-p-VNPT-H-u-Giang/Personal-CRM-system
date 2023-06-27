@@ -442,6 +442,10 @@ export default {
               case cycle.includes("tuần"):
                 cycleDate = numberOfCycle * 7;
                 break;
+              case cycle.includes("quý"): 
+                cycleDate = 90
+              case cycle.includes("quí"): 
+                cycleDate = 90
             }
 
             // lần bắt đầu đầu tiên
@@ -458,23 +462,19 @@ export default {
             }
 
             if (dayStartNewCycle == end_date) {
-              // nếu ngày bắt đầu chu kì mới == end_date thì + 1
-              dayStartNewCycle = year + "-" + month + "-" + (day + 1);
+              dayStartNewCycle = new Date(dayStartNewCycle)
+              dayStartNewCycle.setDate(dayStartNewCycle.getDate()  + 1);
+              dayStartNewCycle = dayStartNewCycle.getFullYear() + "-" + (dayStartNewCycle.getMonth() + 1) + "-" + dayStartNewCycle.getDate();
               cycleDate = cycleDate * 2;
             }
 
             if (isBefore(new Date(dayStartNewCycle), new Date(end_date))) {
               let end_day = new Date(end_date);
-              dayStartNewCycle =
-                end_day.getFullYear() +
-                "-" +
-                (end_day.getMonth() + 1) +
-                "-" +
-                (end_day.getDate() + 1);
+              end_day.setDate(end_day.getDate() + 1);
+              dayStartNewCycle = end_day.getFullYear() + "-" + (end_day.getMonth() + 1) + "-" + end_day.getDate();
               cycleDate = cycleDate * 2 + 1;
             }
 
-            // console.log('So sanh dayStartNewCycle ++ ', dayStartNewCycle , 'End date ++ ',end_date);
 
             // lần bắt đầu thứ 2
             cycleMonth = cycleMonth * 2;
@@ -493,7 +493,6 @@ export default {
           }
         });
 
-        // import { isEqual, isBefore, isAfter } from 'date-fns';
 
         const rsTaskCusCared = taskCusCared.filter((value, index) => {
           let dayStartNewCycle2 = new Date(value.dayStartNewCycle2);
@@ -517,9 +516,7 @@ export default {
               ) {
                 // console.log('Report ', task);
                 return task;
-              } else {
-                // console.log("Run task", task);
-              }
+              } 
             });
           }
         });
@@ -530,7 +527,7 @@ export default {
               return taskCusCared.customerId === task.customerId;
             });
 
-            const hasOtherTasks = matchingTasks.some(
+            const hasOtherTasks = matchingTasks.some( // lấy 
               (task) => task.Status_Task.name !== "đã chăm sóc"
             );
 
@@ -545,14 +542,6 @@ export default {
           if(filteredTasks.length > 0) {
             return filteredTasks
           }
-
-          // filteredTasks.forEach((task) => {
-          //   console.log("task đã chăm sóc", task);
-          // });
-
-          // console.log('All tasks', filteredTasks);
-          // console.log('All tasks', filteredTasks);
-          // return filteredTasks;
         }
 
       });
