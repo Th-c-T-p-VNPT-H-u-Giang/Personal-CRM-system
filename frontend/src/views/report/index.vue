@@ -296,6 +296,7 @@ import {
   Customer_Work,
   formatDateTime,
   formatDate,
+  Task,
 } from "../common/import";
 
 import { isEqual, isBefore, isAfter, isSameDay } from "date-fns";
@@ -399,6 +400,9 @@ export default {
       store.countleaderStaff = await countElementReportLeaderStaff();
 
       const cusWork = await http_getAll(Customer_Work);
+      const tasks = await http_getAll(Task);
+
+      console.log("List tasks: ", tasks);
       data.lengthCustomer = cusWork.documents.length;
       data.items = cusWork.documents.filter((cusWork) => {
         const taskCusCared = cusWork.Customer.Tasks.filter((task) => {
@@ -448,9 +452,6 @@ export default {
             const month = start_date.getMonth() + 1;
             const day = start_date.getDate();
             let dayStartNewCycle = year + "-" + month + "-" + day; // ngày bắt đầu chu kì mới
-            // console.log('So sanh dayStartNewCycle', dayStartNewCycle , 'End date',end_date);
-
-            // cycleDate = ((cycleDate) * 2);
 
             if (isAfter(new Date(dayStartNewCycle), new Date(end_date))) {
               cycleDate = cycleDate * 2;
@@ -507,22 +508,53 @@ export default {
               let start_date = new Date(task.start_date);
 
               if (
+                value.customerId == cusWork.Customer._id &&
                 (isAfter(dayStartNewCycle2, currentDay) ||
                   isEqual(dayStartNewCycle2, currentDay)) &&
-                !isSameDay(dayStartNewCycle2, start_date) &&
-                !isSameDay(dayStartNewCycle, start_date)
+                !isEqual(dayStartNewCycle2, start_date) &&
+                !isEqual(dayStartNewCycle, start_date) &&
+                task.Status_Task.name == "đã chăm sóc"
               ) {
+                // console.log('Report ', task);
                 return task;
               } else {
-                console.log("Run task");
+                // console.log("Run task", task);
               }
             });
           }
         });
 
         if (rsTaskCusCared.length > 0) {
-          return rsTaskCusCared;
+          const filteredTasks =  rsTaskCusCared.filter((taskCusCared) => {
+            const matchingTasks = tasks.filter((task) => {
+              return taskCusCared.customerId === task.customerId;
+            });
+
+            const hasOtherTasks = matchingTasks.some(
+              (task) => task.Status_Task.name !== "đã chăm sóc"
+            );
+
+            if (hasOtherTasks) {
+              return false; // Không trả về nếu có task khác đã chăm sóc
+            }
+
+            return taskCusCared;
+          });
+
+          console.log('All tasks', filteredTasks);
+          if(filteredTasks.length > 0) {
+            return filteredTasks
+          }
+
+          // filteredTasks.forEach((task) => {
+          //   console.log("task đã chăm sóc", task);
+          // });
+
+          // console.log('All tasks', filteredTasks);
+          // console.log('All tasks', filteredTasks);
+          // return filteredTasks;
         }
+
       });
 
       // format lại data items
@@ -554,10 +586,7 @@ export default {
       data.searchText = value;
     };
 
-    // nameCustomer: item.Customer.name,
-    //       emailCustomer: item.Customer.email,
-    //       phoneCustomer: item.Customer.phone,
-    // // handle pagination
+    // handle pagination
     const toString = computed(() => {
       console.log("Starting search");
       if (data.choseSearch == "name") {
