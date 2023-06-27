@@ -322,7 +322,9 @@ export default {
     const refresh = async () => {
       data.items = await http_getAll(Role);
       for (let value of data.items) {
-        value.checked = false;
+        if (value.Permissions.length > 0) value.pTList = value.Permissions.map(obj => obj.name).join(' - ');
+        else value.pTList = 'không có';
+        
       }
     };
 
@@ -469,15 +471,15 @@ export default {
             >Tạo quyền</span
           >
         </button>
-        <SetPermission v-if="data.showSetPermission" :item="data.roleValue" />
+        <SetPermission @refresh="refresh()" v-if="data.showSetPermission" :item="data.roleValue" />
       </div>
     </div>
     <!-- Table -->
     <Table
       :items="setPages"
-      :fields="['Tên vai trò']"
-      :labels="['name']"
-      :showActionList="[flase, true, true]"
+      :fields="['Tên vai trò', 'Quyền']"
+      :labels="['name', 'pTList']"
+      :showActionList="[flase, flase, true]"
       :startRow="data.startRow"
       :selectAll="data.selectAll"
       @selectAll="(value) => handleSelectAll(value)"
