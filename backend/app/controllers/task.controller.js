@@ -290,7 +290,7 @@ exports.findAll = async (req, res, next) => {
     });
     ////////////////////////////////////////////
     // Thêm employeeTask vào documents.EmployeesList
-    console.log("Document:", documents.length);
+    // console.log("Document:", documents.length);
 
     for (let i = 0; i < documents.length; i++) {
       var employees = await Employee_Task.findAll({
@@ -298,7 +298,7 @@ exports.findAll = async (req, res, next) => {
           TaskId: documents[i].dataValues._id,
         },
       });
-      console.log("Tất cả employee của 1 task", employees.length);
+      // console.log("Tất cả employee của 1 task", employees.length);
       documents[i].dataValues["EmployeesList"] = employees;
     }
     /////////////////////////////////////////////////
