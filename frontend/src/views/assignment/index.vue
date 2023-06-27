@@ -250,6 +250,9 @@ export default {
         },
       ],
       showFeedback: false,
+      resetDataAdd: false,
+      showActiveAdd: false,
+      resetDataEdit: false,
     });
 
     const cycleValue = ref("");
@@ -1386,7 +1389,10 @@ export default {
         );
         refresh();
       } else if (renewTask.error) {
-        alert_error(`Tạo mới phân công theo chu kỳ chăm sóc`, `${renewTask.msg}`);
+        alert_error(
+          `Tạo mới phân công theo chu kỳ chăm sóc`,
+          `${renewTask.msg}`
+        );
       }
       await refresh();
     };
@@ -1633,6 +1639,10 @@ export default {
     // handle http methods
 
     // Hàm callback được gọi trước khi component được mount (load)
+
+    const add = () => {
+      data.showActiveAdd = true;
+    };
     onBeforeMount(async () => {
       await refresh();
     });
@@ -1672,6 +1682,7 @@ export default {
       initRenewTask,
       handleCycle,
       renewTask,
+      add,
     };
   },
 };
@@ -1843,16 +1854,21 @@ export default {
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
         <!-- <DeleteAll :items="data.items" /> -->
+        {{ data.resetData }}
         <button
           type="button"
           class="btn btn-primary"
           data-toggle="modal"
           data-target="#model-add"
+          @click="(data.resetDataAdd = true), add()"
         >
           <span id="add" class="mx-2">Thêm</span>
         </button>
+        {{ data.resetDataAdd }}
         <Add
-          @create="create"
+          v-if="data.showActiveAdd"
+          @create="create, (data.resetDataAdd = false)"
+          :resetData="data.resetDataAdd"
           :cycles="data.cycles"
           :cus="data.cus"
           :employee="data.employee"
@@ -1887,7 +1903,9 @@ export default {
       @delete="handleDelete"
       @edit="
         (value, value1) => (
-          (data.editValue = value), (data.activeEdit = value1)
+          (data.editValue = value),
+          (data.activeEdit = value1),
+          (data.resetDataEdit = true)
         )
       "
       @view="(value) => view(value)"
@@ -1911,13 +1929,14 @@ export default {
     <Edit
       :item="data.editValue"
       :class="[data.activeEdit ? 'show-modal' : 'd-none']"
+      :resetData="data.resetDataEdit"
       @cancel="data.activeEdit = false"
       :cycles="cycles.cycle"
       :cus="data.cus"
       :employee="data.employee"
       :evaluate="data.evaluate"
       :statustask="status_tasks.status_task"
-      @edit="edit(data.editValue)"
+      @edit="edit(data.editValue), (data.resetDataEdit = false)"
     />
     <RenewTask
       v-if="data.activeRenew"

@@ -1,5 +1,5 @@
 <script>
-import { reactive, onBeforeMount, watch, ref, computed } from "vue";
+import { reactive, onBeforeMount, watch, ref, computed, onMounted } from "vue";
 import StatusTask from "../../services/status_task.service";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import Cycle from "../../services/cycle.service";
@@ -45,8 +45,24 @@ export default {
       type: Object,
       default: {},
     },
+    resetData: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props, ctx) {
+    watch(
+      () => props.resetData,
+      async (newValue, oldValue) => {
+        console.log("Thay đổi", newValue);
+        await refresh();
+
+        // const data1 = await Position.getAll();
+        console.log("DTE:", cycles.cycle);
+      },
+      { immediate: true }
+      //có props
+    );
     const data = reactive({
       stepList: [
         {
@@ -124,10 +140,12 @@ export default {
     const search = async (value) => {
       console.log("a", value, statustasks.statustask);
       await refresh();
-      statustasks.statustask = statustasks.statustask.filter((value1, index) => {
-        console.log(value1, value);
-        return value1.name.includes(value) || value.length == 0;
-      });
+      statustasks.statustask = statustasks.statustask.filter(
+        (value1, index) => {
+          console.log(value1, value);
+          return value1.name.includes(value) || value.length == 0;
+        }
+      );
       console.log("searchSlect", value.length);
     };
 
@@ -170,6 +188,7 @@ export default {
         selectedOptionCycle.value = 0;
       }
       props.item.cycleId = selectedOptionCycle.value;
+      cycles.cycle.push = { _id: "other", name: "khác" };
     });
 
     const deleteCycle = async (_id) => {
@@ -182,8 +201,11 @@ export default {
       console.log(isConfirmed);
       if (isConfirmed == true) {
         const result = await http_deleteOne(Cycle, _id);
-        alert_success(`Xoá chu kỳ`, `Bạn đã xoá thành công chu kỳ ${cycle.name} .`);
-        refresh();
+        alert_success(
+          `Xoá chu kỳ`,
+          `Bạn đã xoá thành công chu kỳ ${cycle.name} .`
+        );
+        await refresh();
       }
     };
     const searchCycle = async (value) => {
@@ -210,8 +232,8 @@ export default {
       // data.cycleSelect = [...rs];
     };
 
-    onBeforeMount(() => {
-      refresh();
+    onMounted(async () => {
+      await refresh();
     });
     const update = () => {
       ctx.emit("update");
@@ -238,7 +260,9 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 15px">Chỉnh sửa phân công</h4>
+          <h4 class="modal-title" style="font-size: 15px">
+            Chỉnh sửa phân công
+          </h4>
           <button
             type="button"
             class="close"
@@ -285,9 +309,18 @@ export default {
                 style="width: 100%"
               >
                 <div class="form-group flex-grow-1">
-                  <label for="name">Khách hàng(<span style="color: red">*</span>):</label>
-                  <select id="" class="form-control" required v-model="item.customerId">
-                    <option value="" disabled selected hidden>Chọn khách hàng</option>
+                  <label for="name"
+                    >Khách hàng(<span style="color: red">*</span>):</label
+                  >
+                  <select
+                    id=""
+                    class="form-control"
+                    required
+                    v-model="item.customerId"
+                  >
+                    <option value="" disabled selected hidden>
+                      Chọn khách hàng
+                    </option>
                     <option v-for="cus in cus" :key="cus" :value="cus._id">
                       {{ cus.name }}
                     </option>
@@ -321,7 +354,9 @@ export default {
                 </div>
 
                 <div class="form-group flex-grow-1">
-                  <label for="content">Chu kỳ(<span style="color: red">*</span>):</label>
+                  <label for="content"
+                    >Chu kỳ(<span style="color: red">*</span>):</label
+                  >
                   <Select_Advanced
                     style="height: 40px"
                     required
@@ -331,14 +366,16 @@ export default {
                     @delete="(value) => deleteCycle(value._id)"
                     @chose="
                       (value, value1) => (
-                        (selectedOptionCycle = value), (item.Cycle.name = value1.name)
+                        (selectedOptionCycle = value),
+                        (item.Cycle.name = value1.name)
                       )
                     "
                   />
                 </div>
                 <div class="form-group flex-grow-1">
                   <label for="content"
-                    >Nội dung phân công(<span style="color: red">*</span>):</label
+                    >Nội dung phân công(<span style="color: red">*</span
+                    >):</label
                   >
                   <textarea
                     v-model="item.content"
@@ -359,7 +396,8 @@ export default {
                 <div class="form-group flex-grow-1">
                   <div class="form-group flex-grow-1">
                     <label for="content"
-                      >Trạng thái phân công(<span style="color: red">*</span>):</label
+                      >Trạng thái phân công(<span style="color: red">*</span
+                      >):</label
                     >
                     <Select_Advanced
                       style="height: 40px"
@@ -400,19 +438,29 @@ export default {
               </form>
               <div class="d-flex justify-content-end mt-3">
                 <span
-                  v-if="data.activeStep >= 1 && data.activeStep < data.stepList.length"
+                  v-if="
+                    data.activeStep >= 1 &&
+                    data.activeStep < data.stepList.length
+                  "
                   class="btn-next d-flex align-items-center px-3 py-1"
                   @click="data.activeStep = 2"
                   >Trang kế tiếp
-                  <span class="material-symbols-outlined d-flex align-items-center">
+                  <span
+                    class="material-symbols-outlined d-flex align-items-center"
+                  >
                     navigate_next
                   </span>
                 </span>
                 <span
-                  v-if="data.activeStep > 1 && data.activeStep <= data.stepList.length"
+                  v-if="
+                    data.activeStep > 1 &&
+                    data.activeStep <= data.stepList.length
+                  "
                   class="btn-prev d-flex align-items-center px-3 py-1"
                   @click="data.activeStep = 1"
-                  ><span class="material-symbols-outlined d-flex align-items-center">
+                  ><span
+                    class="material-symbols-outlined d-flex align-items-center"
+                  >
                     navigate_before </span
                   >Trang trước</span
                 >
