@@ -253,6 +253,7 @@ export default {
       resetDataAdd: false,
       showActiveAdd: false,
       resetDataEdit: false,
+      resetDataStar: false,
     });
 
     const cycleValue = ref("");
@@ -1643,6 +1644,9 @@ export default {
     const add = () => {
       data.showActiveAdd = true;
     };
+    const star = async () => {
+      await refresh();
+    };
     onBeforeMount(async () => {
       await refresh();
     });
@@ -1683,6 +1687,7 @@ export default {
       handleCycle,
       renewTask,
       add,
+      star,
     };
   },
 };
@@ -1825,13 +1830,18 @@ export default {
           :item="data.taskEmployee"
           @giaoviec="giaoviec"
         />
-        <FeedBack v-if="data.showFeedback" :item="data.taskEmployee" />
+        <FeedBack
+          v-if="data.showFeedback"
+          :item="data.taskEmployee"
+          :resetData="data.resetDataStar"
+          @create="(data.resetDataStar = false), star()"
+        />
         <button
           type="button"
           class="btn btn-secondary mr-3"
           data-toggle="modal"
           data-target="#model-feedback"
-          @click="showFeedback()"
+          @click="showFeedback(), (data.resetDataStar = true)"
         >
           <span class="mx-2">Đánh giá</span>
         </button>
@@ -1854,7 +1864,7 @@ export default {
           <span id="delete-all" class="mx-2">Xoá</span>
         </button>
         <!-- <DeleteAll :items="data.items" /> -->
-        {{ data.resetData }}
+
         <button
           type="button"
           class="btn btn-primary"
@@ -1867,7 +1877,7 @@ export default {
         {{ data.resetDataAdd }}
         <Add
           v-if="data.showActiveAdd"
-          @create="create, (data.resetDataAdd = false)"
+          @create="(data.resetDataAdd = false), create()"
           :resetData="data.resetDataAdd"
           :cycles="data.cycles"
           :cus="data.cus"

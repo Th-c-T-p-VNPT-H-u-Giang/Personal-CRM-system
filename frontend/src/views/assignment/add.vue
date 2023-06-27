@@ -37,7 +37,6 @@ export default {
       async (newValue, oldValue) => {
         console.log("Thay đổi", newValue);
         await refresh();
-
         // const data1 = await Position.getAll();
         console.log("DT1:", cycles.cycle);
       },

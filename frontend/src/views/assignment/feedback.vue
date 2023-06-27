@@ -26,8 +26,23 @@ export default {
       type: Object,
       default: {},
     },
+    resetData: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(props, ctx) {
+    watch(
+      () => props.resetData,
+      async (newValue, oldValue) => {
+        console.log("Thay đổi", newValue);
+        await refresh();
+        // // const data1 = await Position.getAll();
+        console.log("DTStar:", evaluates.evaluate);
+      },
+      { immediate: true }
+      //có props
+    );
     const data = reactive({});
     const create = () => {
       ctx.emit("create");
@@ -59,7 +74,8 @@ export default {
       console.log("ne", result);
       if (!result.error) {
         alert_success(`Sửa đánh giá`, `${result.msg}`);
-        refresh();
+        await refresh();
+        ctx.emit("create");
       } else if (result.error) {
         alert_error(`Sửa đánh giá`, `${result.msg}`);
       }

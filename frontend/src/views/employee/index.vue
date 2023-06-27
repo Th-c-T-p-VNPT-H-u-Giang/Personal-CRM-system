@@ -1098,7 +1098,7 @@ export default {
         <Add
           v-if="data.showActiveAdd"
           :resetData="data.resetDataAdd"
-          @create="create, (data.resetDataAdd = false)"
+          @create="(data.resetDataAdd = false), create()"
           @newPosition="
             (value) => {
               updatePosition(value);
