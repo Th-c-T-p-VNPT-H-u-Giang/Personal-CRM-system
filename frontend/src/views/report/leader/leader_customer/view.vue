@@ -16,6 +16,9 @@ export default {
     Events: {
       type: Array,
     },
+    viewCareCus: {
+      type: Array,
+    }
   },
   setup(props, context) {
     const isActive = ref(false);
@@ -187,7 +190,7 @@ export default {
               Danh sách chăm sóc khách hàng
             </button>
             <div v-if="isActive" id="assignment" class="collapse">
-              <div class="table-responsive">
+              <!-- <div class="table-responsive">
                 <table class="table table-bordered">
                   <thead>
                     <tr>
@@ -214,12 +217,30 @@ export default {
                     </tr>
                   </tbody>
                 </table>
-              </div>
+              </div> -->
               <!-- <div v-for="(value, index) in item.Tasks" :key="index">
               <p> Ngày bắt đầu:  {{ value.start_date }}</p>
               <p> Ngày kết thúc: {{ value.end_date }}</p>
               <p> Nội dung: {{ value.content }}</p>
-              </div> -->
+              </div> --> 
+              <!-- name: item.Customer.name,
+          start_date: formatDate(value.start_date),
+          end_date: formatDate(value.end_date),
+          content: value.content,
+          cycle: value.Cycle.name,
+          statusTask: value.Status_Task.name,
+          star: value.Evaluate.star,
+          comment: value.Comment.content -->
+              <Table
+                :items="viewCareCus"
+                :fields="['Ngày bắt đầu', 'Ngày kết thúc', 'Nội dung chăm sóc', 'Tên khách hàng','Chu kì', 'Trạng thái','Đánh giá', 'Nhận xét']"
+                :labels="['start_date', 'end_date', 'content', 'name', 'cycle','statusTask','star','comment']"
+                :borderTableAll="true"
+                :showActionList="[false, false, false]"
+                :activeAction="false"
+                :isActiveCheckbox="false"
+                :startRow="0"
+              />
             </div>
           </div>
           <div class="">

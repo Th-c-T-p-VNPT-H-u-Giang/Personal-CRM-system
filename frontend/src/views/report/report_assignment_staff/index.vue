@@ -145,7 +145,7 @@
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-              console.log('search ........'),
+              // console.log('search ........'),
               (data.choseSearch = value),
               (data.currentPage = 1)
             )
@@ -293,7 +293,7 @@
         <p>Người Báo Cáo</p>
       </div>
     </div>
-    <View :item="data.viewValue" :Events="data.Events" />
+    <View :item="data.viewValue" :Events="data.Events" :viewCareCus="data.viewCareCus"/>
     <Mail />
   </div>
 </template>
@@ -372,6 +372,7 @@ export default {
       viewValue: [],
       lengthCustomer: 0,
       employee: [],
+      viewCareCus: []
     });
 
     const reFresh = async () => {
@@ -430,7 +431,7 @@ export default {
         };
       });
 
-      console.log("data employee: ", data.employee[0].employee[0].name);
+      // console.log("data employee: ", data.employee[0].employee[0].name);
     };
 
     // life cycle
@@ -469,7 +470,7 @@ export default {
 
     // computed
     const toString = computed(() => {
-      console.log("Starting search");
+      // console.log("Starting search");
       if (data.choseSearch == "name") {
         return data.items.map((value, index) => {
           return [value.nameCustomer].join("").toLocaleLowerCase();
@@ -526,8 +527,22 @@ export default {
       } else return data.items.value;
     });
 
-    const view = (item) => {
-      console.log("Before view", item);
+    const view = async (item) => {
+      // console.log("Before view", item.Customer._id);
+      const rs = await http_getOne(Customer, item.Customer._id)
+      console.log('rs',rs.documents);
+      data.viewCareCus = rs.documents.Tasks.map(value => {
+        return {
+          name: item.Customer.name,
+          start_date: formatDate(value.start_date),
+          end_date: formatDate(value.end_date),
+          content: value.content,
+          cycle: value.Cycle.name,
+          statusTask: value.Status_Task.name,
+          star: value.Evaluate.star,
+          comment: value.Comment.content
+        }
+      })
       data.viewValue = {
         Customer: {
           name: item.Customer.name,
