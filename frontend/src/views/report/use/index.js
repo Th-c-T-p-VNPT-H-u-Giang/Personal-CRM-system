@@ -329,12 +329,21 @@ export const countElementReportCustomerCyclePage = async () => {
 
 export const countElementReportAssignmentStaff = async () => {
   const tasks = await http_getAll(Task);
-  return tasks.filter((task, index) => {
-    return (
-      tasks.findIndex((value) => value.Customer._id === task.Customer._id) ===
-      index
-    );
-  }).length;
+  const ListTaskId = [];
+  const arrTasks = [];
+  tasks.map((task) => {
+    ListTaskId.push(task._id);
+  });
+
+  for (const _id of ListTaskId) {
+    const rs = await http_getOne(Task, _id);
+    console.log("rs", rs.Employees.length);
+    if (rs.Employees.length > 0) {
+      arrTasks.push(rs);
+    }
+  }
+
+  return arrTasks.length;
 };
 
 // khách hàng do lảnh đạo phụ trách
@@ -342,8 +351,23 @@ export const countElementReportLeaderCustomer = async () => {
   const leaderId = sessionStorage.getItem("employeeId");
 
   const tasks = await http_getAll(Task);
-  return tasks.filter((task) => {
-    return task.leaderId == leaderId; // người giao việc và nhân viên là mình
+  const ListTaskId = [];
+  const arrTasks = [];
+  tasks.map((task) => {
+    ListTaskId.push(task._id);
+  });
+
+  for (const _id of ListTaskId) {
+    const rs = await http_getOne(Task, _id);
+    arrTasks.push(rs);
+  }
+
+  return arrTasks.filter((item, index, self) => {
+    return (
+      item.leaderId == leaderId &&
+      index ===
+        self.findIndex((customer) => customer.Customer._id === item.customerId)
+    );
   }).length;
 };
 
@@ -353,40 +377,30 @@ export const countElementReportLeaderStaff = async () => {
   const tasks = await http_getAll(Task);
 
   const ListTaskId = [];
+  let arrayEmployess = [];
   tasks.map((task) => {
     ListTaskId.push(task._id);
   });
 
   for (const _id of ListTaskId) {
     const rs = await http_getOne(Task, _id);
-    data.items.push(rs);
+    arrayEmployess.push(rs);
   }
 
-  data.items = data.items.map((task) => {
-    if (task.leaderId == leaderId) {
-      return [...task.Employees];
+  arrayEmployess = arrayEmployess.map((item) => {
+    const array = [...item.Employees];
+    if (array.length > 0) {
+      return array;
     }
   });
 
-  data.items = data.items.filter((task) => {
-    return task != undefined;
+  arrayEmployess = arrayEmployess.filter((item) => {
+    return item !== undefined;
   });
 
-  // console.log("items use", data.items);
-  const newArray = [];
+  const newarrayEmployess = arrayEmployess.flatMap((item) => item); // chuyển mảng 2 chiều thành mảng 1 chiều
 
-  // chuyển mảng 2 chiều thành mảng 1 chiều
-  for (let i = 0; i < data.items.length; i++) {
-    for (let j = 0; j < data.items[i].length; j++) {
-      newArray.push(data.items[i][j]);
-    }
-  }
-
-  data.items = newArray.map((item) => {
-    return {
-      ...item,
-    };
-  });
-
-  return data.items.length;
+  return newarrayEmployess.filter((item, index, self) => {
+    return index === self.findIndex((value) => value._id === item._id); // lọc ra các nhân viên trùng nhau
+  }).length;
 };

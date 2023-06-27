@@ -20,14 +20,6 @@
           </span>
         </router-link>
       </div>
-
-      <!-- countCustomer: 0,
-      countEmployee: 0,
-      countReport: 0,
-      countReportAssignmentStaff: 0,
-      countReportCustomerCycle: 0,
-      countLeaderCustomer: 0,
-      countleaderStaff: 0 -->
       <div
         class="mx-1 report__item"
         :style="data.activeMenu == 1 ? { border: '1px solid blue' } : {}"
@@ -312,8 +304,8 @@ import {
   Pagination,
   Select,
   Search,
-  Customer,
   formatDate,
+  http_getOne
 } from "../../../common/import";
 import jsPDF from "jspdf"; //in
 import html2canvas from "html2canvas";
@@ -383,7 +375,6 @@ export default {
       searchText: "",
       activeMenu: 3,
       viewValue: {},
-      lenghCustomer: 0,
     });
 
     const reFresh = async () => {
@@ -398,14 +389,22 @@ export default {
       store.countleaderStaff = await countElementReportLeaderStaff();
 
       const leaderId = sessionStorage.getItem("employeeId");
-      const customer = await http_getAll(Customer);
-      data.lenghCustomer = customer.documents.length;
       const tasks = await http_getAll(Task);
-      data.items = tasks.filter((task) => {
-        console.log(task);
-        // return task.leaderId == task.Employee._id && task.leaderId == leaderId; // người giao việc và nhân viên là mình
-        return task.leaderId == leaderId;
+      const ListTaskId = [];
+      tasks.map((task) => {
+        ListTaskId.push(task._id);
       });
+
+      for (const _id of ListTaskId) {
+        const rs = await http_getOne(Task, _id);
+        data.items.push(rs);
+      }
+
+      data.items = data.items.filter( (item,index , self) => {
+        return item.leaderId == leaderId && index === self.findIndex(customer => customer.Customer._id === item.customerId)
+      })
+
+      // console.log('unique customer', data.items);
 
       data.items = data.items.map((item) => {
         return {

@@ -20,14 +20,6 @@
           </span>
         </router-link>
       </div>
-
-      <!-- countCustomer: 0,
-        countEmployee: 0,
-        countReport: 0,
-        countReportAssignmentStaff: 0,
-        countReportCustomerCycle: 0,
-        countLeaderCustomer: 0,
-        countleaderStaff: 0 -->
       <div
         class="mx-1 report__item"
         :style="data.activeMenu == 1 ? { border: '1px solid blue' } : {}"
@@ -184,11 +176,6 @@
         </button>
       </div>
     </div>
-    <!-- nameEmployee: item.Employee.name,
-              phoneEmployee: item.Employee.phone,
-              emailEmployee: item.Employee.email,
-              addressEmployee: item.Employee.address,
-              birthdayEmployee: item.Employee.birthday, -->
     <Table
       :items="setPages"
       :fields="[
@@ -410,14 +397,7 @@ export default {
         return task != undefined;
       });
 
-      const newArray = [];
-
-      // chuyển mảng 2 chiều thành mảng 1 chiều
-      for (let i = 0; i < data.items.length; i++) {
-        for (let j = 0; j < data.items[i].length; j++) {
-          newArray.push(data.items[i][j]);
-        }
-      }
+      let newArray = data.items.flatMap((item) => item); // chuyển mảng 2 chiều thành mảng 1 chiều
 
       data.items = newArray.map((item) => {
         return {
@@ -425,8 +405,6 @@ export default {
           ...item,
         };
       });
-
-      console.log("Data items: ", data.items);
     };
 
     onBeforeMount(() => {

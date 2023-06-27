@@ -398,13 +398,14 @@ export default {
 
       // console.log('Data items report assignment staff:', data.items); 
 
-      data.items.filter( (item) => {
+      data.items = data.items.filter( (item) => {
         if(item.Employees.length > 0) {
           return item
         }
       })
 
-      console.log('data items:', data.items);
+      // console.log('data items:', data.items);
+
 
       data.items = data.items.map((task) => {
         return {
