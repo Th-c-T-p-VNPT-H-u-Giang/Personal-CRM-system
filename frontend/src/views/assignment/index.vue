@@ -450,15 +450,10 @@ export default {
         value.checked = false;
       }
       // 2*****
-      // console.log("Data items tasks:", data.items);
-      var employees = reactive({ data: {} });
       for (let value of data.items) {
-        employees.data = await http_getOne(Task, value._id);
-        // console.log("count:", employees.data.Employees.length);
-        // value.count = employees.data.Employees.length;
+        value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-          // value.count = employees.Employees.length;
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -640,11 +635,9 @@ export default {
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         employees.data = await http_getOne(Task, value._id);
-        // console.log("count:", employees.data.Employees.length);
-        // value.count = employees.data.Employees.length;
+        value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-          // value.count = employees.Employees.length;
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -823,11 +816,9 @@ export default {
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         employees.data = await http_getOne(Task, value._id);
-        // console.log("count:", employees.data.Employees.length);
-        // value.count = employees.data.Employees.length;
+        value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-          // value.count = employees.Employees.length;
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -1016,11 +1007,9 @@ export default {
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         employees.data = await http_getOne(Task, value._id);
-        // console.log("count:", employees.data.Employees.length);
-        // value.count = employees.data.Employees.length;
+        value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-          // value.count = employees.Employees.length;
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -1203,11 +1192,9 @@ export default {
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         employees.data = await http_getOne(Task, value._id);
-        // console.log("count:", employees.data.Employees.length);
-        // value.count = employees.data.Employees.length;
+        value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-          // value.count = employees.Employees.length;
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -1581,15 +1568,10 @@ export default {
         value.checked = false;
       }
       // 2*****
-      // console.log("Data items tasks:", data.items);
-      // var employees = reactive({ data: {} });
       for (let value of data.items) {
-        // employees.data = await http_getOne(Task, value._id);
-        // console.log("count:", employees.data.Employees.length);
         value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-          // value.count = employees.Employees.length;
           if (value._id == value1._id) {
             value.checked = true;
           }
