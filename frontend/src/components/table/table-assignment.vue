@@ -61,7 +61,10 @@ export default {
 
 <template>
   <div ref="selectRef">
-    <table class="my-table mb-2" :class="[borderTableAll ? 'border-table-all' : '']">
+    <table
+      class="my-table mb-2 table-container"
+      :class="[borderTableAll ? 'border-table-all' : '']"
+    >
       <thead>
         <tr>
           <th>
@@ -259,7 +262,9 @@ export default {
         </tr>
       </tbody>
     </table>
-    <p v-if="items.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p>
+    <p v-if="items.length == 0" class="text-center mt-2">
+      Không tồn tại bản ghi.
+    </p>
   </div>
 </template>
 
@@ -324,5 +329,11 @@ export default {
   padding: 10px 20px;
   border: 1px solid white;
   border-radius: 5px;
+}
+
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+  width: 100%;
 }
 </style>

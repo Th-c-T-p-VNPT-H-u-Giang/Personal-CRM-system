@@ -40,7 +40,16 @@ export default {
       selectedItem: {},
       TaskLD: [],
       TaskLDE: [],
+      showSidebar: ref(false),
     });
+
+    const toggleSidebar = () => {
+      data.showSidebar = !data.showSidebar; // Toggle the value of showSidebar
+    };
+
+    const handleSidebarClick = () => {
+      toggleSidebar(); // Toggle the sidebar visibility
+    };
 
     // const emit = inject('emit');
     const updateMenuResponsive = () => {
@@ -295,6 +304,8 @@ export default {
     check(token);
 
     return {
+      toggleSidebar,
+      handleSidebarClick,
       employeeName,
       roleName,
       logout,
@@ -324,7 +335,9 @@ export default {
   <nav class="w-100 d-flex align-items-center justify-content-between border-nav">
     <a class="text-dark h5 my-auto d-none d-xl-block ml-3">PERSONAL CRM SYSTEM</a>
     <a class="d-xl-none d-sm-block text-dark h5 my-auto"
-      ><span class="material-symbols-outlined cursor-pointer" @click="$emit('showMenu')">
+      ><span class="material-symbols-outlined cursor-pointer" 
+      :class="{ 'sidebar-active': data.showSidebar }"
+      @click="handleSidebarClick">
         menu
       </span></a
     >

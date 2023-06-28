@@ -178,7 +178,7 @@ export default {
       },
       labels: [],
       series: [],
-      colors: ["#9FD7F0", "#3300cc", "#1CA7EC"],
+      colors: ["#9FD7F0", "#3300cc", "#1CA7EC", "	#9400D3"],
     });
     const chartSeriesCustomerType = ref([]);
 
@@ -190,7 +190,14 @@ export default {
       },
       labels: [],
       series: [],
-      colors: ["#FFDD94", "#FD8F52", "#FFd700", "#FFC125", "#EEAD0F"],
+      colors: [
+        "#FFDD94",
+        "#FD8F52",
+        "#FFd700",
+        "#FFC125",
+        "#EEAD0F",
+        "#ADFF2F",
+      ],
     });
     const chartSeriesStar = ref([]);
 
@@ -756,7 +763,7 @@ export default {
 };
 </script>
 <template>
-  <div class="border-box ml-2">
+  <div class="border-box content ml-2">
     <div class="d-flex my-2 mx-3 menu justify-content-end" style="border: none">
       <!-- BTN tổng quan chi tiêt -->
       <div class="d-flex menu mx-2 my-2 justify-content-end">
@@ -771,32 +778,6 @@ export default {
         >
           <span class="size-17 active-menu">Tổng quan</span>
         </a>
-      </div>
-      <div class="">
-        <!-- <button
-          class="btn m-0"
-          :class="{ 'btn-primary': overview }"
-          @click="
-            () => {
-              detail = false;
-              overview = true;
-            }
-          "
-        >
-          Tổng quan
-        </button> -->
-        <!--<button
-          class="btn mr-4"
-          @click="
-            () => {
-              detail = true;
-              overview = false;
-            }
-          "
-          :class="{ 'btn-primary': detail }"
-        >
-          Chi tiết
-        </button> -->
       </div>
     </div>
     <div class="border-hr mb-3"></div>
@@ -820,7 +801,7 @@ export default {
         v-if="showchart == 'customerCycle'"
       >
         <Select
-          class="d-flex justify-content-start"
+          class="d-flex justify-content-start select"
           :options="[
             {
               name: 5,
@@ -839,15 +820,13 @@ export default {
               value: 30,
             },
           ]"
-          style="width: 125px"
           :title="`Số bản ghi`"
           @update:entryValue="(value) => (data.entryValue = value)"
           :entryValue="data.entryValue"
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
         />
         <Search
-          class="ml-3"
-          style="width: 300px"
+          class="ml-3 search"
           @update:searchText="(value) => (data.searchText = value)"
           :entryValue="data.searchText"
           @choseSearch="
@@ -912,10 +891,10 @@ export default {
     <!--CHART -->
 
     <div class="p-0 mx-4">
-      <div class="mt-2" v-if="showchart == 'appointment'">
+      <div class="mt-2 row" v-if="showchart == 'appointment'">
         <!--Chart Appointment -->
-        <div class="mt-5" v-if="overview && showchart == 'appointment'">
-          <div class="border-box">
+        <div class="mt-5 col-12" v-if="overview && showchart == 'appointment'">
+          <div class="border-box-chart">
             <h5 class="text-center mt-2">
               Biểu đồ thể hiện trạng thái chăm sóc
             </h5>
@@ -926,7 +905,7 @@ export default {
               height="400"
             />
           </div>
-          <div class="mt-3 border-box">
+          <div class="mt-3 border-box-chart col-12">
             <apexchart
               class="mt-5"
               :options="chartOptionsAppointment1"
@@ -940,10 +919,10 @@ export default {
 
       <!--Chart Customer -->
       <div
-        class="row justify-content-around"
+        class="row justify-content-around row"
         v-if="overview && showchart == 'customer'"
       >
-        <div class="col-6 mb-4">
+        <div class="col-lg-6 col-12 mb-4">
           <div
             class="card border-left-primary shadow h-100 py-2"
             :class="{ 'box-active': name == 'customer' }"
@@ -965,7 +944,7 @@ export default {
             </div>
           </div>
         </div>
-        <div class="col-6 mb-4">
+        <div class="col-lg-6 col-12 mb-4">
           <div class="card border-left-primary shadow h-100 py-2">
             <div class="card-body">
               <div class="row no-gutters align-items-center">
@@ -1046,6 +1025,10 @@ export default {
   border: 1px solid var(--gray);
   border-radius: 5px;
 }
+.border-box-chart {
+  border: 1px solid var(--gray);
+  border-radius: 5px;
+}
 .border-hr {
   border-top: 1px solid var(--gray);
 }
@@ -1072,9 +1055,41 @@ select {
 .pad {
   padding: 1px;
 }
-@media screen and (max-width: 739px) {
-  apexchart {
-    width: 500px;
+.select {
+  width: 125px;
+}
+.search {
+  width: 300px;
+}
+.content {
+  margin-top: 0px;
+}
+@media screen and (max-width: 738px) {
+  .select {
+    width: 90px;
+  }
+  .search {
+    width: 210px;
+    margin-left: 2px !important ;
+    margin-right: 2px;
+  }
+  .border-box {
+    width: 890px;
+    margin-left: 10px;
+  }
+}
+@media screen and (max-width: 992px) {
+  .select {
+    width: 90px;
+  }
+  .search {
+    width: 210px;
+    margin-left: 2px !important ;
+    margin-right: 2px;
+  }
+  .border-box {
+    width: 100%;
+    margin-left: 10px;
   }
 }
 </style>

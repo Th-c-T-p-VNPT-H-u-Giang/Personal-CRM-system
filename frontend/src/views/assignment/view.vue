@@ -350,6 +350,7 @@ export default {
                 :labels="['date_time', 'place', 'content']"
                 :activeCheck="false"
                 :borderTableAll="true"
+                :activeAction="false"
               />
 
               <!-- <p v-if="viewValue.Appointments.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p> -->
@@ -392,5 +393,11 @@ export default {
 }
 .modal-parent {
   position: relative;
+}
+@media screen and (min-width: 739px) and (max-width: 992px) {
+  .modal-content {
+    width: 999px;
+    margin-left: -220px;
+  }
 }
 </style>

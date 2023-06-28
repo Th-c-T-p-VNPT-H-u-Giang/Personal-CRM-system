@@ -128,7 +128,7 @@ export default {
           sessionStorage.setItem("employeeId", response.data.document.Employee._id);
           sessionStorage.setItem("employeeName", response.data.document.Employee.name);
           sessionStorage.setItem("role", response.data.document.Role.name);
-          sessionStorage.setItem("role", response.data.document.Role.name);
+          // sessionStorage.setItem("role", response.data.document.Role.name);
           sessionStorage.setItem(
             "permissionList",
             response.data.document.Role.Permissions

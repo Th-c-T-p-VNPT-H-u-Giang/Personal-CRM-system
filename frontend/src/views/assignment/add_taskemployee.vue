@@ -942,4 +942,10 @@ export default {
   padding-top: 10px;
   margin-bottom: 14px;
 }
+@media screen and (min-width: 739px) and (max-width: 992px) {
+  .modal-content {
+    width: 999px;
+    margin-left: -220px;
+  }
+}
 </style>

@@ -2024,4 +2024,10 @@ export default {
 #delete-all {
   font-size: 14px;
 }
+@media screen and (max-width: 992px) {
+  .border-box {
+    width: 100%;
+    margin-left: 10px;
+  }
+}
 </style>
