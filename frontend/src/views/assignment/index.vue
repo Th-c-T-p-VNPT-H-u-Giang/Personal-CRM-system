@@ -1948,6 +1948,7 @@ export default {
         }
       "
       @renewtask="(value, value1) => initRenewTask(value, value1)"
+      :startRow="data.startRow"
     />
     <!-- Pagination -->
     <Pagination
