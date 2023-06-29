@@ -57,7 +57,7 @@ export default {
       <!-- Navbar content goes here -->
       <Navbar @showMenu="showSidebar()" />
     </nav>
-    <div class="sidebar" :class="{ showSidebar: isIpad && isSideBar }">
+    <div class="sidebar" :class="{ showSidebar: isSideBar }">
       <!-- Sidebar content goes here -->
       <Sidebar :activeIndex="data.activeIndex" />
     </div>

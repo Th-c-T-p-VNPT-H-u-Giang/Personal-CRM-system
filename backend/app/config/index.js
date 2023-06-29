@@ -8,9 +8,9 @@ const config = {
 
 // Khởi tạo kết nối database
 const sequelize = new Sequelize(
-  "personal_crm_system",
+  "personal_crm_system1",
   "root",
-  "#NguyenAnh1111",
+  "Quyber2015",
   {
     host: "localhost",
     dialect: "mysql",
