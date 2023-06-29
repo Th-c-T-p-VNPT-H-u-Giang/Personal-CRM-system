@@ -84,7 +84,7 @@ const isSelfAssignement = () => {
   return permissionList.includes("tự phân công");
 };
 const isSetAssignement = () => {
-  return permissionList.includes("giao phân công");
+  return permissionList.includes("giao phân công ");
 };
 const isFeedbackAssignment = () => {
   return permissionList.includes("thêm đánh giá phân công");

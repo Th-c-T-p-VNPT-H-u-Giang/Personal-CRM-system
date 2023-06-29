@@ -477,7 +477,7 @@ export default {
           value: value._id,
         };
       });
-      console.log("start1", data.department[0]._id);
+      // console.log("start1", data.department[0]._id);
       data.unit = [];
       //Lấy tất cả tổ của 1 trung tâm
       // for (let value of data.department) {
