@@ -55,6 +55,7 @@ import {
   alert_info,
   alert_delete_wide,
   alert_input_text,
+  alert_mail
 } from "../../assets/js/common.alert";
 
 export {
@@ -120,4 +121,5 @@ export {
   alert_info,
   alert_delete_wide,
   alert_input_text,
+  alert_mail
 };

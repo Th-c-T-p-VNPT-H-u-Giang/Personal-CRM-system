@@ -19,6 +19,7 @@ import {
   alert_warning,
   alert_delete,
   alert_delete_wide,
+  alert_mail,
   Pagination,
   Dropdown,
   Select,
@@ -567,6 +568,10 @@ export default {
       document.removeEventListener("click", handleClickOutside);
     });
 
+    const sendMail = () => {
+      alert_mail()
+    }  
+
     return {
       update,
       deleteOne,
@@ -588,7 +593,7 @@ export default {
       deleteMany,
       reFresh,
       isStringFound,
-      selectRef,
+      selectRef, sendMail
     };
   },
 };
@@ -704,7 +709,16 @@ export default {
           ]"
         />
       </div>
+    <div class="d-flex align-items-start">
+        <button
+          class="btn btn-warning mx-2" 
+          @click="sendMail"
+        >
+          <span id="delete-all" class="">Mail</span>
+        </button>
     </div>
+    </div>
+    
     <!-- Table -->
     <Table
       :items="setPages"
