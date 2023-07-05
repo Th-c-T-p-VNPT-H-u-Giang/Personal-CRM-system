@@ -197,10 +197,7 @@ export default {
           refresh();
           viewData.customerCompany._id = res.document._id;
           console.log(viewData.customerCompany._id);
-          alert_success(
-            `Thành công`,
-            `Công ty ${companyName}  đã được tạo thành công.`
-          );
+          alert_success(`Thành công`, `Công ty ${companyName}  đã được tạo thành công.`);
         }
       } else {
         const rs = await http_getOne(Company_KH, _id);
@@ -255,10 +252,7 @@ export default {
         formData.append("address", viewData.customerInfo.address);
         formData.append("phone", viewData.customerInfo.phone);
         formData.append("email", viewData.customerInfo.email);
-        formData.append(
-          "customerTypesId",
-          viewData.customerInfo.customerTypesId
-        );
+        formData.append("customerTypesId", viewData.customerInfo.customerTypesId);
 
         console.log("avatar", viewData.customerInfo.avatar);
         console.log("name", viewData.customerInfo.name);
@@ -321,9 +315,7 @@ export default {
         <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title" style="font-size: 18px">Thêm Khách Hàng</h4>
-          <button type="button" class="close" data-dismiss="modal">
-            &times;
-          </button>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
 
         <!-- Modal body -->
@@ -354,19 +346,12 @@ export default {
               class="d-flex flex-grow-1 flex-column step-content px-3 my-3"
               style="width: 10000px"
             >
-              <form
-                action=""
-                class="was-validated"
-                style="width: 100%"
-                method="post"
-              >
+              <form action="" class="was-validated" style="width: 100%" method="post">
                 <!--begin  page 1 -->
                 <div v-if="data.activeStep == 1" class="page-1">
                   <div class="form-row">
                     <div class="form-group col-md-6">
-                      <label for="name"
-                        >Tên (<span style="color: red">*</span>)</label
-                      >
+                      <label for="name">Tên (<span style="color: red">*</span>)</label>
                       <input
                         type="text"
                         class="form-control"
@@ -400,9 +385,7 @@ export default {
                     ></textarea>
                   </div>
                   <div class="form-group">
-                    <label for="phone"
-                      >Sdt (<span style="color: red">*</span>)</label
-                    >
+                    <label for="phone">Sdt (<span style="color: red">*</span>)</label>
                     <input
                       type="text"
                       class="form-control"
@@ -413,9 +396,7 @@ export default {
                   </div>
                   <div class="form-row">
                     <div class="form-group col-md-6">
-                      <label for="email"
-                        >Email (<span style="color: red">*</span>)</label
-                      >
+                      <label for="email">Email (<span style="color: red">*</span>)</label>
                       <input
                         type="text"
                         class="form-control"
@@ -452,7 +433,7 @@ export default {
                         class="form-control"
                         name="file"
                         id="imageUpload"
-                        accept=".png, .jpg, jpeg"
+                        accept=".png, .jpg, .jpeg"
                         :maxFileSize="1000000"
                         ref="fileInput"
                         @change="onFileChange"
@@ -484,8 +465,7 @@ export default {
                   <div class="form-row">
                     <div class="form-group col-md-6">
                       <label for="wor_current_workplace"
-                        >Nơi đang công tác (<span style="color: red">*</span
-                        >)</label
+                        >Nơi đang công tác (<span style="color: red">*</span>)</label
                       >
                       <input
                         type="text"
@@ -497,8 +477,7 @@ export default {
                     </div>
                     <div class="form-group col-md-6">
                       <label for="wor_current_position"
-                        >Chức vụ đang công tác (<span style="color: red">*</span
-                        >)</label
+                        >Chức vụ đang công tác (<span style="color: red">*</span>)</label
                       >
                       <input
                         type="text"
@@ -512,8 +491,7 @@ export default {
 
                   <div class="form-group">
                     <label for="wor_work_history"
-                      >Lịch sử công tác (<span style="color: red">*</span
-                      >)</label
+                      >Lịch sử công tác (<span style="color: red">*</span>)</label
                     >
                     <textarea
                       name=""
@@ -547,29 +525,19 @@ export default {
 
               <div class="d-flex justify-content-end mt-3">
                 <span
-                  v-if="
-                    data.activeStep >= 1 &&
-                    data.activeStep < data.stepList.length
-                  "
+                  v-if="data.activeStep >= 1 && data.activeStep < data.stepList.length"
                   class="btn-next d-flex align-items-center px-3 py-1 mx-2"
                   @click="data.activeStep = data.activeStep + 1"
                   >Tiếp tục
-                  <span
-                    class="material-symbols-outlined d-flex align-items-center"
-                  >
+                  <span class="material-symbols-outlined d-flex align-items-center">
                     navigate_next
                   </span>
                 </span>
                 <span
-                  v-if="
-                    data.activeStep > 1 &&
-                    data.activeStep <= data.stepList.length
-                  "
+                  v-if="data.activeStep > 1 && data.activeStep <= data.stepList.length"
                   class="btn-prev d-flex align-items-center px-3 py-1"
                   @click="data.activeStep = data.activeStep - 1"
-                  ><span
-                    class="material-symbols-outlined d-flex align-items-center mx-2"
-                  >
+                  ><span class="material-symbols-outlined d-flex align-items-center mx-2">
                     navigate_before </span
                   >Quay lại</span
                 >
