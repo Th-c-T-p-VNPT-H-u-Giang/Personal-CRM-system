@@ -17,7 +17,7 @@
       style="font-size: 16px;"
       @input="
         (activeSelect = true),
-          $emit('searchSelect', searchText.toLocaleLowerCase())
+          $emit('searchSelect', searchText.toLowerCase())
       "
       @focus="activeSelect = true"
     />
