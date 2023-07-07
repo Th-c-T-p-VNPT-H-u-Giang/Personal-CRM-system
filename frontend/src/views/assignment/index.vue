@@ -12,6 +12,7 @@ import DeleteAll from "../../components/form/delete-all.vue";
 import Add from "./add.vue";
 import Add_TaskEmployee from "./add_taskemployee.vue";
 import Edit from "./edit.vue";
+import EditStatus_App from "./edit_statustask.vue";
 import View from "./view.vue";
 import FeedBack from "./feedback.vue";
 import RenewTask from "../../views/assignment/renewtask.vue";
@@ -56,7 +57,11 @@ import {
   isReNewAssignment,
 } from "../../use/getSessionItem";
 
-import { formatDate, formatDateTime } from "../../assets/js/common";
+import {
+  formatDate,
+  formatDateTime,
+  formatDateTime_2,
+} from "../../assets/js/common";
 export default {
   components: {
     SelectFilter,
@@ -75,10 +80,11 @@ export default {
     Search,
     FeedBack,
     RenewTask,
+    EditStatus_App,
   },
   setup(ctx) {
     const res = isSetAssignement();
-    
+
     const data = reactive({
       employeeList: [],
       items: [
@@ -91,6 +97,12 @@ export default {
           Customer: {
             _id: "",
             name: "",
+            Events: {
+              name: "",
+              content: "",
+              place: "",
+              time_duration: "",
+            },
           },
           cycleId: "",
           Cycle: {
@@ -133,6 +145,7 @@ export default {
       currentPage: 1,
       searchText: "",
       activeEdit: false,
+      activeEditStatus: false,
       activeRenew: false,
       editValue: {
         _id: "",
@@ -301,16 +314,13 @@ export default {
       entryValueStatusTask.value = value;
     };
     const updateEntryValueCycle = (value) => {
-      
       entryValueCycle.value = value;
-      
     };
     const updateEntryValueEval = (value) => {
       entryValueEval.value = value;
     };
     // //watch lọc
     watch(entryValueCycle, async (newValue, oldValue) => {
-  
       if (newValue == "") {
         await refresh();
         return;
@@ -326,7 +336,6 @@ export default {
         enddateValue.value != "" &&
         entryValueEval.value != ""
       ) {
-       
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -388,7 +397,10 @@ export default {
             value.Evaluate._id == entryValueEval.value
           );
         });
-      } else if (entryValueEval.value != "" && entryValueStatusTask.value != "") {
+      } else if (
+        entryValueEval.value != "" &&
+        entryValueStatusTask.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -412,7 +424,10 @@ export default {
             value.Evaluate._id == entryValueEval.value
           );
         });
-      } else if (entryValueStatusTask.value != "" && startdateValue.value != "") {
+      } else if (
+        entryValueStatusTask.value != "" &&
+        startdateValue.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -460,13 +475,12 @@ export default {
       } else if (enddateValue.value != "") {
         data.items = data.items.filter((value, index) => {
           return (
-            value.cycleId == entryValueCycle.value && value.end_date == enddateValue.value
+            value.cycleId == entryValueCycle.value &&
+            value.end_date == enddateValue.value
           );
         });
       } else {
-        
         data.items = data.items.filter((value, index) => {
-         
           return value.Cycle._id == entryValueCycle.value;
         });
       }
@@ -474,7 +488,7 @@ export default {
         value.checked = false;
       }
       // 2*****
-    
+
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         value.count = value.EmployeesList.length;
@@ -504,7 +518,6 @@ export default {
         enddateValue.value != "" &&
         entryValueEval.value != ""
       ) {
-        
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -519,7 +532,6 @@ export default {
         startdateValue.value != "" &&
         enddateValue.value != ""
       ) {
-        
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -559,7 +571,6 @@ export default {
         enddateValue.value != "" &&
         entryValueEval.value != ""
       ) {
-        
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -577,7 +588,6 @@ export default {
           );
         });
       } else if (entryValueCycle.value != "" && entryValueEval.value != "") {
-       
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -586,7 +596,6 @@ export default {
           );
         });
       } else if (startdateValue.value != "" && entryValueEval.value != "") {
-        
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -595,7 +604,6 @@ export default {
           );
         });
       } else if (enddateValue.value != "" && entryValueEval.value != "") {
-        
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -641,7 +649,6 @@ export default {
           );
         });
       } else if (entryValueEval.value != "") {
-        
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -650,7 +657,6 @@ export default {
         });
       } else {
         data.items = data.items.filter((value, index) => {
-         
           return value.Status_Task._id == entryValueStatusTask.value;
         });
       }
@@ -658,7 +664,7 @@ export default {
         value.checked = false;
       }
       // 2*****
-     
+
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         value.count = value.EmployeesList.length;
@@ -673,7 +679,6 @@ export default {
     });
 
     watch(startdateValue, async (newValue, oldValue) => {
-    
       if (newValue == "") {
         await refresh();
         return;
@@ -750,7 +755,10 @@ export default {
             value.Evaluate._id == entryValueEval.value
           );
         });
-      } else if (entryValueCycle.value != "" && entryValueStatusTask.value != "") {
+      } else if (
+        entryValueCycle.value != "" &&
+        entryValueStatusTask.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -766,7 +774,10 @@ export default {
             value.Evaluate._id == entryValueEval.value
           );
         });
-      } else if (entryValueStatusTask.value != "" && entryValueEval.value != "") {
+      } else if (
+        entryValueStatusTask.value != "" &&
+        entryValueEval.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -813,8 +824,6 @@ export default {
           );
         });
       } else if (enddateValue.value != "") {
-        
-
         data.items = data.items.filter((value, index) => {
           return (
             new Date(value.start_date) >= new Date(startdateValue.value) &&
@@ -834,13 +843,12 @@ export default {
         value.checked = false;
       }
       // 2*****
-     
+
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-        
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -850,7 +858,6 @@ export default {
     });
 
     watch(enddateValue, async (newValue, oldValue) => {
-      
       if (newValue == "") {
         await refresh();
         return;
@@ -931,7 +938,10 @@ export default {
             value.Evaluate._id == entryValueEval.value
           );
         });
-      } else if (entryValueCycle.value != "" && entryValueStatusTask.value != "") {
+      } else if (
+        entryValueCycle.value != "" &&
+        entryValueStatusTask.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -939,7 +949,10 @@ export default {
             value.end_date == enddateValue.value
           );
         });
-      } else if (entryValueStatusTask.value != "" && startdateValue.value != "") {
+      } else if (
+        entryValueStatusTask.value != "" &&
+        startdateValue.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -971,7 +984,10 @@ export default {
             value.Evaluate._id == entryValueEval.value
           );
         });
-      } else if (entryValueStatusTask.value != "" && entryValueEval.value != "") {
+      } else if (
+        entryValueStatusTask.value != "" &&
+        entryValueEval.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -982,7 +998,8 @@ export default {
       } else if (entryValueCycle.value != "") {
         data.items = data.items.filter((value, index) => {
           return (
-            value.cycleId == entryValueCycle.value && value.end_date == enddateValue.value
+            value.cycleId == entryValueCycle.value &&
+            value.end_date == enddateValue.value
           );
         });
       } else if (entryValueStatusTask.value != "") {
@@ -1015,13 +1032,12 @@ export default {
         value.checked = false;
       }
       // 2*****
-      
+
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-         
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -1031,7 +1047,6 @@ export default {
     });
 
     watch(entryValueEval, async (newValue, oldValue) => {
-    
       if (newValue == "") {
         await refresh();
         return;
@@ -1108,7 +1123,10 @@ export default {
             value.Evaluate._id == entryValueEval.value
           );
         });
-      } else if (entryValueCycle.value != "" && entryValueStatusTask.value != "") {
+      } else if (
+        entryValueCycle.value != "" &&
+        entryValueStatusTask.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.cycleId == entryValueCycle.value &&
@@ -1116,7 +1134,10 @@ export default {
             value.Evaluate._id == entryValueEval.value
           );
         });
-      } else if (entryValueStatusTask.value != "" && startdateValue.value != "") {
+      } else if (
+        entryValueStatusTask.value != "" &&
+        startdateValue.value != ""
+      ) {
         data.items = data.items.filter((value, index) => {
           return (
             value.Status_Task._id == entryValueStatusTask.value &&
@@ -1185,7 +1206,6 @@ export default {
           );
         });
       } else {
-       
         data.items = data.items.filter((value, index) => {
           return value.Evaluate._id == entryValueEval.value;
         });
@@ -1194,13 +1214,12 @@ export default {
         value.checked = false;
       }
       // 2*****
-      
+
       var employees = reactive({ data: {} });
       for (let value of data.items) {
         value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-          
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -1211,7 +1230,6 @@ export default {
 
     // computedconst
     const toString = computed(() => {
-     
       if (data.choseSearch == "nameCus") {
         return data.items.map((value, index) => {
           return [value.Customer.name].join("").toLocaleLowerCase();
@@ -1240,7 +1258,9 @@ export default {
     });
     const filter = computed(() => {
       return data.items.filter((value, index) => {
-        return toString.value[index].includes(data.searchText.toLocaleLowerCase());
+        return toString.value[index].includes(
+          data.searchText.toLocaleLowerCase()
+        );
       });
     });
     const filtered = computed(() => {
@@ -1279,26 +1299,26 @@ export default {
         alert_warning("Lưu ý", "Phân công chưa được giao cho nhân viên");
         return;
       }
-      
+
       router.push({ name: "Task.appointment", params: { id: `${value}` } });
     };
     const showFeedback = () => {
-     
       data.showFeedback = false;
       for (let value of data.items) {
         if (value.checked == true) {
-          
           data.taskEmployee = value;
           data.showFeedback = true;
           break;
         }
       }
       if (data.showFeedback == false) {
-        alert_warning(`Thêm đánh giá`, `Vui lòng chọn phân công để thêm đánh giá.`);
+        alert_warning(
+          `Thêm đánh giá`,
+          `Vui lòng chọn phân công để thêm đánh giá.`
+        );
       }
     };
     const showTask_Employee = () => {
-    
       data.showTask_Employee = false;
       if (arrayCheck.data.length > 0) {
         data.taskEmployee = arrayCheck.data[0];
@@ -1317,27 +1337,21 @@ export default {
       var string = parts[1];
       switch (string) {
         case "ngày":
-          
           coming_day = coming_day.add(number, "days");
           break;
         case "tuần":
-          
           coming_day = coming_day.add(number * 7, "days");
           break;
         case "tháng":
-        
           coming_day = coming_day.add(number, "months");
           break;
         case "quý":
-          
           coming_day = coming_day.add(number * 3, "months");
           break;
         case "năm":
-     
           coming_day = coming_day.add(number, "years");
           break;
         default:
-     
           break;
       }
 
@@ -1349,6 +1363,7 @@ export default {
         alert_warning("Lưu ý", "Phân công chưa được giao cho nhân viên");
         return;
       }
+
       data.resetRenew = true;
       data.renewValue = value;
       data.activeRenew = value1;
@@ -1360,36 +1375,44 @@ export default {
         data.renewValue.start_date
       );
       if (data.renewValue.start_date_new == data.renewValue.end_date) {
-        data.renewValue.start_date = handleCycle(
+        data.renewValue.start_date_new = handleCycle(
           "1 ngày",
           data.renewValue.start_date_new
         );
       } else {
-        data.renewValue.start_date = data.renewValue.start_date_new;
+        data.renewValue.start_date_new = data.renewValue.start_date_new;
       }
-      data.renewValue.end_date = handleCycle(
+      data.renewValue.end_date_new = handleCycle(
         data.renewValue.Cycle.name,
-        data.renewValue.start_date
+        data.renewValue.start_date_new
       );
 
-      
-      // const renewTask = await http_create(Task, data.renewValue);
+      data.renewValue.start_date_format = formatDate(
+        data.renewValue.start_date_new
+      );
+      data.renewValue.end_date_format = formatDate(
+        data.renewValue.end_date_new
+      );
     };
     const renewTask = async (value) => {
       data.resetRenew = false;
-  
+      const renew = reactive({ data: {} });
+      renew.data = value;
+      renew.data.start_date = value.start_date_new;
+      renew.data.end_date = value.end_date_new;
       value.loginId = sessionStorage.getItem("employeeId");
-      const renewTask = await http_create(Task, value);
+      const renewTask = await http_create(Task, renew.data);
       if (!renewTask.error) {
-        
-
         const dataTaskEm = reactive({ TaskId: " ", EmployeeId: " " });
         dataTaskEm.TaskId = renewTask.document._id;
         for (let i = 0; i < value.EmployeesList.length; i++) {
           dataTaskEm.EmployeeId = value.EmployeesList[i].EmployeeId;
           await http_create(Employees_Task, dataTaskEm);
           /////////////////////////////////
-          const Employ = await http_getOne(Employee, value.EmployeesList[i].EmployeeId);
+          const Employ = await http_getOne(
+            Employee,
+            value.EmployeesList[i].EmployeeId
+          );
           const token = sessionStorage.getItem("token");
           if (token) {
             const _idEmployee = sessionStorage.getItem("employeeId");
@@ -1421,14 +1444,17 @@ export default {
           //////////////////////////////
         }
         const task = await http_getOne(Task, value._id);
-      
+
         alert_success(
           `Tạo mới phân công theo chu kỳ chăm sóc`,
           `Phân công khách hàng "${task.Customer.name}" đã được tạo thành công.`
         );
         refresh();
       } else if (renewTask.error) {
-        alert_error(`Tạo mới phân công theo chu kỳ chăm sóc`, `${renewTask.msg}`);
+        alert_error(
+          `Tạo mới phân công theo chu kỳ chăm sóc`,
+          `Phân công đã tồn tại`
+        );
       }
       (data.renewValue = {
         _id: "",
@@ -1457,8 +1483,19 @@ export default {
         await refresh();
     };
 
+    const handleEditStatus = async (value, value1) => {
+      if (value.count == 0) {
+        alert_warning(
+          "Lưu ý",
+          "Không thể cập nhật trạng thái phân công do chưa giao việc hoặc chưa có lịch hẹn"
+        );
+        return;
+      }
+      data.editValue = value;
+      data.activeEditStatus = value1;
+      console.log("hah");
+    };
     const create = async () => {
- 
       data.items = await http_getAll(Task);
       await refresh();
     };
@@ -1473,13 +1510,13 @@ export default {
       }
     };
     const edit = async (editValue) => {
-     
       editValue.loginId = sessionStorage.getItem("employeeId");
       const result = await http_update(Task, editValue._id, editValue);
- 
+
       // thêm phân công khi có sự thay đổi status thành Đã chăm sóc
       if (!result.error) {
         alert_success(`Sửa phân công`, `${result.msg}`);
+        data.activeEditStatus = false;
         await refresh();
       } else if (result.error) {
         alert_error(`Sửa phân công`, `${result.msg}`);
@@ -1489,15 +1526,27 @@ export default {
     const router = useRouter();
 
     const view = async (id) => {
-
       data.viewValue = await http_getOne(Task, id);
 
-      data.viewValue.Customer.birthday = formatDate(data.viewValue.Customer.birthday);
+      data.viewValue.Customer.birthday = formatDate(
+        data.viewValue.Customer.birthday
+      );
       data.viewValue.start_date = formatDate(data.viewValue.start_date);
       data.viewValue.end_date = formatDate(data.viewValue.end_date);
       for (const value of data.viewValue.Appointments) {
         value.date_time_format = formatDateTime(value.date_time.toUpperCase());
       }
+      data.viewValue.Customer.Events = data.viewValue.Customer.Events.map(
+        (item) => {
+          return {
+            // 'name','time_duration', 'content'
+            name: item.name,
+            time_duration: formatDateTime_2(item.time_duration),
+            content: item.content,
+            place: item.place != null ? item.place : "không có",
+          };
+        }
+      );
     };
     const star = async () => {
       await refresh();
@@ -1597,7 +1646,10 @@ export default {
         }
         contentAlert += `</tbody>
       </table>`;
-        const isConfirmed = await alert_delete_wide(`Xoá nhiều phân công`, contentAlert);
+        const isConfirmed = await alert_delete_wide(
+          `Xoá nhiều phân công`,
+          contentAlert
+        );
         if (isConfirmed) {
           let checkDeleteAll = false;
           for (let valueDelete of arrayCheck.data) {
@@ -1635,6 +1687,7 @@ export default {
 
       data.employee = await http_getAll(Employee);
       data.items = await http_getAll(Task);
+      console.log("hehe", data.items);
       for (let value of data.items) {
         value.checked = false;
       }
@@ -1645,7 +1698,6 @@ export default {
         value.count = value.EmployeesList.length;
 
         for (let value1 of arrayCheck.data) {
-          
           if (value._id == value1._id) {
             value.checked = true;
           }
@@ -1656,17 +1708,19 @@ export default {
           value.note = "không có";
         } else value.note = value.note;
       }
-      
+
       for (const value of data.items) {
         value.end_date_format = formatDate(value.end_date);
         value.start_date_format = formatDate(value.start_date);
       }
-      status_tasks.status_task = status_tasks.status_task.map((value, index) => {
-        return {
-          ...value,
-          value: value._id,
-        };
-      });
+      status_tasks.status_task = status_tasks.status_task.map(
+        (value, index) => {
+          return {
+            ...value,
+            value: value._id,
+          };
+        }
+      );
       cycles.cycle = cycles.cycle.map((value, index) => {
         return {
           ...value,
@@ -1680,7 +1734,7 @@ export default {
           name: value.star,
         };
       });
-  
+
       data.selectAll[0].checked = false;
 
       data.items = data.items.map((item) => {
@@ -1699,12 +1753,9 @@ export default {
           Employees: rs,
         };
       });
-
-      
     };
 
     const giaoviec = async () => {
-     
       await refresh();
     };
     // handle http methods
@@ -1718,9 +1769,9 @@ export default {
     // Hàm callback được gọi trước khi component được mount (load)
     onBeforeMount(async () => {
       const res = await http_getAll(Employee);
-     
+
       data.employeeList = res;
-  
+
       await refresh();
     });
 
@@ -1769,6 +1820,7 @@ export default {
       isSetAssignement,
       isFeedbackAssignment,
       isReNewAssignment,
+      handleEditStatus,
     };
   },
 };
@@ -1817,11 +1869,13 @@ export default {
             :options="status_tasks.status_task"
             @update:entryValue="
               (value, value1) => (
-                updateEntryValueStatusTask(value), (entryNameStatusTask = value1.name)
+                updateEntryValueStatusTask(value),
+                (entryNameStatusTask = value1.name)
               )
             "
             @refresh="
-              (entryNameStatusTask = 'Trạng thái'), updateEntryValueStatusTask('')
+              (entryNameStatusTask = 'Trạng thái'),
+                updateEntryValueStatusTask('')
             "
             style="height: 35px"
           />
@@ -1881,9 +1935,7 @@ export default {
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-             
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -2001,6 +2053,7 @@ export default {
           (data.resetDataEdit = true)
         )
       "
+      @editStatus="(value, value1) => handleEditStatus(value, value1)"
       @view="(value) => view(value)"
       @appointmentView="
         (value, value1) => {
@@ -2025,6 +2078,13 @@ export default {
       :currentPage="data.currentPage"
       @update:currentPage="(value) => (data.currentPage = value)"
       class="mx-3"
+    />
+    <EditStatus_App
+      :item="data.editValue"
+      :class="[data.activeEditStatus ? 'show-modal' : 'd-none']"
+      @cancel="data.activeEditStatus = false"
+      :statustask="status_tasks.status_task"
+      @edit="edit(data.editValue), (data.resetDataEdit = false)"
     />
     <Edit
       :item="data.editValue"

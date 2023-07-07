@@ -1,7 +1,14 @@
 <script>
 import Notification from "../../services/notification.service";
 import socket from "../../../socket";
-import { reactive, onBeforeMount, ref, watch, computed, watchEffect } from "vue";
+import {
+  reactive,
+  onBeforeMount,
+  ref,
+  watch,
+  computed,
+  watchEffect,
+} from "vue";
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import Table from "../../components/table/table_employee.vue";
 import Select from "../../components/form/select.vue";
@@ -97,7 +104,6 @@ export default {
 
     // computed
     const toString = computed(() => {
-      
       if (data.choseSearch == "name") {
         return data.itemEm.map((value, index) => {
           return [value.name].join("").toLocaleLowerCase();
@@ -112,13 +118,17 @@ export default {
         });
       } else {
         return data.itemEm.map((value, index) => {
-          return [value.name, value.email, value.phone].join("").toLocaleLowerCase();
+          return [value.name, value.email, value.phone]
+            .join("")
+            .toLocaleLowerCase();
         });
       }
     });
     const filter = computed(() => {
       return data.itemEm.filter((value, index) => {
-        return toString.value[index].includes(data.searchText.toLocaleLowerCase());
+        return toString.value[index].includes(
+          data.searchText.toLocaleLowerCase()
+        );
       });
     });
     const filtered = computed(() => {
@@ -164,9 +174,11 @@ export default {
     // ******LỌC ******
     watch(entryValuePosition, async (newValue, oldValue) => {
       if (newValue == "") {
+        data.currentPage = 1;
         await refresh();
         return;
       }
+      data.currentPage = 1;
       data.itemEm = await http_getAll(Employee);
       //1.lấy danh sách nhân viên chức vụ x
       if (entryValuePosition.value.length > 0) {
@@ -203,7 +215,9 @@ export default {
         });
       } else if (entryValueCenter.value != "") {
         data.itemEm = data.itemEm.filter((val) => {
-          return val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value;
+          return (
+            val.Unit.Department.Center_VNPTHG._id == entryValueCenter.value
+          );
         });
       }
       //Thay đổi
@@ -213,7 +227,6 @@ export default {
       }
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
-          
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -221,7 +234,6 @@ export default {
           value.checked = false;
         }
       }
-      
     });
     const updateEntryValuePosition = (value) => {
       entryValuePosition.value = value;
@@ -229,9 +241,11 @@ export default {
     //  CENTER
     watch(entryValueCenter, async (newValue, oldValue) => {
       if (newValue == "") {
+        data.currentPage = 1;
         await refresh();
         return;
       }
+      data.currentPage = 1;
       entryValueDepartment.value = "1"; //id
       entryNameDepartment.value = "Phòng"; //name
       entryValueUnit.value = "1"; //id
@@ -239,30 +253,28 @@ export default {
       //Lấy tất cả nhân viên
       data.itemEm = await http_getAll(Employee);
       //Lấy tất cả phòng của 1 trung tâm
-      
+
       data.department = await departmentsServices.findAllDepOfACenter(newValue);
-      
+
       data.department = data.department.map((value, index) => {
         return {
           ...value,
           value: value._id,
         };
       });
-   
+
       data.unit = [];
-      
+
       data.unit = data.unit.map((value, index) => {
         return {
           ...value,
           value: value._id,
         };
       });
-     
 
       //Lọc
       // 1. có chức vụ và trung tâm
       if (entryValueCenter.value != "" && entryValuePosition.value != "") {
-   
         data.itemEm = data.itemEm.filter((value, index) => {
           return (
             value.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
@@ -272,9 +284,10 @@ export default {
       }
       //2.  chỉ có trung tâm
       else {
-       
         data.itemEm = data.itemEm.filter((value, index) => {
-          return value.Unit.Department.Center_VNPTHG._id == entryValueCenter.value;
+          return (
+            value.Unit.Department.Center_VNPTHG._id == entryValueCenter.value
+          );
         });
       }
       data.selectAll[0].checked = false;
@@ -283,7 +296,6 @@ export default {
       }
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
-          
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -291,7 +303,6 @@ export default {
           value.checked = false;
         }
       }
-     
     });
     //UpdateEntryValueCenter
     const updateEntryValueCenter = (value) => {
@@ -301,11 +312,13 @@ export default {
     //DEP
     watch(entryValueDepartment, async (newValue, oldValue) => {
       if (newValue == "") {
+        data.currentPage = 1;
         await refresh();
         return;
       } else if (newValue == "1") {
         return;
       }
+      data.currentPage = 1;
       entryValueUnit.value = "1"; //id
       entryNameUnit.value = "Tổ"; //name
 
@@ -345,7 +358,6 @@ export default {
       }
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
-          
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -353,7 +365,6 @@ export default {
           value.checked = false;
         }
       }
-      
     });
     const updateEntryValueDepartment = (value) => {
       entryValueDepartment.value = value;
@@ -362,11 +373,13 @@ export default {
     //UNIT
     watch(entryValueUnit, async (newValue, oldValue) => {
       if (newValue == "") {
+        data.currentPage = 1;
         await refresh();
         return;
       } else if (newValue == "1") {
         return;
       }
+      data.currentPage = 1;
       //Lấy tất cả nhân vien
       data.itemEm = await http_getAll(Employee);
       //Lọc
@@ -383,7 +396,6 @@ export default {
       }
       //2. có trung tâm, phòng, tổ
       else {
-    
         data.itemEm = data.itemEm.filter((value, index) => {
           return (
             value.Unit.Department.Center_VNPTHG._id == entryValueCenter.value &&
@@ -399,7 +411,6 @@ export default {
       }
       for (let value of data.itemEm) {
         for (let array of arrayCheck.data) {
-         
           if (array._id == value._id) {
             value.checked = true;
             break;
@@ -407,7 +418,6 @@ export default {
           value.checked = false;
         }
       }
-      
     });
 
     const updateEntryValueUnit = (value) => {
@@ -432,7 +442,7 @@ export default {
       D.data = array.data.filter((value) => arrayCheck.data.includes(value));
       D.data = [...new Set(D.data)];
       E.data = arrayCheck.data.filter((value) => !D.data.includes(value));
-      
+
       if (C.data.length != 0) {
         for (let j = 0; j < C.data.length; j++) {
           const dataDel = reactive({
@@ -450,7 +460,7 @@ export default {
               _id: _idEmployee,
               name: _nameEmployee,
             };
-           
+
             const TaskCus = await http_getOne(Task, dataDel.data.TaskId);
             const notiAssignment = reactive({
               title: "Huỷ giao việc",
@@ -470,7 +480,7 @@ export default {
             notiAssignment.idRecipient = C.data[j]._id;
             // const result1 = await http_create(Notification, notiAssignment);
             socket.emit("cancleAssign", notiAssignment);
-            
+
             socket.emit("assignmentTask");
           }
         }
@@ -486,7 +496,7 @@ export default {
               name: _nameEmployee,
             };
             const TaskCus = await http_getOne(Task, dataTaskEm.TaskId);
-            
+
             const notiAssignment = reactive({
               title: "Phân công mới",
               content: `đã phân công khách hàng "${TaskCus.Customer.name}" cho bạn`,
@@ -503,9 +513,9 @@ export default {
             }
             notiAssignment.recipient = E.data[i].name;
             notiAssignment.idRecipient = E.data[i]._id;
-           
+
             socket.emit("Assign", notiAssignment);
-            
+
             socket.emit("assignmentTask");
           }
         }
@@ -528,7 +538,7 @@ export default {
       const newData = reactive({ TaskId: " ", EmployeeId: " " });
       newData.TaskId = props.item._id;
       newData.EmployeeId = sessionStorage.getItem("employeeId");
-      
+
       try {
         const result = await http_create(EmployeeTask, newData);
 
@@ -551,7 +561,7 @@ export default {
               name: _nameEmployee,
             };
             const TaskCus = await http_getOne(Task, newData.TaskId);
-            
+
             const notiAssignment = reactive({
               title: "Nhận việc thành công",
               content: `Khách hàng "${TaskCus.Customer.name}" đã được phân công cho bạn`,
@@ -592,10 +602,8 @@ export default {
           }
         }
       }
-     
     };
     const handlSelectOne = (id, item) => {
-  
       if (item.checked == false) {
         arrayCheck.data.push(item);
       } else {
@@ -604,23 +612,21 @@ export default {
         });
       }
       data.selectAll[0].checked = false;
-     
     };
 
     const array = reactive({ data: [] });
     const refresh = async () => {
-    
       data.itemEm = await http_getAll(Employee);
       for (let i = 0; i < data.itemEm.length; i++) {
         data.itemEm[i].checked = false;
       }
-     
+
       // ***
       arrayCheck.data = [];
       array.data = [];
       const employeeTask = reactive({ data: [] });
       employeeTask.data = await http_getOne(Task, props.item._id);
-  
+
       for (let i = 0; i < data.itemEm.length; i++) {
         for (let j = 0; j < employeeTask.data.Employees.length; j++) {
           if (data.itemEm[i]._id == employeeTask.data.Employees[j]._id) {
@@ -630,7 +636,6 @@ export default {
           }
         }
       }
-      
 
       data.position = await http_getAll(Position);
 
@@ -649,7 +654,9 @@ export default {
         data.department = [];
       }
       if (entryValueDepartment.value != "") {
-        data.unit = await unitsServices.findAllUnitsOfADep(entryValueDepartment.value);
+        data.unit = await unitsServices.findAllUnitsOfADep(
+          entryValueDepartment.value
+        );
         data.unit = data.unit.map((value, index) => {
           return {
             ...value,
@@ -680,12 +687,10 @@ export default {
       entryValueDepartment.value = "";
       entryNameUnit.value = "Tổ";
       entryValueUnit.value = "";
-   
+
       data.selectAll[0].checked = false;
     };
     const closeModal = async () => {
-     
-
       await refresh();
       showModal.value = false;
     };
@@ -693,7 +698,6 @@ export default {
       await refresh();
     });
     watchEffect(async () => {
-      
       await refresh();
     });
 
@@ -734,8 +738,15 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 18px">Giao việc cho nhân viên</h4>
-          <button type="button" class="close" data-dismiss="modal" @click="closeModal">
+          <h4 class="modal-title" style="font-size: 18px">
+            Giao việc cho nhân viên
+          </h4>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            @click="closeModal"
+          >
             &times;
           </button>
         </div>
@@ -745,7 +756,9 @@ export default {
           <div style="padding: 24px">
             <form action="" class="was-validated">
               <div class="form-group">
-                <label for="name">Khách hàng(<span style="color: red">*</span>):</label>
+                <label for="name"
+                  >Khách hàng(<span style="color: red">*</span>):</label
+                >
                 <input
                   type="text"
                   class="form-control"
@@ -780,7 +793,8 @@ export default {
                         )
                       "
                       @refresh="
-                        (entryNamePosition = 'Chọn chức vụ'), updateEntryValuePosition('')
+                        (entryNamePosition = 'Chọn chức vụ'),
+                          updateEntryValuePosition('')
                       "
                       style="height: 35px"
                     />
@@ -792,11 +806,13 @@ export default {
                       :options="data.center"
                       @update:entryValue="
                         (value, value1) => (
-                          updateEntryValueCenter(value), (entryNameCenter = value1.name)
+                          updateEntryValueCenter(value),
+                          (entryNameCenter = value1.name)
                         )
                       "
                       @refresh="
-                        (entryNameCenter = 'Chọn trung tâm'), updateEntryValueCenter('')
+                        (entryNameCenter = 'Chọn trung tâm'),
+                          updateEntryValueCenter('')
                       "
                       style="height: 35px"
                     />
@@ -829,10 +845,13 @@ export default {
                       :options="data.unit"
                       @update:entryValue="
                         (value, value1) => (
-                          updateEntryValueUnit(value), (entryNameUnit = value1.name)
+                          updateEntryValueUnit(value),
+                          (entryNameUnit = value1.name)
                         )
                       "
-                      @refresh="(entryNameUnit = 'Chọn tổ'), updateEntryValueUnit('')"
+                      @refresh="
+                        (entryNameUnit = 'Chọn tổ'), updateEntryValueUnit('')
+                      "
                       style="height: 35px"
                     />
                   </div>

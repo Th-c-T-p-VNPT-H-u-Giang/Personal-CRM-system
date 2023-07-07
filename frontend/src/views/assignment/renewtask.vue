@@ -116,18 +116,18 @@ export default {
       );
       if (isConfirmed == true) {
         const result = await http_deleteOne(Cycle, _id);
-        alert_success(`Xoá chu kỳ`, `Bạn đã xoá thành công chu kỳ ${cycle.name} .`);
+        alert_success(
+          `Xoá chu kỳ`,
+          `Bạn đã xoá thành công chu kỳ ${cycle.name} .`
+        );
         refresh();
       }
     };
     const searchCycle = async (value) => {
-  
       await refresh();
       cycles.cycle = cycles.cycle.filter((value1, index) => {
-        
         return value1.name.includes(value) || value.length == 0;
       });
-      
     };
 
     const refresh = async () => {
@@ -186,7 +186,9 @@ export default {
           <h4 class="modal-title" style="font-size: 18px">
             Tạo mới phân công theo chu kỳ chăm sóc
           </h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
+          </button>
         </div>
         <div class="modal-header" v-if="showInfo == true">
           <div class="d-flex flex-column w-100">
@@ -221,20 +223,21 @@ export default {
                 </div>
                 <div class="mt-2">
                   <span
-                    ><span style="font-weight: 900">Ngày bắt đầu chăm sóc</span>:
-                    {{ item.start_date }}</span
+                    ><span style="font-weight: 900">Ngày bắt đầu chăm sóc</span
+                    >: {{ item.start_date }}</span
                   >
                 </div>
                 <div class="mt-2">
                   <span
-                    ><span style="font-weight: 900">Ngày kết thúc chăm sóc</span>:
-                    {{ item.end_date }}</span
+                    ><span style="font-weight: 900">Ngày kết thúc chăm sóc</span
+                    >: {{ item.end_date }}</span
                   >
                 </div>
                 <div class="mt-2">
                   <span
-                    ><span style="font-weight: 900">Chu kì chăm sóc khách hàng</span>:
-                    {{ item.Cycle.name }}</span
+                    ><span style="font-weight: 900"
+                      >Chu kì chăm sóc khách hàng</span
+                    >: {{ item.Cycle.name }}</span
                   >
                 </div>
               </div>
@@ -265,7 +268,9 @@ export default {
         <div class="modal-body">
           <form class="was-validated">
             <div class="form-group">
-              <label for="name">Khách hàng(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Khách hàng(<span style="color: red">*</span>):</label
+              >
               <input
                 disabled
                 id=""
@@ -275,29 +280,35 @@ export default {
               />
             </div>
             <div class="form-group">
-              <label for="name">Ngày bắt đầu(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Ngày bắt đầu(<span style="color: red">*</span>):</label
+              >
               <input
                 type="date"
                 class="form-control"
                 id=""
-                v-model="item.start_date"
+                v-model="item.start_date_new"
                 required
               />
             </div>
 
             <div class="form-group">
-              <label for="name">Ngày kết thúc(<span style="color: red">*</span>):</label>
+              <label for="name"
+                >Ngày kết thúc(<span style="color: red">*</span>):</label
+              >
               <input
                 type="date"
                 class="form-control"
                 id=""
-                v-model="item.end_date"
+                v-model="item.end_date_new"
                 required
               />
             </div>
 
             <div class="form-group">
-              <label for="content">Chu kỳ(<span style="color: red">*</span>):</label>
+              <label for="content"
+                >Chu kỳ(<span style="color: red">*</span>):</label
+              >
               <Select_Advanced
                 style="height: 40px"
                 required
@@ -307,7 +318,8 @@ export default {
                 @delete="(value) => deleteCycle(value._id)"
                 @chose="
                   (value, value1) => (
-                    (selectedOptionCycle = value), (item.Cycle.name = value1.name)
+                    (selectedOptionCycle = value),
+                    (item.Cycle.name = value1.name)
                   )
                 "
               />
@@ -317,7 +329,11 @@ export default {
               <label for="content"
                 >Nội dung chăm sóc(<span style="color: red">*</span>):</label
               >
-              <textarea class="form-control" v-model="item.content" required></textarea>
+              <textarea
+                class="form-control"
+                v-model="item.content"
+                required
+              ></textarea>
             </div>
             <div class="form-group">
               <label for="content">Chú thích:</label>

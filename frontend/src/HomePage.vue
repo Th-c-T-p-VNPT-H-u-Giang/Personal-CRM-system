@@ -2,8 +2,7 @@
 import Navbar from "./components/layout/navbar.vue";
 import Footer from "./components/layout/footer.vue";
 import Sidebar from "./components/layout/sidebar.vue";
-import { reactive, ref, computed, watch, onMounted } from "vue";
-import sidebarVue from "./components/layout/sidebar.vue";
+import { reactive, ref, watch, onMounted } from "vue";
 export default {
   components: {
     Footer,
@@ -15,15 +14,10 @@ export default {
       activeMenuResponsive: false,
       activeIndex: sessionStorage.getItem("activeMenu") || 1,
     });
-    const updateMenuResponsive = () => {
-      // console.log("Received event from child component:");
-    };
+
     const isSideBar = ref(true);
-
     // Check if the device's maximum width is 992 pixels
-
     const showSidebar = () => {
-      // console.log("Thay đổi sidebar:", isSideBar.value);
       isSideBar.value = !isSideBar.value;
     };
     const isIPadAndMaxWidth992 = () => {
@@ -40,7 +34,6 @@ export default {
     });
     return {
       data,
-      updateMenuResponsive,
       isSideBar,
       showSidebar,
       isIPadAndMaxWidth992,
@@ -60,18 +53,6 @@ export default {
       <!-- Sidebar content goes here -->
       <Sidebar :activeIndex="data.activeIndex" />
     </div>
-    <!-- <div class="sidebar" v-if="isIpad">
-      <Sidebar
-        :activeIndex="data.activeIndex"
-        :style="{
-          display: isSideBar ? 'block' : 'none',
-          width: isSideBar ? '200px' : '0px',
-          'z-index': isSideBar ? '' : '0',
-          'background-color': isSideBar ? 'rgba(255, 255, 255, 1)' : 'white',
-        }"
-      />
-    </div> -->
-
     <div class="content">
       <!-- Content goes here -->
       <router-view></router-view>
@@ -95,7 +76,7 @@ export default {
 .showSidebar {
   display: block;
   width: 200px;
-  z-index: 9999;
+  z-index: 9;
   background-color: var(--light);
   position: absolute;
 }

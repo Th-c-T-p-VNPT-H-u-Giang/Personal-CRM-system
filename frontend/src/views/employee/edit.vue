@@ -35,7 +35,6 @@ export default {
       type: Object,
       default: {},
     },
-    flag: { type: String, default: "" },
   },
   setup(props, ctx) {
     const data = reactive({
@@ -77,7 +76,6 @@ export default {
     const positions = reactive({ position: [] });
     const selectedOptionPosition = ref("Chức vụ");
     watch(selectedOptionPosition, async (newValue, oldValue) => {
-
       if (newValue == 0) return;
       if (newValue == "other") {
         const showSweetAlert = async () => {
@@ -247,7 +245,6 @@ export default {
     });
     const selectedOptionUnit = ref("Đơn vị");
     watch(selectedOptionUnit, async (newValue, oldValue) => {
-
       if (newValue == "") return;
       if (newValue == "other") {
         const showSweetAlert = async () => {
@@ -333,7 +330,6 @@ export default {
           });
 
           if (formValues) {
-           
             const document = await unitsServices.create({
               departmentId: formValues.selectedOptionDep,
               name: formValues.inputValue,
@@ -379,7 +375,6 @@ export default {
       units.unit.push({ _id: "other", name: "khác" });
     };
     const onDeletePosition = async (value) => {
-
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
         await Position.delete(value._id);
@@ -389,7 +384,6 @@ export default {
       }
     };
     const onDeleteCenter = async (value) => {
-
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
         await CenterServices.delete(value._id);
@@ -399,7 +393,6 @@ export default {
       }
     };
     const onDeleteDep = async (value) => {
-   
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
         await departmentsServices.deleteOne(value._id);
@@ -409,7 +402,6 @@ export default {
       }
     };
     const onDeleteUnit = async (value) => {
-
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
         await unitsServices.deleteOne(value._id);
@@ -418,30 +410,18 @@ export default {
         ctx.emit("newUnit", units.unit);
       }
     };
-    const update = ref("");
-    update.value = props.flag;
-    watchEffect(async () => {
-      if (props.flag) {
-        await refresh_add();
-        ctx.emit("restore", false);
-      }
-    });
 
     const showModal = ref(false);
 
     const closeModal = async () => {
-
       showModal.value = false;
       ctx.emit("refresh", false);
     };
-
     onMounted(async () => {
-    
       await refresh_add();
     });
     return {
       data,
-      // ***
       positions,
       selectedOptionPosition,
       centers,
@@ -456,7 +436,7 @@ export default {
       onDeleteCenter,
       onDeleteDep,
       onDeleteUnit,
-      //
+
       closeModal,
     };
   },
@@ -607,13 +587,11 @@ export default {
                           await refresh_add(),
                           (positions.position = positions.position.filter(
                             (value1, index) => {
-                         
                               return (
                                 value1.name.includes(value) || value.length == 0
                               );
                             }
                           ))
-          
                         )
                       "
                       @delete="(value) => onDeletePosition(value)"
@@ -641,7 +619,6 @@ export default {
                           await refresh_add(),
                           (centers.center = centers.center.filter(
                             (value1, index) => {
-                     
                               return (
                                 value1.name.includes(value) || value.length == 0
                               );
@@ -674,13 +651,11 @@ export default {
                         await refresh_add(),
                         (departments.department = departments.department.filter(
                           (value1, index) => {
-                       
                             return (
                               value1.name.includes(value) || value.length == 0
                             );
                           }
                         ))
-                     
                       )
                     "
                     @delete="(value) => onDeleteDep(value)"
@@ -702,12 +677,10 @@ export default {
                       async (value) => (
                         await refresh_add(),
                         (units.unit = units.unit.filter((value1, index) => {
-               
                           return (
                             value1.name.includes(value) || value.length == 0
                           );
                         }))
-                       
                       )
                     "
                     @delete="(value) => onDeleteUnit(value)"

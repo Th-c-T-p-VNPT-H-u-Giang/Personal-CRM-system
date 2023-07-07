@@ -7,7 +7,6 @@ import Search from "../../components/form/search.vue";
 import Select from "../../components/form/select.vue";
 import Box from "../../components/box_lananh/box.vue";
 import SelectOption from "../../components/box_lananh/select.vue";
-import Add from "../dashboard/add_taskemployeedash.vue";
 import {
   Customer,
   Customer_Types,
@@ -34,13 +33,10 @@ export default {
     Box,
     SelectOption,
     Select_Advanced,
-    Add,
   },
   setup() {
-    // Data customer
     const data = reactive({
       items: [],
-
       activeEdit: false,
       entryValue: 5,
       numberOfPages: 1,
@@ -93,7 +89,11 @@ export default {
         });
       } else {
         return data.items.map((value, index) => {
-          return [value.customer.name, value.customer.email, value.customer.phone]
+          return [
+            value.customer.name,
+            value.customer.email,
+            value.customer.phone,
+          ]
             .join("")
             .toLocaleLowerCase();
         });
@@ -101,7 +101,9 @@ export default {
     });
     const filter = computed(() => {
       return data.items.filter((value, index) => {
-        return toString.value[index].includes(data.searchText.toLocaleLowerCase());
+        return toString.value[index].includes(
+          data.searchText.toLocaleLowerCase()
+        );
       });
     });
     const filtered = computed(() => {
@@ -150,21 +152,13 @@ export default {
       data.customerCycle = await http_getAll(Task);
     };
 
-    // table customer
-    const overview = ref(true);
-    const detail = ref(false);
-    // !chăm sóc
-    const takeCare = ref(false);
-    // !phân công
-    const assign = ref(false);
-    const isassign = ref(true);
     // Chart
     const selectedOptionCycle = ref(""); //cycle
     const customerChart = ref(false);
     const appointmentChart = ref(true);
     const showchart = ref("appointment");
 
-    //biểu đồ tròn của loại khách hàng
+    //chart customer type
     const chartOptionsCustomerType = reactive({
       chart: {
         type: "pie",
@@ -174,9 +168,8 @@ export default {
       colors: ["#9FD7F0", "#3300cc", "#1CA7EC"],
     });
     const chartSeriesCustomerType = ref([]);
-
     //STAR
-    //chart số lượng khách hàng đã phân công
+    //chart evently customer
     const chartOptionsStar = reactive({
       chart: {
         type: "pie", // Thay đổi loại biểu đồ thành "line"
@@ -187,7 +180,7 @@ export default {
     });
     const chartSeriesStar = ref([]);
 
-    //bar chart , 3 trạng thái
+    //bar chart , status
     const chartOptionsAppointment = reactive({
       chart: {
         id: "basic-bar",
@@ -227,26 +220,20 @@ export default {
           coming_day = coming_day.add(number, "days");
           break;
         case "tuần":
-          
           coming_day = coming_day.add(number * 7, "days");
           break;
         case "tháng":
-          
           coming_day = coming_day.add(number, "months");
           break;
         case "quý":
-          
           coming_day = coming_day.add(number * 3, "months");
           break;
         case "năm":
-          
           coming_day = coming_day.add(number, "years");
           break;
         default:
-         
           break;
       }
-
       return coming_day.format("YYYY-MM-DD");
     };
 
@@ -257,17 +244,14 @@ export default {
       // Mảng nhiệm vụ ban đầu
       // Đối tượng để lưu trữ nhiệm vụ duy nhất theo từng khách hàng
       uniqueTasks = {};
-
       // Duyệt qua mảng nhiệm vụ và lấy nhiệm vụ duy nhất có ngày bắt đầu lớn nhất
       for (var i = 0; i < data.customerCycle.length; i++) {
         var task = data.customerCycle[i];
         var customer = task["customerId"];
-
         if (uniqueTasks.hasOwnProperty(customer)) {
           var existingTask = uniqueTasks[customer];
           var existingStartDate = new Date(existingTask["start_date"]);
           var currentStartDate = new Date(task["start_date"]);
-
           if (currentStartDate > existingStartDate) {
             uniqueTasks[customer] = task;
           }
@@ -285,7 +269,6 @@ export default {
           start_date_new: handleCycle(value.Cycle.name, value.start_date),
         };
       });
-      // const abc = reactive({ data: [] });
       data.customerCycle = data.customerCycle.map((value, index) => {
         if (value.start_date_new == value.end_date) {
           return {
@@ -298,7 +281,6 @@ export default {
           };
         }
       });
-  
 
       data.customerCycle = data.customerCycle.filter((item) => {
         return item.start_date_new >= start && item.start_date_new <= end;
@@ -318,7 +300,6 @@ export default {
         data.items.push(cus);
       }
       data.customerCare = data.items.length;
-  
     };
     // khởi tạo biểu đồ khi thay đổi lựa chọn tuần, ...
     const initChart = async (start, end) => {
@@ -334,7 +315,6 @@ export default {
         var count = 0;
         chartOptionsAppointment1.labels[i] = data.statusTask[i].name;
         chartSeriesAppointment1.value[i] = 0;
-
         for (let task of data.task) {
           if (task.StatusTaskId == data.statusTask[i]._id) {
             count++;
@@ -344,16 +324,15 @@ export default {
         if (data.statusTask[i].name == "đã chăm sóc") {
           data.progress = count;
         }
-
         chartSeriesAppointment.data[i] = {
           name: data.statusTask[i].name,
           data: [count],
         };
       }
       for (let i = 0; i < data.customerType.documents.length; i++) {
-        chartOptionsCustomerType.labels[i] = data.customerType.documents[i].name;
+        chartOptionsCustomerType.labels[i] =
+          data.customerType.documents[i].name;
         chartSeriesCustomerType.value[i] = 0;
-
         for (let j = 0; j < data.customer.documents.length; j++) {
           if (
             data.customerType.documents[i]._id ==
@@ -374,7 +353,8 @@ export default {
       if (nameChart == "customer") {
         await refresh();
         for (let i = 0; i < data.customerType.documents.length; i++) {
-          chartOptionsCustomerType.labels[i] = data.customerType.documents[i].name;
+          chartOptionsCustomerType.labels[i] =
+            data.customerType.documents[i].name;
           chartSeriesCustomerType.value[i] = 0;
 
           for (let j = 0; j < data.customer.documents.length; j++) {
@@ -413,7 +393,10 @@ export default {
           case "quý": {
             const currentQuarterDates = reactive({ data: {} });
             currentQuarterDates.data = getCurrentQuarterDates();
-            initChart(currentQuarterDates.data.start, currentQuarterDates.data.end);
+            initChart(
+              currentQuarterDates.data.start,
+              currentQuarterDates.data.end
+            );
           }
           case "năm": {
             const getCurrentYearDates = getCurrentYear();
@@ -445,7 +428,10 @@ export default {
           }
           case "năm": {
             const getCurrentYearDates = getCurrentYear();
-            await initCustomer(getCurrentYearDates.start, getCurrentYearDates.end);
+            await initCustomer(
+              getCurrentYearDates.start,
+              getCurrentYearDates.end
+            );
             break;
           }
           default: {
@@ -500,7 +486,11 @@ export default {
       const currentYear = currentDate.getFullYear();
       const currentQuarter = Math.floor(currentDate.getMonth() / 3) + 1;
 
-      const firstDayOfQuarter = new Date(currentYear, (currentQuarter - 1) * 3, 1);
+      const firstDayOfQuarter = new Date(
+        currentYear,
+        (currentQuarter - 1) * 3,
+        1
+      );
       const lastDayOfQuarter = new Date(currentYear, currentQuarter * 3, 0);
 
       const formattedFirstDay = formatDate(firstDayOfQuarter);
@@ -552,7 +542,7 @@ export default {
       const week = getCurrentWeekDays();
       const firstDayOfWeek = week[0];
       const lastDayOfWeek = week[week.length - 1];
-      //1****
+
       data.items = [];
       data.customerCycle = await http_getAll(Task);
       // Mảng nhiệm vụ ban đầu
@@ -602,7 +592,8 @@ export default {
 
       data.customerCycle = data.customerCycle.filter((item) => {
         return (
-          item.start_date_new >= firstDayOfWeek && item.start_date_new <= lastDayOfWeek
+          item.start_date_new >= firstDayOfWeek &&
+          item.start_date_new <= lastDayOfWeek
         );
       });
 
@@ -620,12 +611,15 @@ export default {
         data.items.push(cus);
       }
       data.customerCare = data.items.length;
-      //
+
       data.progress = 0;
       data.task = data.task.filter((value, index) => {
-        return value.start_date >= firstDayOfWeek && value.start_date <= lastDayOfWeek;
+        return (
+          value.start_date >= firstDayOfWeek &&
+          value.start_date <= lastDayOfWeek
+        );
       });
-      // console.log(data.task);
+
       for (let i = 0; i < data.statusTask.length; i++) {
         var count = 0;
         chartOptionsAppointment1.labels[i] = data.statusTask[i].name;
@@ -646,12 +640,12 @@ export default {
           data: [count],
         };
       }
-      //biểu đồ
-      await refresh();
+      //chart
       data.progress = 0;
       data.task = data.task.filter((item) => {
         return (
-          (item.start_date >= firstDayOfWeek && item.start_date <= lastDayOfWeek) ||
+          (item.start_date >= firstDayOfWeek &&
+            item.start_date <= lastDayOfWeek) ||
           (item.end_date >= firstDayOfWeek && item.end_date <= lastDayOfWeek)
         );
       });
@@ -675,32 +669,23 @@ export default {
           data: [count],
         };
       }
-      //
+
       if (data.task.length == 0) {
         data.progress = 0.0;
       } else {
         data.progress = (data.progress / data.task.length) * 100;
         data.progress = data.progress.toFixed(2);
       }
-
     });
 
-    //3****
-    watch(takeCare, (newValue, oldValue) => {
-      // console.log("takecare", newValue);
-    });
     return {
       data,
-      overview,
-      detail,
-      takeCare,
       setPages,
       selectedOptionCycle,
       showchart,
       customerChart,
       appointmentChart,
-      assign,
-      isassign,
+
       chartOptionsCustomerType,
       chartSeriesCustomerType,
       chartOptionsStar,
@@ -721,19 +706,10 @@ export default {
     <div class="d-flex my-2 mx-3 menu justify-content-end" style="border: none">
       <!-- BTN tổng quan chi tiêt -->
       <div class="d-flex menu mx-2 my-2 justify-content-end">
-        <a
-          @click="
-            () => {
-              detail = false;
-              overview = true;
-            }
-          "
-          class="active-menu"
-        >
+        <a class="active-menu">
           <span class="size-17 active-menu">Tổng quan</span>
         </a>
       </div>
-      <div class=""></div>
     </div>
     <div class="border-hr mb-3"></div>
     <!-- Box -->
@@ -751,7 +727,10 @@ export default {
 
     <!-- search, select -->
     <div class="d-flex justify-content-between mx-4 mb-3">
-      <div class="d-flex justify-content-start" v-if="showchart == 'customerCycle'">
+      <div
+        class="d-flex justify-content-start"
+        v-if="showchart == 'customerCycle'"
+      >
         <Select
           class="d-flex justify-content-start select"
           :options="[
@@ -785,8 +764,7 @@ export default {
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-              (data.choseSearch = value),
-              (data.currentPage = 1)
+              (data.choseSearch = value), (data.currentPage = 1)
             )
           "
           @refresh="(data.entryValue = 'All'), (data.currentPage = 1)"
@@ -844,13 +822,15 @@ export default {
     <div class="p-0 mx-4">
       <div class="mt-2" v-if="showchart == 'appointment'">
         <!--Chart Appointment -->
-        <div class="mt-5" v-if="overview && showchart == 'appointment'">
+        <div class="mt-5" v-if="showchart == 'appointment'">
           <div class="border-box-chart">
-            <h5 class="text-center mt-2">Biểu đồ thể hiện trạng thái chăm sóc</h5>
+            <h5 class="text-center mt-2">
+              Biểu đồ thể hiện trạng thái chăm sóc
+            </h5>
             <apexchart
               :options="chartOptionsAppointment"
               :series="chartSeriesAppointment.data"
-              v-if="overview && showchart == 'appointment'"
+              v-if="showchart == 'appointment'"
               height="400"
             />
           </div>
@@ -859,7 +839,7 @@ export default {
               class="mt-5"
               :options="chartOptionsAppointment1"
               :series="chartSeriesAppointment1"
-              v-if="overview && showchart == 'appointment'"
+              v-if="showchart == 'appointment'"
               height="400"
             />
           </div>
@@ -869,7 +849,7 @@ export default {
       <!--Chart Customer -->
       <div
         class="row justify-content-around row"
-        v-if="overview && showchart == 'customer'"
+        v-if="showchart == 'customer'"
       >
         <div class="col-lg-6 col-12 mb-4">
           <div
@@ -885,7 +865,7 @@ export default {
                     class=""
                     :options="chartOptionsCustomerType"
                     :series="chartSeriesCustomerType"
-                    v-if="overview && showchart == 'customer'"
+                    v-if="showchart == 'customer'"
                     height="400"
                   />
                 </div>
@@ -904,7 +884,7 @@ export default {
                     class=""
                     :options="chartOptionsStar"
                     :series="chartSeriesStar"
-                    v-if="overview && showchart == 'customer'"
+                    v-if="showchart == 'customer'"
                     height="400"
                   />
                 </div>
@@ -934,7 +914,11 @@ export default {
         @selectAll="(value) => handleSelectAll(value)"
         @selectOne="(id, item) => handleSelectOne(id, item)"
         @delete="handleDelete"
-        @edit="(value, value1) => ((data.addValue = value), (data.activeEdit = value1))"
+        @edit="
+          (value, value1) => (
+            (data.addValue = value), (data.activeEdit = value1)
+          )
+        "
         @view="
           (value) => {
             view(value);
@@ -977,7 +961,6 @@ export default {
 .border-hr {
   border-top: 1px solid var(--gray);
 }
-
 .menu {
   /* border: 1px solid var(--gray); */
   border-collapse: collapse;

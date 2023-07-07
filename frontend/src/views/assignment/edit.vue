@@ -54,10 +54,7 @@ export default {
     watch(
       () => props.resetData,
       async (newValue, oldValue) => {
-        
         await refresh();
-
-        
       },
       { immediate: true }
       //có props
@@ -106,7 +103,7 @@ export default {
             props.item.Status_Task.name = res.document.name;
             await refresh();
             ctx.emit("newStatus", statustasks.statustask);
-          
+
             selectedOptionStatus.value = res.document._id;
           }
           return true;
@@ -114,19 +111,19 @@ export default {
         showSweetAlert();
         selectedOptionStatus.value = 0;
       }
-      
+
       props.item.StatusTaskId = selectedOptionStatus.value;
       selectedOptionStatus.value = "";
     });
 
     const deleteStatusTask = async (_id) => {
       const status_task = await http_getOne(StatusTask, _id);
-      
+
       const isConfirmed = await alert_delete(
         `Xoá trạng thái`,
         `Bạn có chắc chắn muốn xoá trạng thái ${status_task.name} không ?`
       );
-      
+
       if (isConfirmed == true) {
         const result = await http_deleteOne(StatusTask, _id);
         alert_success(
@@ -137,15 +134,12 @@ export default {
       }
     };
     const search = async (value) => {
-      
       await refresh();
       statustasks.statustask = statustasks.statustask.filter(
         (value1, index) => {
-          
           return value1.name.includes(value) || value.length == 0;
         }
       );
-     
     };
 
     const cycles = reactive({ cycle: [] });
@@ -177,7 +171,7 @@ export default {
             props.item.Cycle.name = res.document.name;
             await refresh();
             ctx.emit("newCycle", cycles.cycle);
-            
+
             selectedOptionCycle.value = res.document._id;
             // name.value = document.document.name;
           }
@@ -191,12 +185,12 @@ export default {
 
     const deleteCycle = async (_id) => {
       const cycle = await http_getOne(Cycle, _id);
-      
+
       const isConfirmed = await alert_delete(
         `Xoá chu kỳ`,
         `Bạn có chắc chắn muốn xoá chu kỳ ${cycle.name} không ?`
       );
-     
+
       if (isConfirmed == true) {
         const result = await http_deleteOne(Cycle, _id);
         alert_success(
@@ -207,13 +201,10 @@ export default {
       }
     };
     const searchCycle = async (value) => {
-      
       await refresh();
       cycles.cycle = cycles.cycle.filter((value1, index) => {
-        
         return value1.name.includes(value) || value.length == 0;
       });
- 
     };
 
     const refresh = async () => {
@@ -230,8 +221,8 @@ export default {
       // data.cycleSelect = [...rs];
     };
 
-    onBeforeMount(() => {
-      refresh();
+    onBeforeMount(async () => {
+      await refresh();
     });
     const update = () => {
       ctx.emit("update");

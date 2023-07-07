@@ -20,116 +20,27 @@ export default {
     const handleActiveCus = () => {
       isActive.value = !isActive.value;
     };
-
-    const showSweetAlert = async () => {
-      const { value: formValues } = await Swal.fire({
-        title: "Chỉnh sửa ",
-        html: `
-        <input id="my-input1" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
-        <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
-        <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
-        <select id="my-select-center" class="swal2-input form-control  ml-3 mb-3 mx-2" style="width:92%">
-        <option value="">Trung tâm</option>
-        ${centers.center
-          .map(
-            (option) => `<option value="${option._id}"
-            ${option._id == selectedOptionCenter.value ? "selected" : ""}
-            >${option.name}</option>`
-          )
-          .join("")}
-      </select>
-      <select id="my-select-dep" class="swal2-input form-control  ml-3  mx-2" style="width:92%" >
-        <option value="">Phòng</option>
-
-      </select>
-      </select>
-      <input id="my-input" class="swal2-input form-control  m-3" style="width:92%" type="text" placeholder="Tên tổ">
-    `,
-        focusConfirm: false,
-        showCancelButton: true,
-        preConfirm: () => {
-          const selectedOptionCenter =
-            document.getElementById("my-select-center").value;
-          const selectedOptionDep =
-            document.getElementById("my-select-dep").value;
-
-          const inputValue = document.getElementById("my-input").value;
-          if (!selectedOptionCenter || !inputValue || !selectedOptionDep) {
-            Swal.showValidationMessage("Vui lòng điền đầy đủ thông tin");
-          }
-
-          return {
-            selectedOptionCenter,
-            selectedOptionDep,
-            inputValue,
-          };
-        },
-        didOpen: async () => {
-          const center = document.getElementById("my-select-center");
-          const dep = document.getElementById("my-select-dep");
-
-          const Id = center.value;
-          departments.department =
-            (await departmentsServices.findAllDepOfACenter(Id)) || [];
-
-          dep.innerHTML = `
-          <option value="">Phòng</option>
-          ${departments.department
-            .map(
-              (option) =>
-                `<option value="${option._id}"
-                ${
-                  option._id == selectedOptionDepartment.value ? "selected" : ""
-                }
-
-                >${option.name}</option>`
-            )
-            .join("")}
-        `;
-          center.addEventListener("change", async () => {
-            const Id = center.value;
-            departments.department =
-              (await departmentsServices.findAllDepOfACenter(Id)) || [];
-
-            dep.innerHTML = `
-
-          ${departments.department
-            .map(
-              (option) =>
-                `<option value="${option._id}"
-
-                >${option.name}</option>`
-            )
-            .join("")}
-        `;
-          });
-        },
-      });
-
-      if (formValues) {
-        // Xử lý giá trị selectedOption và giá trị inputValue
-        const document = await unitsServices.create({
-          departmentId: formValues.selectedOptionDep,
-          name: formValues.inputValue,
-        });
-        if (document.error) {
-          alert_warning(`Đã tồn tại  `, `${formValues.inputValue}`);
-          return;
-        }
-        alert_success(`Đã thêm `, `${formValues.inputValue}`);
-
-        await refresh("unit");
-        units.unit.push({ _id: "other", name: "khác" });
-
-        ctx.emit("newUnit", units.unit);
-        selectedOptionUnit.value = document.document._id;
-        data.modelUnit = document.document.name;
-      }
+    const isActiveAssign = ref(true);
+    const handleActiveAssign = () => {
+      isActiveAssign.value = !isActiveAssign.value;
     };
-
+    const isActiveEmploy = ref(false);
+    const handleActiveEmploy = () => {
+      isActiveEmploy.value = !isActiveEmploy.value;
+    };
+    const isActiveAppoint = ref(false);
+    const handleActiveAppoint = () => {
+      isActiveAppoint.value = !isActiveAppoint.value;
+    };
     return {
       isActive,
       handleActiveCus,
+      isActiveAssign,
+      handleActiveAssign,
+      isActiveEmploy,
+      handleActiveEmploy,
+      isActiveAppoint,
+      handleActiveAppoint,
     };
   },
 };
@@ -141,7 +52,9 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 18px;">Thông tin chi tiết phân công</h4>
+          <h4 class="modal-title" style="font-size: 18px">
+            Thông tin chi tiết phân công
+          </h4>
           <button type="button" class="close" data-dismiss="modal">
             &times;
           </button>
@@ -155,14 +68,14 @@ export default {
               class="px-3 py-2 h6 border-none"
               data-target="#personal-info"
               style="margin-bottom: 0"
-              @click="handleActiveCus"
+              @click="handleActiveAssign"
             >
               Thông tin phân công
             </button>
             <div
-              v-if="isActive"
+              v-if="isActiveAssign"
               id="personal-info"
-              class="collapse my-3 border-all"
+              class="my-3 border-all"
             >
               <div
                 class="d-flex justify-content-around row mx-2"
@@ -277,11 +190,11 @@ export default {
               data-toggle="collapse"
               class="px-3 py-2 h6 border-none"
               data-target="#assignment"
-              @click="handleActiveCus"
+              @click="handleActiveEmploy"
             >
               Danh sách nhân viên phụ trách
             </button>
-            <div v-if="isActive" id="assignment" class="collapse my-3">
+            <div v-if="isActiveEmploy" id="assignment" class="collapse my-3">
               <div class="table-responsive">
                 <table class="my-table mb-2 table border-table-all">
                   <thead style="max-width: 100px; overflow: auto">
@@ -323,16 +236,17 @@ export default {
               </div>
             </div>
           </div>
+
           <div class="mt-2">
             <button
               data-toggle="collapse"
               class="px-3 py-2 h6 border-none"
               data-target="#event"
-              @click="handleActiveCus"
+              @click="handleActiveAppoint()"
             >
               Danh sách lịch hẹn
             </button>
-            <div v-if="isActive" id="event" class="collapse mt-2">
+            <div v-if="isActiveAppoint" id="event" class="collapse mt-2">
               <Table
                 :items="viewValue.Appointments"
                 :cus="viewValue.Customer.name"
@@ -342,8 +256,6 @@ export default {
                 :borderTableAll="true"
                 :activeAction="false"
               />
-
-              <!-- <p v-if="viewValue.Appointments.length == 0" class="text-center mt-2">Không tồn tại bản ghi.</p> -->
             </div>
           </div>
         </div>

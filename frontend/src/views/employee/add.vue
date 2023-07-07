@@ -2,7 +2,6 @@
 import { reactive, ref, watch, onMounted, watchEffect } from "vue";
 import Select from "../../components/form/select.vue";
 import Employee from "../../services/employee.service";
-// ******
 import Select_Advanced from "../../components/form/select_advanced.vue";
 import Position from "../../services/position.service";
 import Role from "../../services/role.service";
@@ -25,7 +24,6 @@ import mailService from "../../services/mail.service";
 export default {
   components: {
     Select,
-    // ***
     SelectOption,
     Select_Advanced,
   },
@@ -100,18 +98,15 @@ export default {
         mail: data.item.email,
       });
 
-
-
       data.item.unitId = selectedOptionUnit.value;
       data.item.postionId = selectedOptionPosition.value;
 
       data.item.checkUser = true;
       const account = await http_create(Account, data.item);
       if (account.user_name == true) {
-
         const result = await http_create(Employee, data.item);
         data.item.checkUser = false;
-  
+
         if (!result.error) {
           data.item.EmployeeId = result.document._id;
           const account = await http_create(Account, data.item);
@@ -153,7 +148,6 @@ export default {
         const randomIndex = Math.floor(Math.random() * charset.length);
         password += charset[randomIndex];
       }
-      // data.item.password = password;
       return password;
     };
     // ****REFRESH
@@ -181,8 +175,6 @@ export default {
     const positions = reactive({ position: [] });
     let selectedOptionPosition = ref("Chức vụ");
     watch(selectedOptionPosition, async (newValue, oldValue) => {
-
-      // Alert add center
       if (newValue == "other") {
         const showSweetAlert = async () => {
           const { value: PositionName } = await Swal.fire({
@@ -221,7 +213,6 @@ export default {
     const centers = reactive({ center: [] });
     let selectedOptionCenter = ref("0");
     watch(selectedOptionCenter, async (newValue, oldValue) => {
-      
       departments.department = await departmentsServices.findAllDepOfACenter(
         newValue
       );
@@ -315,7 +306,6 @@ export default {
           });
 
           if (formValues) {
-       
             const document = await departmentsServices.create({
               centerVNPTHGId: formValues.selectedOption,
               name: formValues.inputValue,
@@ -349,7 +339,6 @@ export default {
     });
     let selectedOptionUnit = ref("Đơn vị");
     watch(selectedOptionUnit, async (newValue, oldValue) => {
-
       if (newValue == "other") {
         const showSweetAlert = async () => {
           const { value: formValues } = await Swal.fire({
@@ -477,14 +466,11 @@ export default {
         selectedOptionDepartment.value
       );
       units.unit.push({ _id: "other", name: "khác" });
-  
     };
     const onDeletePosition = async (value) => {
-
       const result = await alert_delete("Bạn muốn xóa chức vụ", value.name);
 
       if (result) {
-
         const a = await Position.delete(value._id);
 
         alert_success("Bạn đã xóa trung tâm", value.name);
@@ -493,7 +479,6 @@ export default {
       }
     };
     const onDeleteCenter = async (value) => {
-   
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
         await CenterServices.delete(value._id);
@@ -503,7 +488,6 @@ export default {
       }
     };
     const onDeleteDep = async (value) => {
-     
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
         await departmentsServices.deleteOne(value._id);
@@ -513,7 +497,6 @@ export default {
       }
     };
     const onDeleteUnit = async (value) => {
-     
       const result = await alert_delete("Bạn muốn xóa", value.name);
       if (result) {
         await unitsServices.deleteOne(value._id);
@@ -523,7 +506,6 @@ export default {
       }
     };
     const closeModal = async () => {
-     
       showModal.value = false;
       ctx.emit("refresh", false);
     };
@@ -536,7 +518,6 @@ export default {
     return {
       data,
       create,
-      // ***
       positions,
       selectedOptionPosition,
       centers,
@@ -576,7 +557,6 @@ export default {
             &times;
           </button>
         </div>
-        <!-- {{ resetData }} -->
         <!-- Modal body -->
         <div class="model-body">
           <div class="d-flex">
@@ -638,19 +618,7 @@ export default {
                     required
                   />
                 </div>
-                <!-- <div class="form-group flex-grow-1">
-                  <label for="avatar"
-                    >Avatar(<span style="color: red">*</span>):</label
-                  >
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="avatar"
-                    name="avatar"
-                    v-model="data.item.avatar"
-                    required
-                  />
-                </div> -->
+
                 <div class="form-group flex-grow-1">
                   <label for="address"
                     >Địa chỉ(<span style="color: red">*</span>):</label

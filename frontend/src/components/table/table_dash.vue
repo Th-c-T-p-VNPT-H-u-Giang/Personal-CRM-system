@@ -3,35 +3,14 @@
     <table class="my-table table-container mb-2">
       <thead>
         <tr class="">
-          <!-- <th>
-            <input
-              type="checkbox"
-              name=""
-              id=""
-              :checked="selectAll[0].checked == true"
-              v-model="selectAll[0].checked"
-              @click="$emit('selectAll', selectAll[0].checked)"
-              class="d-flex align-items-center size-16"
-            />
-          </th> -->
           <th><span class="size-16">Stt</span></th>
           <th v-for="(value, index) in fields" :key="index">
             <span class="size-16">{{ value }}</span>
           </th>
-          <!-- <th><span class="size-16">Hành động</span></th> -->
         </tr>
       </thead>
       <tbody>
         <tr class="size-16" v-for="(item, index) in items" :key="index">
-          <!-- <td>
-            <input
-              type="checkbox"
-              :checked="item.checked == true"
-              v-model="item.checked"
-              @click="$emit('selectOne', item._id, item)"
-              class="d-flex align-items-center size-16"
-            />
-          </td> -->
           <td class="size-16">{{ startRow + index }}</td>
           <td class="size-16">{{ item.customer.name }}</td>
           <td class="size-16">{{ item.customer.phone }}</td>
@@ -52,8 +31,6 @@
 </template>
 
 <script>
-import { formatDate } from "../../assets/js/common";
-
 export default {
   props: {
     items: {
@@ -78,7 +55,6 @@ export default {
     },
   },
   setup(props, ntx) {
-    
     const defaultCustomerType = "Thường";
     return {
       defaultCustomerType,

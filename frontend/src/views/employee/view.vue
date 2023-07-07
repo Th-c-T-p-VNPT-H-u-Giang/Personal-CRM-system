@@ -1,5 +1,5 @@
 <script>
-import { watch, ref } from "vue";
+import { watch, ref, onMounted } from "vue";
 import Table from "../../components/table/table_employee_task.vue";
 
 export default {
@@ -17,9 +17,22 @@ export default {
     const handleActiveCus = () => {
       isActive.value = !isActive.value;
     };
+    const isActiveEmployee = ref(true);
+    const handleActiveEmployee = () => {
+      isActiveEmployee.value = !isActiveEmployee.value;
+    };
+    const isActiveWork = ref(false);
+    const handleActiveWork = () => {
+      isActiveWork.value = !isActiveWork.value;
+    };
+
     return {
       isActive,
       handleActiveCus,
+      isActiveEmployee,
+      handleActiveEmployee,
+      isActiveWork,
+      handleActiveWork,
     };
   },
 };
@@ -31,7 +44,9 @@ export default {
       <div class="modal-content">
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title" style="font-size: 18px;">Thông tin chi tiết nhân viên</h4>
+          <h4 class="modal-title" style="font-size: 18px">
+            Thông tin chi tiết nhân viên
+          </h4>
           <button type="button" class="close" data-dismiss="modal">
             &times;
           </button>
@@ -45,14 +60,14 @@ export default {
               class="px-3 py-2 h6 border-none"
               data-target="#personal-info"
               style="margin-bottom: 0"
-              @click="handleActiveCus"
+              @click="handleActiveEmployee()"
             >
               Thông tin cá nhân
             </button>
             <div
-              v-if="isActive"
+              v-if="isActiveEmployee"
               id="personal-info"
-              class="collapse my-3 border-all"
+              class="my-3 border-all"
             >
               <div class="d-flex justify-content-around row mx-3">
                 <div class="mt-3 col-6">
@@ -87,12 +102,12 @@ export default {
               data-toggle="collapse"
               class="py-2 h6 border-none"
               data-target="#customer-type"
-              @click="handleActiveCus"
+              @click="handleActiveWork()"
             >
               Công việc
             </button>
             <div
-              v-if="isActive"
+              v-if="isActiveWork"
               id="customer-type"
               class="collapse border-all mt-2 mb-3"
             >
@@ -152,11 +167,6 @@ export default {
                   :isActiveCheckbox="false"
                 />
               </div>
-              <!-- <div v-for="(value, index) in item.Tasks" :key="index">
-              <p> Ngày bắt đầu:  {{ value.start_date }}</p>
-              <p> Ngày kết thúc: {{ value.end_date }}</p>
-              <p> Nội dung: {{ value.content }}</p>
-              </div> -->
             </div>
           </div>
         </div>
