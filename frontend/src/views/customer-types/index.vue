@@ -196,6 +196,7 @@ export default {
     </div>
     <!-- Table -->
     <Table
+      :isActiveCheckbox="false"
       :items="data.items"
       :fields="['Tên']"
       :labels="['name']"
@@ -203,8 +204,7 @@ export default {
       @edit="EditEmit"
       :showActionList="[false, 
         isEditCustomer() ? true : false
-      , 
-        isDeleteCustomer() ? true : false
+      ,false
       ]"
       :startRow="1"
     />

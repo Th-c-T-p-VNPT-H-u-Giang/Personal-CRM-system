@@ -126,13 +126,6 @@ export default {
       default: [true, true, true],
     },
   },
-  setup(props, ntx) {
-    console.log(props.items);
-    const defaultCustomerType = "Thường";
-    return {
-      defaultCustomerType,
-    };
-  },
 };
 </script>
 

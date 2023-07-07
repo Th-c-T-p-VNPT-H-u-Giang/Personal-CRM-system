@@ -202,7 +202,7 @@ export default {
       for (const value of data.Notice.documents) {
         if (value.isRead == false) {
           count.value++;
-          console.log("count value", count.value);
+          // console.log("count value", count.value);
         }
       }
       // alert_info(`Chi Tiết Thông Báo`, `aca`)

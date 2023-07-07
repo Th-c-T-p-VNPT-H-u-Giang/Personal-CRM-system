@@ -144,6 +144,8 @@ export default {
     const entryNameCustomerType = ref("Loại khách hàng");
     const entryValueStatusTask = ref("");
     const entryNameStatusTask = ref("Trạng thái chăm sóc");
+    const entryAgeStatusTask = ref("Độ tuổi khách hàng");
+    const entryValueAge = ref("");
 
     const reFresh = async () => {
       const cusWork = await http_getAll(Customer_Work);
@@ -182,7 +184,29 @@ export default {
         });
       }
 
-      // console.log("customer1", data.items);
+    //   watch(entryValueAge, (newValue, oldValue) => {
+    //   // console.log('Age', newValue);
+    //   if (newValue != "") {
+    //     data.currentPage = 1;
+    //     reFresh();
+    //   } else {
+    //     data.currentPage = 1;
+    //     reFresh();
+    //   }
+    // });
+
+    // {
+    //             value: '1',
+    //             name: 'lớn hơn 18'
+    //           },
+    //           {
+    //             value: '2',
+    //             name: 'từ 18 đến 30'
+    //           },
+    //           {
+    //             value: '3',
+    //             name: 'lớn hơn 30'
+    //           }
 
       if (entryValueStatusTask.value.length > 0) {
         data.items = data.items.filter((cusWork) => {
@@ -193,6 +217,7 @@ export default {
           );
         });
       }
+
     };
 
     const reFresh1 = async () => {
@@ -242,7 +267,18 @@ export default {
         });
       } else if (data.choseSearch == "phone") {
         return data.items.map((value, index) => {
+          // console.log('Value: ', [value.Customer.birthday].join("").toLocaleLowerCase());
           return [value.Customer.phone].join("").toLocaleLowerCase();
+        });
+      } else if (data.choseSearch == "age") {
+        return data.items.map( (value, index) => {
+          return [new Date().getFullYear() - new Date(value.Customer.birthday).getFullYear()].join("").toLocaleLowerCase();
+        })
+      } 
+      else if (data.choseSearch == "address") {
+        return data.items.map((value, index) => {
+          // console.log('Value: ', [value.Customer.birthday].join("").toLocaleLowerCase());
+          return [value.Customer.address].join("").toLocaleLowerCase();
         });
       } else {
         return data.items.map((value, index) => {
@@ -250,6 +286,8 @@ export default {
             value.Customer.name,
             value.Customer.email,
             value.Customer.phone,
+            value.Customer.address,
+            new Date().getFullYear() - new Date(value.Customer.birthday).getFullYear()
           ]
             .join("")
             .toLocaleLowerCase();
@@ -292,11 +330,7 @@ export default {
       } else return data.items.value;
     });
     // methods
-    const update = (item) => {
-      console.log("updating", item);
-    };
     const deleteOne = (_id) => {
-      console.log("deleting", _id);
     };
 
     // watch
@@ -312,7 +346,6 @@ export default {
 
       if (isConfirmed) {
         const rsCustomer = await http_deleteOne(Customer, customerId);
-        console.log(rsCustomer);
         if (rsCustomer.error) {
           alert_error("Lổi ", rsCustomer.msg);
         } else {
@@ -357,7 +390,6 @@ export default {
       };
 
       data.viewCareCus = item.Customer.Tasks.map((value) => {
-        console.log("Value:", value);
         return {
           start_date: formatDate(value.start_date),
           end_date: formatDate(value.end_date),
@@ -387,7 +419,6 @@ export default {
     const edit = (item, isCheck) => {
       data.activeShowEdit = true;
       reFresh();
-      console.log(item.Customer);
       data.viewValue = {
         Customer: {
           _id: item.Customer._id,
@@ -414,13 +445,16 @@ export default {
       };
 
       data.activeEdit = isCheck;
-      console.log("Edit data", data.viewValue);
-      console.log("Check edit", data.activeEdit);
     };
 
     const updateEntryValueCustomerType = (value) => {
       entryValueCustomerType.value = value;
     };
+
+    const updateEntryValueAge = (value) => {
+      entryValueAge.value = value
+    };
+
 
     const updateEntryValueStatusTask = (value) => {
       entryValueStatusTask.value = value;
@@ -516,6 +550,17 @@ export default {
       }
     });
 
+    // watch(entryValueAge, (newValue, oldValue) => {
+    //   // console.log('Age', newValue);
+    //   if (newValue != "") {
+    //     data.currentPage = 1;
+    //     reFresh();
+    //   } else {
+    //     data.currentPage = 1;
+    //     reFresh();
+    //   }
+    // });
+
     const removeItem = (index) => {
       data.habitAdd = data.habitAdd.filter((value1, index1) => {
         return index1 != index;
@@ -523,7 +568,6 @@ export default {
     };
 
     return {
-      update,
       deleteOne,
       edit,
       handleDelete,
@@ -532,6 +576,7 @@ export default {
       showAddHabit,
       updateEntryValueCustomerType,
       updateEntryValueStatusTask,
+      updateEntryValueAge,
       entryValueCustomerType,
       entryNameCustomerType,
       entryValueStatusTask,
@@ -549,6 +594,8 @@ export default {
       isReadCustomer,
       isCreateCustomer,
       isCreateHabit,
+      entryAgeStatusTask,
+      entryValueAge
     };
   },
 };
@@ -615,7 +662,38 @@ export default {
             style="height: 35px"
           />
         </div>
-        <div class="form-group"></div>
+        <!-- <div class="form-group col-4">
+          <Select
+            :title="`Độ tuổi khách hàng`"
+            :entryValue="entryAgeStatusTask"
+            :options="[
+              {
+                value: '1',
+                name: 'bé hơn 18'
+              },
+              {
+                value: '2',
+                name: 'từ 18 đến 30'
+              },
+              {
+                value: '3',
+                name: 'lớn hơn 30'
+              }
+            ]"
+            @update:entryValue="
+              (value, value1) => (
+                updateEntryValueAge(value),
+                (entryAgeStatusTask = value1.name)
+              )
+            "
+            @refresh="
+              (entryAgeStatusTask = 'Độ tuổi khách hàng'),
+                updateEntryValueAge(''),
+                (data.currentPage = 1)
+            "
+            style="height: 35px"
+          />
+        </div> -->
       </div>
     </div>
     <!-- Search -->
@@ -655,7 +733,6 @@ export default {
           :entryValue="data.searchText"
           @choseSearch="
             async (value) => (
-              console.log('search ........'),
               (data.choseSearch = value),
               (data.currentPage = 1)
             )
@@ -674,6 +751,14 @@ export default {
               _id: 'phone',
               name: 'Tìm kiếm theo số điện thoại',
             },
+            {
+              _id: 'age',
+              name: 'Tìm kiếm theo độ tuổi',
+            },
+            {
+              _id: 'address',
+              name: 'Tìm kiếm theo địa chỉ',
+            },
           ]"
         />
       </div>
@@ -685,6 +770,7 @@ export default {
           data-target="#model-delete-all"
           @click="deleteMany()"
           :disabled="isDeleteCustomer() ? false : true"
+          v-if="false"
         >
           <span id="delete-all" class="mx-2"
             ><span class="size-16">Xoá</span></span
@@ -748,7 +834,7 @@ export default {
       :showActionList="[
         isReadCustomer() ? true : false,
         isEditCustomer() ? true : false,
-        isDeleteCustomer() ? true : false
+        false
       ]"
     />
     <!-- Pagination -->
