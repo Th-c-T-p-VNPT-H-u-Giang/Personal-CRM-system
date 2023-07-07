@@ -33,6 +33,88 @@ const io = require("socket.io")(server, {
   },
 });
 
+const sendMail = async (email, name, age) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "maxvolum2012@gmail.com",
+      pass: "wisbbpolajrseqqd",
+    },
+  });
+
+  const mailOptions = {
+    from: "maxvolum2012@gmail.com",
+    to: email,
+    subject: "Chúc mừng sinh nhật",
+    html: `Dear ${name}!
+            <br> Chúc mừng sinh nhật lần thứ ${age} của bạn`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+const DatetimeEvent = async () => {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = ("0" + (currentDate.getMonth() + 1)).slice(-2);
+  const currentDay = ("0" + currentDate.getDate()).slice(-2);
+  const currentHour = ("0" + currentDate.getHours()).slice(-2);
+  const currentMinute = ("0" + currentDate.getMinutes()).slice(-2);
+
+  const datetimeLocalFormat =
+    `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}` +
+    " to " +
+    `${currentYear}-${currentMonth}-${currentDay}T23:59`;
+  // const formattedDateTime = currentDate.toISOString();
+  return datetimeLocalFormat;
+};
+const getTimeEvent = async (value) => {
+  value.time_duration = value.time_duration.split(" to ")[0];
+  var time_duration = new Date(value.time_duration);
+  var ngay = time_duration.getDate();
+  var thang = time_duration.getMonth() + 1; // Tháng bắt đầu từ 0, nên cộng thêm 1
+  var nam = time_duration.getFullYear();
+  var timeEvent = ngay + "/" + thang + "/" + nam;
+  return timeEvent;
+};
+const getCurrent = async () => {
+  var ngayHienTai = new Date();
+  var ngay = ngayHienTai.getDate();
+  var thang = ngayHienTai.getMonth() + 1; // Tháng bắt đầu từ 0, nên cộng thêm 1
+  var nam = ngayHienTai.getFullYear();
+  var current = ngay + "/" + thang + "/" + nam;
+  return current;
+};
+
+const createCusEvent = async (customer, value) => {
+  await Customer_Event.create({
+    CustomerId: customer._id,
+    EventId: value._id,
+  });
+};
+
+const createNoti = async (customerBirthday, age, customer, _id, nameEm) => {
+  await Notification.create({
+    title: "Sinh nhật",
+    content: `Ngày mai ${customerBirthday.date}/${
+      customerBirthday.month + 1
+    } là sinh nhật thứ ${age} của khách hàng "${customer.name}"`,
+    recipient: nameEm,
+    sender: "",
+    isRead: false,
+    idRecipient: _id,
+  });
+};
+
+const createEvent = async (time) => {
+  const event = await Event.create({
+    name: "sinh nhật",
+    content: "sinh nhật",
+    time_duration: time,
+  });
+  return event;
+};
+
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.on("disconnect", () => {
@@ -61,7 +143,6 @@ io.on("connection", (socket) => {
 
   socket.on("birthday", async (customers, _id, nameEm) => {
     const today = moment(); // Lấy ngày hiện tại
-    const events = await Event.findAll();
     for (const customer of customers) {
       const birthday = moment(customer.birthday, "YYYY-MM-DD");
       const customerBirthday = {
@@ -100,38 +181,15 @@ io.on("connection", (socket) => {
           if (count > 0) {
             io.emit("notiTask");
           } else {
-            await Notification.create({
-              title: "Sinh nhật",
-              content: `Ngày mai ${customerBirthday.date}/${
-                customerBirthday.month + 1
-              } là sinh nhật thứ ${age} của khách hàng "${customer.name}"`,
-              recipient: nameEm,
-              sender: "",
-              isRead: false,
-              idRecipient: _id,
-            });
+            await createNoti(customerBirthday, age, customer, _id, nameEm);
             io.emit("notiTask");
             /////event
             const events = await Event.findAll();
             if (events.length > 0) {
               let temp = 0;
               for (let value of events) {
-                value.time_duration = value.time_duration.split(" to ")[0];
-                
-
-                var time_duration = new Date(value.time_duration);
-
-                var ngay = time_duration.getDate();
-                var thang = time_duration.getMonth() + 1; // Tháng bắt đầu từ 0, nên cộng thêm 1
-                var nam = time_duration.getFullYear();
-                var timeEvent = ngay + "/" + thang + "/" + nam;
-
-                var ngayHienTai = new Date();
-                var ngay = ngayHienTai.getDate();
-                var thang = ngayHienTai.getMonth() + 1; // Tháng bắt đầu từ 0, nên cộng thêm 1
-                var nam = ngayHienTai.getFullYear();
-                var current = ngay + "/" + thang + "/" + nam;
-                
+                var timeEvent = await getTimeEvent(value);
+                var current = await getCurrent();
                 if (value.name == "sinh nhật" && timeEvent == current) {
                   temp++;
                   ////// có sự kiện r thì thêm khách hàng dô
@@ -149,40 +207,16 @@ io.on("connection", (socket) => {
                       }
                     }
                     if (count == 0) {
-                      const doc = await Customer_Event.create({
-                        CustomerId: customer._id,
-                        EventId: value._id,
-                      });
+                      await createCusEvent(customer, value);
                     }
                   } else {
-                    const doc = await Customer_Event.create({
-                      CustomerId: customer._id,
-                      EventId: value._id,
-                    });
+                    await createCusEvent(customer, value);
                   }
                 }
               }
               if (temp == 0) {
-                const currentDate = new Date();
-                const currentYear = currentDate.getFullYear();
-                const currentMonth = ("0" + (currentDate.getMonth() + 1)).slice(
-                  -2
-                );
-                const currentDay = ("0" + currentDate.getDate()).slice(-2);
-                const currentHour = ("0" + currentDate.getHours()).slice(-2);
-                const currentMinute = ("0" + currentDate.getMinutes()).slice(
-                  -2
-                );
-
-                const datetimeLocalFormat =
-                  `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}` +
-                  " to " +
-                  `${currentYear}-${currentMonth}-${currentDay}T23:59`;
-                const docevent = await Event.create({
-                  name: "sinh nhật",
-                  content: "sinh nhật",
-                  time_duration: datetimeLocalFormat,
-                });
+                const datetimeLocalFormat = await DatetimeEvent();
+                const docevent = await createEvent(datetimeLocalFormat);
                 ////Cus_event
                 const cusEvent = await Customer_Event.findAll();
                 if (cusEvent.length > 0) {
@@ -197,39 +231,15 @@ io.on("connection", (socket) => {
                     }
                   }
                   if (count == 0) {
-                    const doc = await Customer_Event.create({
-                      CustomerId: customer._id,
-                      EventId: docevent._id,
-                    });
+                    await createCusEvent(customer, docevent);
                   }
                 } else {
-                  const doc = await Customer_Event.create({
-                    CustomerId: customer._id,
-                    EventId: docevent._id,
-                  });
+                  await createCusEvent(customer, docevent);
                 }
               }
             } else {
-              const currentDate = new Date();
-              const currentYear = currentDate.getFullYear();
-              const currentMonth = ("0" + (currentDate.getMonth() + 1)).slice(
-                -2
-              );
-              const currentDay = ("0" + currentDate.getDate()).slice(-2);
-              const currentHour = ("0" + currentDate.getHours()).slice(-2);
-              const currentMinute = ("0" + currentDate.getMinutes()).slice(-2);
-
-              const datetimeLocalFormat =
-                `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}` +
-                " to " +
-                `${currentYear}-${currentMonth}-${currentDay}T23:59`;
-              // const currentDate = new Date();
-              const formattedDateTime = currentDate.toISOString();
-              const document = await Event.create({
-                name: "sinh nhật",
-                content: "sinh nhật",
-                time_duration: datetimeLocalFormat,
-              });
+              const datetimeLocalFormat = await DatetimeEvent();
+              const document = await createEvent(datetimeLocalFormat);
               ////Cus_event
               const cusEvent = await Customer_Event.findAll();
               if (cusEvent.length > 0) {
@@ -244,67 +254,24 @@ io.on("connection", (socket) => {
                   }
                 }
                 if (count == 0) {
-                  const doc = await Customer_Event.create({
-                    CustomerId: customer._id,
-                    EventId: document._id,
-                  });
+                  await createCusEvent(customer, document);
                 }
               } else {
-                const doc = await Customer_Event.create({
-                  CustomerId: customer._id,
-                  EventId: document._id,
-                });
+                await createCusEvent(customer, document);
               }
             }
-            // ////mail
-            const transporter = nodemailer.createTransport({
-              service: "gmail",
-              auth: {
-                user: "maxvolum2012@gmail.com",
-                pass: "wisbbpolajrseqqd",
-              },
-            });
-
-            const mailOptions = {
-              from: "maxvolum2012@gmail.com",
-              to: customer.email,
-              subject: "Chúc mừng sinh nhật",
-              html: `Dear ${customer.name}!
-                    <br> Chúc mừng sinh nhật lần thứ ${age} của bạn`,
-            };
-
-            const info = await transporter.sendMail(mailOptions);
+            await sendMail(customer.email, customer.name, age);
           }
         } else {
-          await Notification.create({
-            title: "Sinh nhật",
-            content: `Ngày mai ${customerBirthday.date}/${
-              customerBirthday.month + 1
-            } là sinh nhật thứ ${age} của khách hàng "${customer.name}"`,
-            recipient: nameEm,
-            sender: "",
-            isRead: false,
-            idRecipient: _id,
-          });
+          await createNoti(customerBirthday, age, customer, _id, nameEm);
+          io.emit("notiTask");
           /////event
           const events = await Event.findAll();
           if (events.length > 0) {
             let temp = 0;
             for (let value of events) {
-              value.time_duration = value.time_duration.split(" to ")[0];
-             
-              var time_duration = new Date(value.time_duration);
-              var ngay = time_duration.getDate();
-              var thang = time_duration.getMonth() + 1; // Tháng bắt đầu từ 0, nên cộng thêm 1
-              var nam = time_duration.getFullYear();
-              var timeEvent = ngay + "/" + thang + "/" + nam;
-
-              var ngayHienTai = new Date();
-              var ngay = ngayHienTai.getDate();
-              var thang = ngayHienTai.getMonth() + 1; // Tháng bắt đầu từ 0, nên cộng thêm 1
-              var nam = ngayHienTai.getFullYear();
-              var current = ngay + "/" + thang + "/" + nam;
-              
+              var timeEvent = await getTimeEvent(value);
+              var current = await getCurrent();
               if (value.name == "sinh nhật" && timeEvent == current) {
                 temp++;
                 ////// có sự kiện r thì thêm khách hàng dô
@@ -322,38 +289,39 @@ io.on("connection", (socket) => {
                     }
                   }
                   if (count == 0) {
-                    const doc = await Customer_Event.create({
-                      CustomerId: customer._id,
-                      EventId: value._id,
-                    });
+                    await createCusEvent(customer, value);
                   }
                 } else {
-                  const doc = await Customer_Event.create({
-                    CustomerId: customer._id,
-                    EventId: value._id,
-                  });
+                  await createCusEvent(customer, value);
                 }
               }
             }
+            if (temp == 0) {
+              const datetimeLocalFormat = await DatetimeEvent();
+              const docevent = await createEvent(datetimeLocalFormat);
+              ////Cus_event
+              const cusEvent = await Customer_Event.findAll();
+              if (cusEvent.length > 0) {
+                let count = 0;
+                for (let val of cusEvent) {
+                  if (
+                    val.CustomerId == customer._id &&
+                    val.EventId == docevent._id
+                  ) {
+                    count++;
+                    break;
+                  }
+                }
+                if (count == 0) {
+                  await createCusEvent(customer, docevent);
+                }
+              } else {
+                await createCusEvent(customer, docevent);
+              }
+            }
           } else {
-            // const currentDate = new Date();
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear();
-            const currentMonth = ("0" + (currentDate.getMonth() + 1)).slice(-2);
-            const currentDay = ("0" + currentDate.getDate()).slice(-2);
-            const currentHour = ("0" + currentDate.getHours()).slice(-2);
-            const currentMinute = ("0" + currentDate.getMinutes()).slice(-2);
-
-            const datetimeLocalFormat =
-              `${currentYear}-${currentMonth}-${currentDay}T${currentHour}:${currentMinute}` +
-              " to " +
-              `${currentYear}-${currentMonth}-${currentDay}T23:59`;
-            const formattedDateTime = currentDate.toISOString();
-            const document = await Event.create({
-              name: "sinh nhật",
-              content: "sinh nhật",
-              time_duration: datetimeLocalFormat,
-            });
+            const datetimeLocalFormat = await DatetimeEvent();
+            const document = await createEvent(datetimeLocalFormat);
             ////Cus_event
             const cusEvent = await Customer_Event.findAll();
             if (cusEvent.length > 0) {
@@ -368,35 +336,13 @@ io.on("connection", (socket) => {
                 }
               }
               if (count == 0) {
-                const doc = await Customer_Event.create({
-                  CustomerId: customer._id,
-                  EventId: document._id,
-                });
+                await createCusEvent(customer, document);
               }
             } else {
-              const doc = await Customer_Event.create({
-                CustomerId: customer._id,
-                EventId: document._id,
-              });
+              await createCusEvent(customer, document);
             }
           }
-          const transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-              user: "maxvolum2012@gmail.com",
-              pass: "wisbbpolajrseqqd",
-            },
-          });
-
-          const mailOptions = {
-            from: "maxvolum2012@gmail.com",
-            to: customer.email,
-            subject: "Chúc mừng sinh nhật",
-            html: `Dear ${customer.name}!
-                    <br> Chúc mừng sinh nhật lần thứ ${age} của bạn`,
-          };
-
-          const info = await transporter.sendMail(mailOptions);
+          await sendMail(customer.email, customer.name, age);
          
           io.emit("notiTask");
         }
