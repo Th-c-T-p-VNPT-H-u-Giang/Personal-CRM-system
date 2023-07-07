@@ -218,7 +218,7 @@
       class="mx-3"
     />
 
-    <div class="container pdf-content" ref="pdfContent">
+    <div class="container pdf-content" ref="pdfContentRef">
       <img
         src="../../assets/images/vnpt-logo1.png"
         class="rounded-circle"
@@ -477,7 +477,6 @@ export default {
                 (dayStartNewCycle.getMonth() + 1) +
                 "-" +
                 dayStartNewCycle.getDate();
-              // cycleDate = cycleDate * 2;
             }
 
             if (isBefore(new Date(dayStartNewCycle), new Date(end_date))) {
@@ -489,20 +488,13 @@ export default {
                 (end_day.getMonth() + 1) +
                 "-" +
                 end_day.getDate();
-              // cycleDate = cycleDate * 2 + 1;
             }
 
             // // lần bắt đầu thứ 2
-
-            // console.log('Day start new cycle before: ' + dayStartNewCycle);
             const dayCycle2 = new Date(dayStartNewCycle);
-            // console.log('Cycle month: ' + cycleMonth);
-            // console.log('Cycle date: ' + cycleDate);
-            // console.log(' cycleYear: ' + cycleYear);
             dayCycle2.setDate(dayCycle2.getDate() + cycleDate);
             dayCycle2.setMonth(dayCycle2.getMonth() + cycleMonth);
             dayCycle2.setFullYear(dayCycle2.getFullYear() + cycleYear);
-            // console.log('Day start new cycle after: ' + dayCycle2);
 
             const year2 = dayCycle2.getFullYear();
             const month2 = dayCycle2.getMonth() + 1;
@@ -596,7 +588,6 @@ export default {
 
     // handle pagination
     const toString = computed(() => {
-      // console.log("Starting search");
       if (data.choseSearch == "name") {
         return data.items.map((value, index) => {
           return [value.nameCustomer].join("").toLocaleLowerCase();
@@ -654,44 +645,19 @@ export default {
     });
 
     // handle print data
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+    const pdfContentRef = ref(null);
+    const handlePrintReport = () => {
+      const printContent = pdfContentRef.value;
+      const originalContents = document.body.innerHTML;
 
-      if (pdfContent.value) {
-        const content = pdfContent.value;
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
 
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
+      document.body.innerHTML = originalContents;
+    };
 
-          const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let yPosition = 10; // Đặt lề trên là 10px
-          let contentRemainingHeight = imgHeight;
-          let pageNumber = 1;
-
-          while (contentRemainingHeight > 0) {
-            if (pageNumber > 1) {
-              doc.addPage();
-            }
-
-            doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
-
-            contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
-            if (contentRemainingHeight > 0) {
-              yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
-            } else {
-              yPosition = 10; // Reset lề trên cho trang tiếp theo
-            }
-
-            pageNumber++;
-          }
-
-          doc.save("BaoCaoDanhSachKhachHangLauChuaChamSoc.pdf");
-        });
-      }
+    const isPrintReport = () => {
+      return true;
     };
 
     const view = (item) => {
@@ -760,7 +726,7 @@ export default {
       handleUpdateEntryValue,
       handleUpdateSearchText,
       handlePrintReport,
-      pdfContent,
+      pdfContentRef,
       view,
       labels,
       store,

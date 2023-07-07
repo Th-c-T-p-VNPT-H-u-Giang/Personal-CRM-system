@@ -16,6 +16,8 @@
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "moment": "^2.29.4",
+    "pdfmake": "^0.2.7",
+    "puppeteer": "^20.8.0",
     "socket.io-client": "^4.7.0",
     "sweetalert2": "^11.7.12",
     "vue": "^3.2.47",

@@ -212,7 +212,7 @@
       class="mx-3"
     />
 
-    <div class="container pdf-content" v-show="true" ref="pdfContent">
+    <div class="container pdf-content" v-show="true" ref="pdfContentRef">
       <img
         src="../../../assets/images/vnpt-logo1.png"
         class="rounded-circle"
@@ -456,54 +456,30 @@ export default {
           employee: [...item.employee],
         };
       });
-
-      // console.log("data employee: ", data.employee[0].employee[0].name);
     };
 
     // life cycle
     onBeforeMount(() => {
       reFresh();
     });
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
 
-      if (pdfContent.value) {
-        const content = pdfContent.value;
+      // handle print data
+    const pdfContentRef = ref(null);
+    // const pdfContent = ref(null);
+    const handlePrintReport = () => {
+      const printContent = pdfContentRef.value;
+      const originalContents = document.body.innerHTML;
 
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
 
-          const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let yPosition = 10; // Đặt lề trên là 10px
-          let contentRemainingHeight = imgHeight;
-          let pageNumber = 1;
-
-          while (contentRemainingHeight > 0) {
-            if (pageNumber > 1) {
-              doc.addPage();
-            }
-
-            doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
-
-            contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
-            if (contentRemainingHeight > 0) {
-              yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
-            } else {
-              yPosition = 10; // Reset lề trên cho trang tiếp theo
-            }
-
-            pageNumber++;
-          }
-
-          doc.save("BaoCaoKhachHangThuocNhanVienPhuTrach.pdf");
-        });
-      }
+      document.body.innerHTML = originalContents;
     };
 
+    const isPrintReport = () => {
+      // Add your logic here to determine if the report can be printed
+      return true;
+    };
     // computed
     const toString = computed(() => {
       // console.log("Starting search");
@@ -616,7 +592,8 @@ export default {
       setPages,
       view,
       handlePrintReport,
-      pdfContent,
+      // pdfContent,
+      pdfContentRef,
       labels,
       store,
       isReadReport,

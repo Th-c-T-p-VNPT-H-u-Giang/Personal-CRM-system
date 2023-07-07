@@ -217,7 +217,7 @@
       class="mx-3"
     />
 
-    <div class="container pdf-content" ref="pdfContent">
+    <div class="container pdf-content" ref="pdfContentRef">
       <img
         src="../../../assets/images/vnpt-logo1.png"
         class="rounded-circle"
@@ -644,45 +644,62 @@ export default {
     });
 
     // handle print data
-    const pdfContent = ref(null);
-    const handlePrintReport = async () => {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+    // const pdfContent = ref(null);
+    // const handlePrintReport = async () => {
+    //   const doc = new jsPDF();
+    //   const pageWidth = doc.internal.pageSize.getWidth();
+    //   const pageHeight = doc.internal.pageSize.getHeight();
 
-      if (pdfContent.value) {
-        const content = pdfContent.value;
+    //   if (pdfContent.value) {
+    //     const content = pdfContent.value;
 
-        html2canvas(content).then((canvas) => {
-          const imgData = canvas.toDataURL("image/png");
+    //     html2canvas(content).then((canvas) => {
+    //       const imgData = canvas.toDataURL("image/png");
 
-          const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
-          const imgHeight = (canvas.height * imgWidth) / canvas.width;
-          let yPosition = 10; // Đặt lề trên là 10px
-          let contentRemainingHeight = imgHeight;
-          let pageNumber = 1;
+    //       const imgWidth = pageWidth - 20; // Giảm kích thước hình ảnh để tạo lề
+    //       const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    //       let yPosition = 10; // Đặt lề trên là 10px
+    //       let contentRemainingHeight = imgHeight;
+    //       let pageNumber = 1;
 
-          while (contentRemainingHeight > 0) {
-            if (pageNumber > 1) {
-              doc.addPage();
-            }
+    //       while (contentRemainingHeight > 0) {
+    //         if (pageNumber > 1) {
+    //           doc.addPage();
+    //         }
 
-            doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
+    //         doc.addImage(imgData, "PNG", 10, yPosition, imgWidth, imgHeight); // Đặt lề trái là 10px
 
-            contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
-            if (contentRemainingHeight > 0) {
-              yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
-            } else {
-              yPosition = 10; // Reset lề trên cho trang tiếp theo
-            }
+    //         contentRemainingHeight -= pageHeight - 20; // Giảm chiều cao trang để tạo lề
+    //         if (contentRemainingHeight > 0) {
+    //           yPosition = 10 - contentRemainingHeight; // Đặt lề trên trang tiếp theo
+    //         } else {
+    //           yPosition = 10; // Reset lề trên cho trang tiếp theo
+    //         }
 
-            pageNumber++;
-          }
+    //         pageNumber++;
+    //       }
 
-          doc.save("BaoCaoDanhSachKhachHangToiChuKyNhungChuaChamSoc.pdf");
-        });
-      }
+    //       doc.save("BaoCaoDanhSachKhachHangToiChuKyNhungChuaChamSoc.pdf");
+    //     });
+    //   }
+    // };
+    const pdfContentRef = ref(null);
+    // const pdfContent = ref(null);
+    const handlePrintReport = () => {
+      const printContent = pdfContentRef.value;
+      const originalContents = document.body.innerHTML;
+
+      document.body.innerHTML = printContent.innerHTML;
+      window.print();
+
+      document.body.innerHTML = originalContents;
     };
+
+    const isPrintReport = () => {
+      // Add your logic here to determine if the report can be printed
+      return true;
+    };
+
 
     const view = (item) => {
       data.viewValue = {
@@ -749,7 +766,7 @@ export default {
       handleUpdateEntryValue,
       handleUpdateSearchText,
       handlePrintReport,
-      pdfContent,
+      pdfContentRef,
       view,
       store,
       isReadReport,
