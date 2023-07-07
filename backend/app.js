@@ -17,6 +17,8 @@ const path = require("path");
 const nodemailer = require("nodemailer");
 //socket
 const moment = require("moment");
+//len lich
+const cron = require("node-cron");
 
 // initialize
 const app = express();
@@ -119,6 +121,10 @@ io.on("connection", (socket) => {
   console.log("a user connected");
   socket.on("disconnect", () => {
     console.log("user disconnected");
+  });
+
+  cron.schedule("50 20 * * *", () => {
+    socket.emit("notiEveryDay");
   });
 
   socket.on("assignmentTask", () => {
@@ -343,7 +349,6 @@ io.on("connection", (socket) => {
             }
           }
           await sendMail(customer.email, customer.name, age);
-         
           io.emit("notiTask");
         }
       }
